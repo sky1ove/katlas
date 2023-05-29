@@ -5,4 +5,8 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://sky1ove.github.io',
                 'git_url': 'https://github.com/sky1ove/katlas',
                 'lib_path': 'katlas'},
-  'syms': {'katlas.core': {'katlas.core.foo': ('core.html#foo', 'katlas/core.py')}}}
+  'syms': { 'katlas.core': { 'katlas.core.Data': ('core.html#data', 'katlas/core.py'),
+                             'katlas.core.Data.__init__': ('core.html#data.__init__', 'katlas/core.py'),
+                             'katlas.core.Data.get_kinase_raw': ('core.html#data.get_kinase_raw', 'katlas/core.py'),
+                             'katlas.core.normalize': ('core.html#normalize', 'katlas/core.py'),
+                             'katlas.core.raw2kinase': ('core.html#raw2kinase', 'katlas/core.py')}}}
