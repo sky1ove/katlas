@@ -8,5 +8,7 @@ d = { 'settings': { 'branch': 'main',
   'syms': { 'katlas.core': { 'katlas.core.Data': ('core.html#data', 'katlas/core.py'),
                              'katlas.core.Data.__init__': ('core.html#data.__init__', 'katlas/core.py'),
                              'katlas.core.Data.get_kinase_raw': ('core.html#data.get_kinase_raw', 'katlas/core.py'),
-                             'katlas.core.normalize': ('core.html#normalize', 'katlas/core.py'),
-                             'katlas.core.raw2kinase': ('core.html#raw2kinase', 'katlas/core.py')}}}
+                             'katlas.core.norm': ('core.html#norm', 'katlas/core.py'),
+                             'katlas.core.plot_logo': ('core.html#plot_logo', 'katlas/core.py'),
+                             'katlas.core.raw2kinase': ('core.html#raw2kinase', 'katlas/core.py'),
+                             'katlas.core.raw2logo': ('core.html#raw2logo', 'katlas/core.py')}}}
