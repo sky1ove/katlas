@@ -16,7 +16,7 @@ class Data:
     """
 
     RAW_KINASE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_raw.csv"
-    NORM_KINASE_URL = ""
+    NORM_KINASE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_norm.csv"
     KINASE_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/STkinase_info.csv"
     STANDARD_UNSTACK_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/standard_unstack.csv"
 
@@ -60,7 +60,7 @@ class Data:
         df = pd.read_csv(Data.STANDARD_UNSTACK_URL)
         return df
 
-# %% ../nbs/00_core.ipynb 7
+# %% ../nbs/00_core.ipynb 8
 def norm(df, #a single kinase's df that has position as index, and a.a. as columns
          PDHK=False, #whether this kinase belongs to PDHK family
         ):
@@ -81,7 +81,7 @@ def norm(df, #a single kinase's df that has position as index, and a.a. as colum
     
     return df2
 
-# %% ../nbs/00_core.ipynb 9
+# %% ../nbs/00_core.ipynb 10
 def raw2kinase(df, #dataframe is from the paper's raw data; each raw contains a kinase info at all postiions
                kinase, # a specific kinase you'd like to extract to make a pivot table (position as index, a.a. as columns)
                normalize=False, # normalize according to the paper; special for PDHK1/4
@@ -97,7 +97,7 @@ def raw2kinase(df, #dataframe is from the paper's raw data; each raw contains a 
         pp = norm(pp, PDHK=True if kinase == 'PDHK1' or kinase == 'PDHK4' else False)
     return pp
 
-# %% ../nbs/00_core.ipynb 13
+# %% ../nbs/00_core.ipynb 15
 def plot_logo(df, 
               title = 'logo'):
     sns.set(rc={"figure.dpi":300, 'savefig.dpi':300})
@@ -125,7 +125,7 @@ def plot_logo(df,
     # logo.ax.set_xlabel("Position")
     logo.ax.set_title(title);
 
-# %% ../nbs/00_core.ipynb 14
+# %% ../nbs/00_core.ipynb 16
 def raw2logo(df_raw, 
              kinase,
             out_df = False
