@@ -16,6 +16,9 @@ class Data:
     """
 
     RAW_KINASE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_raw.csv"
+    NORM_KINASE_URL = ""
+    KINASE_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/STkinase_info.csv"
+    STANDARD_UNSTACK_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/standard_unstack.csv"
 
     def __init__(self):
         pass
@@ -23,11 +26,38 @@ class Data:
     @staticmethod
     def get_kinase_raw():
         """
-        Fetches the supplementary Table 2 "ser_thr_all_norm_matrices" from the nature paper: 
+        Fetches the supplementary Table 2 "ser_thr_all_raw_matrices" from the nature paper: 
         An atlas of substrate specificities for the human serine/threonine kinome.
         """
         df = pd.read_csv(Data.RAW_KINASE_URL)
         df = df.rename(columns={'Unnamed: 0': 'kinase'})
+        return df
+    
+    @staticmethod
+    def get_kinase_norm():
+        """
+        Fetches the supplementary Table 2 "ser_thr_all_norm_matrices" from the nature paper: 
+        An atlas of substrate specificities for the human serine/threonine kinome.
+        """
+        df = pd.read_csv(Data.NORM_KINASE_URL)
+        df = df.rename(columns={'Unnamed: 0': 'kinase'})
+        return df
+    
+    
+    @staticmethod
+    def get_kinase_info():
+        """
+        Fetches the supplementary Table 1 from the nature paper with additional sequence info
+        """
+        df = pd.read_csv(Data.KINASE_INFO_URL)
+        return df
+    
+    @staticmethod
+    def get_standard_unstack():
+        """
+        Fetches the standardized raw data
+        """
+        df = pd.read_csv(Data.STANDARD_UNSTACK_URL)
         return df
 
 # %% ../nbs/00_core.ipynb 7
