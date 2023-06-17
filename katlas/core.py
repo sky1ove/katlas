@@ -14,12 +14,28 @@ class Data:
     """
     A class for fetching various datasets.
     """
-
+    
+    # Kinase info
+    KINASE_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/STkinase_info.csv"
+    KINASE_ESM_RAW_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/kinase_esm.csv"
+    KINASE_ESM_PCA_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/kinase_esm_pca32.csv"
+    
+    # Amino acid info
+    AA_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/aa_info.csv"
+    AA_FEATURE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/aa_rdkit.csv"
+    
+    # Target info
     RAW_KINASE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_raw.csv"
     NORM_KINASE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_norm.csv"
-    KINASE_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/STkinase_info.csv"
-    STANDARD_UNSTACK_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/standard_unstack.csv"
 
+    # Unstacked target
+    STANDARD_UNSTACK_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/unstack_standard.csv"
+    LOG_UNSTACK_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/unstack_log.csv"
+    
+    # Stacked target
+    STANDARD_STACK_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/pivot_standard.csv"
+    LOG_STACK_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/pivot_log.csv"
+    
     def __init__(self):
         pass
     
@@ -32,6 +48,7 @@ class Data:
         df = pd.read_csv(Data.RAW_KINASE_URL)
         df = df.rename(columns={'Unnamed: 0': 'kinase'})
         return df
+    
     
     @staticmethod
     def get_kinase_norm():
@@ -53,11 +70,70 @@ class Data:
         return df
     
     @staticmethod
+    def get_esm():
+        """
+        Fetches the esm embeddings of kinase
+        """
+        df = pd.read_csv(Data.KINASE_ESM_RAW_URL)
+        return df
+    
+    @staticmethod
+    def get_esm_pca32():
+        """
+        Fetches the esm embeddings of kinase
+        """
+        df = pd.read_csv(Data.KINASE_ESM_PCA_URL)
+        return df
+    
+    @staticmethod
+    def get_aa_info():
+        """
+        Fetches the amino acid info
+        """
+        df = pd.read_csv(Data.AA_INFO_URL)
+        return df
+    
+    @staticmethod
+    def get_aa_feature():
+        """
+        Fetches the 72 rdkit features of a.a. (after removing features with Pearson >0.9)
+        """
+        df = pd.read_csv(Data.AA_FEATURE_URL)
+        return df
+    
+    
+    
+    @staticmethod
     def get_standard_unstack():
         """
-        Fetches the standardized raw data
+        Fetches the unstacked standardized raw data
         """
         df = pd.read_csv(Data.STANDARD_UNSTACK_URL)
+        return df
+    
+    @staticmethod
+    def get_log_unstack():
+        """
+        Fetches the log transformed raw data.
+        """
+        df = pd.read_csv(Data.LOG_UNSTACK_URL)
+        return df
+    
+    @staticmethod
+    def get_log_stack():
+        """
+        Fetches the stacked log transformed raw data.
+        """
+        df = pd.read_csv(Data.LOG_STACK_URL)
+        return df
+    
+        
+    @staticmethod
+    def get_standard_stack():
+        """
+        Fetches the stacked standardized raw data
+        """
+        df = pd.read_csv(Data.STANDARD_STACK_URL)
         return df
 
 # %% ../nbs/00_core.ipynb 8
