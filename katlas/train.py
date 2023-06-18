@@ -7,7 +7,7 @@ __all__ = ['xgb_trainer', 'xgb_predict']
 from fastbook import *
 import xgboost as xgb
 import matplotlib.pyplot as plt
-from scipy.stats import spearmanr
+from scipy.stats import spearmanr,pearsonr
 from sklearn.model_selection import train_test_split
 from pathlib import Path
 
@@ -68,6 +68,8 @@ def xgb_trainer(df,
     pred = model.predict(dtest)
     spearman_corr, _ = spearmanr(y_test, pred)
     print(f'Spearman correlation: {spearman_corr:.2f}')
+    pearson_corr, p_value = pearsonr(y_test, pred)
+    print(f'Pearson correlation: {pearson_corr:.2f}')
     out = np.vstack([np.ravel(y_test),np.ravel(pred)]).T
     pred_df = pd.DataFrame(out,index=y_test.index, columns = ['label','pred'] )
     pred_df['pred'] = pred

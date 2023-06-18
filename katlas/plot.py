@@ -26,6 +26,7 @@ sns.set_style("ticks")
 def reduce_dim(df, 
                method='pca', 
                n_components=2, 
+               complexity = 20, # umap default: 15, tsne default: 30
                load=None, # load a previous model
                save=None, # pkl file to be saved, e.g. pca_model.pkl
                seed =123):
@@ -37,9 +38,15 @@ def reduce_dim(df,
         if method == 'pca':
             reducer = PCA(n_components=n_components, random_state=seed)
         elif method == 'tsne':
-            reducer = TSNE(n_components=n_components, random_state=seed)
+            reducer = TSNE(n_components=n_components,
+                           random_state=seed, 
+                           perplexity = complexity # default from official is 30 
+                          )
         elif method == 'umap':
-            reducer = UMAP(n_components=n_components, random_state=seed)
+            reducer = UMAP(n_components=n_components, 
+                           random_state=seed, 
+                           n_neighbors=complexity # default from official is 15, try 15-200
+                          )
         else:
             raise ValueError('Invalid method specified')
 
@@ -58,24 +65,25 @@ def reduce_dim(df,
 # %% ../nbs/02_plot.ipynb 6
 def plot_cluster(df, 
                  method='pca', 
-                 hue=None, 
+                 hue=None,
+                 complexity = 30,
                  palette='tab20', 
                  legend=False, 
                  name_list=None, # a list or df Series of names that label the dots
                  seed = 123
                 ):
-    embedding_df = reduce_dim(df, method=method, seed=seed)
+    embedding_df = reduce_dim(df, method=method, seed=seed, complexity = complexity)
     x_col, y_col = [col for col in embedding_df.columns if col.startswith(method.upper())]
     sns.relplot(data=embedding_df, x=x_col, y=y_col, hue=hue, palette=palette, s=50, alpha=0.8, legend=legend)
     plt.xticks([])
     plt.yticks([])
     if name_list is not None:
-        texts = [plt.text(embedding_df['PCA1'][i], embedding_df['PCA2'][i], name_list[i],fontsize=8) for i in range(len(embedding_df))]
+        texts = [plt.text(embedding_df[f'{method.upper()}1'][i], embedding_df[f'{method.upper()}2'][i], name_list[i],fontsize=8) for i in range(len(embedding_df))]
         adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
     plt.show()
     plt.close()
 
-# %% ../nbs/02_plot.ipynb 14
+# %% ../nbs/02_plot.ipynb 15
 def plot_corr(x,#a column of df
               y,#a column of df
               xlabel=None,# x axis label
