@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import logomaker
+from fastbook import *
 
 # %% ../nbs/00_core.ipynb 4
 class Data:
@@ -168,7 +169,9 @@ def raw2kinase(df, #dataframe is from the paper's raw data; each raw contains a 
     p['aa'] = p.substrate.str[-1]
     p.position = p.position.astype(int)
     pp = p.pivot(index='position', columns='aa', values=kinase)
-    pp = pp.drop(columns=['s'])
+    if 's' in pp.columns:
+        pp = pp.drop(columns=['s'])
+
     if normalize:
         pp = norm(pp, PDHK=True if kinase == 'PDHK1' or kinase == 'PDHK4' else False)
     return pp
@@ -199,7 +202,10 @@ def plot_logo(df,
     # logo.ax.set_xticks([])
     # logo.ax.set_ylabel("log2[ratio to median]")
     # logo.ax.set_xlabel("Position")
-    logo.ax.set_title(title);
+    logo.ax.set_title(title)
+    
+    plt.show()
+    plt.close()
 
 # %% ../nbs/00_core.ipynb 16
 def raw2logo(df_raw, 

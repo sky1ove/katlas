@@ -4,6 +4,7 @@ website:
       - index.ipynb
       - section: Tutorials
         contents:
+        - tutorial_00_hierarchical_clustering.ipynb
         - tutorial_01_aa_feature.ipynb
         - tutorial_02_kinase_feature.ipynb
         - tutorial_03a_target_transform.ipynb
