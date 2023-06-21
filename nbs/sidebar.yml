@@ -16,6 +16,11 @@ website:
         - 01_feature.ipynb
         - 02_plot.ipynb
         - 03_train.ipynb
+      - section: XGB train
+        contents:
+        - xgb_01_dummy.ipynb
+        - xgb_01_T5_aa_feature.ipynb
+        - xgb_01_T5_aa_feature_raw.ipynb
 
       
 

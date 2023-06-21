@@ -21,6 +21,8 @@ class Data:
     KINASE_ESM_RAW_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/kinase_esm.csv"
     KINASE_ESM_PCA_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/kinase_esm_pca32.csv"
     
+    KINASE_T5_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/T5_xl_uniref50.csv"
+    
     # Amino acid info
     AA_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/aa_info.csv"
     AA_FEATURE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/aa_rdkit.csv"
@@ -84,6 +86,14 @@ class Data:
         Fetches the esm embeddings of kinase
         """
         df = pd.read_csv(Data.KINASE_ESM_PCA_URL)
+        return df
+    
+    @staticmethod
+    def get_t5():
+        """
+        Fetches the esm embeddings of kinase
+        """
+        df = pd.read_csv(Data.KINASE_T5_URL)
         return df
     
     @staticmethod
