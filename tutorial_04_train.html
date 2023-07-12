@@ -1,0 +1,2961 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="a collection of tools to train various ML model">
+
+<title>katlas - Train ML model</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="katlas - Train ML model">
+<meta property="og:description" content="a collection of tools to train various ML model">
+<meta property="og:image" content="https://sky1ove.github.io/katlas/tutorial_04_train_files/figure-html/cell-37-output-2.png">
+<meta property="og:site-name" content="katlas">
+<meta property="og:image:height" content="1178">
+<meta property="og:image:width" content="1588">
+<meta name="twitter:title" content="katlas - Train ML model">
+<meta name="twitter:description" content="a collection of tools to train various ML model">
+<meta name="twitter:image" content="https://sky1ove.github.io/katlas/tutorial_04_train_files/figure-html/cell-37-output-2.png">
+<meta name="twitter:image-height" content="1178">
+<meta name="twitter:image-width" content="1588">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">katlas</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools ms-auto">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tutorial_00_hierarchical_clustering.html">Tutorials</a></li><li class="breadcrumb-item"><a href="./tutorial_04_train.html">Train ML model</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">katlas</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Tutorials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_00_hierarchical_clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hierarchical Clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_01_aa_feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get amino acid features</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_02_kinase_feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get features from kinase protein</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_03a_target_transform.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prepare target for training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_03b_target_plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dimensionality reduction</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_04_train.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Train ML model</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Core</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature engineering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./train.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">XGB train</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./xgb_01_dummy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Baseline: one-hot encoded a.a. &amp; kinase</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./xgb_01_t5_aa_feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T5 kinase feature + aa rdkit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./xgb_01_t5_aa_feature_raw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T5 kinase feature + aa rdkit</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#prepare-training-file" id="toc-prepare-training-file" class="nav-link active" data-scroll-target="#prepare-training-file">Prepare training file</a></li>
+  <li><a href="#dummies" id="toc-dummies" class="nav-link" data-scroll-target="#dummies">Dummies</a></li>
+  <li><a href="#trainer" id="toc-trainer" class="nav-link" data-scroll-target="#trainer">Trainer</a>
+  <ul class="collapse">
+  <li><a href="#ml-models" id="toc-ml-models" class="nav-link" data-scroll-target="#ml-models">ML models</a></li>
+  <li><a href="#xgb" id="toc-xgb" class="nav-link" data-scroll-target="#xgb">XGB</a></li>
+  <li><a href="#xgb_trainer" id="toc-xgb_trainer" class="nav-link" data-scroll-target="#xgb_trainer">xgb_trainer</a></li>
+  <li><a href="#split-method-stratifiedgroupkfold" id="toc-split-method-stratifiedgroupkfold" class="nav-link" data-scroll-target="#split-method-stratifiedgroupkfold">Split method: StratifiedGroupKfold</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Train ML model</h1>
+</div>
+
+<div>
+  <div class="description">
+    a collection of tools to train various ML model
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastbook <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.core <span class="im">import</span> Data</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.train <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.plot <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> StratifiedGroupKFold</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/usr/local/lib/python3.9/dist-packages/umap/distances.py:1063: NumbaDeprecationWarning: The 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  @numba.jit()
+/usr/local/lib/python3.9/dist-packages/umap/distances.py:1071: NumbaDeprecationWarning: The 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  @numba.jit()
+/usr/local/lib/python3.9/dist-packages/umap/distances.py:1086: NumbaDeprecationWarning: The 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  @numba.jit()
+/usr/local/lib/python3.9/dist-packages/umap/umap_.py:660: NumbaDeprecationWarning: The 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  @numba.jit()</code></pre>
+</div>
+</div>
+<p>In this file, we will show you how to train ML model using the features we extracted</p>
+<section id="prepare-training-file" class="level2">
+<h2 class="anchored" data-anchor-id="prepare-training-file">Prepare training file</h2>
+<p>amino acid</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>aa <span class="op">=</span> Data.get_aa_feature()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>aa.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(23, 73)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># reduce dimension</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>aa_pca <span class="op">=</span> reduce_dim(aa,n_components<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># add annotation</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>aa_pca.columns <span class="op">=</span> <span class="st">'aa_'</span> <span class="op">+</span> aa_pca.columns</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>aa_pca <span class="op">=</span> aa_pca.rename(columns <span class="op">=</span> {<span class="st">'aa_aa'</span>:<span class="st">'aa'</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>protein</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>prot <span class="op">=</span> Data.get_esm_pca32()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>prot.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(298, 33)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># prot = pd.read_csv('t5_umap32.csv')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add annotation</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>prot2 <span class="op">=</span> prot.set_index(<span class="st">'kinase'</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>prot2.columns <span class="op">=</span> <span class="st">'kinase_'</span> <span class="op">+</span> prot2.columns</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>prot <span class="op">=</span> prot2.reset_index()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>target with position info</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> Data.get_standard_unstack()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>target.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">kinase</th>
+<th data-quarto-table-cell-role="th">substrate</th>
+<th data-quarto-table-cell-role="th">target</th>
+<th data-quarto-table-cell-role="th">position</th>
+<th data-quarto-table-cell-role="th">aa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AAK1</td>
+<td>-5P</td>
+<td>0.203681</td>
+<td>-5</td>
+<td>P</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>ACVR2A</td>
+<td>-5P</td>
+<td>-0.497906</td>
+<td>-5</td>
+<td>P</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>ACVR2B</td>
+<td>-5P</td>
+<td>-0.274530</td>
+<td>-5</td>
+<td>P</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>AKT1</td>
+<td>-5P</td>
+<td>-0.138624</td>
+<td>-5</td>
+<td>P</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>AKT2</td>
+<td>-5P</td>
+<td>-0.052269</td>
+<td>-5</td>
+<td>P</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> Data.get_log_unstack()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>target.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">kinase</th>
+<th data-quarto-table-cell-role="th">substrate</th>
+<th data-quarto-table-cell-role="th">target</th>
+<th data-quarto-table-cell-role="th">position</th>
+<th data-quarto-table-cell-role="th">aa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AAK1</td>
+<td>-5P</td>
+<td>15.845517</td>
+<td>-5</td>
+<td>P</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>ACVR2A</td>
+<td>-5P</td>
+<td>15.423155</td>
+<td>-5</td>
+<td>P</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>ACVR2B</td>
+<td>-5P</td>
+<td>17.091913</td>
+<td>-5</td>
+<td>P</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>AKT1</td>
+<td>-5P</td>
+<td>16.727835</td>
+<td>-5</td>
+<td>P</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>AKT2</td>
+<td>-5P</td>
+<td>15.509150</td>
+<td>-5</td>
+<td>P</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> target.query(<span class="st">'kinase != "CK1G2" '</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> target.merge(prot,<span class="st">'left'</span>).merge(aa_pca,<span class="st">'left'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">kinase</th>
+<th data-quarto-table-cell-role="th">substrate</th>
+<th data-quarto-table-cell-role="th">target</th>
+<th data-quarto-table-cell-role="th">position</th>
+<th data-quarto-table-cell-role="th">aa</th>
+<th data-quarto-table-cell-role="th">PCA1</th>
+<th data-quarto-table-cell-role="th">PCA2</th>
+<th data-quarto-table-cell-role="th">PCA3</th>
+<th data-quarto-table-cell-role="th">PCA4</th>
+<th data-quarto-table-cell-role="th">PCA5</th>
+<th data-quarto-table-cell-role="th">PCA6</th>
+<th data-quarto-table-cell-role="th">PCA7</th>
+<th data-quarto-table-cell-role="th">PCA8</th>
+<th data-quarto-table-cell-role="th">PCA9</th>
+<th data-quarto-table-cell-role="th">PCA10</th>
+<th data-quarto-table-cell-role="th">PCA11</th>
+<th data-quarto-table-cell-role="th">PCA12</th>
+<th data-quarto-table-cell-role="th">PCA13</th>
+<th data-quarto-table-cell-role="th">PCA14</th>
+<th data-quarto-table-cell-role="th">PCA15</th>
+<th data-quarto-table-cell-role="th">PCA16</th>
+<th data-quarto-table-cell-role="th">PCA17</th>
+<th data-quarto-table-cell-role="th">PCA18</th>
+<th data-quarto-table-cell-role="th">PCA19</th>
+<th data-quarto-table-cell-role="th">PCA20</th>
+<th data-quarto-table-cell-role="th">PCA21</th>
+<th data-quarto-table-cell-role="th">PCA22</th>
+<th data-quarto-table-cell-role="th">PCA23</th>
+<th data-quarto-table-cell-role="th">PCA24</th>
+<th data-quarto-table-cell-role="th">PCA25</th>
+<th data-quarto-table-cell-role="th">PCA26</th>
+<th data-quarto-table-cell-role="th">PCA27</th>
+<th data-quarto-table-cell-role="th">PCA28</th>
+<th data-quarto-table-cell-role="th">PCA29</th>
+<th data-quarto-table-cell-role="th">PCA30</th>
+<th data-quarto-table-cell-role="th">PCA31</th>
+<th data-quarto-table-cell-role="th">PCA32</th>
+<th data-quarto-table-cell-role="th">aa_PCA1</th>
+<th data-quarto-table-cell-role="th">aa_PCA2</th>
+<th data-quarto-table-cell-role="th">aa_PCA3</th>
+<th data-quarto-table-cell-role="th">aa_PCA4</th>
+<th data-quarto-table-cell-role="th">aa_PCA5</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AAK1</td>
+<td>-5P</td>
+<td>15.845517</td>
+<td>-5</td>
+<td>P</td>
+<td>-0.529323</td>
+<td>-0.529422</td>
+<td>-0.277885</td>
+<td>0.427082</td>
+<td>-0.191013</td>
+<td>-0.206378</td>
+<td>0.036362</td>
+<td>0.283639</td>
+<td>-0.03368</td>
+<td>-0.345977</td>
+<td>-0.320672</td>
+<td>0.19172</td>
+<td>0.164984</td>
+<td>0.105528</td>
+<td>-0.102076</td>
+<td>0.177409</td>
+<td>-0.065808</td>
+<td>-0.324508</td>
+<td>-0.186942</td>
+<td>-0.154722</td>
+<td>0.108451</td>
+<td>-0.048535</td>
+<td>0.059394</td>
+<td>-0.144194</td>
+<td>-0.068808</td>
+<td>-0.030775</td>
+<td>-0.177793</td>
+<td>-0.132509</td>
+<td>0.038955</td>
+<td>0.09075</td>
+<td>-0.128941</td>
+<td>-0.116763</td>
+<td>-4.604141</td>
+<td>2.659866</td>
+<td>1.697217</td>
+<td>-0.613948</td>
+<td>1.642941</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>AAK1</td>
+<td>-4P</td>
+<td>15.475701</td>
+<td>-4</td>
+<td>P</td>
+<td>-0.529323</td>
+<td>-0.529422</td>
+<td>-0.277885</td>
+<td>0.427082</td>
+<td>-0.191013</td>
+<td>-0.206378</td>
+<td>0.036362</td>
+<td>0.283639</td>
+<td>-0.03368</td>
+<td>-0.345977</td>
+<td>-0.320672</td>
+<td>0.19172</td>
+<td>0.164984</td>
+<td>0.105528</td>
+<td>-0.102076</td>
+<td>0.177409</td>
+<td>-0.065808</td>
+<td>-0.324508</td>
+<td>-0.186942</td>
+<td>-0.154722</td>
+<td>0.108451</td>
+<td>-0.048535</td>
+<td>0.059394</td>
+<td>-0.144194</td>
+<td>-0.068808</td>
+<td>-0.030775</td>
+<td>-0.177793</td>
+<td>-0.132509</td>
+<td>0.038955</td>
+<td>0.09075</td>
+<td>-0.128941</td>
+<td>-0.116763</td>
+<td>-4.604141</td>
+<td>2.659866</td>
+<td>1.697217</td>
+<td>-0.613948</td>
+<td>1.642941</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="dummies" class="level2">
+<h2 class="anchored" data-anchor-id="dummies">Dummies</h2>
+<p>We can also use dummies of both aa and kinase as control</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> Data.get_standard_unstack()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> Data.get_log_unstack()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>target.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(59994, 5)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> target.query(<span class="st">'kinase != "CK1G2" '</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>target.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(59796, 5)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get dummies</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>aa_one <span class="op">=</span> pd.get_dummies(target.aa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>kinase_one <span class="op">=</span> pd.get_dummies(target.kinase)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>kinase_one.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(59796, 302)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.concat([target,aa_one],axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> target.merge(aa_pca, <span class="st">'left'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>df.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(59796, 10)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.concat([df,kinase_one],axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="trainer" class="level2">
+<h2 class="anchored" data-anchor-id="trainer">Trainer</h2>
+<section id="ml-models" class="level3">
+<h3 class="anchored" data-anchor-id="ml-models">ML models</h3>
+<p>We can use various ML models to train: - Xgboost - LightGBM - Tablet - Traditional ML: Regression, others</p>
+</section>
+<section id="xgb" class="level3">
+<h3 class="anchored" data-anchor-id="xgb">XGB</h3>
+<hr>
+</section>
+<section id="xgb_trainer" class="level3">
+<h3 class="anchored" data-anchor-id="xgb_trainer">xgb_trainer</h3>
+<blockquote class="blockquote">
+<pre><code> xgb_trainer (df, feature_col, target_col, test_index=None,
+              xgb_params={'max_depth': 7, 'learning_rate': 0.001,
+              'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric':
+              'rmse', 'objective': 'reg:squarederror', 'tree_method':
+              'gpu_hist', 'predictor': 'gpu_predictor', 'random_state':
+              123}, model_file='xgb_model.bin', split_seed=123)</code></pre>
+</blockquote>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>df</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>feature_col</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>target_col</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>test_index</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>xgb_params</td>
+<td>dict</td>
+<td>{‘max_depth’: 7, ‘learning_rate’: 0.001, ‘subsample’: 0.8, ‘colsample_bytree’: 1, ‘eval_metric’: ‘rmse’, ‘objective’: ‘reg:squarederror’, ‘tree_method’: ‘gpu_hist’, ‘predictor’: ‘gpu_predictor’, ‘random_state’: 123}</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>model_file</td>
+<td>str</td>
+<td>xgb_model.bin</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>split_seed</td>
+<td>int</td>
+<td>123</td>
+<td>seed of random split</td>
+</tr>
+</tbody>
+</table>
+<p>Specify the feature column and target column</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>df.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Index(['kinase', 'substrate', 'target', 'position', 'aa', 'aa', 'aa_PCA1',
+       'aa_PCA2', 'aa_PCA3', 'aa_PCA4',
+       ...
+       'VRK1', 'VRK2', 'WNK1', 'WNK3', 'WNK4', 'YANK2', 'YANK3', 'YSK1',
+       'YSK4', 'ZAK'],
+      dtype='object', length=314)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>feat_col <span class="op">=</span> [<span class="st">'position'</span>] <span class="op">+</span> df.columns[<span class="dv">5</span>:].tolist()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>feat_col</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['position',
+ 'aa_PCA1',
+ 'aa_PCA2',
+ 'aa_PCA3',
+ 'aa_PCA4',
+ 'aa_PCA5',
+ 'AAK1',
+ 'ACVR2A',
+ 'ACVR2B',
+ 'AKT1',
+ 'AKT2',
+ 'AKT3',
+ 'ALK2',
+ 'ALK4',
+ 'ALPHAK3',
+ 'AMPKA1',
+ 'AMPKA2',
+ 'ANKRD3',
+ 'ASK1',
+ 'ATM',
+ 'ATR',
+ 'AURA',
+ 'AURB',
+ 'AURC',
+ 'BCKDK',
+ 'BIKE',
+ 'BMPR1A',
+ 'BMPR1B',
+ 'BMPR2',
+ 'BRAF',
+ 'BRSK1',
+ 'BRSK2',
+ 'BUB1',
+ 'CAMK1A',
+ 'CAMK1B',
+ 'CAMK1D',
+ 'CAMK1G',
+ 'CAMK2A',
+ 'CAMK2B',
+ 'CAMK2D',
+ 'CAMK2G',
+ 'CAMK4',
+ 'CAMKK1',
+ 'CAMKK2',
+ 'CAMLCK',
+ 'CDC7',
+ 'CDK1',
+ 'CDK10',
+ 'CDK12',
+ 'CDK13',
+ 'CDK14',
+ 'CDK16',
+ 'CDK17',
+ 'CDK18',
+ 'CDK19',
+ 'CDK2',
+ 'CDK3',
+ 'CDK4',
+ 'CDK5',
+ 'CDK6',
+ 'CDK7',
+ 'CDK8',
+ 'CDK9',
+ 'CDKL1',
+ 'CDKL5',
+ 'CHAK1',
+ 'CHAK2',
+ 'CHK1',
+ 'CHK2',
+ 'CK1A',
+ 'CK1A2',
+ 'CK1D',
+ 'CK1E',
+ 'CK1G1',
+ 'CK1G3',
+ 'CK2A1',
+ 'CK2A2',
+ 'CLK1',
+ 'CLK2',
+ 'CLK3',
+ 'CLK4',
+ 'COT',
+ 'CRIK',
+ 'DAPK1',
+ 'DAPK2',
+ 'DAPK3',
+ 'DCAMKL1',
+ 'DCAMKL2',
+ 'DLK',
+ 'DMPK1',
+ 'DNAPK',
+ 'DRAK1',
+ 'DSTYK',
+ 'DYRK1A',
+ 'DYRK1B',
+ 'DYRK2',
+ 'DYRK3',
+ 'DYRK4',
+ 'EEF2K',
+ 'ERK1',
+ 'ERK2',
+ 'ERK5',
+ 'ERK7',
+ 'FAM20C',
+ 'GAK',
+ 'GCK',
+ 'GCN2',
+ 'GRK1',
+ 'GRK2',
+ 'GRK3',
+ 'GRK4',
+ 'GRK5',
+ 'GRK6',
+ 'GRK7',
+ 'GSK3A',
+ 'GSK3B',
+ 'HASPIN',
+ 'HGK',
+ 'HIPK1',
+ 'HIPK2',
+ 'HIPK3',
+ 'HIPK4',
+ 'HPK1',
+ 'HRI',
+ 'HUNK',
+ 'ICK',
+ 'IKKA',
+ 'IKKB',
+ 'IKKE',
+ 'IRAK1',
+ 'IRAK4',
+ 'IRE1',
+ 'IRE2',
+ 'JNK1',
+ 'JNK2',
+ 'JNK3',
+ 'KHS1',
+ 'KHS2',
+ 'KIS',
+ 'LATS1',
+ 'LATS2',
+ 'LKB1',
+ 'LOK',
+ 'LRRK2',
+ 'MAK',
+ 'MAP3K15',
+ 'MAPKAPK2',
+ 'MAPKAPK3',
+ 'MAPKAPK5',
+ 'MARK1',
+ 'MARK2',
+ 'MARK3',
+ 'MARK4',
+ 'MASTL',
+ 'MEK1',
+ 'MEK2',
+ 'MEK5',
+ 'MEKK1',
+ 'MEKK2',
+ 'MEKK3',
+ 'MEKK6',
+ 'MELK',
+ 'MINK',
+ 'MLK1',
+ 'MLK2',
+ 'MLK3',
+ 'MLK4',
+ 'MNK1',
+ 'MNK2',
+ 'MOK',
+ 'MOS',
+ 'MPSK1',
+ 'MRCKA',
+ 'MRCKB',
+ 'MSK1',
+ 'MSK2',
+ 'MST1',
+ 'MST2',
+ 'MST3',
+ 'MST4',
+ 'MTOR',
+ 'MYLK4',
+ 'MYO3A',
+ 'MYO3B',
+ 'NDR1',
+ 'NDR2',
+ 'NEK1',
+ 'NEK11',
+ 'NEK2',
+ 'NEK3',
+ 'NEK4',
+ 'NEK5',
+ 'NEK6',
+ 'NEK7',
+ 'NEK8',
+ 'NEK9',
+ 'NIK',
+ 'NIM1',
+ 'NLK',
+ 'NUAK1',
+ 'NUAK2',
+ 'OSR1',
+ 'P38A',
+ 'P38B',
+ 'P38D',
+ 'P38G',
+ 'P70S6K',
+ 'P70S6KB',
+ 'P90RSK',
+ 'PAK1',
+ 'PAK2',
+ 'PAK3',
+ 'PAK4',
+ 'PAK5',
+ 'PAK6',
+ 'PASK',
+ 'PBK',
+ 'PDHK1',
+ 'PDHK4',
+ 'PDK1',
+ 'PERK',
+ 'PHKG1',
+ 'PHKG2',
+ 'PIM1',
+ 'PIM2',
+ 'PIM3',
+ 'PINK1',
+ 'PKACA',
+ 'PKACB',
+ 'PKACG',
+ 'PKCA',
+ 'PKCB',
+ 'PKCD',
+ 'PKCE',
+ 'PKCG',
+ 'PKCH',
+ 'PKCI',
+ 'PKCT',
+ 'PKCZ',
+ 'PKG1',
+ 'PKG2',
+ 'PKN1',
+ 'PKN2',
+ 'PKN3',
+ 'PKR',
+ 'PLK1',
+ 'PLK2',
+ 'PLK3',
+ 'PLK4',
+ 'PRKD1',
+ 'PRKD2',
+ 'PRKD3',
+ 'PRKX',
+ 'PRP4',
+ 'PRPK',
+ 'QIK',
+ 'QSK',
+ 'RAF1',
+ 'RIPK1',
+ 'RIPK2',
+ 'RIPK3',
+ 'ROCK1',
+ 'ROCK2',
+ 'RSK2',
+ 'RSK3',
+ 'RSK4',
+ 'SBK',
+ 'SGK1',
+ 'SGK3',
+ 'SIK',
+ 'SKMLCK',
+ 'SLK',
+ 'SMG1',
+ 'SMMLCK',
+ 'SNRK',
+ 'SRPK1',
+ 'SRPK2',
+ 'SRPK3',
+ 'SSTK',
+ 'STK33',
+ 'STLK3',
+ 'TAK1',
+ 'TAO1',
+ 'TAO2',
+ 'TAO3',
+ 'TBK1',
+ 'TGFBR1',
+ 'TGFBR2',
+ 'TLK1',
+ 'TLK2',
+ 'TNIK',
+ 'TSSK1',
+ 'TSSK2',
+ 'TTBK1',
+ 'TTBK2',
+ 'TTK',
+ 'ULK1',
+ 'ULK2',
+ 'VRK1',
+ 'VRK2',
+ 'WNK1',
+ 'WNK3',
+ 'WNK4',
+ 'YANK2',
+ 'YANK3',
+ 'YSK1',
+ 'YSK4',
+ 'ZAK']</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>target_col <span class="op">=</span> <span class="st">'target'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If test_index is not specified, then it will randomly choose some samples as test set</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> pearsonr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>pred_df, aaaa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pearsonr(pred_df.label,pred_df.pred)</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="co"># pearsonr(back.label,back.pred)</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="co"># pearsonr(back.label,back.pred)</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="co"># back.plot.scatter(x='label',y='pred')</span></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="co"># back.plot.scatter(x='label',y='pred')</span></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a><span class="co"># back = np.exp(pred_df)</span></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a><span class="co"># back = np.exp(pred_df)</span></span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a><span class="co"># pred_df</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>pred, gain, weight <span class="op">=</span> xgb_trainer(df, feat_col, target_col,model_file <span class="op">=</span> <span class="st">'model/dummy.bin'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>xgb params is: {'max_depth': 7, 'learning_rate': 0.001, 'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric': 'rmse', 'objective': 'reg:squarederror', 'tree_method': 'gpu_hist', 'predictor': 'gpu_predictor', 'random_state': 123}
+(47995, 326) (47995,) (11999, 326) (11999,)
+Int64Index([21415, 52252, 40130, 46523, 53724, 46690, 51338, 51705, 15233,
+            22673,
+            ...
+            54124, 31808, 42022, 18420, 37774, 26583, 56968,  2079, 44226,
+             3146],
+           dtype='int64', length=11999)
+[0] train-rmse:1.10892  valid-rmse:1.13098
+[100]   train-rmse:1.07478  valid-rmse:1.09907
+[200]   train-rmse:1.04580  valid-rmse:1.07233
+[300]   train-rmse:1.02119  valid-rmse:1.04993
+[400]   train-rmse:1.00036  valid-rmse:1.03122
+[500]   train-rmse:0.98272  valid-rmse:1.01560
+[600]   train-rmse:0.96778  valid-rmse:1.00255
+[700]   train-rmse:0.95510  valid-rmse:0.99168
+[800]   train-rmse:0.94430  valid-rmse:0.98263
+[900]   train-rmse:0.93501  valid-rmse:0.97502
+[1000]  train-rmse:0.92704  valid-rmse:0.96861
+[1100]  train-rmse:0.92018  valid-rmse:0.96326
+[1200]  train-rmse:0.91426  valid-rmse:0.95877
+[1300]  train-rmse:0.90910  valid-rmse:0.95498
+[1400]  train-rmse:0.90462  valid-rmse:0.95181
+[1500]  train-rmse:0.90062  valid-rmse:0.94910
+[1600]  train-rmse:0.89706  valid-rmse:0.94682
+[1700]  train-rmse:0.89384  valid-rmse:0.94487
+[1800]  train-rmse:0.89095  valid-rmse:0.94321
+[1900]  train-rmse:0.88832  valid-rmse:0.94178
+[2000]  train-rmse:0.88590  valid-rmse:0.94052
+[2100]  train-rmse:0.88368  valid-rmse:0.93936
+[2200]  train-rmse:0.88163  valid-rmse:0.93839
+[2300]  train-rmse:0.87973  valid-rmse:0.93750
+[2400]  train-rmse:0.87793  valid-rmse:0.93664
+[2500]  train-rmse:0.87624  valid-rmse:0.93589
+[2600]  train-rmse:0.87462  valid-rmse:0.93517
+[2700]  train-rmse:0.87317  valid-rmse:0.93450
+[2800]  train-rmse:0.87172  valid-rmse:0.93386
+[2900]  train-rmse:0.87031  valid-rmse:0.93326
+[3000]  train-rmse:0.86892  valid-rmse:0.93271
+[3100]  train-rmse:0.86761  valid-rmse:0.93212
+[3200]  train-rmse:0.86638  valid-rmse:0.93164
+[3300]  train-rmse:0.86514  valid-rmse:0.93114
+[3400]  train-rmse:0.86393  valid-rmse:0.93065
+[3500]  train-rmse:0.86275  valid-rmse:0.93019
+[3600]  train-rmse:0.86158  valid-rmse:0.92978
+[3700]  train-rmse:0.86045  valid-rmse:0.92942
+[3800]  train-rmse:0.85933  valid-rmse:0.92903
+[3900]  train-rmse:0.85826  valid-rmse:0.92865
+[4000]  train-rmse:0.85717  valid-rmse:0.92829
+[4100]  train-rmse:0.85611  valid-rmse:0.92797
+[4200]  train-rmse:0.85515  valid-rmse:0.92765
+[4300]  train-rmse:0.85419  valid-rmse:0.92735
+[4400]  train-rmse:0.85323  valid-rmse:0.92704
+[4500]  train-rmse:0.85227  valid-rmse:0.92678
+[4600]  train-rmse:0.85134  valid-rmse:0.92647
+[4700]  train-rmse:0.85046  valid-rmse:0.92620
+[4800]  train-rmse:0.84963  valid-rmse:0.92594
+[4900]  train-rmse:0.84872  valid-rmse:0.92564
+[5000]  train-rmse:0.84785  valid-rmse:0.92539
+[5100]  train-rmse:0.84704  valid-rmse:0.92514
+[5200]  train-rmse:0.84623  valid-rmse:0.92490
+[5300]  train-rmse:0.84543  valid-rmse:0.92466
+[5400]  train-rmse:0.84468  valid-rmse:0.92444
+[5500]  train-rmse:0.84395  valid-rmse:0.92419
+[5600]  train-rmse:0.84323  valid-rmse:0.92397
+[5700]  train-rmse:0.84250  valid-rmse:0.92374
+[5800]  train-rmse:0.84175  valid-rmse:0.92352
+[5900]  train-rmse:0.84106  valid-rmse:0.92331
+[6000]  train-rmse:0.84035  valid-rmse:0.92311
+[6100]  train-rmse:0.83963  valid-rmse:0.92289
+[6200]  train-rmse:0.83891  valid-rmse:0.92268
+[6300]  train-rmse:0.83828  valid-rmse:0.92248
+[6400]  train-rmse:0.83765  valid-rmse:0.92228
+[6500]  train-rmse:0.83701  valid-rmse:0.92208
+[6600]  train-rmse:0.83640  valid-rmse:0.92189
+[6700]  train-rmse:0.83581  valid-rmse:0.92173
+[6800]  train-rmse:0.83517  valid-rmse:0.92156
+[6900]  train-rmse:0.83449  valid-rmse:0.92139
+[7000]  train-rmse:0.83393  valid-rmse:0.92123
+[7100]  train-rmse:0.83322  valid-rmse:0.92107
+[7200]  train-rmse:0.83267  valid-rmse:0.92091
+[7300]  train-rmse:0.83208  valid-rmse:0.92073
+[7400]  train-rmse:0.83149  valid-rmse:0.92059
+[7500]  train-rmse:0.83092  valid-rmse:0.92043
+[7600]  train-rmse:0.83032  valid-rmse:0.92026
+[7700]  train-rmse:0.82974  valid-rmse:0.92009
+[7800]  train-rmse:0.82915  valid-rmse:0.91993
+[7900]  train-rmse:0.82860  valid-rmse:0.91977
+[8000]  train-rmse:0.82803  valid-rmse:0.91961
+[8100]  train-rmse:0.82752  valid-rmse:0.91946
+[8200]  train-rmse:0.82699  valid-rmse:0.91932
+[8300]  train-rmse:0.82643  valid-rmse:0.91916
+[8400]  train-rmse:0.82592  valid-rmse:0.91902
+[8500]  train-rmse:0.82539  valid-rmse:0.91887
+[8600]  train-rmse:0.82487  valid-rmse:0.91872
+[8700]  train-rmse:0.82436  valid-rmse:0.91857
+[8800]  train-rmse:0.82381  valid-rmse:0.91841
+[8900]  train-rmse:0.82331  valid-rmse:0.91828
+[9000]  train-rmse:0.82277  valid-rmse:0.91815
+[9100]  train-rmse:0.82221  valid-rmse:0.91799
+[9200]  train-rmse:0.82167  valid-rmse:0.91785
+[9300]  train-rmse:0.82115  valid-rmse:0.91771
+[9400]  train-rmse:0.82062  valid-rmse:0.91758
+[9500]  train-rmse:0.82011  valid-rmse:0.91744
+[9600]  train-rmse:0.81958  valid-rmse:0.91730
+[9700]  train-rmse:0.81907  valid-rmse:0.91716
+[9800]  train-rmse:0.81855  valid-rmse:0.91703
+[9900]  train-rmse:0.81803  valid-rmse:0.91689
+[9998]  train-rmse:0.81754  valid-rmse:0.91676
+Model saved to model/dummy.bin
+Spearman correlation: 0.50</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-37-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-37-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-37-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="split-method-stratifiedgroupkfold" class="level3">
+<h3 class="anchored" data-anchor-id="split-method-stratifiedgroupkfold">Split method: StratifiedGroupKfold</h3>
+<p>We will use StratifiedGroupKFold to split the training and valid set: we group each point by kinase, and then stratify the kinase by their category. This split method ensures that the model can see different patterns of substrate specificity</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># prepare the dataframe for split</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>kinase_info <span class="op">=</span> Data.get_kinase_info()</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>kinase_info <span class="op">=</span> kinase_info[[<span class="st">'kinase'</span>,<span class="st">'Family'</span>,<span class="st">'category'</span>,<span class="st">'category_big'</span>]]</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> df[[<span class="st">'kinase'</span>]].merge(kinase_info,<span class="st">'left'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>np.exp(pred_df).plot.scatter(<span class="st">'label'</span>,<span class="st">'pred'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>*c* argument looks like a single numeric RGB or RGBA sequence, which should be avoided as value-mapping will have precedence in case its length matches with *x* &amp; *y*.  Please use the *color* keyword-argument or provide a 2D array with a single row if you intend to specify the same RGB or RGBA value for all points.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:xlabel='label', ylabel='pred'&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-39-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>FOLDS<span class="op">=</span><span class="dv">5</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>pred_dfs <span class="op">=</span> []</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>gains <span class="op">=</span> []</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> []</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fold, (train_idx, valid_idx) <span class="kw">in</span> <span class="bu">enumerate</span>(StratifiedGroupKFold(FOLDS).split(df2.index.values, df2.category,df2.kinase)):</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    pred_df, gain, weight <span class="op">=</span> xgb_trainer(df, feat_col, target_col <span class="op">=</span> <span class="st">'target'</span>, test_index<span class="op">=</span>valid_idx, model_file <span class="op">=</span> <span class="ss">f'model/fold</span><span class="sc">{</span>fold<span class="sc">}</span><span class="ss">.bin'</span>)</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>    pred_dfs.append(pred_df)</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>    gains.append(gain)</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>    weights.append(weight)</span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">break</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>xgb params is: {'max_depth': 7, 'learning_rate': 0.001, 'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric': 'rmse', 'objective': 'reg:squarederror', 'tree_method': 'gpu_hist', 'predictor': 'gpu_predictor', 'random_state': 123}
+(47718, 308) (47718,) (12078, 308) (12078,)
+Int64Index([    0,     1,     2,     3,     4,     5,     6,     7,     8,
+                9,
+            ...
+            59390, 59391, 59392, 59393, 59394, 59395, 59396, 59397, 59398,
+            59399],
+           dtype='int64', length=12078)
+[0] train-rmse:16.32159 valid-rmse:16.34461
+[100]   train-rmse:14.77744 valid-rmse:14.80050
+[200]   train-rmse:13.38118 valid-rmse:13.40417
+[300]   train-rmse:12.11885 valid-rmse:12.14175
+[400]   train-rmse:10.97792 valid-rmse:11.00065
+[500]   train-rmse:9.94678  valid-rmse:9.96936
+[600]   train-rmse:9.01507  valid-rmse:9.03747
+[700]   train-rmse:8.17357  valid-rmse:8.19580
+[800]   train-rmse:7.41369  valid-rmse:7.43574
+[900]   train-rmse:6.72774  valid-rmse:6.74959
+[1000]  train-rmse:6.10892  valid-rmse:6.13058
+[1100]  train-rmse:5.55103  valid-rmse:5.57248
+[1200]  train-rmse:5.04835  valid-rmse:5.06960
+[1300]  train-rmse:4.59576  valid-rmse:4.61683
+[1400]  train-rmse:4.18875  valid-rmse:4.20966
+[1500]  train-rmse:3.82305  valid-rmse:3.84380
+[1600]  train-rmse:3.49501  valid-rmse:3.51554
+[1700]  train-rmse:3.20108  valid-rmse:3.22135
+[1800]  train-rmse:2.93831  valid-rmse:2.95831
+[1900]  train-rmse:2.70382  valid-rmse:2.72350
+[2000]  train-rmse:2.49505  valid-rmse:2.51438
+[2100]  train-rmse:2.30968  valid-rmse:2.32860
+[2200]  train-rmse:2.14552  valid-rmse:2.16399
+[2300]  train-rmse:2.00060  valid-rmse:2.01866
+[2400]  train-rmse:1.87316  valid-rmse:1.89070
+[2500]  train-rmse:1.76145  valid-rmse:1.77844
+[2600]  train-rmse:1.66382  valid-rmse:1.68024
+[2700]  train-rmse:1.57882  valid-rmse:1.59463
+[2800]  train-rmse:1.50505  valid-rmse:1.52025
+[2900]  train-rmse:1.44128  valid-rmse:1.45583
+[3000]  train-rmse:1.38624  valid-rmse:1.40012
+[3100]  train-rmse:1.33883  valid-rmse:1.35207
+[3200]  train-rmse:1.29810  valid-rmse:1.31068
+[3300]  train-rmse:1.26311  valid-rmse:1.27498
+[3400]  train-rmse:1.23304  valid-rmse:1.24434
+[3500]  train-rmse:1.20717  valid-rmse:1.21789
+[3600]  train-rmse:1.18488  valid-rmse:1.19504
+[3700]  train-rmse:1.16563  valid-rmse:1.17525
+[3800]  train-rmse:1.14900  valid-rmse:1.15808
+[3900]  train-rmse:1.13453  valid-rmse:1.14310
+[4000]  train-rmse:1.12183  valid-rmse:1.13002
+[4100]  train-rmse:1.11062  valid-rmse:1.11842
+[4200]  train-rmse:1.10067  valid-rmse:1.10814
+[4300]  train-rmse:1.09174  valid-rmse:1.09891
+[4400]  train-rmse:1.08372  valid-rmse:1.09058
+[4500]  train-rmse:1.07648  valid-rmse:1.08306
+[4600]  train-rmse:1.06987  valid-rmse:1.07617
+[4700]  train-rmse:1.06375  valid-rmse:1.06980
+[4800]  train-rmse:1.05806  valid-rmse:1.06390
+[4900]  train-rmse:1.05273  valid-rmse:1.05835
+[5000]  train-rmse:1.04771  valid-rmse:1.05317
+[5100]  train-rmse:1.04296  valid-rmse:1.04822
+[5200]  train-rmse:1.03841  valid-rmse:1.04353
+[5300]  train-rmse:1.03401  valid-rmse:1.03902
+[5400]  train-rmse:1.02976  valid-rmse:1.03465
+[5500]  train-rmse:1.02568  valid-rmse:1.03048
+[5600]  train-rmse:1.02169  valid-rmse:1.02638
+[5700]  train-rmse:1.01785  valid-rmse:1.02243
+[5800]  train-rmse:1.01406  valid-rmse:1.01856
+[5900]  train-rmse:1.01035  valid-rmse:1.01477
+[6000]  train-rmse:1.00667  valid-rmse:1.01105
+[6100]  train-rmse:1.00311  valid-rmse:1.00743
+[6200]  train-rmse:0.99953  valid-rmse:1.00382
+[6300]  train-rmse:0.99602  valid-rmse:1.00030
+[6400]  train-rmse:0.99253  valid-rmse:0.99680
+[6500]  train-rmse:0.98911  valid-rmse:0.99336
+[6600]  train-rmse:0.98572  valid-rmse:0.98995
+[6700]  train-rmse:0.98238  valid-rmse:0.98661
+[6800]  train-rmse:0.97909  valid-rmse:0.98326
+[6900]  train-rmse:0.97583  valid-rmse:0.97996
+[7000]  train-rmse:0.97258  valid-rmse:0.97673
+[7100]  train-rmse:0.96936  valid-rmse:0.97349
+[7200]  train-rmse:0.96620  valid-rmse:0.97032
+[7300]  train-rmse:0.96301  valid-rmse:0.96716
+[7400]  train-rmse:0.95989  valid-rmse:0.96403
+[7500]  train-rmse:0.95680  valid-rmse:0.96093
+[7600]  train-rmse:0.95369  valid-rmse:0.95784
+[7700]  train-rmse:0.95068  valid-rmse:0.95480
+[7800]  train-rmse:0.94769  valid-rmse:0.95178
+[7900]  train-rmse:0.94469  valid-rmse:0.94876
+[8000]  train-rmse:0.94170  valid-rmse:0.94582
+[8100]  train-rmse:0.93871  valid-rmse:0.94283
+[8200]  train-rmse:0.93577  valid-rmse:0.93989
+[8300]  train-rmse:0.93283  valid-rmse:0.93696
+[8400]  train-rmse:0.92994  valid-rmse:0.93408
+[8500]  train-rmse:0.92709  valid-rmse:0.93124
+[8600]  train-rmse:0.92420  valid-rmse:0.92838
+[8700]  train-rmse:0.92135  valid-rmse:0.92555
+[8800]  train-rmse:0.91850  valid-rmse:0.92272
+[8900]  train-rmse:0.91573  valid-rmse:0.91997
+[9000]  train-rmse:0.91293  valid-rmse:0.91718
+[9100]  train-rmse:0.91012  valid-rmse:0.91439
+[9200]  train-rmse:0.90739  valid-rmse:0.91168
+[9300]  train-rmse:0.90465  valid-rmse:0.90896
+[9400]  train-rmse:0.90199  valid-rmse:0.90629
+[9500]  train-rmse:0.89927  valid-rmse:0.90359
+[9600]  train-rmse:0.89660  valid-rmse:0.90095
+[9700]  train-rmse:0.89392  valid-rmse:0.89830
+[9800]  train-rmse:0.89126  valid-rmse:0.89567
+[9900]  train-rmse:0.88863  valid-rmse:0.89306
+[9998]  train-rmse:0.88611  valid-rmse:0.89053
+Model saved to model/fold0.bin
+Spearman correlation: 0.84</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-40-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-40-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-40-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>FOLDS<span class="op">=</span><span class="dv">5</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>pred_dfs <span class="op">=</span> []</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>gains <span class="op">=</span> []</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> []</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fold, (train_idx, valid_idx) <span class="kw">in</span> <span class="bu">enumerate</span>(StratifiedGroupKFold(FOLDS).split(df2.index.values, df2.category,df2.kinase)):</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>    pred_df, gain, weight <span class="op">=</span> xgb_trainer(df, feat_col, target_col <span class="op">=</span> <span class="st">'target'</span>, test_index<span class="op">=</span>valid_idx, model_file <span class="op">=</span> <span class="ss">f'model/fold</span><span class="sc">{</span>fold<span class="sc">}</span><span class="ss">.bin'</span>)</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>    pred_dfs.append(pred_df)</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>    gains.append(gain)</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>    weights.append(weight)</span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">break</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>xgb params is: {'max_depth': 7, 'learning_rate': 0.001, 'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric': 'rmse', 'objective': 'reg:squarederror', 'tree_method': 'gpu_hist', 'predictor': 'gpu_predictor', 'random_state': 123}
+(47916, 38) (47916,) (12078, 38) (12078,)
+Int64Index([    0,     1,     2,     3,     4,     5,     6,     7,     8,
+                9,
+            ...
+            59588, 59589, 59590, 59591, 59592, 59593, 59594, 59595, 59596,
+            59597],
+           dtype='int64', length=12078)
+[0] train-rmse:16.30815 valid-rmse:16.29252
+[100]   train-rmse:14.76309 valid-rmse:14.74738
+[200]   train-rmse:13.36545 valid-rmse:13.34989
+[300]   train-rmse:12.10065 valid-rmse:12.08506
+[400]   train-rmse:10.95631 valid-rmse:10.94060
+[500]   train-rmse:9.92106  valid-rmse:9.90525
+[600]   train-rmse:8.98465  valid-rmse:8.96862
+[700]   train-rmse:8.13780  valid-rmse:8.12251
+[800]   train-rmse:7.37203  valid-rmse:7.35838
+[900]   train-rmse:6.67986  valid-rmse:6.66736
+[1000]  train-rmse:6.05416  valid-rmse:6.04243
+[1100]  train-rmse:5.48848  valid-rmse:5.47764
+[1200]  train-rmse:4.97710  valid-rmse:4.96733
+[1300]  train-rmse:4.51507  valid-rmse:4.50636
+[1400]  train-rmse:4.09800  valid-rmse:4.08975
+[1500]  train-rmse:3.72094  valid-rmse:3.71325
+[1600]  train-rmse:3.38095  valid-rmse:3.37351
+[1700]  train-rmse:3.07361  valid-rmse:3.06716
+[1800]  train-rmse:2.79608  valid-rmse:2.79060
+[1900]  train-rmse:2.54622  valid-rmse:2.54187
+[2000]  train-rmse:2.32105  valid-rmse:2.31818
+[2100]  train-rmse:2.11855  valid-rmse:2.11735
+[2200]  train-rmse:1.93668  valid-rmse:1.93725
+[2300]  train-rmse:1.77316  valid-rmse:1.77568
+[2400]  train-rmse:1.62691  valid-rmse:1.63133
+[2500]  train-rmse:1.49592  valid-rmse:1.50217
+[2600]  train-rmse:1.37848  valid-rmse:1.38675
+[2700]  train-rmse:1.27369  valid-rmse:1.28404
+[2800]  train-rmse:1.18029  valid-rmse:1.19269
+[2900]  train-rmse:1.09712  valid-rmse:1.11160
+[3000]  train-rmse:1.02321  valid-rmse:1.03985
+[3100]  train-rmse:0.95811  valid-rmse:0.97677
+[3200]  train-rmse:0.90012  valid-rmse:0.92092
+[3300]  train-rmse:0.84872  valid-rmse:0.87169
+[3400]  train-rmse:0.80347  valid-rmse:0.82853
+[3500]  train-rmse:0.76320  valid-rmse:0.79031
+[3600]  train-rmse:0.72806  valid-rmse:0.75707
+[3700]  train-rmse:0.69721  valid-rmse:0.72803
+[3800]  train-rmse:0.66957  valid-rmse:0.70217
+[3900]  train-rmse:0.64539  valid-rmse:0.67965
+[4000]  train-rmse:0.62406  valid-rmse:0.65978
+[4100]  train-rmse:0.60549  valid-rmse:0.64259
+[4200]  train-rmse:0.58835  valid-rmse:0.62692
+[4300]  train-rmse:0.57380  valid-rmse:0.61365
+[4400]  train-rmse:0.56059  valid-rmse:0.60173
+[4500]  train-rmse:0.54880  valid-rmse:0.59103
+[4600]  train-rmse:0.53827  valid-rmse:0.58145
+[4700]  train-rmse:0.52868  valid-rmse:0.57274
+[4800]  train-rmse:0.52001  valid-rmse:0.56503
+[4900]  train-rmse:0.51187  valid-rmse:0.55776
+[5000]  train-rmse:0.50470  valid-rmse:0.55134
+[5100]  train-rmse:0.49822  valid-rmse:0.54556
+[5200]  train-rmse:0.49184  valid-rmse:0.53994
+[5300]  train-rmse:0.48590  valid-rmse:0.53466
+[5400]  train-rmse:0.48047  valid-rmse:0.52983
+[5500]  train-rmse:0.47544  valid-rmse:0.52543
+[5600]  train-rmse:0.47063  valid-rmse:0.52113
+[5700]  train-rmse:0.46599  valid-rmse:0.51704
+[5800]  train-rmse:0.46172  valid-rmse:0.51330
+[5900]  train-rmse:0.45763  valid-rmse:0.50966
+[6000]  train-rmse:0.45375  valid-rmse:0.50617
+[6100]  train-rmse:0.45004  valid-rmse:0.50292
+[6200]  train-rmse:0.44659  valid-rmse:0.49987
+[6300]  train-rmse:0.44325  valid-rmse:0.49696
+[6400]  train-rmse:0.43997  valid-rmse:0.49409
+[6500]  train-rmse:0.43675  valid-rmse:0.49124
+[6600]  train-rmse:0.43365  valid-rmse:0.48860
+[6700]  train-rmse:0.43082  valid-rmse:0.48606
+[6800]  train-rmse:0.42823  valid-rmse:0.48378
+[6900]  train-rmse:0.42560  valid-rmse:0.48148
+[7000]  train-rmse:0.42298  valid-rmse:0.47921
+[7100]  train-rmse:0.42042  valid-rmse:0.47700
+[7200]  train-rmse:0.41780  valid-rmse:0.47473
+[7300]  train-rmse:0.41535  valid-rmse:0.47259
+[7400]  train-rmse:0.41314  valid-rmse:0.47065
+[7500]  train-rmse:0.41093  valid-rmse:0.46872
+[7600]  train-rmse:0.40866  valid-rmse:0.46677
+[7700]  train-rmse:0.40649  valid-rmse:0.46483
+[7800]  train-rmse:0.40432  valid-rmse:0.46295
+[7900]  train-rmse:0.40222  valid-rmse:0.46117
+[8000]  train-rmse:0.40039  valid-rmse:0.45953
+[8100]  train-rmse:0.39838  valid-rmse:0.45781
+[8200]  train-rmse:0.39637  valid-rmse:0.45612
+[8300]  train-rmse:0.39461  valid-rmse:0.45462
+[8400]  train-rmse:0.39271  valid-rmse:0.45301
+[8500]  train-rmse:0.39086  valid-rmse:0.45142
+[8600]  train-rmse:0.38920  valid-rmse:0.45003
+[8700]  train-rmse:0.38737  valid-rmse:0.44852
+[8800]  train-rmse:0.38575  valid-rmse:0.44712
+[8900]  train-rmse:0.38405  valid-rmse:0.44567
+[9000]  train-rmse:0.38238  valid-rmse:0.44425
+[9100]  train-rmse:0.38088  valid-rmse:0.44303
+[9200]  train-rmse:0.37934  valid-rmse:0.44173
+[9300]  train-rmse:0.37777  valid-rmse:0.44045
+[9400]  train-rmse:0.37627  valid-rmse:0.43918
+[9500]  train-rmse:0.37478  valid-rmse:0.43795
+[9600]  train-rmse:0.37330  valid-rmse:0.43675
+[9700]  train-rmse:0.37191  valid-rmse:0.43561
+[9800]  train-rmse:0.37049  valid-rmse:0.43445
+[9900]  train-rmse:0.36907  valid-rmse:0.43330
+[9998]  train-rmse:0.36770  valid-rmse:0.43222
+Model saved to model/fold0.bin
+Spearman correlation: 0.95</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-41-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-41-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-41-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>FOLDS<span class="op">=</span><span class="dv">5</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>pred_dfs <span class="op">=</span> []</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>gains <span class="op">=</span> []</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> []</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fold, (train_idx, valid_idx) <span class="kw">in</span> <span class="bu">enumerate</span>(StratifiedGroupKFold(FOLDS).split(df2.index.values, df2.category,df2.kinase)):</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>    pred_df, gain, weight <span class="op">=</span> xgb_trainer(df, feat_col, target_col <span class="op">=</span> <span class="st">'target'</span>, test_index<span class="op">=</span>valid_idx, model_file <span class="op">=</span> <span class="ss">f'model/fold</span><span class="sc">{</span>fold<span class="sc">}</span><span class="ss">.bin'</span>)</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>    pred_dfs.append(pred_df)</span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>    gains.append(gain)</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>    weights.append(weight)</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">break</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>xgb params is: {'max_depth': 7, 'learning_rate': 0.001, 'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric': 'rmse', 'objective': 'reg:squarederror', 'tree_method': 'gpu_hist', 'predictor': 'gpu_predictor', 'random_state': 123}
+(47916, 326) (47916,) (12078, 326) (12078,)
+Int64Index([    0,     1,     2,     3,     4,     5,     6,     7,     8,
+                9,
+            ...
+            59588, 59589, 59590, 59591, 59592, 59593, 59594, 59595, 59596,
+            59597],
+           dtype='int64', length=12078)
+[0] train-rmse:16.30110 valid-rmse:16.32064
+[100]   train-rmse:14.75899 valid-rmse:14.77809
+[200]   train-rmse:13.36468 valid-rmse:13.38346
+[300]   train-rmse:12.10416 valid-rmse:12.12268
+[400]   train-rmse:10.96478 valid-rmse:10.98307
+[500]   train-rmse:9.93518  valid-rmse:9.95326
+[600]   train-rmse:9.00486  valid-rmse:9.02280
+[700]   train-rmse:8.16465  valid-rmse:8.18249
+[800]   train-rmse:7.40599  valid-rmse:7.42375
+[900]   train-rmse:6.72126  valid-rmse:6.73896
+[1000]  train-rmse:6.10363  valid-rmse:6.12125
+[1100]  train-rmse:5.54675  valid-rmse:5.56433
+[1200]  train-rmse:5.04509  valid-rmse:5.06258
+[1300]  train-rmse:4.59355  valid-rmse:4.61092
+[1400]  train-rmse:4.18748  valid-rmse:4.20477
+[1500]  train-rmse:3.82280  valid-rmse:3.83997
+[1600]  train-rmse:3.49577  valid-rmse:3.51283
+[1700]  train-rmse:3.20292  valid-rmse:3.21987
+[1800]  train-rmse:2.94114  valid-rmse:2.95791
+[1900]  train-rmse:2.70764  valid-rmse:2.72422
+[2000]  train-rmse:2.49982  valid-rmse:2.51617
+[2100]  train-rmse:2.31537  valid-rmse:2.33149
+[2200]  train-rmse:2.15215  valid-rmse:2.16804
+[2300]  train-rmse:2.00815  valid-rmse:2.02366
+[2400]  train-rmse:1.88153  valid-rmse:1.89665
+[2500]  train-rmse:1.77060  valid-rmse:1.78531
+[2600]  train-rmse:1.67369  valid-rmse:1.68787
+[2700]  train-rmse:1.58940  valid-rmse:1.60309
+[2800]  train-rmse:1.51626  valid-rmse:1.52940
+[2900]  train-rmse:1.45304  valid-rmse:1.46561
+[3000]  train-rmse:1.39849  valid-rmse:1.41047
+[3100]  train-rmse:1.35149  valid-rmse:1.36287
+[3200]  train-rmse:1.31116  valid-rmse:1.32197
+[3300]  train-rmse:1.27650  valid-rmse:1.28672
+[3400]  train-rmse:1.24670  valid-rmse:1.25636
+[3500]  train-rmse:1.22105  valid-rmse:1.23023
+[3600]  train-rmse:1.19896  valid-rmse:1.20767
+[3700]  train-rmse:1.17990  valid-rmse:1.18815
+[3800]  train-rmse:1.16335  valid-rmse:1.17118
+[3900]  train-rmse:1.14891  valid-rmse:1.15632
+[4000]  train-rmse:1.13631  valid-rmse:1.14331
+[4100]  train-rmse:1.12517  valid-rmse:1.13187
+[4200]  train-rmse:1.11528  valid-rmse:1.12169
+[4300]  train-rmse:1.10643  valid-rmse:1.11260
+[4400]  train-rmse:1.09846  valid-rmse:1.10445
+[4500]  train-rmse:1.09123  valid-rmse:1.09702
+[4600]  train-rmse:1.08460  valid-rmse:1.09020
+[4700]  train-rmse:1.07846  valid-rmse:1.08389
+[4800]  train-rmse:1.07274  valid-rmse:1.07805
+[4900]  train-rmse:1.06739  valid-rmse:1.07260
+[5000]  train-rmse:1.06233  valid-rmse:1.06744
+[5100]  train-rmse:1.05752  valid-rmse:1.06258
+[5200]  train-rmse:1.05291  valid-rmse:1.05794
+[5300]  train-rmse:1.04850  valid-rmse:1.05350
+[5400]  train-rmse:1.04425  valid-rmse:1.04917
+[5500]  train-rmse:1.04013  valid-rmse:1.04501
+[5600]  train-rmse:1.03613  valid-rmse:1.04103
+[5700]  train-rmse:1.03222  valid-rmse:1.03712
+[5800]  train-rmse:1.02838  valid-rmse:1.03328
+[5900]  train-rmse:1.02463  valid-rmse:1.02958
+[6000]  train-rmse:1.02094  valid-rmse:1.02592
+[6100]  train-rmse:1.01732  valid-rmse:1.02234
+[6200]  train-rmse:1.01376  valid-rmse:1.01883
+[6300]  train-rmse:1.01024  valid-rmse:1.01537
+[6400]  train-rmse:1.00677  valid-rmse:1.01195
+[6500]  train-rmse:1.00334  valid-rmse:1.00857
+[6600]  train-rmse:0.99994  valid-rmse:1.00523
+[6700]  train-rmse:0.99659  valid-rmse:1.00195
+[6800]  train-rmse:0.99326  valid-rmse:0.99872
+[6900]  train-rmse:0.98998  valid-rmse:0.99549
+[7000]  train-rmse:0.98671  valid-rmse:0.99229
+[7100]  train-rmse:0.98347  valid-rmse:0.98913
+[7200]  train-rmse:0.98026  valid-rmse:0.98600
+[7300]  train-rmse:0.97710  valid-rmse:0.98293
+[7400]  train-rmse:0.97395  valid-rmse:0.97987
+[7500]  train-rmse:0.97083  valid-rmse:0.97686
+[7600]  train-rmse:0.96772  valid-rmse:0.97386
+[7700]  train-rmse:0.96463  valid-rmse:0.97087
+[7800]  train-rmse:0.96157  valid-rmse:0.96791
+[7900]  train-rmse:0.95855  valid-rmse:0.96500
+[8000]  train-rmse:0.95554  valid-rmse:0.96209
+[8100]  train-rmse:0.95254  valid-rmse:0.95919
+[8200]  train-rmse:0.94958  valid-rmse:0.95633
+[8300]  train-rmse:0.94665  valid-rmse:0.95349
+[8400]  train-rmse:0.94370  valid-rmse:0.95065
+[8500]  train-rmse:0.94078  valid-rmse:0.94789
+[8600]  train-rmse:0.93789  valid-rmse:0.94509
+[8700]  train-rmse:0.93501  valid-rmse:0.94235
+[8800]  train-rmse:0.93219  valid-rmse:0.93963
+[8900]  train-rmse:0.92936  valid-rmse:0.93690
+[9000]  train-rmse:0.92656  valid-rmse:0.93422
+[9100]  train-rmse:0.92378  valid-rmse:0.93153
+[9200]  train-rmse:0.92102  valid-rmse:0.92889
+[9300]  train-rmse:0.91827  valid-rmse:0.92626
+[9400]  train-rmse:0.91555  valid-rmse:0.92365
+[9500]  train-rmse:0.91284  valid-rmse:0.92107
+[9600]  train-rmse:0.91016  valid-rmse:0.91849
+[9700]  train-rmse:0.90745  valid-rmse:0.91593
+[9800]  train-rmse:0.90481  valid-rmse:0.91338
+[9900]  train-rmse:0.90216  valid-rmse:0.91087
+[9998]  train-rmse:0.89958  valid-rmse:0.90841
+Model saved to model/fold0.bin
+Spearman correlation: 0.83</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-42-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-42-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-42-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>FOLDS<span class="op">=</span><span class="dv">5</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>pred_dfs <span class="op">=</span> []</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>gains <span class="op">=</span> []</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> []</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fold, (train_idx, valid_idx) <span class="kw">in</span> <span class="bu">enumerate</span>(StratifiedGroupKFold(FOLDS).split(df2.index.values, df2.category,df2.kinase)):</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>    pred_df, gain, weight <span class="op">=</span> xgb_trainer(df, feat_col, target_col <span class="op">=</span> <span class="st">'target'</span>, test_index<span class="op">=</span>valid_idx, model_file <span class="op">=</span> <span class="ss">f'model/fold</span><span class="sc">{</span>fold<span class="sc">}</span><span class="ss">.bin'</span>)</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>    pred_dfs.append(pred_df)</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>    gains.append(gain)</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>    weights.append(weight)</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">break</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>xgb params is: {'max_depth': 7, 'learning_rate': 0.001, 'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric': 'rmse', 'objective': 'reg:squarederror', 'tree_method': 'gpu_hist', 'predictor': 'gpu_predictor', 'random_state': 123}
+(47916, 38) (47916,) (12078, 38) (12078,)
+Int64Index([    0,     1,     2,     3,     4,     5,     6,     7,     8,
+                9,
+            ...
+            59588, 59589, 59590, 59591, 59592, 59593, 59594, 59595, 59596,
+            59597],
+           dtype='int64', length=12078)
+[0] train-rmse:16.30815 valid-rmse:16.29252
+[100]   train-rmse:14.76309 valid-rmse:14.74738
+[200]   train-rmse:13.36545 valid-rmse:13.34989
+[300]   train-rmse:12.10065 valid-rmse:12.08506
+[400]   train-rmse:10.95631 valid-rmse:10.94060
+[500]   train-rmse:9.92106  valid-rmse:9.90525
+[600]   train-rmse:8.98465  valid-rmse:8.96862
+[700]   train-rmse:8.13780  valid-rmse:8.12251
+[800]   train-rmse:7.37203  valid-rmse:7.35838
+[900]   train-rmse:6.67986  valid-rmse:6.66736
+[1000]  train-rmse:6.05416  valid-rmse:6.04243
+[1100]  train-rmse:5.48848  valid-rmse:5.47764
+[1200]  train-rmse:4.97710  valid-rmse:4.96733
+[1300]  train-rmse:4.51507  valid-rmse:4.50636
+[1400]  train-rmse:4.09800  valid-rmse:4.08975
+[1500]  train-rmse:3.72094  valid-rmse:3.71325
+[1600]  train-rmse:3.38095  valid-rmse:3.37351
+[1700]  train-rmse:3.07361  valid-rmse:3.06716
+[1800]  train-rmse:2.79608  valid-rmse:2.79060
+[1900]  train-rmse:2.54622  valid-rmse:2.54187
+[2000]  train-rmse:2.32105  valid-rmse:2.31818
+[2100]  train-rmse:2.11855  valid-rmse:2.11735
+[2200]  train-rmse:1.93668  valid-rmse:1.93725
+[2300]  train-rmse:1.77316  valid-rmse:1.77568
+[2400]  train-rmse:1.62691  valid-rmse:1.63133
+[2500]  train-rmse:1.49592  valid-rmse:1.50217
+[2600]  train-rmse:1.37848  valid-rmse:1.38675
+[2700]  train-rmse:1.27369  valid-rmse:1.28404
+[2800]  train-rmse:1.18029  valid-rmse:1.19269
+[2900]  train-rmse:1.09712  valid-rmse:1.11160
+[3000]  train-rmse:1.02321  valid-rmse:1.03985
+[3100]  train-rmse:0.95811  valid-rmse:0.97677
+[3200]  train-rmse:0.90012  valid-rmse:0.92092
+[3300]  train-rmse:0.84872  valid-rmse:0.87169
+[3400]  train-rmse:0.80347  valid-rmse:0.82853
+[3500]  train-rmse:0.76320  valid-rmse:0.79031
+[3600]  train-rmse:0.72806  valid-rmse:0.75707
+[3700]  train-rmse:0.69721  valid-rmse:0.72803
+[3800]  train-rmse:0.66957  valid-rmse:0.70217
+[3900]  train-rmse:0.64539  valid-rmse:0.67965
+[4000]  train-rmse:0.62406  valid-rmse:0.65978
+[4100]  train-rmse:0.60549  valid-rmse:0.64259
+[4200]  train-rmse:0.58835  valid-rmse:0.62692
+[4300]  train-rmse:0.57380  valid-rmse:0.61365
+[4400]  train-rmse:0.56059  valid-rmse:0.60173
+[4500]  train-rmse:0.54880  valid-rmse:0.59103
+[4600]  train-rmse:0.53827  valid-rmse:0.58145
+[4700]  train-rmse:0.52868  valid-rmse:0.57274
+[4800]  train-rmse:0.52001  valid-rmse:0.56503
+[4900]  train-rmse:0.51187  valid-rmse:0.55776
+[5000]  train-rmse:0.50470  valid-rmse:0.55134
+[5100]  train-rmse:0.49822  valid-rmse:0.54556
+[5200]  train-rmse:0.49184  valid-rmse:0.53994
+[5300]  train-rmse:0.48590  valid-rmse:0.53466
+[5400]  train-rmse:0.48047  valid-rmse:0.52983
+[5500]  train-rmse:0.47544  valid-rmse:0.52543
+[5600]  train-rmse:0.47063  valid-rmse:0.52113
+[5700]  train-rmse:0.46599  valid-rmse:0.51704
+[5800]  train-rmse:0.46172  valid-rmse:0.51330
+[5900]  train-rmse:0.45763  valid-rmse:0.50966
+[6000]  train-rmse:0.45375  valid-rmse:0.50617
+[6100]  train-rmse:0.45004  valid-rmse:0.50292
+[6200]  train-rmse:0.44659  valid-rmse:0.49987
+[6300]  train-rmse:0.44325  valid-rmse:0.49696
+[6400]  train-rmse:0.43997  valid-rmse:0.49409
+[6500]  train-rmse:0.43675  valid-rmse:0.49124
+[6600]  train-rmse:0.43365  valid-rmse:0.48860
+[6700]  train-rmse:0.43082  valid-rmse:0.48606
+[6800]  train-rmse:0.42823  valid-rmse:0.48378
+[6900]  train-rmse:0.42560  valid-rmse:0.48148
+[7000]  train-rmse:0.42298  valid-rmse:0.47921
+[7100]  train-rmse:0.42042  valid-rmse:0.47700
+[7200]  train-rmse:0.41780  valid-rmse:0.47473
+[7300]  train-rmse:0.41535  valid-rmse:0.47259
+[7400]  train-rmse:0.41314  valid-rmse:0.47065
+[7500]  train-rmse:0.41093  valid-rmse:0.46872
+[7600]  train-rmse:0.40866  valid-rmse:0.46677
+[7700]  train-rmse:0.40649  valid-rmse:0.46483
+[7800]  train-rmse:0.40432  valid-rmse:0.46295
+[7900]  train-rmse:0.40222  valid-rmse:0.46117
+[8000]  train-rmse:0.40039  valid-rmse:0.45953
+[8100]  train-rmse:0.39838  valid-rmse:0.45781
+[8200]  train-rmse:0.39637  valid-rmse:0.45612
+[8300]  train-rmse:0.39461  valid-rmse:0.45462
+[8400]  train-rmse:0.39271  valid-rmse:0.45301
+[8500]  train-rmse:0.39086  valid-rmse:0.45142
+[8600]  train-rmse:0.38920  valid-rmse:0.45003
+[8700]  train-rmse:0.38737  valid-rmse:0.44852
+[8800]  train-rmse:0.38575  valid-rmse:0.44712
+[8900]  train-rmse:0.38405  valid-rmse:0.44567
+[9000]  train-rmse:0.38238  valid-rmse:0.44425
+[9100]  train-rmse:0.38088  valid-rmse:0.44303
+[9200]  train-rmse:0.37934  valid-rmse:0.44173
+[9300]  train-rmse:0.37777  valid-rmse:0.44045
+[9400]  train-rmse:0.37627  valid-rmse:0.43918
+[9500]  train-rmse:0.37478  valid-rmse:0.43795
+[9600]  train-rmse:0.37330  valid-rmse:0.43675
+[9700]  train-rmse:0.37191  valid-rmse:0.43561
+[9800]  train-rmse:0.37049  valid-rmse:0.43445
+[9900]  train-rmse:0.36907  valid-rmse:0.43330
+[9998]  train-rmse:0.36770  valid-rmse:0.43222
+Model saved to model/fold0.bin
+Spearman correlation: 0.95</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-43-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-43-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-43-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>FOLDS<span class="op">=</span><span class="dv">5</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>pred_dfs <span class="op">=</span> []</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>gains <span class="op">=</span> []</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> []</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fold, (train_idx, valid_idx) <span class="kw">in</span> <span class="bu">enumerate</span>(StratifiedGroupKFold(FOLDS).split(df2.index.values, df2.category,df2.kinase)):</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>    pred_df, gain, weight <span class="op">=</span> xgb_trainer(df, feat_col, target_col <span class="op">=</span> <span class="st">'target'</span>, test_index<span class="op">=</span>valid_idx, model_file <span class="op">=</span> <span class="ss">f'model/fold</span><span class="sc">{</span>fold<span class="sc">}</span><span class="ss">.bin'</span>)</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>    pred_dfs.append(pred_df)</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>    gains.append(gain)</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>    weights.append(weight)</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">break</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>xgb params is: {'max_depth': 7, 'learning_rate': 0.001, 'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric': 'rmse', 'objective': 'reg:squarederror', 'tree_method': 'gpu_hist', 'predictor': 'gpu_predictor', 'random_state': 123}
+(47916, 38) (47916,) (12078, 38) (12078,)
+Int64Index([    0,     1,     2,     3,     4,     5,     6,     7,     8,
+                9,
+            ...
+            59588, 59589, 59590, 59591, 59592, 59593, 59594, 59595, 59596,
+            59597],
+           dtype='int64', length=12078)
+[0] train-rmse:1.10368  valid-rmse:1.15063
+[100]   train-rmse:1.06054  valid-rmse:1.11333
+[200]   train-rmse:1.02301  valid-rmse:1.08145
+[300]   train-rmse:0.99026  valid-rmse:1.05427
+[400]   train-rmse:0.96181  valid-rmse:1.03109
+[500]   train-rmse:0.93718  valid-rmse:1.01128
+[600]   train-rmse:0.91588  valid-rmse:0.99456
+[700]   train-rmse:0.89728  valid-rmse:0.98026
+[800]   train-rmse:0.88122  valid-rmse:0.96805
+[900]   train-rmse:0.86722  valid-rmse:0.95781
+[1000]  train-rmse:0.85495  valid-rmse:0.94915
+[1100]  train-rmse:0.84414  valid-rmse:0.94170
+[1200]  train-rmse:0.83446  valid-rmse:0.93510
+[1300]  train-rmse:0.82561  valid-rmse:0.92932
+[1400]  train-rmse:0.81795  valid-rmse:0.92454
+[1500]  train-rmse:0.81105  valid-rmse:0.92024
+[1600]  train-rmse:0.80475  valid-rmse:0.91635
+[1700]  train-rmse:0.79895  valid-rmse:0.91299
+[1800]  train-rmse:0.79350  valid-rmse:0.90969
+[1900]  train-rmse:0.78845  valid-rmse:0.90678
+[2000]  train-rmse:0.78376  valid-rmse:0.90379
+[2100]  train-rmse:0.77930  valid-rmse:0.90123
+[2200]  train-rmse:0.77509  valid-rmse:0.89890
+[2300]  train-rmse:0.77095  valid-rmse:0.89665
+[2400]  train-rmse:0.76709  valid-rmse:0.89455
+[2500]  train-rmse:0.76343  valid-rmse:0.89263
+[2600]  train-rmse:0.76003  valid-rmse:0.89077
+[2700]  train-rmse:0.75668  valid-rmse:0.88899
+[2800]  train-rmse:0.75345  valid-rmse:0.88735
+[2900]  train-rmse:0.75024  valid-rmse:0.88574
+[3000]  train-rmse:0.74736  valid-rmse:0.88425
+[3100]  train-rmse:0.74454  valid-rmse:0.88289
+[3200]  train-rmse:0.74190  valid-rmse:0.88161
+[3300]  train-rmse:0.73887  valid-rmse:0.88025
+[3400]  train-rmse:0.73626  valid-rmse:0.87897
+[3500]  train-rmse:0.73366  valid-rmse:0.87795
+[3600]  train-rmse:0.73108  valid-rmse:0.87685
+[3700]  train-rmse:0.72843  valid-rmse:0.87575
+[3800]  train-rmse:0.72575  valid-rmse:0.87458
+[3900]  train-rmse:0.72331  valid-rmse:0.87364
+[4000]  train-rmse:0.72082  valid-rmse:0.87269
+[4100]  train-rmse:0.71847  valid-rmse:0.87172
+[4200]  train-rmse:0.71626  valid-rmse:0.87090
+[4300]  train-rmse:0.71332  valid-rmse:0.86977
+[4400]  train-rmse:0.71095  valid-rmse:0.86893
+[4500]  train-rmse:0.70858  valid-rmse:0.86800
+[4600]  train-rmse:0.70639  valid-rmse:0.86732
+[4700]  train-rmse:0.70433  valid-rmse:0.86652
+[4800]  train-rmse:0.70203  valid-rmse:0.86574
+[4900]  train-rmse:0.69971  valid-rmse:0.86499
+[5000]  train-rmse:0.69745  valid-rmse:0.86419
+[5100]  train-rmse:0.69542  valid-rmse:0.86350
+[5200]  train-rmse:0.69327  valid-rmse:0.86276
+[5300]  train-rmse:0.69103  valid-rmse:0.86201
+[5400]  train-rmse:0.68918  valid-rmse:0.86140
+[5500]  train-rmse:0.68730  valid-rmse:0.86075
+[5600]  train-rmse:0.68533  valid-rmse:0.86014
+[5700]  train-rmse:0.68361  valid-rmse:0.85959
+[5800]  train-rmse:0.68173  valid-rmse:0.85895
+[5900]  train-rmse:0.67991  valid-rmse:0.85839
+[6000]  train-rmse:0.67798  valid-rmse:0.85782
+[6100]  train-rmse:0.67620  valid-rmse:0.85727
+[6200]  train-rmse:0.67445  valid-rmse:0.85666
+[6300]  train-rmse:0.67271  valid-rmse:0.85613
+[6400]  train-rmse:0.67104  valid-rmse:0.85558
+[6500]  train-rmse:0.66938  valid-rmse:0.85511
+[6600]  train-rmse:0.66792  valid-rmse:0.85467
+[6700]  train-rmse:0.66631  valid-rmse:0.85417
+[6800]  train-rmse:0.66455  valid-rmse:0.85370
+[6900]  train-rmse:0.66290  valid-rmse:0.85325
+[7000]  train-rmse:0.66143  valid-rmse:0.85289
+[7100]  train-rmse:0.65990  valid-rmse:0.85240
+[7200]  train-rmse:0.65842  valid-rmse:0.85193
+[7300]  train-rmse:0.65690  valid-rmse:0.85147
+[7400]  train-rmse:0.65546  valid-rmse:0.85106
+[7500]  train-rmse:0.65390  valid-rmse:0.85066
+[7600]  train-rmse:0.65240  valid-rmse:0.85027
+[7700]  train-rmse:0.65101  valid-rmse:0.84984
+[7800]  train-rmse:0.64958  valid-rmse:0.84954
+[7900]  train-rmse:0.64823  valid-rmse:0.84926
+[8000]  train-rmse:0.64691  valid-rmse:0.84893
+[8100]  train-rmse:0.64555  valid-rmse:0.84853
+[8200]  train-rmse:0.64406  valid-rmse:0.84812
+[8300]  train-rmse:0.64263  valid-rmse:0.84780
+[8400]  train-rmse:0.64141  valid-rmse:0.84748
+[8500]  train-rmse:0.64006  valid-rmse:0.84715
+[8600]  train-rmse:0.63864  valid-rmse:0.84677
+[8700]  train-rmse:0.63739  valid-rmse:0.84645
+[8800]  train-rmse:0.63611  valid-rmse:0.84610
+[8900]  train-rmse:0.63473  valid-rmse:0.84571
+[9000]  train-rmse:0.63352  valid-rmse:0.84544
+[9100]  train-rmse:0.63228  valid-rmse:0.84518
+[9200]  train-rmse:0.63104  valid-rmse:0.84490
+[9300]  train-rmse:0.62983  valid-rmse:0.84462
+[9400]  train-rmse:0.62864  valid-rmse:0.84440
+[9500]  train-rmse:0.62740  valid-rmse:0.84408
+[9600]  train-rmse:0.62617  valid-rmse:0.84385
+[9700]  train-rmse:0.62499  valid-rmse:0.84354
+[9800]  train-rmse:0.62380  valid-rmse:0.84326
+[9900]  train-rmse:0.62266  valid-rmse:0.84299
+[9998]  train-rmse:0.62162  valid-rmse:0.84280
+Model saved to model/fold0.bin
+Spearman correlation: 0.59</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-44-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-44-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-44-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>FOLDS<span class="op">=</span><span class="dv">5</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>pred_dfs <span class="op">=</span> []</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>gains <span class="op">=</span> []</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> []</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fold, (train_idx, valid_idx) <span class="kw">in</span> <span class="bu">enumerate</span>(StratifiedGroupKFold(FOLDS).split(df2.index.values, df2.category,df2.kinase)):</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>    pred_df, gain, weight <span class="op">=</span> xgb_trainer(df, feat_col, target_col <span class="op">=</span> <span class="st">'target'</span>, test_index<span class="op">=</span>valid_idx, model_file <span class="op">=</span> <span class="ss">f'model/fold</span><span class="sc">{</span>fold<span class="sc">}</span><span class="ss">.bin'</span>)</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>    pred_dfs.append(pred_df)</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>    gains.append(gain)</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>    weights.append(weight)</span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">break</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>xgb params is: {'max_depth': 7, 'learning_rate': 0.001, 'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric': 'rmse', 'objective': 'reg:squarederror', 'tree_method': 'gpu_hist', 'predictor': 'gpu_predictor', 'random_state': 123}
+(47916, 326) (47916,) (12078, 326) (12078,)
+Int64Index([    0,     1,     2,     3,     4,     5,     6,     7,     8,
+                9,
+            ...
+            59588, 59589, 59590, 59591, 59592, 59593, 59594, 59595, 59596,
+            59597],
+           dtype='int64', length=12078)
+[0] train-rmse:1.06857  valid-rmse:1.27563
+[100]   train-rmse:1.03270  valid-rmse:1.24503
+[200]   train-rmse:1.00221  valid-rmse:1.21979
+[300]   train-rmse:0.97636  valid-rmse:1.19907
+[400]   train-rmse:0.95440  valid-rmse:1.18207
+[500]   train-rmse:0.93579  valid-rmse:1.16830
+[600]   train-rmse:0.92002  valid-rmse:1.15716
+[700]   train-rmse:0.90668  valid-rmse:1.14815
+[800]   train-rmse:0.89532  valid-rmse:1.14095
+[900]   train-rmse:0.88567  valid-rmse:1.13515
+[1000]  train-rmse:0.87743  valid-rmse:1.13047
+[1100]  train-rmse:0.87036  valid-rmse:1.12667
+[1200]  train-rmse:0.86427  valid-rmse:1.12360
+[1300]  train-rmse:0.85897  valid-rmse:1.12105
+[1400]  train-rmse:0.85435  valid-rmse:1.11893
+[1500]  train-rmse:0.85035  valid-rmse:1.11722
+[1600]  train-rmse:0.84672  valid-rmse:1.11581
+[1700]  train-rmse:0.84348  valid-rmse:1.11456
+[1800]  train-rmse:0.84061  valid-rmse:1.11359
+[1900]  train-rmse:0.83797  valid-rmse:1.11279
+[2000]  train-rmse:0.83559  valid-rmse:1.11210
+[2100]  train-rmse:0.83333  valid-rmse:1.11153
+[2200]  train-rmse:0.83120  valid-rmse:1.11106
+[2300]  train-rmse:0.82919  valid-rmse:1.11065
+[2400]  train-rmse:0.82734  valid-rmse:1.11027
+[2500]  train-rmse:0.82561  valid-rmse:1.10998
+[2600]  train-rmse:0.82394  valid-rmse:1.10971
+[2700]  train-rmse:0.82234  valid-rmse:1.10953
+[2800]  train-rmse:0.82083  valid-rmse:1.10930
+[2900]  train-rmse:0.81937  valid-rmse:1.10912
+[3000]  train-rmse:0.81796  valid-rmse:1.10900
+[3100]  train-rmse:0.81661  valid-rmse:1.10887
+[3200]  train-rmse:0.81527  valid-rmse:1.10875
+[3300]  train-rmse:0.81398  valid-rmse:1.10864
+[3400]  train-rmse:0.81267  valid-rmse:1.10848
+[3500]  train-rmse:0.81146  valid-rmse:1.10831
+[3600]  train-rmse:0.81030  valid-rmse:1.10821
+[3700]  train-rmse:0.80916  valid-rmse:1.10811
+[3800]  train-rmse:0.80800  valid-rmse:1.10801
+[3900]  train-rmse:0.80686  valid-rmse:1.10794
+[4000]  train-rmse:0.80577  valid-rmse:1.10781
+[4100]  train-rmse:0.80470  valid-rmse:1.10770
+[4200]  train-rmse:0.80362  valid-rmse:1.10764
+[4300]  train-rmse:0.80266  valid-rmse:1.10753
+[4400]  train-rmse:0.80169  valid-rmse:1.10739
+[4500]  train-rmse:0.80069  valid-rmse:1.10737
+[4600]  train-rmse:0.79974  valid-rmse:1.10733
+[4700]  train-rmse:0.79885  valid-rmse:1.10722
+[4800]  train-rmse:0.79799  valid-rmse:1.10709
+[4900]  train-rmse:0.79713  valid-rmse:1.10697
+[5000]  train-rmse:0.79627  valid-rmse:1.10692
+[5100]  train-rmse:0.79539  valid-rmse:1.10684
+[5200]  train-rmse:0.79456  valid-rmse:1.10674
+[5300]  train-rmse:0.79375  valid-rmse:1.10667
+[5400]  train-rmse:0.79299  valid-rmse:1.10656
+[5500]  train-rmse:0.79224  valid-rmse:1.10646
+[5600]  train-rmse:0.79153  valid-rmse:1.10635
+[5700]  train-rmse:0.79074  valid-rmse:1.10624
+[5800]  train-rmse:0.79001  valid-rmse:1.10612
+[5900]  train-rmse:0.78926  valid-rmse:1.10603
+[6000]  train-rmse:0.78859  valid-rmse:1.10593
+[6100]  train-rmse:0.78792  valid-rmse:1.10584
+[6200]  train-rmse:0.78724  valid-rmse:1.10576
+[6300]  train-rmse:0.78656  valid-rmse:1.10568
+[6400]  train-rmse:0.78588  valid-rmse:1.10556
+[6500]  train-rmse:0.78528  valid-rmse:1.10543
+[6600]  train-rmse:0.78461  valid-rmse:1.10535
+[6700]  train-rmse:0.78394  valid-rmse:1.10527
+[6800]  train-rmse:0.78328  valid-rmse:1.10515
+[6900]  train-rmse:0.78267  valid-rmse:1.10507
+[7000]  train-rmse:0.78205  valid-rmse:1.10501
+[7100]  train-rmse:0.78148  valid-rmse:1.10488
+[7200]  train-rmse:0.78086  valid-rmse:1.10482
+[7300]  train-rmse:0.78022  valid-rmse:1.10473
+[7400]  train-rmse:0.77964  valid-rmse:1.10466
+[7500]  train-rmse:0.77905  valid-rmse:1.10455
+[7600]  train-rmse:0.77849  valid-rmse:1.10444
+[7700]  train-rmse:0.77791  valid-rmse:1.10432
+[7800]  train-rmse:0.77737  valid-rmse:1.10425
+[7900]  train-rmse:0.77686  valid-rmse:1.10414
+[8000]  train-rmse:0.77630  valid-rmse:1.10409
+[8100]  train-rmse:0.77576  valid-rmse:1.10403
+[8200]  train-rmse:0.77522  valid-rmse:1.10390
+[8300]  train-rmse:0.77468  valid-rmse:1.10382
+[8400]  train-rmse:0.77414  valid-rmse:1.10372
+[8500]  train-rmse:0.77363  valid-rmse:1.10363
+[8600]  train-rmse:0.77313  valid-rmse:1.10351
+[8700]  train-rmse:0.77257  valid-rmse:1.10345
+[8800]  train-rmse:0.77209  valid-rmse:1.10334
+[8900]  train-rmse:0.77158  valid-rmse:1.10321
+[9000]  train-rmse:0.77108  valid-rmse:1.10310
+[9100]  train-rmse:0.77055  valid-rmse:1.10296
+[9200]  train-rmse:0.77009  valid-rmse:1.10284
+[9300]  train-rmse:0.76961  valid-rmse:1.10274
+[9400]  train-rmse:0.76913  valid-rmse:1.10265
+[9500]  train-rmse:0.76865  valid-rmse:1.10255
+[9600]  train-rmse:0.76816  valid-rmse:1.10247
+[9700]  train-rmse:0.76768  valid-rmse:1.10240
+[9800]  train-rmse:0.76721  valid-rmse:1.10229
+[9900]  train-rmse:0.76672  valid-rmse:1.10219
+[9998]  train-rmse:0.76626  valid-rmse:1.10208
+Model saved to model/fold0.bin
+Spearman correlation: 0.48</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-45-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-45-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-45-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>FOLDS<span class="op">=</span><span class="dv">5</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>pred_dfs <span class="op">=</span> []</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>gains <span class="op">=</span> []</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> []</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fold, (train_idx, valid_idx) <span class="kw">in</span> <span class="bu">enumerate</span>(StratifiedGroupKFold(FOLDS).split(df2.index.values, df2.category,df2.kinase)):</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>    pred_df, gain, weight <span class="op">=</span> xgb_trainer(df, feat_col, target_col <span class="op">=</span> <span class="st">'target'</span>, test_index<span class="op">=</span>valid_idx, model_file <span class="op">=</span> <span class="ss">f'model/fold</span><span class="sc">{</span>fold<span class="sc">}</span><span class="ss">.bin'</span>)</span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>    pred_dfs.append(pred_df)</span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>    gains.append(gain)</span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a>    weights.append(weight)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>xgb params is: {'max_depth': 7, 'learning_rate': 0.001, 'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric': 'rmse', 'objective': 'reg:squarederror', 'tree_method': 'gpu_hist', 'predictor': 'gpu_predictor', 'random_state': 123}
+(47124, 38) (47124,) (11880, 38) (11880,)
+Int64Index([  396,   397,   398,   399,   400,   401,   402,   403,   404,
+              405,
+            ...
+            58004, 58005, 58006, 58007, 58008, 58009, 58010, 58011, 58012,
+            58013],
+           dtype='int64', length=11880)
+[0] train-rmse:1.09019  valid-rmse:1.19967
+[100]   train-rmse:1.04661  valid-rmse:1.16338
+[200]   train-rmse:1.00888  valid-rmse:1.13234
+[300]   train-rmse:0.97609  valid-rmse:1.10599
+[400]   train-rmse:0.94770  valid-rmse:1.08364
+[500]   train-rmse:0.92299  valid-rmse:1.06462
+[600]   train-rmse:0.90156  valid-rmse:1.04776
+[700]   train-rmse:0.88273  valid-rmse:1.03328
+[800]   train-rmse:0.86620  valid-rmse:1.02090
+[900]   train-rmse:0.85169  valid-rmse:1.01018
+[1000]  train-rmse:0.83891  valid-rmse:1.00068
+[1100]  train-rmse:0.82760  valid-rmse:0.99261
+[1200]  train-rmse:0.81745  valid-rmse:0.98548
+[1300]  train-rmse:0.80847  valid-rmse:0.97928
+[1400]  train-rmse:0.80030  valid-rmse:0.97380
+[1500]  train-rmse:0.79288  valid-rmse:0.96865
+[1600]  train-rmse:0.78600  valid-rmse:0.96416
+[1700]  train-rmse:0.77972  valid-rmse:0.96021
+[1800]  train-rmse:0.77373  valid-rmse:0.95649
+[1900]  train-rmse:0.76826  valid-rmse:0.95300
+[2000]  train-rmse:0.76310  valid-rmse:0.94975
+[2100]  train-rmse:0.75828  valid-rmse:0.94671
+[2200]  train-rmse:0.75366  valid-rmse:0.94394
+[2300]  train-rmse:0.74935  valid-rmse:0.94148
+[2400]  train-rmse:0.74522  valid-rmse:0.93908
+[2500]  train-rmse:0.74131  valid-rmse:0.93685
+[2600]  train-rmse:0.73765  valid-rmse:0.93474
+[2700]  train-rmse:0.73413  valid-rmse:0.93261
+[2800]  train-rmse:0.73073  valid-rmse:0.93084
+[2900]  train-rmse:0.72730  valid-rmse:0.92885
+[3000]  train-rmse:0.72411  valid-rmse:0.92738
+[3100]  train-rmse:0.72097  valid-rmse:0.92574
+[3200]  train-rmse:0.71804  valid-rmse:0.92439
+[3300]  train-rmse:0.71511  valid-rmse:0.92325
+[3400]  train-rmse:0.71231  valid-rmse:0.92207
+[3500]  train-rmse:0.70956  valid-rmse:0.92098
+[3600]  train-rmse:0.70681  valid-rmse:0.91970
+[3700]  train-rmse:0.70420  valid-rmse:0.91862
+[3800]  train-rmse:0.70166  valid-rmse:0.91764
+[3900]  train-rmse:0.69906  valid-rmse:0.91647
+[4000]  train-rmse:0.69675  valid-rmse:0.91555
+[4100]  train-rmse:0.69440  valid-rmse:0.91466
+[4200]  train-rmse:0.69191  valid-rmse:0.91374
+[4300]  train-rmse:0.68954  valid-rmse:0.91280
+[4400]  train-rmse:0.68740  valid-rmse:0.91207
+[4500]  train-rmse:0.68501  valid-rmse:0.91109
+[4600]  train-rmse:0.68287  valid-rmse:0.91022
+[4700]  train-rmse:0.68074  valid-rmse:0.90946
+[4800]  train-rmse:0.67866  valid-rmse:0.90862
+[4900]  train-rmse:0.67651  valid-rmse:0.90776
+[5000]  train-rmse:0.67445  valid-rmse:0.90708
+[5100]  train-rmse:0.67260  valid-rmse:0.90639
+[5200]  train-rmse:0.67090  valid-rmse:0.90577
+[5300]  train-rmse:0.66899  valid-rmse:0.90497
+[5400]  train-rmse:0.66693  valid-rmse:0.90411
+[5500]  train-rmse:0.66492  valid-rmse:0.90337
+[5600]  train-rmse:0.66311  valid-rmse:0.90269
+[5700]  train-rmse:0.66139  valid-rmse:0.90212
+[5800]  train-rmse:0.65971  valid-rmse:0.90157
+[5900]  train-rmse:0.65789  valid-rmse:0.90079
+[6000]  train-rmse:0.65616  valid-rmse:0.90021
+[6100]  train-rmse:0.65426  valid-rmse:0.89932
+[6200]  train-rmse:0.65260  valid-rmse:0.89877
+[6300]  train-rmse:0.65096  valid-rmse:0.89807
+[6400]  train-rmse:0.64933  valid-rmse:0.89751
+[6500]  train-rmse:0.64778  valid-rmse:0.89691
+[6600]  train-rmse:0.64631  valid-rmse:0.89638
+[6700]  train-rmse:0.64461  valid-rmse:0.89549
+[6800]  train-rmse:0.64314  valid-rmse:0.89501
+[6900]  train-rmse:0.64162  valid-rmse:0.89458
+[7000]  train-rmse:0.64013  valid-rmse:0.89415
+[7100]  train-rmse:0.63863  valid-rmse:0.89348
+[7200]  train-rmse:0.63712  valid-rmse:0.89286
+[7300]  train-rmse:0.63572  valid-rmse:0.89230
+[7400]  train-rmse:0.63439  valid-rmse:0.89189
+[7500]  train-rmse:0.63296  valid-rmse:0.89144
+[7600]  train-rmse:0.63160  valid-rmse:0.89086
+[7700]  train-rmse:0.63019  valid-rmse:0.89037
+[7800]  train-rmse:0.62878  valid-rmse:0.88986
+[7900]  train-rmse:0.62734  valid-rmse:0.88935
+[8000]  train-rmse:0.62611  valid-rmse:0.88898
+[8100]  train-rmse:0.62473  valid-rmse:0.88834
+[8200]  train-rmse:0.62345  valid-rmse:0.88791
+[8300]  train-rmse:0.62217  valid-rmse:0.88742
+[8400]  train-rmse:0.62092  valid-rmse:0.88691
+[8500]  train-rmse:0.61964  valid-rmse:0.88650
+[8600]  train-rmse:0.61833  valid-rmse:0.88588
+[8700]  train-rmse:0.61703  valid-rmse:0.88543
+[8800]  train-rmse:0.61574  valid-rmse:0.88503
+[8900]  train-rmse:0.61446  valid-rmse:0.88456
+[9000]  train-rmse:0.61314  valid-rmse:0.88405
+[9100]  train-rmse:0.61180  valid-rmse:0.88348
+[9200]  train-rmse:0.61054  valid-rmse:0.88295
+[9300]  train-rmse:0.60920  valid-rmse:0.88239
+[9400]  train-rmse:0.60798  valid-rmse:0.88201
+[9500]  train-rmse:0.60679  valid-rmse:0.88161
+[9600]  train-rmse:0.60566  valid-rmse:0.88129
+[9700]  train-rmse:0.60440  valid-rmse:0.88083
+[9800]  train-rmse:0.60313  valid-rmse:0.88028
+[9900]  train-rmse:0.60201  valid-rmse:0.87997
+[9998]  train-rmse:0.60094  valid-rmse:0.87961
+Model saved to model/fold0.bin
+Spearman correlation: 0.64
+xgb params is: {'max_depth': 7, 'learning_rate': 0.001, 'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric': 'rmse', 'objective': 'reg:squarederror', 'tree_method': 'gpu_hist', 'predictor': 'gpu_predictor', 'random_state': 123}
+(47124, 38) (47124,) (11880, 38) (11880,)
+Int64Index([  990,   991,   992,   993,   994,   995,   996,   997,   998,
+              999,
+            ...
+            58796, 58797, 58798, 58799, 58800, 58801, 58802, 58803, 58804,
+            58805],
+           dtype='int64', length=11880)
+[0] train-rmse:1.11201  valid-rmse:1.11728
+[100]   train-rmse:1.06738  valid-rmse:1.08122
+[200]   train-rmse:1.02876  valid-rmse:1.05086
+[300]   train-rmse:0.99503  valid-rmse:1.02492
+[400]   train-rmse:0.96589  valid-rmse:1.00330
+[500]   train-rmse:0.94033  valid-rmse:0.98480
+[600]   train-rmse:0.91798  valid-rmse:0.96924
+[700]   train-rmse:0.89844  valid-rmse:0.95625
+[800]   train-rmse:0.88146  valid-rmse:0.94532
+[900]   train-rmse:0.86634  valid-rmse:0.93594
+[1000]  train-rmse:0.85298  valid-rmse:0.92796
+[1100]  train-rmse:0.84107  valid-rmse:0.92127
+[1200]  train-rmse:0.83048  valid-rmse:0.91527
+[1300]  train-rmse:0.82110  valid-rmse:0.91006
+[1400]  train-rmse:0.81250  valid-rmse:0.90541
+[1500]  train-rmse:0.80459  valid-rmse:0.90111
+[1600]  train-rmse:0.79738  valid-rmse:0.89745
+[1700]  train-rmse:0.79063  valid-rmse:0.89406
+[1800]  train-rmse:0.78449  valid-rmse:0.89108
+[1900]  train-rmse:0.77859  valid-rmse:0.88806
+[2000]  train-rmse:0.77310  valid-rmse:0.88526
+[2100]  train-rmse:0.76797  valid-rmse:0.88283
+[2200]  train-rmse:0.76318  valid-rmse:0.88043
+[2300]  train-rmse:0.75857  valid-rmse:0.87823
+[2400]  train-rmse:0.75419  valid-rmse:0.87607
+[2500]  train-rmse:0.75022  valid-rmse:0.87426
+[2600]  train-rmse:0.74617  valid-rmse:0.87237
+[2700]  train-rmse:0.74244  valid-rmse:0.87065
+[2800]  train-rmse:0.73876  valid-rmse:0.86914
+[2900]  train-rmse:0.73526  valid-rmse:0.86760
+[3000]  train-rmse:0.73196  valid-rmse:0.86628
+[3100]  train-rmse:0.72855  valid-rmse:0.86502
+[3200]  train-rmse:0.72525  valid-rmse:0.86385
+[3300]  train-rmse:0.72207  valid-rmse:0.86277
+[3400]  train-rmse:0.71903  valid-rmse:0.86179
+[3500]  train-rmse:0.71604  valid-rmse:0.86070
+[3600]  train-rmse:0.71288  valid-rmse:0.85972
+[3700]  train-rmse:0.71022  valid-rmse:0.85891
+[3800]  train-rmse:0.70720  valid-rmse:0.85796
+[3900]  train-rmse:0.70415  valid-rmse:0.85707
+[4000]  train-rmse:0.70136  valid-rmse:0.85604
+[4100]  train-rmse:0.69863  valid-rmse:0.85518
+[4200]  train-rmse:0.69583  valid-rmse:0.85436
+[4300]  train-rmse:0.69323  valid-rmse:0.85358
+[4400]  train-rmse:0.69045  valid-rmse:0.85293
+[4500]  train-rmse:0.68765  valid-rmse:0.85224
+[4600]  train-rmse:0.68517  valid-rmse:0.85165
+[4700]  train-rmse:0.68244  valid-rmse:0.85099
+[4800]  train-rmse:0.67990  valid-rmse:0.85044
+[4900]  train-rmse:0.67752  valid-rmse:0.84981
+[5000]  train-rmse:0.67507  valid-rmse:0.84916
+[5100]  train-rmse:0.67268  valid-rmse:0.84853
+[5200]  train-rmse:0.67036  valid-rmse:0.84794
+[5300]  train-rmse:0.66825  valid-rmse:0.84739
+[5400]  train-rmse:0.66634  valid-rmse:0.84686
+[5500]  train-rmse:0.66421  valid-rmse:0.84635
+[5600]  train-rmse:0.66211  valid-rmse:0.84585
+[5700]  train-rmse:0.66005  valid-rmse:0.84538
+[5800]  train-rmse:0.65828  valid-rmse:0.84495
+[5900]  train-rmse:0.65622  valid-rmse:0.84448
+[6000]  train-rmse:0.65416  valid-rmse:0.84395
+[6100]  train-rmse:0.65233  valid-rmse:0.84352
+[6200]  train-rmse:0.65051  valid-rmse:0.84316
+[6300]  train-rmse:0.64874  valid-rmse:0.84274
+[6400]  train-rmse:0.64664  valid-rmse:0.84230
+[6500]  train-rmse:0.64473  valid-rmse:0.84184
+[6600]  train-rmse:0.64318  valid-rmse:0.84145
+[6700]  train-rmse:0.64147  valid-rmse:0.84103
+[6800]  train-rmse:0.63998  valid-rmse:0.84072
+[6900]  train-rmse:0.63824  valid-rmse:0.84029
+[7000]  train-rmse:0.63640  valid-rmse:0.83988
+[7100]  train-rmse:0.63478  valid-rmse:0.83952
+[7200]  train-rmse:0.63317  valid-rmse:0.83919
+[7300]  train-rmse:0.63150  valid-rmse:0.83886
+[7400]  train-rmse:0.62993  valid-rmse:0.83854
+[7500]  train-rmse:0.62826  valid-rmse:0.83818
+[7600]  train-rmse:0.62686  valid-rmse:0.83787
+[7700]  train-rmse:0.62542  valid-rmse:0.83756
+[7800]  train-rmse:0.62386  valid-rmse:0.83724
+[7900]  train-rmse:0.62252  valid-rmse:0.83695
+[8000]  train-rmse:0.62098  valid-rmse:0.83663
+[8100]  train-rmse:0.61965  valid-rmse:0.83635
+[8200]  train-rmse:0.61812  valid-rmse:0.83606
+[8300]  train-rmse:0.61670  valid-rmse:0.83573
+[8400]  train-rmse:0.61530  valid-rmse:0.83539
+[8500]  train-rmse:0.61404  valid-rmse:0.83514
+[8600]  train-rmse:0.61269  valid-rmse:0.83488
+[8700]  train-rmse:0.61146  valid-rmse:0.83455
+[8800]  train-rmse:0.61015  valid-rmse:0.83429
+[8900]  train-rmse:0.60883  valid-rmse:0.83405
+[9000]  train-rmse:0.60752  valid-rmse:0.83379
+[9100]  train-rmse:0.60611  valid-rmse:0.83351
+[9200]  train-rmse:0.60481  valid-rmse:0.83329
+[9300]  train-rmse:0.60356  valid-rmse:0.83304
+[9400]  train-rmse:0.60238  valid-rmse:0.83275
+[9500]  train-rmse:0.60119  valid-rmse:0.83248
+[9600]  train-rmse:0.59986  valid-rmse:0.83224
+[9700]  train-rmse:0.59868  valid-rmse:0.83203
+[9800]  train-rmse:0.59749  valid-rmse:0.83181
+[9900]  train-rmse:0.59643  valid-rmse:0.83160
+[9998]  train-rmse:0.59509  valid-rmse:0.83132
+Model saved to model/fold1.bin
+Spearman correlation: 0.60
+xgb params is: {'max_depth': 7, 'learning_rate': 0.001, 'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric': 'rmse', 'objective': 'reg:squarederror', 'tree_method': 'gpu_hist', 'predictor': 'gpu_predictor', 'random_state': 123}
+(47322, 38) (47322,) (11682, 38) (11682,)
+Int64Index([ 1386,  1387,  1388,  1389,  1390,  1391,  1392,  1393,  1394,
+             1395,
+            ...
+            58598, 58599, 58600, 58601, 58602, 58603, 58604, 58605, 58606,
+            58607],
+           dtype='int64', length=11682)
+[0] train-rmse:1.13284  valid-rmse:1.02907
+[100]   train-rmse:1.08782  valid-rmse:0.99345
+[200]   train-rmse:1.04870  valid-rmse:0.96359
+[300]   train-rmse:1.01472  valid-rmse:0.93869
+[400]   train-rmse:0.98519  valid-rmse:0.91751
+[500]   train-rmse:0.95955  valid-rmse:0.90001
+[600]   train-rmse:0.93734  valid-rmse:0.88530
+[700]   train-rmse:0.91796  valid-rmse:0.87295
+[800]   train-rmse:0.90102  valid-rmse:0.86209
+[900]   train-rmse:0.88581  valid-rmse:0.85261
+[1000]  train-rmse:0.87217  valid-rmse:0.84397
+[1100]  train-rmse:0.86005  valid-rmse:0.83684
+[1200]  train-rmse:0.84903  valid-rmse:0.83040
+[1300]  train-rmse:0.83904  valid-rmse:0.82469
+[1400]  train-rmse:0.82989  valid-rmse:0.81957
+[1500]  train-rmse:0.82150  valid-rmse:0.81512
+[1600]  train-rmse:0.81382  valid-rmse:0.81110
+[1700]  train-rmse:0.80687  valid-rmse:0.80738
+[1800]  train-rmse:0.80032  valid-rmse:0.80413
+[1900]  train-rmse:0.79428  valid-rmse:0.80093
+[2000]  train-rmse:0.78888  valid-rmse:0.79811
+[2100]  train-rmse:0.78382  valid-rmse:0.79553
+[2200]  train-rmse:0.77890  valid-rmse:0.79314
+[2300]  train-rmse:0.77443  valid-rmse:0.79104
+[2400]  train-rmse:0.77009  valid-rmse:0.78914
+[2500]  train-rmse:0.76599  valid-rmse:0.78719
+[2600]  train-rmse:0.76224  valid-rmse:0.78545
+[2700]  train-rmse:0.75832  valid-rmse:0.78394
+[2800]  train-rmse:0.75475  valid-rmse:0.78242
+[2900]  train-rmse:0.75137  valid-rmse:0.78101
+[3000]  train-rmse:0.74808  valid-rmse:0.77969
+[3100]  train-rmse:0.74469  valid-rmse:0.77846
+[3200]  train-rmse:0.74141  valid-rmse:0.77731
+[3300]  train-rmse:0.73840  valid-rmse:0.77610
+[3400]  train-rmse:0.73549  valid-rmse:0.77517
+[3500]  train-rmse:0.73262  valid-rmse:0.77410
+[3600]  train-rmse:0.72976  valid-rmse:0.77310
+[3700]  train-rmse:0.72704  valid-rmse:0.77216
+[3800]  train-rmse:0.72441  valid-rmse:0.77126
+[3900]  train-rmse:0.72186  valid-rmse:0.77037
+[4000]  train-rmse:0.71925  valid-rmse:0.76957
+[4100]  train-rmse:0.71669  valid-rmse:0.76877
+[4200]  train-rmse:0.71406  valid-rmse:0.76793
+[4300]  train-rmse:0.71170  valid-rmse:0.76718
+[4400]  train-rmse:0.70910  valid-rmse:0.76644
+[4500]  train-rmse:0.70647  valid-rmse:0.76561
+[4600]  train-rmse:0.70406  valid-rmse:0.76486
+[4700]  train-rmse:0.70156  valid-rmse:0.76413
+[4800]  train-rmse:0.69931  valid-rmse:0.76332
+[4900]  train-rmse:0.69726  valid-rmse:0.76266
+[5000]  train-rmse:0.69490  valid-rmse:0.76196
+[5100]  train-rmse:0.69272  valid-rmse:0.76133
+[5200]  train-rmse:0.69055  valid-rmse:0.76073
+[5300]  train-rmse:0.68836  valid-rmse:0.76008
+[5400]  train-rmse:0.68635  valid-rmse:0.75956
+[5500]  train-rmse:0.68405  valid-rmse:0.75897
+[5600]  train-rmse:0.68186  valid-rmse:0.75841
+[5700]  train-rmse:0.67971  valid-rmse:0.75788
+[5800]  train-rmse:0.67738  valid-rmse:0.75729
+[5900]  train-rmse:0.67540  valid-rmse:0.75672
+[6000]  train-rmse:0.67345  valid-rmse:0.75623
+[6100]  train-rmse:0.67158  valid-rmse:0.75566
+[6200]  train-rmse:0.66964  valid-rmse:0.75512
+[6300]  train-rmse:0.66783  valid-rmse:0.75460
+[6400]  train-rmse:0.66596  valid-rmse:0.75416
+[6500]  train-rmse:0.66423  valid-rmse:0.75370
+[6600]  train-rmse:0.66224  valid-rmse:0.75317
+[6700]  train-rmse:0.66043  valid-rmse:0.75271
+[6800]  train-rmse:0.65877  valid-rmse:0.75230
+[6900]  train-rmse:0.65712  valid-rmse:0.75183
+[7000]  train-rmse:0.65526  valid-rmse:0.75137
+[7100]  train-rmse:0.65364  valid-rmse:0.75096
+[7200]  train-rmse:0.65203  valid-rmse:0.75054
+[7300]  train-rmse:0.65044  valid-rmse:0.75015
+[7400]  train-rmse:0.64882  valid-rmse:0.74975
+[7500]  train-rmse:0.64725  valid-rmse:0.74938
+[7600]  train-rmse:0.64570  valid-rmse:0.74895
+[7700]  train-rmse:0.64420  valid-rmse:0.74858
+[7800]  train-rmse:0.64252  valid-rmse:0.74816
+[7900]  train-rmse:0.64090  valid-rmse:0.74783
+[8000]  train-rmse:0.63941  valid-rmse:0.74753
+[8100]  train-rmse:0.63785  valid-rmse:0.74711
+[8200]  train-rmse:0.63616  valid-rmse:0.74671
+[8300]  train-rmse:0.63479  valid-rmse:0.74638
+[8400]  train-rmse:0.63314  valid-rmse:0.74601
+[8500]  train-rmse:0.63167  valid-rmse:0.74572
+[8600]  train-rmse:0.63025  valid-rmse:0.74541
+[8700]  train-rmse:0.62895  valid-rmse:0.74506
+[8800]  train-rmse:0.62731  valid-rmse:0.74471
+[8900]  train-rmse:0.62588  valid-rmse:0.74437
+[9000]  train-rmse:0.62462  valid-rmse:0.74403
+[9100]  train-rmse:0.62326  valid-rmse:0.74368
+[9200]  train-rmse:0.62196  valid-rmse:0.74339
+[9300]  train-rmse:0.62066  valid-rmse:0.74310
+[9400]  train-rmse:0.61940  valid-rmse:0.74279
+[9500]  train-rmse:0.61798  valid-rmse:0.74248
+[9600]  train-rmse:0.61665  valid-rmse:0.74213
+[9700]  train-rmse:0.61529  valid-rmse:0.74182
+[9800]  train-rmse:0.61410  valid-rmse:0.74154
+[9900]  train-rmse:0.61293  valid-rmse:0.74124
+[9998]  train-rmse:0.61176  valid-rmse:0.74099
+Model saved to model/fold2.bin
+Spearman correlation: 0.61
+xgb params is: {'max_depth': 7, 'learning_rate': 0.001, 'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric': 'rmse', 'objective': 'reg:squarederror', 'tree_method': 'gpu_hist', 'predictor': 'gpu_predictor', 'random_state': 123}
+(47322, 38) (47322,) (11682, 38) (11682,)
+Int64Index([    0,     1,     2,     3,     4,     5,     6,     7,     8,
+                9,
+            ...
+            58994, 58995, 58996, 58997, 58998, 58999, 59000, 59001, 59002,
+            59003],
+           dtype='int64', length=11682)
+[0] train-rmse:1.11732  valid-rmse:1.09569
+[100]   train-rmse:1.07230  valid-rmse:1.05686
+[200]   train-rmse:1.03323  valid-rmse:1.02451
+[300]   train-rmse:0.99937  valid-rmse:0.99774
+[400]   train-rmse:0.96987  valid-rmse:0.97545
+[500]   train-rmse:0.94429  valid-rmse:0.95690
+[600]   train-rmse:0.92194  valid-rmse:0.94184
+[700]   train-rmse:0.90250  valid-rmse:0.92931
+[800]   train-rmse:0.88548  valid-rmse:0.91892
+[900]   train-rmse:0.87046  valid-rmse:0.91018
+[1000]  train-rmse:0.85724  valid-rmse:0.90287
+[1100]  train-rmse:0.84555  valid-rmse:0.89665
+[1200]  train-rmse:0.83505  valid-rmse:0.89121
+[1300]  train-rmse:0.82555  valid-rmse:0.88655
+[1400]  train-rmse:0.81688  valid-rmse:0.88230
+[1500]  train-rmse:0.80918  valid-rmse:0.87870
+[1600]  train-rmse:0.80204  valid-rmse:0.87571
+[1700]  train-rmse:0.79552  valid-rmse:0.87309
+[1800]  train-rmse:0.78943  valid-rmse:0.87092
+[1900]  train-rmse:0.78397  valid-rmse:0.86893
+[2000]  train-rmse:0.77896  valid-rmse:0.86712
+[2100]  train-rmse:0.77419  valid-rmse:0.86545
+[2200]  train-rmse:0.76983  valid-rmse:0.86396
+[2300]  train-rmse:0.76538  valid-rmse:0.86251
+[2400]  train-rmse:0.76127  valid-rmse:0.86115
+[2500]  train-rmse:0.75729  valid-rmse:0.85984
+[2600]  train-rmse:0.75334  valid-rmse:0.85844
+[2700]  train-rmse:0.74956  valid-rmse:0.85726
+[2800]  train-rmse:0.74577  valid-rmse:0.85610
+[2900]  train-rmse:0.74234  valid-rmse:0.85501
+[3000]  train-rmse:0.73909  valid-rmse:0.85398
+[3100]  train-rmse:0.73581  valid-rmse:0.85294
+[3200]  train-rmse:0.73280  valid-rmse:0.85212
+[3300]  train-rmse:0.72987  valid-rmse:0.85125
+[3400]  train-rmse:0.72716  valid-rmse:0.85038
+[3500]  train-rmse:0.72438  valid-rmse:0.84941
+[3600]  train-rmse:0.72156  valid-rmse:0.84859
+[3700]  train-rmse:0.71893  valid-rmse:0.84773
+[3800]  train-rmse:0.71620  valid-rmse:0.84696
+[3900]  train-rmse:0.71388  valid-rmse:0.84627
+[4000]  train-rmse:0.71128  valid-rmse:0.84559
+[4100]  train-rmse:0.70887  valid-rmse:0.84495
+[4200]  train-rmse:0.70622  valid-rmse:0.84425
+[4300]  train-rmse:0.70362  valid-rmse:0.84359
+[4400]  train-rmse:0.70134  valid-rmse:0.84299
+[4500]  train-rmse:0.69875  valid-rmse:0.84237
+[4600]  train-rmse:0.69629  valid-rmse:0.84174
+[4700]  train-rmse:0.69388  valid-rmse:0.84109
+[4800]  train-rmse:0.69174  valid-rmse:0.84047
+[4900]  train-rmse:0.68952  valid-rmse:0.83991
+[5000]  train-rmse:0.68731  valid-rmse:0.83926
+[5100]  train-rmse:0.68501  valid-rmse:0.83871
+[5200]  train-rmse:0.68299  valid-rmse:0.83818
+[5300]  train-rmse:0.68099  valid-rmse:0.83765
+[5400]  train-rmse:0.67886  valid-rmse:0.83713
+[5500]  train-rmse:0.67674  valid-rmse:0.83661
+[5600]  train-rmse:0.67468  valid-rmse:0.83609
+[5700]  train-rmse:0.67239  valid-rmse:0.83560
+[5800]  train-rmse:0.67047  valid-rmse:0.83513
+[5900]  train-rmse:0.66871  valid-rmse:0.83468
+[6000]  train-rmse:0.66679  valid-rmse:0.83426
+[6100]  train-rmse:0.66502  valid-rmse:0.83377
+[6200]  train-rmse:0.66308  valid-rmse:0.83327
+[6300]  train-rmse:0.66141  valid-rmse:0.83277
+[6400]  train-rmse:0.65958  valid-rmse:0.83235
+[6500]  train-rmse:0.65790  valid-rmse:0.83195
+[6600]  train-rmse:0.65614  valid-rmse:0.83151
+[6700]  train-rmse:0.65442  valid-rmse:0.83108
+[6800]  train-rmse:0.65285  valid-rmse:0.83068
+[6900]  train-rmse:0.65120  valid-rmse:0.83028
+[7000]  train-rmse:0.64943  valid-rmse:0.82989
+[7100]  train-rmse:0.64776  valid-rmse:0.82950
+[7200]  train-rmse:0.64622  valid-rmse:0.82911
+[7300]  train-rmse:0.64453  valid-rmse:0.82871
+[7400]  train-rmse:0.64305  valid-rmse:0.82834
+[7500]  train-rmse:0.64154  valid-rmse:0.82799
+[7600]  train-rmse:0.64002  valid-rmse:0.82765
+[7700]  train-rmse:0.63848  valid-rmse:0.82732
+[7800]  train-rmse:0.63698  valid-rmse:0.82699
+[7900]  train-rmse:0.63554  valid-rmse:0.82667
+[8000]  train-rmse:0.63410  valid-rmse:0.82631
+[8100]  train-rmse:0.63255  valid-rmse:0.82596
+[8200]  train-rmse:0.63119  valid-rmse:0.82567
+[8300]  train-rmse:0.62977  valid-rmse:0.82537
+[8400]  train-rmse:0.62835  valid-rmse:0.82508
+[8500]  train-rmse:0.62707  valid-rmse:0.82477
+[8600]  train-rmse:0.62565  valid-rmse:0.82444
+[8700]  train-rmse:0.62439  valid-rmse:0.82416
+[8800]  train-rmse:0.62309  valid-rmse:0.82386
+[8900]  train-rmse:0.62166  valid-rmse:0.82359
+[9000]  train-rmse:0.62037  valid-rmse:0.82332
+[9100]  train-rmse:0.61900  valid-rmse:0.82305
+[9200]  train-rmse:0.61773  valid-rmse:0.82275
+[9300]  train-rmse:0.61638  valid-rmse:0.82248
+[9400]  train-rmse:0.61512  valid-rmse:0.82225
+[9500]  train-rmse:0.61384  valid-rmse:0.82197
+[9600]  train-rmse:0.61244  valid-rmse:0.82166
+[9700]  train-rmse:0.61118  valid-rmse:0.82139
+[9800]  train-rmse:0.60986  valid-rmse:0.82115
+[9900]  train-rmse:0.60847  valid-rmse:0.82087
+[9998]  train-rmse:0.60725  valid-rmse:0.82063
+Model saved to model/fold3.bin
+Spearman correlation: 0.62
+xgb params is: {'max_depth': 7, 'learning_rate': 0.001, 'subsample': 0.8, 'colsample_bytree': 1, 'eval_metric': 'rmse', 'objective': 'reg:squarederror', 'tree_method': 'gpu_hist', 'predictor': 'gpu_predictor', 'random_state': 123}
+(47124, 38) (47124,) (11880, 38) (11880,)
+Int64Index([  198,   199,   200,   201,   202,   203,   204,   205,   206,
+              207,
+            ...
+            57806, 57807, 57808, 57809, 57810, 57811, 57812, 57813, 57814,
+            57815],
+           dtype='int64', length=11880)
+[0] train-rmse:1.11242  valid-rmse:1.11563
+[100]   train-rmse:1.06862  valid-rmse:1.07390
+[200]   train-rmse:1.03042  valid-rmse:1.03864
+[300]   train-rmse:0.99681  valid-rmse:1.00926
+[400]   train-rmse:0.96750  valid-rmse:0.98482
+[500]   train-rmse:0.94212  valid-rmse:0.96436
+[600]   train-rmse:0.92001  valid-rmse:0.94708
+[700]   train-rmse:0.90075  valid-rmse:0.93258
+[800]   train-rmse:0.88377  valid-rmse:0.92028
+[900]   train-rmse:0.86871  valid-rmse:0.90969
+[1000]  train-rmse:0.85510  valid-rmse:0.90027
+[1100]  train-rmse:0.84288  valid-rmse:0.89237
+[1200]  train-rmse:0.83192  valid-rmse:0.88534
+[1300]  train-rmse:0.82211  valid-rmse:0.87916
+[1400]  train-rmse:0.81314  valid-rmse:0.87359
+[1500]  train-rmse:0.80503  valid-rmse:0.86869
+[1600]  train-rmse:0.79771  valid-rmse:0.86433
+[1700]  train-rmse:0.79099  valid-rmse:0.86047
+[1800]  train-rmse:0.78479  valid-rmse:0.85677
+[1900]  train-rmse:0.77899  valid-rmse:0.85328
+[2000]  train-rmse:0.77358  valid-rmse:0.85028
+[2100]  train-rmse:0.76865  valid-rmse:0.84751
+[2200]  train-rmse:0.76402  valid-rmse:0.84499
+[2300]  train-rmse:0.75980  valid-rmse:0.84275
+[2400]  train-rmse:0.75565  valid-rmse:0.84060
+[2500]  train-rmse:0.75180  valid-rmse:0.83878
+[2600]  train-rmse:0.74796  valid-rmse:0.83682
+[2700]  train-rmse:0.74428  valid-rmse:0.83507
+[2800]  train-rmse:0.74073  valid-rmse:0.83326
+[2900]  train-rmse:0.73741  valid-rmse:0.83155
+[3000]  train-rmse:0.73436  valid-rmse:0.83020
+[3100]  train-rmse:0.73090  valid-rmse:0.82840
+[3200]  train-rmse:0.72786  valid-rmse:0.82683
+[3300]  train-rmse:0.72491  valid-rmse:0.82557
+[3400]  train-rmse:0.72202  valid-rmse:0.82426
+[3500]  train-rmse:0.71929  valid-rmse:0.82308
+[3600]  train-rmse:0.71649  valid-rmse:0.82174
+[3700]  train-rmse:0.71382  valid-rmse:0.82063
+[3800]  train-rmse:0.71120  valid-rmse:0.81936
+[3900]  train-rmse:0.70863  valid-rmse:0.81825
+[4000]  train-rmse:0.70615  valid-rmse:0.81715
+[4100]  train-rmse:0.70367  valid-rmse:0.81606
+[4200]  train-rmse:0.70108  valid-rmse:0.81469
+[4300]  train-rmse:0.69873  valid-rmse:0.81360
+[4400]  train-rmse:0.69638  valid-rmse:0.81249
+[4500]  train-rmse:0.69378  valid-rmse:0.81121
+[4600]  train-rmse:0.69157  valid-rmse:0.81008
+[4700]  train-rmse:0.68929  valid-rmse:0.80901
+[4800]  train-rmse:0.68717  valid-rmse:0.80796
+[4900]  train-rmse:0.68498  valid-rmse:0.80673
+[5000]  train-rmse:0.68257  valid-rmse:0.80556
+[5100]  train-rmse:0.68035  valid-rmse:0.80435
+[5200]  train-rmse:0.67820  valid-rmse:0.80344
+[5300]  train-rmse:0.67647  valid-rmse:0.80273
+[5400]  train-rmse:0.67449  valid-rmse:0.80173
+[5500]  train-rmse:0.67253  valid-rmse:0.80085
+[5600]  train-rmse:0.67074  valid-rmse:0.80010
+[5700]  train-rmse:0.66877  valid-rmse:0.79901
+[5800]  train-rmse:0.66690  valid-rmse:0.79828
+[5900]  train-rmse:0.66517  valid-rmse:0.79750
+[6000]  train-rmse:0.66349  valid-rmse:0.79664
+[6100]  train-rmse:0.66159  valid-rmse:0.79560
+[6200]  train-rmse:0.65980  valid-rmse:0.79474
+[6300]  train-rmse:0.65812  valid-rmse:0.79405
+[6400]  train-rmse:0.65637  valid-rmse:0.79325
+[6500]  train-rmse:0.65482  valid-rmse:0.79259
+[6600]  train-rmse:0.65323  valid-rmse:0.79195
+[6700]  train-rmse:0.65141  valid-rmse:0.79104
+[6800]  train-rmse:0.64976  valid-rmse:0.79052
+[6900]  train-rmse:0.64827  valid-rmse:0.78996
+[7000]  train-rmse:0.64678  valid-rmse:0.78932
+[7100]  train-rmse:0.64511  valid-rmse:0.78851
+[7200]  train-rmse:0.64359  valid-rmse:0.78781
+[7300]  train-rmse:0.64196  valid-rmse:0.78695
+[7400]  train-rmse:0.64039  valid-rmse:0.78627
+[7500]  train-rmse:0.63880  valid-rmse:0.78572
+[7600]  train-rmse:0.63735  valid-rmse:0.78510
+[7700]  train-rmse:0.63590  valid-rmse:0.78453
+[7800]  train-rmse:0.63439  valid-rmse:0.78383
+[7900]  train-rmse:0.63294  valid-rmse:0.78327
+[8000]  train-rmse:0.63154  valid-rmse:0.78277
+[8100]  train-rmse:0.63012  valid-rmse:0.78220
+[8200]  train-rmse:0.62881  valid-rmse:0.78173</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-46-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-46-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-46-output-4.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-46-output-5.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-46-output-6.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-46-output-7.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-46-output-8.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-46-output-9.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-46-output-10.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-46-output-11.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-46-output-12.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_04_train_files/figure-html/cell-46-output-13.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Save gain importance and weight importance of each fold to dataframes</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gain importance</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> pd.concat(gains, axis<span class="op">=</span><span class="dv">1</span>, keys<span class="op">=</span><span class="bu">range</span>(<span class="bu">len</span>(gains)))</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>g.columns <span class="op">=</span> [<span class="st">'gain_importance_'</span><span class="op">+</span> <span class="bu">str</span>(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(FOLDS)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># weight importance</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> pd.concat(weights,axis<span class="op">=</span><span class="dv">1</span>,keys <span class="op">=</span> <span class="bu">range</span>(<span class="bu">len</span>(weights)))</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>w.columns <span class="op">=</span> [<span class="st">'weight_importance_'</span><span class="op">+</span> <span class="bu">str</span>(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(FOLDS)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># g.to_csv('model/gains.csv')</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="co"># w.to_csv('model/weights.csv')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>g.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>w.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

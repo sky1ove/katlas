@@ -1,0 +1,7776 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Extract features from amino acid">
+
+<title>katlas - Get amino acid features</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="katlas - Get amino acid features">
+<meta property="og:description" content="Extract features from amino acid">
+<meta property="og:image" content="https://sky1ove.github.io/katlas/tutorial_01_aa_feature_files/figure-html/cell-12-output-1.png">
+<meta property="og:site-name" content="katlas">
+<meta property="og:image:height" content="1392">
+<meta property="og:image:width" content="1340">
+<meta name="twitter:title" content="katlas - Get amino acid features">
+<meta name="twitter:description" content="Extract features from amino acid">
+<meta name="twitter:image" content="https://sky1ove.github.io/katlas/tutorial_01_aa_feature_files/figure-html/cell-12-output-1.png">
+<meta name="twitter:image-height" content="1392">
+<meta name="twitter:image-width" content="1340">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">katlas</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools ms-auto">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tutorial_00_hierarchical_clustering.html">Tutorials</a></li><li class="breadcrumb-item"><a href="./tutorial_01_aa_feature.html">Get amino acid features</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">katlas</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Tutorials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_00_hierarchical_clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hierarchical Clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_01_aa_feature.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Get amino acid features</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_02_kinase_feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get features from kinase protein</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_03a_target_transform.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prepare target for training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_03b_target_plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dimensionality reduction</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_04_train.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train ML model</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Core</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature engineering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./train.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">XGB train</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./xgb_01_dummy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Baseline: one-hot encoded a.a. &amp; kinase</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./xgb_01_t5_aa_feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T5 kinase feature + aa rdkit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./xgb_01_t5_aa_feature_raw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T5 kinase feature + aa rdkit</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#rdkit-descriptors" id="toc-rdkit-descriptors" class="nav-link active" data-scroll-target="#rdkit-descriptors">Rdkit descriptors</a>
+  <ul class="collapse">
+  <li><a href="#smi2prop" id="toc-smi2prop" class="nav-link" data-scroll-target="#smi2prop">smi2prop</a></li>
+  <li><a href="#visualize" id="toc-visualize" class="nav-link" data-scroll-target="#visualize">Visualize</a></li>
+  <li><a href="#plot_cluster" id="toc-plot_cluster" class="nav-link" data-scroll-target="#plot_cluster">plot_cluster</a></li>
+  </ul></li>
+  <li><a href="#morgan-fingerprints" id="toc-morgan-fingerprints" class="nav-link" data-scroll-target="#morgan-fingerprints">Morgan Fingerprints</a>
+  <ul class="collapse">
+  <li><a href="#smi2morgan" id="toc-smi2morgan" class="nav-link" data-scroll-target="#smi2morgan">smi2morgan</a></li>
+  <li><a href="#visualize-1" id="toc-visualize-1" class="nav-link" data-scroll-target="#visualize-1">Visualize</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Get amino acid features</h1>
+</div>
+
+<div>
+  <div class="description">
+    Extract features from amino acid
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.core <span class="im">import</span> Data</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.feature <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.plot <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastbook <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tqdm.notebook <span class="im">import</span> tqdm<span class="op">;</span> tqdm.pandas()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/usr/local/lib/python3.9/dist-packages/umap/distances.py:1063: NumbaDeprecationWarning: The 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  @numba.jit()
+/usr/local/lib/python3.9/dist-packages/umap/distances.py:1071: NumbaDeprecationWarning: The 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  @numba.jit()
+/usr/local/lib/python3.9/dist-packages/umap/distances.py:1086: NumbaDeprecationWarning: The 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  @numba.jit()
+/usr/local/lib/python3.9/dist-packages/umap/umap_.py:660: NumbaDeprecationWarning: The 'nopython' keyword argument was not supplied to the 'numba.jit' decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  @numba.jit()</code></pre>
+</div>
+</div>
+<p>We can use two methods to extract features from amino acid: - Rdkit descriptors - Morgan Fingerprints</p>
+<section id="rdkit-descriptors" class="level2">
+<h2 class="anchored" data-anchor-id="rdkit-descriptors">Rdkit descriptors</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the amino acid info</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>aa_info <span class="op">=</span> Data.get_aa_info()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>aa_info2 <span class="op">=</span> aa_info[[<span class="st">'aa'</span>,<span class="st">'SMILES'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Extract all of the 209 rdkit features</p>
+<hr>
+<section id="smi2prop" class="level3">
+<h3 class="anchored" data-anchor-id="smi2prop">smi2prop</h3>
+<blockquote class="blockquote">
+<pre><code> smi2prop (df, smi_colname='SMILES', id_colname='ID',
+           remove_duplicate=False, thr=0.95, normalize=True)</code></pre>
+</blockquote>
+<p>Extract ~209 features from smiles via rdkit.Chem.Descriptors, and remove duplicate features</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>df</td>
+<td></td>
+<td></td>
+<td>df needs to have SMILES an ID columns</td>
+</tr>
+<tr class="even">
+<td>smi_colname</td>
+<td>str</td>
+<td>SMILES</td>
+<td>column name of smiles</td>
+</tr>
+<tr class="odd">
+<td>id_colname</td>
+<td>str</td>
+<td>ID</td>
+<td>column name of ID</td>
+</tr>
+<tr class="even">
+<td>remove_duplicate</td>
+<td>bool</td>
+<td>False</td>
+<td>remove features that are highly correlated</td>
+</tr>
+<tr class="odd">
+<td>thr</td>
+<td>float</td>
+<td>0.95</td>
+<td>threshold of Pearson correlation</td>
+</tr>
+<tr class="even">
+<td>normalize</td>
+<td>bool</td>
+<td>True</td>
+<td>normalize features using StandardScaler()</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>aa_full_feature <span class="op">=</span> smi2prop(aa_info2, id_colname<span class="op">=</span><span class="st">'aa'</span>,remove_duplicate<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>aa_full_feature.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(23, 210)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>aa_full_feature.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">aa</th>
+<th data-quarto-table-cell-role="th">MaxAbsEStateIndex</th>
+<th data-quarto-table-cell-role="th">MaxEStateIndex</th>
+<th data-quarto-table-cell-role="th">MinAbsEStateIndex</th>
+<th data-quarto-table-cell-role="th">MinEStateIndex</th>
+<th data-quarto-table-cell-role="th">qed</th>
+<th data-quarto-table-cell-role="th">MolWt</th>
+<th data-quarto-table-cell-role="th">HeavyAtomMolWt</th>
+<th data-quarto-table-cell-role="th">ExactMolWt</th>
+<th data-quarto-table-cell-role="th">NumValenceElectrons</th>
+<th data-quarto-table-cell-role="th">NumRadicalElectrons</th>
+<th data-quarto-table-cell-role="th">MaxPartialCharge</th>
+<th data-quarto-table-cell-role="th">MinPartialCharge</th>
+<th data-quarto-table-cell-role="th">MaxAbsPartialCharge</th>
+<th data-quarto-table-cell-role="th">MinAbsPartialCharge</th>
+<th data-quarto-table-cell-role="th">FpDensityMorgan1</th>
+<th data-quarto-table-cell-role="th">FpDensityMorgan2</th>
+<th data-quarto-table-cell-role="th">FpDensityMorgan3</th>
+<th data-quarto-table-cell-role="th">BCUT2D_MWHI</th>
+<th data-quarto-table-cell-role="th">BCUT2D_MWLOW</th>
+<th data-quarto-table-cell-role="th">BCUT2D_CHGHI</th>
+<th data-quarto-table-cell-role="th">BCUT2D_CHGLO</th>
+<th data-quarto-table-cell-role="th">BCUT2D_LOGPHI</th>
+<th data-quarto-table-cell-role="th">BCUT2D_LOGPLOW</th>
+<th data-quarto-table-cell-role="th">BCUT2D_MRHI</th>
+<th data-quarto-table-cell-role="th">BCUT2D_MRLOW</th>
+<th data-quarto-table-cell-role="th">AvgIpc</th>
+<th data-quarto-table-cell-role="th">BalabanJ</th>
+<th data-quarto-table-cell-role="th">BertzCT</th>
+<th data-quarto-table-cell-role="th">Chi0</th>
+<th data-quarto-table-cell-role="th">Chi0n</th>
+<th data-quarto-table-cell-role="th">Chi0v</th>
+<th data-quarto-table-cell-role="th">Chi1</th>
+<th data-quarto-table-cell-role="th">Chi1n</th>
+<th data-quarto-table-cell-role="th">Chi1v</th>
+<th data-quarto-table-cell-role="th">Chi2n</th>
+<th data-quarto-table-cell-role="th">Chi2v</th>
+<th data-quarto-table-cell-role="th">Chi3n</th>
+<th data-quarto-table-cell-role="th">Chi3v</th>
+<th data-quarto-table-cell-role="th">Chi4n</th>
+<th data-quarto-table-cell-role="th">Chi4v</th>
+<th data-quarto-table-cell-role="th">HallKierAlpha</th>
+<th data-quarto-table-cell-role="th">Ipc</th>
+<th data-quarto-table-cell-role="th">Kappa1</th>
+<th data-quarto-table-cell-role="th">Kappa2</th>
+<th data-quarto-table-cell-role="th">Kappa3</th>
+<th data-quarto-table-cell-role="th">LabuteASA</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA1</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA10</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA11</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA12</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA13</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA14</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA2</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA3</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA4</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA5</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA6</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA7</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA8</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA9</th>
+<th data-quarto-table-cell-role="th">SMR_VSA1</th>
+<th data-quarto-table-cell-role="th">SMR_VSA10</th>
+<th data-quarto-table-cell-role="th">SMR_VSA2</th>
+<th data-quarto-table-cell-role="th">SMR_VSA3</th>
+<th data-quarto-table-cell-role="th">SMR_VSA4</th>
+<th data-quarto-table-cell-role="th">SMR_VSA5</th>
+<th data-quarto-table-cell-role="th">SMR_VSA6</th>
+<th data-quarto-table-cell-role="th">SMR_VSA7</th>
+<th data-quarto-table-cell-role="th">SMR_VSA8</th>
+<th data-quarto-table-cell-role="th">SMR_VSA9</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA1</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA10</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA11</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA12</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA2</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA3</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA4</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA5</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA6</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA7</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA8</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA9</th>
+<th data-quarto-table-cell-role="th">TPSA</th>
+<th data-quarto-table-cell-role="th">EState_VSA1</th>
+<th data-quarto-table-cell-role="th">EState_VSA10</th>
+<th data-quarto-table-cell-role="th">EState_VSA11</th>
+<th data-quarto-table-cell-role="th">EState_VSA2</th>
+<th data-quarto-table-cell-role="th">EState_VSA3</th>
+<th data-quarto-table-cell-role="th">EState_VSA4</th>
+<th data-quarto-table-cell-role="th">EState_VSA5</th>
+<th data-quarto-table-cell-role="th">EState_VSA6</th>
+<th data-quarto-table-cell-role="th">EState_VSA7</th>
+<th data-quarto-table-cell-role="th">EState_VSA8</th>
+<th data-quarto-table-cell-role="th">EState_VSA9</th>
+<th data-quarto-table-cell-role="th">VSA_EState1</th>
+<th data-quarto-table-cell-role="th">VSA_EState10</th>
+<th data-quarto-table-cell-role="th">VSA_EState2</th>
+<th data-quarto-table-cell-role="th">VSA_EState3</th>
+<th data-quarto-table-cell-role="th">VSA_EState4</th>
+<th data-quarto-table-cell-role="th">VSA_EState5</th>
+<th data-quarto-table-cell-role="th">VSA_EState6</th>
+<th data-quarto-table-cell-role="th">VSA_EState7</th>
+<th data-quarto-table-cell-role="th">VSA_EState8</th>
+<th data-quarto-table-cell-role="th">VSA_EState9</th>
+<th data-quarto-table-cell-role="th">FractionCSP3</th>
+<th data-quarto-table-cell-role="th">HeavyAtomCount</th>
+<th data-quarto-table-cell-role="th">NHOHCount</th>
+<th data-quarto-table-cell-role="th">NOCount</th>
+<th data-quarto-table-cell-role="th">NumAliphaticCarbocycles</th>
+<th data-quarto-table-cell-role="th">NumAliphaticHeterocycles</th>
+<th data-quarto-table-cell-role="th">NumAliphaticRings</th>
+<th data-quarto-table-cell-role="th">NumAromaticCarbocycles</th>
+<th data-quarto-table-cell-role="th">NumAromaticHeterocycles</th>
+<th data-quarto-table-cell-role="th">NumAromaticRings</th>
+<th data-quarto-table-cell-role="th">NumHAcceptors</th>
+<th data-quarto-table-cell-role="th">NumHDonors</th>
+<th data-quarto-table-cell-role="th">NumHeteroatoms</th>
+<th data-quarto-table-cell-role="th">NumRotatableBonds</th>
+<th data-quarto-table-cell-role="th">NumSaturatedCarbocycles</th>
+<th data-quarto-table-cell-role="th">NumSaturatedHeterocycles</th>
+<th data-quarto-table-cell-role="th">NumSaturatedRings</th>
+<th data-quarto-table-cell-role="th">RingCount</th>
+<th data-quarto-table-cell-role="th">MolLogP</th>
+<th data-quarto-table-cell-role="th">MolMR</th>
+<th data-quarto-table-cell-role="th">fr_Al_COO</th>
+<th data-quarto-table-cell-role="th">fr_Al_OH</th>
+<th data-quarto-table-cell-role="th">fr_Al_OH_noTert</th>
+<th data-quarto-table-cell-role="th">fr_ArN</th>
+<th data-quarto-table-cell-role="th">fr_Ar_COO</th>
+<th data-quarto-table-cell-role="th">fr_Ar_N</th>
+<th data-quarto-table-cell-role="th">fr_Ar_NH</th>
+<th data-quarto-table-cell-role="th">fr_Ar_OH</th>
+<th data-quarto-table-cell-role="th">fr_COO</th>
+<th data-quarto-table-cell-role="th">fr_COO2</th>
+<th data-quarto-table-cell-role="th">fr_C_O</th>
+<th data-quarto-table-cell-role="th">fr_C_O_noCOO</th>
+<th data-quarto-table-cell-role="th">fr_C_S</th>
+<th data-quarto-table-cell-role="th">fr_HOCCN</th>
+<th data-quarto-table-cell-role="th">fr_Imine</th>
+<th data-quarto-table-cell-role="th">fr_NH0</th>
+<th data-quarto-table-cell-role="th">fr_NH1</th>
+<th data-quarto-table-cell-role="th">fr_NH2</th>
+<th data-quarto-table-cell-role="th">fr_N_O</th>
+<th data-quarto-table-cell-role="th">fr_Ndealkylation1</th>
+<th data-quarto-table-cell-role="th">fr_Ndealkylation2</th>
+<th data-quarto-table-cell-role="th">fr_Nhpyrrole</th>
+<th data-quarto-table-cell-role="th">fr_SH</th>
+<th data-quarto-table-cell-role="th">fr_aldehyde</th>
+<th data-quarto-table-cell-role="th">fr_alkyl_carbamate</th>
+<th data-quarto-table-cell-role="th">fr_alkyl_halide</th>
+<th data-quarto-table-cell-role="th">fr_allylic_oxid</th>
+<th data-quarto-table-cell-role="th">fr_amide</th>
+<th data-quarto-table-cell-role="th">fr_amidine</th>
+<th data-quarto-table-cell-role="th">fr_aniline</th>
+<th data-quarto-table-cell-role="th">fr_aryl_methyl</th>
+<th data-quarto-table-cell-role="th">fr_azide</th>
+<th data-quarto-table-cell-role="th">fr_azo</th>
+<th data-quarto-table-cell-role="th">fr_barbitur</th>
+<th data-quarto-table-cell-role="th">fr_benzene</th>
+<th data-quarto-table-cell-role="th">fr_benzodiazepine</th>
+<th data-quarto-table-cell-role="th">fr_bicyclic</th>
+<th data-quarto-table-cell-role="th">fr_diazo</th>
+<th data-quarto-table-cell-role="th">fr_dihydropyridine</th>
+<th data-quarto-table-cell-role="th">fr_epoxide</th>
+<th data-quarto-table-cell-role="th">fr_ester</th>
+<th data-quarto-table-cell-role="th">fr_ether</th>
+<th data-quarto-table-cell-role="th">fr_furan</th>
+<th data-quarto-table-cell-role="th">fr_guanido</th>
+<th data-quarto-table-cell-role="th">fr_halogen</th>
+<th data-quarto-table-cell-role="th">fr_hdrzine</th>
+<th data-quarto-table-cell-role="th">fr_hdrzone</th>
+<th data-quarto-table-cell-role="th">fr_imidazole</th>
+<th data-quarto-table-cell-role="th">fr_imide</th>
+<th data-quarto-table-cell-role="th">fr_isocyan</th>
+<th data-quarto-table-cell-role="th">fr_isothiocyan</th>
+<th data-quarto-table-cell-role="th">fr_ketone</th>
+<th data-quarto-table-cell-role="th">fr_ketone_Topliss</th>
+<th data-quarto-table-cell-role="th">fr_lactam</th>
+<th data-quarto-table-cell-role="th">fr_lactone</th>
+<th data-quarto-table-cell-role="th">fr_methoxy</th>
+<th data-quarto-table-cell-role="th">fr_morpholine</th>
+<th data-quarto-table-cell-role="th">fr_nitrile</th>
+<th data-quarto-table-cell-role="th">fr_nitro</th>
+<th data-quarto-table-cell-role="th">fr_nitro_arom</th>
+<th data-quarto-table-cell-role="th">fr_nitro_arom_nonortho</th>
+<th data-quarto-table-cell-role="th">fr_nitroso</th>
+<th data-quarto-table-cell-role="th">fr_oxazole</th>
+<th data-quarto-table-cell-role="th">fr_oxime</th>
+<th data-quarto-table-cell-role="th">fr_para_hydroxylation</th>
+<th data-quarto-table-cell-role="th">fr_phenol</th>
+<th data-quarto-table-cell-role="th">fr_phenol_noOrthoHbond</th>
+<th data-quarto-table-cell-role="th">fr_phos_acid</th>
+<th data-quarto-table-cell-role="th">fr_phos_ester</th>
+<th data-quarto-table-cell-role="th">fr_piperdine</th>
+<th data-quarto-table-cell-role="th">fr_piperzine</th>
+<th data-quarto-table-cell-role="th">fr_priamide</th>
+<th data-quarto-table-cell-role="th">fr_prisulfonamd</th>
+<th data-quarto-table-cell-role="th">fr_pyridine</th>
+<th data-quarto-table-cell-role="th">fr_quatN</th>
+<th data-quarto-table-cell-role="th">fr_sulfide</th>
+<th data-quarto-table-cell-role="th">fr_sulfonamd</th>
+<th data-quarto-table-cell-role="th">fr_sulfone</th>
+<th data-quarto-table-cell-role="th">fr_term_acetylene</th>
+<th data-quarto-table-cell-role="th">fr_tetrazole</th>
+<th data-quarto-table-cell-role="th">fr_thiazole</th>
+<th data-quarto-table-cell-role="th">fr_thiocyan</th>
+<th data-quarto-table-cell-role="th">fr_thiophene</th>
+<th data-quarto-table-cell-role="th">fr_unbrch_alkane</th>
+<th data-quarto-table-cell-role="th">fr_urea</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>A</td>
+<td>9.574074</td>
+<td>-1.573701</td>
+<td>1.193554</td>
+<td>0.430590</td>
+<td>-0.375462</td>
+<td>-1.439770</td>
+<td>-1.410267</td>
+<td>-1.439436</td>
+<td>-1.491575</td>
+<td>0.0</td>
+<td>-0.392233</td>
+<td>0.228166</td>
+<td>-0.308911</td>
+<td>-0.398345</td>
+<td>1.656688</td>
+<td>0.103007</td>
+<td>-0.780051</td>
+<td>-0.526903</td>
+<td>1.203883</td>
+<td>-1.415519</td>
+<td>1.465101</td>
+<td>-1.347549</td>
+<td>1.162418</td>
+<td>-0.554270</td>
+<td>0.678178</td>
+<td>-1.660842</td>
+<td>0.058766</td>
+<td>-0.928528</td>
+<td>-1.420966</td>
+<td>-1.372879</td>
+<td>-1.406169</td>
+<td>-1.434358</td>
+<td>-1.395786</td>
+<td>-1.364454</td>
+<td>-1.28965</td>
+<td>-1.287461</td>
+<td>-1.371840</td>
+<td>-1.490293</td>
+<td>-1.312462</td>
+<td>-1.397762</td>
+<td>0.661861</td>
+<td>-0.443256</td>
+<td>-1.488584</td>
+<td>-1.704924</td>
+<td>-1.164169</td>
+<td>-1.472171</td>
+<td>-1.088274</td>
+<td>-0.113045</td>
+<td>-0.213201</td>
+<td>-0.308607</td>
+<td>0.0</td>
+<td>-0.521596</td>
+<td>-0.682582</td>
+<td>-0.458413</td>
+<td>-0.308393</td>
+<td>0.0</td>
+<td>-0.647398</td>
+<td>-0.224260</td>
+<td>-0.480351</td>
+<td>-0.694405</td>
+<td>-0.68823</td>
+<td>-0.882977</td>
+<td>-0.213201</td>
+<td>-0.432331</td>
+<td>-0.495561</td>
+<td>-0.290532</td>
+<td>-0.695145</td>
+<td>-0.511968</td>
+<td>0.0</td>
+<td>-0.308607</td>
+<td>-0.482124</td>
+<td>0.0</td>
+<td>-0.308607</td>
+<td>-0.510698</td>
+<td>-1.373429</td>
+<td>-0.884527</td>
+<td>-0.45843</td>
+<td>-0.241607</td>
+<td>-0.504435</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>0.0</td>
+<td>-0.945646</td>
+<td>-0.535127</td>
+<td>-0.66116</td>
+<td>0.0</td>
+<td>-0.922850</td>
+<td>-0.621218</td>
+<td>-0.611041</td>
+<td>0.790873</td>
+<td>-0.440926</td>
+<td>-0.455591</td>
+<td>-0.769976</td>
+<td>-0.626017</td>
+<td>-0.387091</td>
+<td>-0.285797</td>
+<td>-0.779939</td>
+<td>-0.748232</td>
+<td>-0.483822</td>
+<td>0.342808</td>
+<td>-0.393932</td>
+<td>-0.4624</td>
+<td>0.572190</td>
+<td>0.387283</td>
+<td>0.349099</td>
+<td>-1.412520</td>
+<td>-0.883541</td>
+<td>-0.955395</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>-0.213201</td>
+<td>-0.458831</td>
+<td>-0.308607</td>
+<td>-0.493197</td>
+<td>-1.192079</td>
+<td>-1.091089</td>
+<td>-0.960437</td>
+<td>-1.707117</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>-0.213201</td>
+<td>-0.55689</td>
+<td>-0.082356</td>
+<td>-1.373751</td>
+<td>-0.308607</td>
+<td>-0.308607</td>
+<td>-0.308607</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.291386</td>
+<td>-0.308607</td>
+<td>-0.213201</td>
+<td>-0.308607</td>
+<td>-0.308607</td>
+<td>-0.458831</td>
+<td>-0.308607</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>-0.428746</td>
+<td>-0.291386</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.308607</td>
+<td>-0.213201</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.308607</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.458831</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>-0.213201</td>
+<td>-0.213201</td>
+<td>-0.387298</td>
+<td>-0.387298</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.308607</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.308607</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>C</td>
+<td>9.756435</td>
+<td>-0.975395</td>
+<td>-0.594121</td>
+<td>0.396312</td>
+<td>-0.623715</td>
+<td>-0.643882</td>
+<td>-0.589776</td>
+<td>-0.645543</td>
+<td>-1.062747</td>
+<td>0.0</td>
+<td>-0.372209</td>
+<td>0.233514</td>
+<td>-0.311825</td>
+<td>-0.376101</td>
+<td>1.656688</td>
+<td>1.401076</td>
+<td>0.150357</td>
+<td>1.981889</td>
+<td>1.146308</td>
+<td>-0.628535</td>
+<td>0.696026</td>
+<td>-0.795604</td>
+<td>0.077060</td>
+<td>2.091663</td>
+<td>0.765682</td>
+<td>-0.684106</td>
+<td>0.233728</td>
+<td>-0.790419</td>
+<td>-1.053587</td>
+<td>-1.262735</td>
+<td>-0.708759</td>
+<td>-1.022430</td>
+<td>-1.225889</td>
+<td>-0.653616</td>
+<td>-1.28908</td>
+<td>-0.860228</td>
+<td>-1.129809</td>
+<td>-0.545874</td>
+<td>-1.114134</td>
+<td>-0.853857</td>
+<td>1.460660</td>
+<td>-0.429222</td>
+<td>-0.822175</td>
+<td>-0.601392</td>
+<td>-0.581437</td>
+<td>-0.737581</td>
+<td>-1.088274</td>
+<td>-0.113045</td>
+<td>-0.213201</td>
+<td>-0.308607</td>
+<td>0.0</td>
+<td>-0.521596</td>
+<td>-0.682582</td>
+<td>-0.458413</td>
+<td>3.364183</td>
+<td>0.0</td>
+<td>-0.647398</td>
+<td>-1.107502</td>
+<td>0.556864</td>
+<td>-0.694405</td>
+<td>-0.68823</td>
+<td>2.015850</td>
+<td>-0.213201</td>
+<td>-0.432331</td>
+<td>-0.495561</td>
+<td>-1.340339</td>
+<td>0.914158</td>
+<td>-0.511968</td>
+<td>0.0</td>
+<td>-0.308607</td>
+<td>-0.482124</td>
+<td>0.0</td>
+<td>-0.308607</td>
+<td>2.588808</td>
+<td>-0.257709</td>
+<td>-0.884527</td>
+<td>-0.45843</td>
+<td>-1.381653</td>
+<td>-0.504435</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>0.0</td>
+<td>-0.945646</td>
+<td>-0.535127</td>
+<td>-0.66116</td>
+<td>0.0</td>
+<td>0.310554</td>
+<td>-0.621218</td>
+<td>-0.611041</td>
+<td>-0.435773</td>
+<td>-0.440926</td>
+<td>-0.455591</td>
+<td>2.765813</td>
+<td>-0.626017</td>
+<td>-0.387091</td>
+<td>4.280372</td>
+<td>-0.750195</td>
+<td>-0.709478</td>
+<td>-0.437633</td>
+<td>0.631861</td>
+<td>-0.423832</td>
+<td>-0.4624</td>
+<td>-0.522169</td>
+<td>0.387283</td>
+<td>0.349099</td>
+<td>-1.047487</td>
+<td>-0.883541</td>
+<td>-0.955395</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>-0.213201</td>
+<td>-0.458831</td>
+<td>-0.308607</td>
+<td>-0.493197</td>
+<td>0.331133</td>
+<td>0.163663</td>
+<td>-0.329293</td>
+<td>-0.871719</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>-0.213201</td>
+<td>-0.55689</td>
+<td>-0.196341</td>
+<td>-0.570543</td>
+<td>-0.308607</td>
+<td>-0.308607</td>
+<td>-0.308607</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.291386</td>
+<td>-0.308607</td>
+<td>-0.213201</td>
+<td>-0.308607</td>
+<td>-0.308607</td>
+<td>-0.458831</td>
+<td>-0.308607</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>-0.428746</td>
+<td>-0.291386</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.308607</td>
+<td>4.690416</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.308607</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.458831</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>-0.213201</td>
+<td>-0.213201</td>
+<td>-0.387298</td>
+<td>-0.387298</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.308607</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.213201</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>-0.308607</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>If you’d like to remove highly correlated features and features with no variance, set remove_duplicate to True, and set and threshold of Pearson correlation (recommand value 0.9-0.98)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>aa_reduced_feature <span class="op">=</span> smi2prop(aa_info, id_colname<span class="op">=</span><span class="st">'aa'</span>,remove_duplicate<span class="op">=</span><span class="va">True</span>, thr<span class="op">=</span><span class="fl">0.9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>number of 209 features are detected
+dropping 67 features, as they have zero std variance:['NumRadicalElectrons', 'PEOE_VSA13', 'PEOE_VSA5', 'SMR_VSA8', 'SlogP_VSA10', 'SlogP_VSA7', 'SlogP_VSA9', 'EState_VSA11', 'NumAliphaticCarbocycles', 'NumSaturatedCarbocycles', 'fr_ArN', 'fr_Ar_COO', 'fr_C_S', 'fr_HOCCN', 'fr_Imine', 'fr_N_O', 'fr_Ndealkylation1', 'fr_Ndealkylation2', 'fr_aldehyde', 'fr_alkyl_carbamate', 'fr_alkyl_halide', 'fr_allylic_oxid', 'fr_amidine', 'fr_aniline', 'fr_aryl_methyl', 'fr_azide', 'fr_azo', 'fr_barbitur', 'fr_benzodiazepine', 'fr_diazo', 'fr_dihydropyridine', 'fr_epoxide', 'fr_ester', 'fr_ether', 'fr_furan', 'fr_halogen', 'fr_hdrzine', 'fr_hdrzone', 'fr_imide', 'fr_isocyan', 'fr_isothiocyan', 'fr_ketone', 'fr_ketone_Topliss', 'fr_lactam', 'fr_lactone', 'fr_methoxy', 'fr_morpholine', 'fr_nitrile', 'fr_nitro', 'fr_nitro_arom', 'fr_nitro_arom_nonortho', 'fr_nitroso', 'fr_oxazole', 'fr_oxime', 'fr_piperdine', 'fr_piperzine', 'fr_prisulfonamd', 'fr_pyridine', 'fr_quatN', 'fr_sulfonamd', 'fr_sulfone', 'fr_term_acetylene', 'fr_tetrazole', 'fr_thiazole', 'fr_thiocyan', 'fr_thiophene', 'fr_urea']
+dropping 70 features, as they have Pearson corr &gt; 0.9:['MaxEStateIndex', 'HeavyAtomMolWt', 'ExactMolWt', 'NumValenceElectrons', 'MaxPartialCharge', 'MinAbsPartialCharge', 'BCUT2D_MRHI', 'Chi0', 'Chi0n', 'Chi0v', 'Chi1', 'Chi1n', 'Chi1v', 'Chi2n', 'Chi2v', 'Chi3n', 'Chi3v', 'Chi4n', 'Chi4v', 'Ipc', 'Kappa1', 'LabuteASA', 'SMR_VSA1', 'SMR_VSA2', 'SMR_VSA9', 'SlogP_VSA11', 'SlogP_VSA12', 'SlogP_VSA5', 'SlogP_VSA6', 'TPSA', 'EState_VSA5', 'VSA_EState1', 'VSA_EState10', 'VSA_EState2', 'VSA_EState6', 'VSA_EState9', 'HeavyAtomCount', 'NHOHCount', 'NOCount', 'NumAliphaticRings', 'NumAromaticCarbocycles', 'NumAromaticRings', 'NumHDonors', 'NumHeteroatoms', 'NumRotatableBonds', 'NumSaturatedHeterocycles', 'NumSaturatedRings', 'RingCount', 'MolMR', 'fr_Al_OH_noTert', 'fr_Ar_N', 'fr_Ar_NH', 'fr_Ar_OH', 'fr_COO', 'fr_COO2', 'fr_C_O_noCOO', 'fr_NH2', 'fr_Nhpyrrole', 'fr_SH', 'fr_amide', 'fr_benzene', 'fr_bicyclic', 'fr_guanido', 'fr_imidazole', 'fr_para_hydroxylation', 'fr_phenol', 'fr_phenol_noOrthoHbond', 'fr_phos_acid', 'fr_phos_ester', 'fr_priamide']
+number of 72 features are left</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>aa_reduced_feature.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">aa</th>
+<th data-quarto-table-cell-role="th">MaxAbsEStateIndex</th>
+<th data-quarto-table-cell-role="th">MinAbsEStateIndex</th>
+<th data-quarto-table-cell-role="th">MinEStateIndex</th>
+<th data-quarto-table-cell-role="th">qed</th>
+<th data-quarto-table-cell-role="th">MolWt</th>
+<th data-quarto-table-cell-role="th">MinPartialCharge</th>
+<th data-quarto-table-cell-role="th">MaxAbsPartialCharge</th>
+<th data-quarto-table-cell-role="th">FpDensityMorgan1</th>
+<th data-quarto-table-cell-role="th">FpDensityMorgan2</th>
+<th data-quarto-table-cell-role="th">FpDensityMorgan3</th>
+<th data-quarto-table-cell-role="th">BCUT2D_MWHI</th>
+<th data-quarto-table-cell-role="th">BCUT2D_MWLOW</th>
+<th data-quarto-table-cell-role="th">BCUT2D_CHGHI</th>
+<th data-quarto-table-cell-role="th">BCUT2D_CHGLO</th>
+<th data-quarto-table-cell-role="th">BCUT2D_LOGPHI</th>
+<th data-quarto-table-cell-role="th">BCUT2D_LOGPLOW</th>
+<th data-quarto-table-cell-role="th">BCUT2D_MRLOW</th>
+<th data-quarto-table-cell-role="th">AvgIpc</th>
+<th data-quarto-table-cell-role="th">BalabanJ</th>
+<th data-quarto-table-cell-role="th">BertzCT</th>
+<th data-quarto-table-cell-role="th">HallKierAlpha</th>
+<th data-quarto-table-cell-role="th">Kappa2</th>
+<th data-quarto-table-cell-role="th">Kappa3</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA1</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA10</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA11</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA12</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA14</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA2</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA3</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA4</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA6</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA7</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA8</th>
+<th data-quarto-table-cell-role="th">PEOE_VSA9</th>
+<th data-quarto-table-cell-role="th">SMR_VSA10</th>
+<th data-quarto-table-cell-role="th">SMR_VSA3</th>
+<th data-quarto-table-cell-role="th">SMR_VSA4</th>
+<th data-quarto-table-cell-role="th">SMR_VSA5</th>
+<th data-quarto-table-cell-role="th">SMR_VSA6</th>
+<th data-quarto-table-cell-role="th">SMR_VSA7</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA1</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA2</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA3</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA4</th>
+<th data-quarto-table-cell-role="th">SlogP_VSA8</th>
+<th data-quarto-table-cell-role="th">EState_VSA1</th>
+<th data-quarto-table-cell-role="th">EState_VSA10</th>
+<th data-quarto-table-cell-role="th">EState_VSA2</th>
+<th data-quarto-table-cell-role="th">EState_VSA3</th>
+<th data-quarto-table-cell-role="th">EState_VSA4</th>
+<th data-quarto-table-cell-role="th">EState_VSA6</th>
+<th data-quarto-table-cell-role="th">EState_VSA7</th>
+<th data-quarto-table-cell-role="th">EState_VSA8</th>
+<th data-quarto-table-cell-role="th">EState_VSA9</th>
+<th data-quarto-table-cell-role="th">VSA_EState3</th>
+<th data-quarto-table-cell-role="th">VSA_EState4</th>
+<th data-quarto-table-cell-role="th">VSA_EState5</th>
+<th data-quarto-table-cell-role="th">VSA_EState7</th>
+<th data-quarto-table-cell-role="th">VSA_EState8</th>
+<th data-quarto-table-cell-role="th">FractionCSP3</th>
+<th data-quarto-table-cell-role="th">NumAliphaticHeterocycles</th>
+<th data-quarto-table-cell-role="th">NumAromaticHeterocycles</th>
+<th data-quarto-table-cell-role="th">NumHAcceptors</th>
+<th data-quarto-table-cell-role="th">MolLogP</th>
+<th data-quarto-table-cell-role="th">fr_Al_COO</th>
+<th data-quarto-table-cell-role="th">fr_Al_OH</th>
+<th data-quarto-table-cell-role="th">fr_C_O</th>
+<th data-quarto-table-cell-role="th">fr_NH0</th>
+<th data-quarto-table-cell-role="th">fr_NH1</th>
+<th data-quarto-table-cell-role="th">fr_sulfide</th>
+<th data-quarto-table-cell-role="th">fr_unbrch_alkane</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>A</td>
+<td>9.574074</td>
+<td>1.193554</td>
+<td>0.430590</td>
+<td>-0.375462</td>
+<td>-1.439770</td>
+<td>0.228166</td>
+<td>-0.308911</td>
+<td>1.656688</td>
+<td>0.103007</td>
+<td>-0.780051</td>
+<td>-0.526903</td>
+<td>1.203883</td>
+<td>-1.415519</td>
+<td>1.465101</td>
+<td>-1.347549</td>
+<td>1.162418</td>
+<td>0.678178</td>
+<td>-1.660842</td>
+<td>0.058766</td>
+<td>-0.928528</td>
+<td>0.661861</td>
+<td>-1.704924</td>
+<td>-1.164169</td>
+<td>-1.088274</td>
+<td>-0.113045</td>
+<td>-0.213201</td>
+<td>-0.308607</td>
+<td>-0.521596</td>
+<td>-0.682582</td>
+<td>-0.458413</td>
+<td>-0.308393</td>
+<td>-0.647398</td>
+<td>-0.224260</td>
+<td>-0.480351</td>
+<td>-0.694405</td>
+<td>-0.882977</td>
+<td>-0.432331</td>
+<td>-0.495561</td>
+<td>-0.290532</td>
+<td>-0.695145</td>
+<td>-0.511968</td>
+<td>-0.482124</td>
+<td>-1.373429</td>
+<td>-0.884527</td>
+<td>-0.45843</td>
+<td>-0.213201</td>
+<td>-0.535127</td>
+<td>-0.66116</td>
+<td>-0.922850</td>
+<td>-0.621218</td>
+<td>-0.611041</td>
+<td>-0.440926</td>
+<td>-0.455591</td>
+<td>-0.769976</td>
+<td>-0.626017</td>
+<td>-0.748232</td>
+<td>-0.483822</td>
+<td>0.342808</td>
+<td>-0.4624</td>
+<td>0.572190</td>
+<td>0.349099</td>
+<td>-0.213201</td>
+<td>-0.308607</td>
+<td>-1.192079</td>
+<td>-0.082356</td>
+<td>-0.308607</td>
+<td>-0.308607</td>
+<td>-0.458831</td>
+<td>-0.213201</td>
+<td>-0.428746</td>
+<td>-0.213201</td>
+<td>-0.308607</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>C</td>
+<td>9.756435</td>
+<td>-0.594121</td>
+<td>0.396312</td>
+<td>-0.623715</td>
+<td>-0.643882</td>
+<td>0.233514</td>
+<td>-0.311825</td>
+<td>1.656688</td>
+<td>1.401076</td>
+<td>0.150357</td>
+<td>1.981889</td>
+<td>1.146308</td>
+<td>-0.628535</td>
+<td>0.696026</td>
+<td>-0.795604</td>
+<td>0.077060</td>
+<td>0.765682</td>
+<td>-0.684106</td>
+<td>0.233728</td>
+<td>-0.790419</td>
+<td>1.460660</td>
+<td>-0.601392</td>
+<td>-0.581437</td>
+<td>-1.088274</td>
+<td>-0.113045</td>
+<td>-0.213201</td>
+<td>-0.308607</td>
+<td>-0.521596</td>
+<td>-0.682582</td>
+<td>-0.458413</td>
+<td>3.364183</td>
+<td>-0.647398</td>
+<td>-1.107502</td>
+<td>0.556864</td>
+<td>-0.694405</td>
+<td>2.015850</td>
+<td>-0.432331</td>
+<td>-0.495561</td>
+<td>-1.340339</td>
+<td>0.914158</td>
+<td>-0.511968</td>
+<td>-0.482124</td>
+<td>-0.257709</td>
+<td>-0.884527</td>
+<td>-0.45843</td>
+<td>-0.213201</td>
+<td>-0.535127</td>
+<td>-0.66116</td>
+<td>0.310554</td>
+<td>-0.621218</td>
+<td>-0.611041</td>
+<td>-0.440926</td>
+<td>-0.455591</td>
+<td>2.765813</td>
+<td>-0.626017</td>
+<td>-0.709478</td>
+<td>-0.437633</td>
+<td>0.631861</td>
+<td>-0.4624</td>
+<td>-0.522169</td>
+<td>0.349099</td>
+<td>-0.213201</td>
+<td>-0.308607</td>
+<td>0.331133</td>
+<td>-0.196341</td>
+<td>-0.308607</td>
+<td>-0.308607</td>
+<td>-0.458831</td>
+<td>-0.213201</td>
+<td>-0.428746</td>
+<td>-0.213201</td>
+<td>-0.308607</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>aa_reduced_feature.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(23, 73)</code></pre>
+</div>
+</div>
+</section>
+<section id="visualize" class="level3">
+<h3 class="anchored" data-anchor-id="visualize">Visualize</h3>
+<p>Let’s now visualize this feature!</p>
+<p>There are several dimension reduction methods that we can use to visualize in a 2D graph: PCA, TSNE, and UMAP</p>
+<hr>
+</section>
+<section id="plot_cluster" class="level3">
+<h3 class="anchored" data-anchor-id="plot_cluster">plot_cluster</h3>
+<blockquote class="blockquote">
+<pre><code> plot_cluster (df, method='pca', hue=None, complexity=30, palette='tab20',
+               legend=False, name_list=None, seed=123)</code></pre>
+</blockquote>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>df</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>method</td>
+<td>str</td>
+<td>pca</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>hue</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>complexity</td>
+<td>int</td>
+<td>30</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>palette</td>
+<td>str</td>
+<td>tab20</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>legend</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>name_list</td>
+<td>NoneType</td>
+<td>None</td>
+<td>a list or df Series of names that label the dots</td>
+</tr>
+<tr class="even">
+<td>seed</td>
+<td>int</td>
+<td>123</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>PCA – amino acid full feature</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize aa full feature</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>plot_cluster(aa_full_feature, name_list <span class="op">=</span> aa_info.Name, hue <span class="op">=</span> <span class="st">'aa'</span>, method <span class="op">=</span> <span class="st">'pca'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_01_aa_feature_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p><strong>UMAP – amino acid full feature</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize aa full feature</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>plot_cluster(aa_full_feature, name_list <span class="op">=</span> aa_info.Name, hue <span class="op">=</span> <span class="st">'aa'</span>, method <span class="op">=</span> <span class="st">'umap'</span>,complexity<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_01_aa_feature_files/figure-html/cell-13-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p><strong>PCA – amino acid feature after removing highly correlated features</strong></p>
+<p>After removing highly correlated features, each amino acid is more dispersed</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>plot_cluster(aa_reduced_feature, name_list <span class="op">=</span> aa_info.Name, hue <span class="op">=</span> <span class="st">'aa'</span>, method <span class="op">=</span> <span class="st">'pca'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_01_aa_feature_files/figure-html/cell-14-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p><strong>UMAP – amino acid feature after removing highly correlated features</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>plot_cluster(aa_reduced_feature, name_list <span class="op">=</span> aa_info.Name, hue <span class="op">=</span> <span class="st">'aa'</span>, method <span class="op">=</span> <span class="st">'umap'</span>,complexity<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_01_aa_feature_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="morgan-fingerprints" class="level2">
+<h2 class="anchored" data-anchor-id="morgan-fingerprints">Morgan Fingerprints</h2>
+<hr>
+<section id="smi2morgan" class="level3">
+<h3 class="anchored" data-anchor-id="smi2morgan">smi2morgan</h3>
+<blockquote class="blockquote">
+<pre><code> smi2morgan (df, smi_colname='SMILES', id_colname='ID')</code></pre>
+</blockquote>
+<p>Like <a href="https://sky1ove.github.io/katlas/feature.html#smi2prop"><code>smi2prop</code></a>, get 2048 morgan feature (0/1) given a dataframe that contains ID&amp;smiles</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>df</td>
+<td></td>
+<td></td>
+<td>a dataframe contains ID and SMILES columns</td>
+</tr>
+<tr class="even">
+<td>smi_colname</td>
+<td>str</td>
+<td>SMILES</td>
+<td>set smiles columne name</td>
+</tr>
+<tr class="odd">
+<td>id_colname</td>
+<td>str</td>
+<td>ID</td>
+<td>set ID column name</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>aa_morgan <span class="op">=</span> smi2morgan(aa_info, id_colname <span class="op">=</span> <span class="st">'aa'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>aa_morgan.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">aa</th>
+<th data-quarto-table-cell-role="th">morgan_0</th>
+<th data-quarto-table-cell-role="th">morgan_1</th>
+<th data-quarto-table-cell-role="th">morgan_2</th>
+<th data-quarto-table-cell-role="th">morgan_3</th>
+<th data-quarto-table-cell-role="th">morgan_4</th>
+<th data-quarto-table-cell-role="th">morgan_5</th>
+<th data-quarto-table-cell-role="th">morgan_6</th>
+<th data-quarto-table-cell-role="th">morgan_7</th>
+<th data-quarto-table-cell-role="th">morgan_8</th>
+<th data-quarto-table-cell-role="th">morgan_9</th>
+<th data-quarto-table-cell-role="th">morgan_10</th>
+<th data-quarto-table-cell-role="th">morgan_11</th>
+<th data-quarto-table-cell-role="th">morgan_12</th>
+<th data-quarto-table-cell-role="th">morgan_13</th>
+<th data-quarto-table-cell-role="th">morgan_14</th>
+<th data-quarto-table-cell-role="th">morgan_15</th>
+<th data-quarto-table-cell-role="th">morgan_16</th>
+<th data-quarto-table-cell-role="th">morgan_17</th>
+<th data-quarto-table-cell-role="th">morgan_18</th>
+<th data-quarto-table-cell-role="th">morgan_19</th>
+<th data-quarto-table-cell-role="th">morgan_20</th>
+<th data-quarto-table-cell-role="th">morgan_21</th>
+<th data-quarto-table-cell-role="th">morgan_22</th>
+<th data-quarto-table-cell-role="th">morgan_23</th>
+<th data-quarto-table-cell-role="th">morgan_24</th>
+<th data-quarto-table-cell-role="th">morgan_25</th>
+<th data-quarto-table-cell-role="th">morgan_26</th>
+<th data-quarto-table-cell-role="th">morgan_27</th>
+<th data-quarto-table-cell-role="th">morgan_28</th>
+<th data-quarto-table-cell-role="th">morgan_29</th>
+<th data-quarto-table-cell-role="th">morgan_30</th>
+<th data-quarto-table-cell-role="th">morgan_31</th>
+<th data-quarto-table-cell-role="th">morgan_32</th>
+<th data-quarto-table-cell-role="th">morgan_33</th>
+<th data-quarto-table-cell-role="th">morgan_34</th>
+<th data-quarto-table-cell-role="th">morgan_35</th>
+<th data-quarto-table-cell-role="th">morgan_36</th>
+<th data-quarto-table-cell-role="th">morgan_37</th>
+<th data-quarto-table-cell-role="th">morgan_38</th>
+<th data-quarto-table-cell-role="th">morgan_39</th>
+<th data-quarto-table-cell-role="th">morgan_40</th>
+<th data-quarto-table-cell-role="th">morgan_41</th>
+<th data-quarto-table-cell-role="th">morgan_42</th>
+<th data-quarto-table-cell-role="th">morgan_43</th>
+<th data-quarto-table-cell-role="th">morgan_44</th>
+<th data-quarto-table-cell-role="th">morgan_45</th>
+<th data-quarto-table-cell-role="th">morgan_46</th>
+<th data-quarto-table-cell-role="th">morgan_47</th>
+<th data-quarto-table-cell-role="th">morgan_48</th>
+<th data-quarto-table-cell-role="th">morgan_49</th>
+<th data-quarto-table-cell-role="th">morgan_50</th>
+<th data-quarto-table-cell-role="th">morgan_51</th>
+<th data-quarto-table-cell-role="th">morgan_52</th>
+<th data-quarto-table-cell-role="th">morgan_53</th>
+<th data-quarto-table-cell-role="th">morgan_54</th>
+<th data-quarto-table-cell-role="th">morgan_55</th>
+<th data-quarto-table-cell-role="th">morgan_56</th>
+<th data-quarto-table-cell-role="th">morgan_57</th>
+<th data-quarto-table-cell-role="th">morgan_58</th>
+<th data-quarto-table-cell-role="th">morgan_59</th>
+<th data-quarto-table-cell-role="th">morgan_60</th>
+<th data-quarto-table-cell-role="th">morgan_61</th>
+<th data-quarto-table-cell-role="th">morgan_62</th>
+<th data-quarto-table-cell-role="th">morgan_63</th>
+<th data-quarto-table-cell-role="th">morgan_64</th>
+<th data-quarto-table-cell-role="th">morgan_65</th>
+<th data-quarto-table-cell-role="th">morgan_66</th>
+<th data-quarto-table-cell-role="th">morgan_67</th>
+<th data-quarto-table-cell-role="th">morgan_68</th>
+<th data-quarto-table-cell-role="th">morgan_69</th>
+<th data-quarto-table-cell-role="th">morgan_70</th>
+<th data-quarto-table-cell-role="th">morgan_71</th>
+<th data-quarto-table-cell-role="th">morgan_72</th>
+<th data-quarto-table-cell-role="th">morgan_73</th>
+<th data-quarto-table-cell-role="th">morgan_74</th>
+<th data-quarto-table-cell-role="th">morgan_75</th>
+<th data-quarto-table-cell-role="th">morgan_76</th>
+<th data-quarto-table-cell-role="th">morgan_77</th>
+<th data-quarto-table-cell-role="th">morgan_78</th>
+<th data-quarto-table-cell-role="th">morgan_79</th>
+<th data-quarto-table-cell-role="th">morgan_80</th>
+<th data-quarto-table-cell-role="th">morgan_81</th>
+<th data-quarto-table-cell-role="th">morgan_82</th>
+<th data-quarto-table-cell-role="th">morgan_83</th>
+<th data-quarto-table-cell-role="th">morgan_84</th>
+<th data-quarto-table-cell-role="th">morgan_85</th>
+<th data-quarto-table-cell-role="th">morgan_86</th>
+<th data-quarto-table-cell-role="th">morgan_87</th>
+<th data-quarto-table-cell-role="th">morgan_88</th>
+<th data-quarto-table-cell-role="th">morgan_89</th>
+<th data-quarto-table-cell-role="th">morgan_90</th>
+<th data-quarto-table-cell-role="th">morgan_91</th>
+<th data-quarto-table-cell-role="th">morgan_92</th>
+<th data-quarto-table-cell-role="th">morgan_93</th>
+<th data-quarto-table-cell-role="th">morgan_94</th>
+<th data-quarto-table-cell-role="th">morgan_95</th>
+<th data-quarto-table-cell-role="th">morgan_96</th>
+<th data-quarto-table-cell-role="th">morgan_97</th>
+<th data-quarto-table-cell-role="th">morgan_98</th>
+<th data-quarto-table-cell-role="th">morgan_99</th>
+<th data-quarto-table-cell-role="th">morgan_100</th>
+<th data-quarto-table-cell-role="th">morgan_101</th>
+<th data-quarto-table-cell-role="th">morgan_102</th>
+<th data-quarto-table-cell-role="th">morgan_103</th>
+<th data-quarto-table-cell-role="th">morgan_104</th>
+<th data-quarto-table-cell-role="th">morgan_105</th>
+<th data-quarto-table-cell-role="th">morgan_106</th>
+<th data-quarto-table-cell-role="th">morgan_107</th>
+<th data-quarto-table-cell-role="th">morgan_108</th>
+<th data-quarto-table-cell-role="th">morgan_109</th>
+<th data-quarto-table-cell-role="th">morgan_110</th>
+<th data-quarto-table-cell-role="th">morgan_111</th>
+<th data-quarto-table-cell-role="th">morgan_112</th>
+<th data-quarto-table-cell-role="th">morgan_113</th>
+<th data-quarto-table-cell-role="th">morgan_114</th>
+<th data-quarto-table-cell-role="th">morgan_115</th>
+<th data-quarto-table-cell-role="th">morgan_116</th>
+<th data-quarto-table-cell-role="th">morgan_117</th>
+<th data-quarto-table-cell-role="th">morgan_118</th>
+<th data-quarto-table-cell-role="th">morgan_119</th>
+<th data-quarto-table-cell-role="th">morgan_120</th>
+<th data-quarto-table-cell-role="th">morgan_121</th>
+<th data-quarto-table-cell-role="th">morgan_122</th>
+<th data-quarto-table-cell-role="th">morgan_123</th>
+<th data-quarto-table-cell-role="th">morgan_124</th>
+<th data-quarto-table-cell-role="th">morgan_125</th>
+<th data-quarto-table-cell-role="th">morgan_126</th>
+<th data-quarto-table-cell-role="th">morgan_127</th>
+<th data-quarto-table-cell-role="th">morgan_128</th>
+<th data-quarto-table-cell-role="th">morgan_129</th>
+<th data-quarto-table-cell-role="th">morgan_130</th>
+<th data-quarto-table-cell-role="th">morgan_131</th>
+<th data-quarto-table-cell-role="th">morgan_132</th>
+<th data-quarto-table-cell-role="th">morgan_133</th>
+<th data-quarto-table-cell-role="th">morgan_134</th>
+<th data-quarto-table-cell-role="th">morgan_135</th>
+<th data-quarto-table-cell-role="th">morgan_136</th>
+<th data-quarto-table-cell-role="th">morgan_137</th>
+<th data-quarto-table-cell-role="th">morgan_138</th>
+<th data-quarto-table-cell-role="th">morgan_139</th>
+<th data-quarto-table-cell-role="th">morgan_140</th>
+<th data-quarto-table-cell-role="th">morgan_141</th>
+<th data-quarto-table-cell-role="th">morgan_142</th>
+<th data-quarto-table-cell-role="th">morgan_143</th>
+<th data-quarto-table-cell-role="th">morgan_144</th>
+<th data-quarto-table-cell-role="th">morgan_145</th>
+<th data-quarto-table-cell-role="th">morgan_146</th>
+<th data-quarto-table-cell-role="th">morgan_147</th>
+<th data-quarto-table-cell-role="th">morgan_148</th>
+<th data-quarto-table-cell-role="th">morgan_149</th>
+<th data-quarto-table-cell-role="th">morgan_150</th>
+<th data-quarto-table-cell-role="th">morgan_151</th>
+<th data-quarto-table-cell-role="th">morgan_152</th>
+<th data-quarto-table-cell-role="th">morgan_153</th>
+<th data-quarto-table-cell-role="th">morgan_154</th>
+<th data-quarto-table-cell-role="th">morgan_155</th>
+<th data-quarto-table-cell-role="th">morgan_156</th>
+<th data-quarto-table-cell-role="th">morgan_157</th>
+<th data-quarto-table-cell-role="th">morgan_158</th>
+<th data-quarto-table-cell-role="th">morgan_159</th>
+<th data-quarto-table-cell-role="th">morgan_160</th>
+<th data-quarto-table-cell-role="th">morgan_161</th>
+<th data-quarto-table-cell-role="th">morgan_162</th>
+<th data-quarto-table-cell-role="th">morgan_163</th>
+<th data-quarto-table-cell-role="th">morgan_164</th>
+<th data-quarto-table-cell-role="th">morgan_165</th>
+<th data-quarto-table-cell-role="th">morgan_166</th>
+<th data-quarto-table-cell-role="th">morgan_167</th>
+<th data-quarto-table-cell-role="th">morgan_168</th>
+<th data-quarto-table-cell-role="th">morgan_169</th>
+<th data-quarto-table-cell-role="th">morgan_170</th>
+<th data-quarto-table-cell-role="th">morgan_171</th>
+<th data-quarto-table-cell-role="th">morgan_172</th>
+<th data-quarto-table-cell-role="th">morgan_173</th>
+<th data-quarto-table-cell-role="th">morgan_174</th>
+<th data-quarto-table-cell-role="th">morgan_175</th>
+<th data-quarto-table-cell-role="th">morgan_176</th>
+<th data-quarto-table-cell-role="th">morgan_177</th>
+<th data-quarto-table-cell-role="th">morgan_178</th>
+<th data-quarto-table-cell-role="th">morgan_179</th>
+<th data-quarto-table-cell-role="th">morgan_180</th>
+<th data-quarto-table-cell-role="th">morgan_181</th>
+<th data-quarto-table-cell-role="th">morgan_182</th>
+<th data-quarto-table-cell-role="th">morgan_183</th>
+<th data-quarto-table-cell-role="th">morgan_184</th>
+<th data-quarto-table-cell-role="th">morgan_185</th>
+<th data-quarto-table-cell-role="th">morgan_186</th>
+<th data-quarto-table-cell-role="th">morgan_187</th>
+<th data-quarto-table-cell-role="th">morgan_188</th>
+<th data-quarto-table-cell-role="th">morgan_189</th>
+<th data-quarto-table-cell-role="th">morgan_190</th>
+<th data-quarto-table-cell-role="th">morgan_191</th>
+<th data-quarto-table-cell-role="th">morgan_192</th>
+<th data-quarto-table-cell-role="th">morgan_193</th>
+<th data-quarto-table-cell-role="th">morgan_194</th>
+<th data-quarto-table-cell-role="th">morgan_195</th>
+<th data-quarto-table-cell-role="th">morgan_196</th>
+<th data-quarto-table-cell-role="th">morgan_197</th>
+<th data-quarto-table-cell-role="th">morgan_198</th>
+<th data-quarto-table-cell-role="th">morgan_199</th>
+<th data-quarto-table-cell-role="th">morgan_200</th>
+<th data-quarto-table-cell-role="th">morgan_201</th>
+<th data-quarto-table-cell-role="th">morgan_202</th>
+<th data-quarto-table-cell-role="th">morgan_203</th>
+<th data-quarto-table-cell-role="th">morgan_204</th>
+<th data-quarto-table-cell-role="th">morgan_205</th>
+<th data-quarto-table-cell-role="th">morgan_206</th>
+<th data-quarto-table-cell-role="th">morgan_207</th>
+<th data-quarto-table-cell-role="th">morgan_208</th>
+<th data-quarto-table-cell-role="th">morgan_209</th>
+<th data-quarto-table-cell-role="th">morgan_210</th>
+<th data-quarto-table-cell-role="th">morgan_211</th>
+<th data-quarto-table-cell-role="th">morgan_212</th>
+<th data-quarto-table-cell-role="th">morgan_213</th>
+<th data-quarto-table-cell-role="th">morgan_214</th>
+<th data-quarto-table-cell-role="th">morgan_215</th>
+<th data-quarto-table-cell-role="th">morgan_216</th>
+<th data-quarto-table-cell-role="th">morgan_217</th>
+<th data-quarto-table-cell-role="th">morgan_218</th>
+<th data-quarto-table-cell-role="th">morgan_219</th>
+<th data-quarto-table-cell-role="th">morgan_220</th>
+<th data-quarto-table-cell-role="th">morgan_221</th>
+<th data-quarto-table-cell-role="th">morgan_222</th>
+<th data-quarto-table-cell-role="th">morgan_223</th>
+<th data-quarto-table-cell-role="th">morgan_224</th>
+<th data-quarto-table-cell-role="th">morgan_225</th>
+<th data-quarto-table-cell-role="th">morgan_226</th>
+<th data-quarto-table-cell-role="th">morgan_227</th>
+<th data-quarto-table-cell-role="th">morgan_228</th>
+<th data-quarto-table-cell-role="th">morgan_229</th>
+<th data-quarto-table-cell-role="th">morgan_230</th>
+<th data-quarto-table-cell-role="th">morgan_231</th>
+<th data-quarto-table-cell-role="th">morgan_232</th>
+<th data-quarto-table-cell-role="th">morgan_233</th>
+<th data-quarto-table-cell-role="th">morgan_234</th>
+<th data-quarto-table-cell-role="th">morgan_235</th>
+<th data-quarto-table-cell-role="th">morgan_236</th>
+<th data-quarto-table-cell-role="th">morgan_237</th>
+<th data-quarto-table-cell-role="th">morgan_238</th>
+<th data-quarto-table-cell-role="th">morgan_239</th>
+<th data-quarto-table-cell-role="th">morgan_240</th>
+<th data-quarto-table-cell-role="th">morgan_241</th>
+<th data-quarto-table-cell-role="th">morgan_242</th>
+<th data-quarto-table-cell-role="th">morgan_243</th>
+<th data-quarto-table-cell-role="th">morgan_244</th>
+<th data-quarto-table-cell-role="th">morgan_245</th>
+<th data-quarto-table-cell-role="th">morgan_246</th>
+<th data-quarto-table-cell-role="th">morgan_247</th>
+<th data-quarto-table-cell-role="th">morgan_248</th>
+<th data-quarto-table-cell-role="th">morgan_249</th>
+<th data-quarto-table-cell-role="th">morgan_250</th>
+<th data-quarto-table-cell-role="th">morgan_251</th>
+<th data-quarto-table-cell-role="th">morgan_252</th>
+<th data-quarto-table-cell-role="th">morgan_253</th>
+<th data-quarto-table-cell-role="th">morgan_254</th>
+<th data-quarto-table-cell-role="th">morgan_255</th>
+<th data-quarto-table-cell-role="th">morgan_256</th>
+<th data-quarto-table-cell-role="th">morgan_257</th>
+<th data-quarto-table-cell-role="th">morgan_258</th>
+<th data-quarto-table-cell-role="th">morgan_259</th>
+<th data-quarto-table-cell-role="th">morgan_260</th>
+<th data-quarto-table-cell-role="th">morgan_261</th>
+<th data-quarto-table-cell-role="th">morgan_262</th>
+<th data-quarto-table-cell-role="th">morgan_263</th>
+<th data-quarto-table-cell-role="th">morgan_264</th>
+<th data-quarto-table-cell-role="th">morgan_265</th>
+<th data-quarto-table-cell-role="th">morgan_266</th>
+<th data-quarto-table-cell-role="th">morgan_267</th>
+<th data-quarto-table-cell-role="th">morgan_268</th>
+<th data-quarto-table-cell-role="th">morgan_269</th>
+<th data-quarto-table-cell-role="th">morgan_270</th>
+<th data-quarto-table-cell-role="th">morgan_271</th>
+<th data-quarto-table-cell-role="th">morgan_272</th>
+<th data-quarto-table-cell-role="th">morgan_273</th>
+<th data-quarto-table-cell-role="th">morgan_274</th>
+<th data-quarto-table-cell-role="th">morgan_275</th>
+<th data-quarto-table-cell-role="th">morgan_276</th>
+<th data-quarto-table-cell-role="th">morgan_277</th>
+<th data-quarto-table-cell-role="th">morgan_278</th>
+<th data-quarto-table-cell-role="th">morgan_279</th>
+<th data-quarto-table-cell-role="th">morgan_280</th>
+<th data-quarto-table-cell-role="th">morgan_281</th>
+<th data-quarto-table-cell-role="th">morgan_282</th>
+<th data-quarto-table-cell-role="th">morgan_283</th>
+<th data-quarto-table-cell-role="th">morgan_284</th>
+<th data-quarto-table-cell-role="th">morgan_285</th>
+<th data-quarto-table-cell-role="th">morgan_286</th>
+<th data-quarto-table-cell-role="th">morgan_287</th>
+<th data-quarto-table-cell-role="th">morgan_288</th>
+<th data-quarto-table-cell-role="th">morgan_289</th>
+<th data-quarto-table-cell-role="th">morgan_290</th>
+<th data-quarto-table-cell-role="th">morgan_291</th>
+<th data-quarto-table-cell-role="th">morgan_292</th>
+<th data-quarto-table-cell-role="th">morgan_293</th>
+<th data-quarto-table-cell-role="th">morgan_294</th>
+<th data-quarto-table-cell-role="th">morgan_295</th>
+<th data-quarto-table-cell-role="th">morgan_296</th>
+<th data-quarto-table-cell-role="th">morgan_297</th>
+<th data-quarto-table-cell-role="th">morgan_298</th>
+<th data-quarto-table-cell-role="th">morgan_299</th>
+<th data-quarto-table-cell-role="th">morgan_300</th>
+<th data-quarto-table-cell-role="th">morgan_301</th>
+<th data-quarto-table-cell-role="th">morgan_302</th>
+<th data-quarto-table-cell-role="th">morgan_303</th>
+<th data-quarto-table-cell-role="th">morgan_304</th>
+<th data-quarto-table-cell-role="th">morgan_305</th>
+<th data-quarto-table-cell-role="th">morgan_306</th>
+<th data-quarto-table-cell-role="th">morgan_307</th>
+<th data-quarto-table-cell-role="th">morgan_308</th>
+<th data-quarto-table-cell-role="th">morgan_309</th>
+<th data-quarto-table-cell-role="th">morgan_310</th>
+<th data-quarto-table-cell-role="th">morgan_311</th>
+<th data-quarto-table-cell-role="th">morgan_312</th>
+<th data-quarto-table-cell-role="th">morgan_313</th>
+<th data-quarto-table-cell-role="th">morgan_314</th>
+<th data-quarto-table-cell-role="th">morgan_315</th>
+<th data-quarto-table-cell-role="th">morgan_316</th>
+<th data-quarto-table-cell-role="th">morgan_317</th>
+<th data-quarto-table-cell-role="th">morgan_318</th>
+<th data-quarto-table-cell-role="th">morgan_319</th>
+<th data-quarto-table-cell-role="th">morgan_320</th>
+<th data-quarto-table-cell-role="th">morgan_321</th>
+<th data-quarto-table-cell-role="th">morgan_322</th>
+<th data-quarto-table-cell-role="th">morgan_323</th>
+<th data-quarto-table-cell-role="th">morgan_324</th>
+<th data-quarto-table-cell-role="th">morgan_325</th>
+<th data-quarto-table-cell-role="th">morgan_326</th>
+<th data-quarto-table-cell-role="th">morgan_327</th>
+<th data-quarto-table-cell-role="th">morgan_328</th>
+<th data-quarto-table-cell-role="th">morgan_329</th>
+<th data-quarto-table-cell-role="th">morgan_330</th>
+<th data-quarto-table-cell-role="th">morgan_331</th>
+<th data-quarto-table-cell-role="th">morgan_332</th>
+<th data-quarto-table-cell-role="th">morgan_333</th>
+<th data-quarto-table-cell-role="th">morgan_334</th>
+<th data-quarto-table-cell-role="th">morgan_335</th>
+<th data-quarto-table-cell-role="th">morgan_336</th>
+<th data-quarto-table-cell-role="th">morgan_337</th>
+<th data-quarto-table-cell-role="th">morgan_338</th>
+<th data-quarto-table-cell-role="th">morgan_339</th>
+<th data-quarto-table-cell-role="th">morgan_340</th>
+<th data-quarto-table-cell-role="th">morgan_341</th>
+<th data-quarto-table-cell-role="th">morgan_342</th>
+<th data-quarto-table-cell-role="th">morgan_343</th>
+<th data-quarto-table-cell-role="th">morgan_344</th>
+<th data-quarto-table-cell-role="th">morgan_345</th>
+<th data-quarto-table-cell-role="th">morgan_346</th>
+<th data-quarto-table-cell-role="th">morgan_347</th>
+<th data-quarto-table-cell-role="th">morgan_348</th>
+<th data-quarto-table-cell-role="th">morgan_349</th>
+<th data-quarto-table-cell-role="th">morgan_350</th>
+<th data-quarto-table-cell-role="th">morgan_351</th>
+<th data-quarto-table-cell-role="th">morgan_352</th>
+<th data-quarto-table-cell-role="th">morgan_353</th>
+<th data-quarto-table-cell-role="th">morgan_354</th>
+<th data-quarto-table-cell-role="th">morgan_355</th>
+<th data-quarto-table-cell-role="th">morgan_356</th>
+<th data-quarto-table-cell-role="th">morgan_357</th>
+<th data-quarto-table-cell-role="th">morgan_358</th>
+<th data-quarto-table-cell-role="th">morgan_359</th>
+<th data-quarto-table-cell-role="th">morgan_360</th>
+<th data-quarto-table-cell-role="th">morgan_361</th>
+<th data-quarto-table-cell-role="th">morgan_362</th>
+<th data-quarto-table-cell-role="th">morgan_363</th>
+<th data-quarto-table-cell-role="th">morgan_364</th>
+<th data-quarto-table-cell-role="th">morgan_365</th>
+<th data-quarto-table-cell-role="th">morgan_366</th>
+<th data-quarto-table-cell-role="th">morgan_367</th>
+<th data-quarto-table-cell-role="th">morgan_368</th>
+<th data-quarto-table-cell-role="th">morgan_369</th>
+<th data-quarto-table-cell-role="th">morgan_370</th>
+<th data-quarto-table-cell-role="th">morgan_371</th>
+<th data-quarto-table-cell-role="th">morgan_372</th>
+<th data-quarto-table-cell-role="th">morgan_373</th>
+<th data-quarto-table-cell-role="th">morgan_374</th>
+<th data-quarto-table-cell-role="th">morgan_375</th>
+<th data-quarto-table-cell-role="th">morgan_376</th>
+<th data-quarto-table-cell-role="th">morgan_377</th>
+<th data-quarto-table-cell-role="th">morgan_378</th>
+<th data-quarto-table-cell-role="th">morgan_379</th>
+<th data-quarto-table-cell-role="th">morgan_380</th>
+<th data-quarto-table-cell-role="th">morgan_381</th>
+<th data-quarto-table-cell-role="th">morgan_382</th>
+<th data-quarto-table-cell-role="th">morgan_383</th>
+<th data-quarto-table-cell-role="th">morgan_384</th>
+<th data-quarto-table-cell-role="th">morgan_385</th>
+<th data-quarto-table-cell-role="th">morgan_386</th>
+<th data-quarto-table-cell-role="th">morgan_387</th>
+<th data-quarto-table-cell-role="th">morgan_388</th>
+<th data-quarto-table-cell-role="th">morgan_389</th>
+<th data-quarto-table-cell-role="th">morgan_390</th>
+<th data-quarto-table-cell-role="th">morgan_391</th>
+<th data-quarto-table-cell-role="th">morgan_392</th>
+<th data-quarto-table-cell-role="th">morgan_393</th>
+<th data-quarto-table-cell-role="th">morgan_394</th>
+<th data-quarto-table-cell-role="th">morgan_395</th>
+<th data-quarto-table-cell-role="th">morgan_396</th>
+<th data-quarto-table-cell-role="th">morgan_397</th>
+<th data-quarto-table-cell-role="th">morgan_398</th>
+<th data-quarto-table-cell-role="th">morgan_399</th>
+<th data-quarto-table-cell-role="th">morgan_400</th>
+<th data-quarto-table-cell-role="th">morgan_401</th>
+<th data-quarto-table-cell-role="th">morgan_402</th>
+<th data-quarto-table-cell-role="th">morgan_403</th>
+<th data-quarto-table-cell-role="th">morgan_404</th>
+<th data-quarto-table-cell-role="th">morgan_405</th>
+<th data-quarto-table-cell-role="th">morgan_406</th>
+<th data-quarto-table-cell-role="th">morgan_407</th>
+<th data-quarto-table-cell-role="th">morgan_408</th>
+<th data-quarto-table-cell-role="th">morgan_409</th>
+<th data-quarto-table-cell-role="th">morgan_410</th>
+<th data-quarto-table-cell-role="th">morgan_411</th>
+<th data-quarto-table-cell-role="th">morgan_412</th>
+<th data-quarto-table-cell-role="th">morgan_413</th>
+<th data-quarto-table-cell-role="th">morgan_414</th>
+<th data-quarto-table-cell-role="th">morgan_415</th>
+<th data-quarto-table-cell-role="th">morgan_416</th>
+<th data-quarto-table-cell-role="th">morgan_417</th>
+<th data-quarto-table-cell-role="th">morgan_418</th>
+<th data-quarto-table-cell-role="th">morgan_419</th>
+<th data-quarto-table-cell-role="th">morgan_420</th>
+<th data-quarto-table-cell-role="th">morgan_421</th>
+<th data-quarto-table-cell-role="th">morgan_422</th>
+<th data-quarto-table-cell-role="th">morgan_423</th>
+<th data-quarto-table-cell-role="th">morgan_424</th>
+<th data-quarto-table-cell-role="th">morgan_425</th>
+<th data-quarto-table-cell-role="th">morgan_426</th>
+<th data-quarto-table-cell-role="th">morgan_427</th>
+<th data-quarto-table-cell-role="th">morgan_428</th>
+<th data-quarto-table-cell-role="th">morgan_429</th>
+<th data-quarto-table-cell-role="th">morgan_430</th>
+<th data-quarto-table-cell-role="th">morgan_431</th>
+<th data-quarto-table-cell-role="th">morgan_432</th>
+<th data-quarto-table-cell-role="th">morgan_433</th>
+<th data-quarto-table-cell-role="th">morgan_434</th>
+<th data-quarto-table-cell-role="th">morgan_435</th>
+<th data-quarto-table-cell-role="th">morgan_436</th>
+<th data-quarto-table-cell-role="th">morgan_437</th>
+<th data-quarto-table-cell-role="th">morgan_438</th>
+<th data-quarto-table-cell-role="th">morgan_439</th>
+<th data-quarto-table-cell-role="th">morgan_440</th>
+<th data-quarto-table-cell-role="th">morgan_441</th>
+<th data-quarto-table-cell-role="th">morgan_442</th>
+<th data-quarto-table-cell-role="th">morgan_443</th>
+<th data-quarto-table-cell-role="th">morgan_444</th>
+<th data-quarto-table-cell-role="th">morgan_445</th>
+<th data-quarto-table-cell-role="th">morgan_446</th>
+<th data-quarto-table-cell-role="th">morgan_447</th>
+<th data-quarto-table-cell-role="th">morgan_448</th>
+<th data-quarto-table-cell-role="th">morgan_449</th>
+<th data-quarto-table-cell-role="th">morgan_450</th>
+<th data-quarto-table-cell-role="th">morgan_451</th>
+<th data-quarto-table-cell-role="th">morgan_452</th>
+<th data-quarto-table-cell-role="th">morgan_453</th>
+<th data-quarto-table-cell-role="th">morgan_454</th>
+<th data-quarto-table-cell-role="th">morgan_455</th>
+<th data-quarto-table-cell-role="th">morgan_456</th>
+<th data-quarto-table-cell-role="th">morgan_457</th>
+<th data-quarto-table-cell-role="th">morgan_458</th>
+<th data-quarto-table-cell-role="th">morgan_459</th>
+<th data-quarto-table-cell-role="th">morgan_460</th>
+<th data-quarto-table-cell-role="th">morgan_461</th>
+<th data-quarto-table-cell-role="th">morgan_462</th>
+<th data-quarto-table-cell-role="th">morgan_463</th>
+<th data-quarto-table-cell-role="th">morgan_464</th>
+<th data-quarto-table-cell-role="th">morgan_465</th>
+<th data-quarto-table-cell-role="th">morgan_466</th>
+<th data-quarto-table-cell-role="th">morgan_467</th>
+<th data-quarto-table-cell-role="th">morgan_468</th>
+<th data-quarto-table-cell-role="th">morgan_469</th>
+<th data-quarto-table-cell-role="th">morgan_470</th>
+<th data-quarto-table-cell-role="th">morgan_471</th>
+<th data-quarto-table-cell-role="th">morgan_472</th>
+<th data-quarto-table-cell-role="th">morgan_473</th>
+<th data-quarto-table-cell-role="th">morgan_474</th>
+<th data-quarto-table-cell-role="th">morgan_475</th>
+<th data-quarto-table-cell-role="th">morgan_476</th>
+<th data-quarto-table-cell-role="th">morgan_477</th>
+<th data-quarto-table-cell-role="th">morgan_478</th>
+<th data-quarto-table-cell-role="th">morgan_479</th>
+<th data-quarto-table-cell-role="th">morgan_480</th>
+<th data-quarto-table-cell-role="th">morgan_481</th>
+<th data-quarto-table-cell-role="th">morgan_482</th>
+<th data-quarto-table-cell-role="th">morgan_483</th>
+<th data-quarto-table-cell-role="th">morgan_484</th>
+<th data-quarto-table-cell-role="th">morgan_485</th>
+<th data-quarto-table-cell-role="th">morgan_486</th>
+<th data-quarto-table-cell-role="th">morgan_487</th>
+<th data-quarto-table-cell-role="th">morgan_488</th>
+<th data-quarto-table-cell-role="th">morgan_489</th>
+<th data-quarto-table-cell-role="th">morgan_490</th>
+<th data-quarto-table-cell-role="th">morgan_491</th>
+<th data-quarto-table-cell-role="th">morgan_492</th>
+<th data-quarto-table-cell-role="th">morgan_493</th>
+<th data-quarto-table-cell-role="th">morgan_494</th>
+<th data-quarto-table-cell-role="th">morgan_495</th>
+<th data-quarto-table-cell-role="th">morgan_496</th>
+<th data-quarto-table-cell-role="th">morgan_497</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">morgan_1549</th>
+<th data-quarto-table-cell-role="th">morgan_1550</th>
+<th data-quarto-table-cell-role="th">morgan_1551</th>
+<th data-quarto-table-cell-role="th">morgan_1552</th>
+<th data-quarto-table-cell-role="th">morgan_1553</th>
+<th data-quarto-table-cell-role="th">morgan_1554</th>
+<th data-quarto-table-cell-role="th">morgan_1555</th>
+<th data-quarto-table-cell-role="th">morgan_1556</th>
+<th data-quarto-table-cell-role="th">morgan_1557</th>
+<th data-quarto-table-cell-role="th">morgan_1558</th>
+<th data-quarto-table-cell-role="th">morgan_1559</th>
+<th data-quarto-table-cell-role="th">morgan_1560</th>
+<th data-quarto-table-cell-role="th">morgan_1561</th>
+<th data-quarto-table-cell-role="th">morgan_1562</th>
+<th data-quarto-table-cell-role="th">morgan_1563</th>
+<th data-quarto-table-cell-role="th">morgan_1564</th>
+<th data-quarto-table-cell-role="th">morgan_1565</th>
+<th data-quarto-table-cell-role="th">morgan_1566</th>
+<th data-quarto-table-cell-role="th">morgan_1567</th>
+<th data-quarto-table-cell-role="th">morgan_1568</th>
+<th data-quarto-table-cell-role="th">morgan_1569</th>
+<th data-quarto-table-cell-role="th">morgan_1570</th>
+<th data-quarto-table-cell-role="th">morgan_1571</th>
+<th data-quarto-table-cell-role="th">morgan_1572</th>
+<th data-quarto-table-cell-role="th">morgan_1573</th>
+<th data-quarto-table-cell-role="th">morgan_1574</th>
+<th data-quarto-table-cell-role="th">morgan_1575</th>
+<th data-quarto-table-cell-role="th">morgan_1576</th>
+<th data-quarto-table-cell-role="th">morgan_1577</th>
+<th data-quarto-table-cell-role="th">morgan_1578</th>
+<th data-quarto-table-cell-role="th">morgan_1579</th>
+<th data-quarto-table-cell-role="th">morgan_1580</th>
+<th data-quarto-table-cell-role="th">morgan_1581</th>
+<th data-quarto-table-cell-role="th">morgan_1582</th>
+<th data-quarto-table-cell-role="th">morgan_1583</th>
+<th data-quarto-table-cell-role="th">morgan_1584</th>
+<th data-quarto-table-cell-role="th">morgan_1585</th>
+<th data-quarto-table-cell-role="th">morgan_1586</th>
+<th data-quarto-table-cell-role="th">morgan_1587</th>
+<th data-quarto-table-cell-role="th">morgan_1588</th>
+<th data-quarto-table-cell-role="th">morgan_1589</th>
+<th data-quarto-table-cell-role="th">morgan_1590</th>
+<th data-quarto-table-cell-role="th">morgan_1591</th>
+<th data-quarto-table-cell-role="th">morgan_1592</th>
+<th data-quarto-table-cell-role="th">morgan_1593</th>
+<th data-quarto-table-cell-role="th">morgan_1594</th>
+<th data-quarto-table-cell-role="th">morgan_1595</th>
+<th data-quarto-table-cell-role="th">morgan_1596</th>
+<th data-quarto-table-cell-role="th">morgan_1597</th>
+<th data-quarto-table-cell-role="th">morgan_1598</th>
+<th data-quarto-table-cell-role="th">morgan_1599</th>
+<th data-quarto-table-cell-role="th">morgan_1600</th>
+<th data-quarto-table-cell-role="th">morgan_1601</th>
+<th data-quarto-table-cell-role="th">morgan_1602</th>
+<th data-quarto-table-cell-role="th">morgan_1603</th>
+<th data-quarto-table-cell-role="th">morgan_1604</th>
+<th data-quarto-table-cell-role="th">morgan_1605</th>
+<th data-quarto-table-cell-role="th">morgan_1606</th>
+<th data-quarto-table-cell-role="th">morgan_1607</th>
+<th data-quarto-table-cell-role="th">morgan_1608</th>
+<th data-quarto-table-cell-role="th">morgan_1609</th>
+<th data-quarto-table-cell-role="th">morgan_1610</th>
+<th data-quarto-table-cell-role="th">morgan_1611</th>
+<th data-quarto-table-cell-role="th">morgan_1612</th>
+<th data-quarto-table-cell-role="th">morgan_1613</th>
+<th data-quarto-table-cell-role="th">morgan_1614</th>
+<th data-quarto-table-cell-role="th">morgan_1615</th>
+<th data-quarto-table-cell-role="th">morgan_1616</th>
+<th data-quarto-table-cell-role="th">morgan_1617</th>
+<th data-quarto-table-cell-role="th">morgan_1618</th>
+<th data-quarto-table-cell-role="th">morgan_1619</th>
+<th data-quarto-table-cell-role="th">morgan_1620</th>
+<th data-quarto-table-cell-role="th">morgan_1621</th>
+<th data-quarto-table-cell-role="th">morgan_1622</th>
+<th data-quarto-table-cell-role="th">morgan_1623</th>
+<th data-quarto-table-cell-role="th">morgan_1624</th>
+<th data-quarto-table-cell-role="th">morgan_1625</th>
+<th data-quarto-table-cell-role="th">morgan_1626</th>
+<th data-quarto-table-cell-role="th">morgan_1627</th>
+<th data-quarto-table-cell-role="th">morgan_1628</th>
+<th data-quarto-table-cell-role="th">morgan_1629</th>
+<th data-quarto-table-cell-role="th">morgan_1630</th>
+<th data-quarto-table-cell-role="th">morgan_1631</th>
+<th data-quarto-table-cell-role="th">morgan_1632</th>
+<th data-quarto-table-cell-role="th">morgan_1633</th>
+<th data-quarto-table-cell-role="th">morgan_1634</th>
+<th data-quarto-table-cell-role="th">morgan_1635</th>
+<th data-quarto-table-cell-role="th">morgan_1636</th>
+<th data-quarto-table-cell-role="th">morgan_1637</th>
+<th data-quarto-table-cell-role="th">morgan_1638</th>
+<th data-quarto-table-cell-role="th">morgan_1639</th>
+<th data-quarto-table-cell-role="th">morgan_1640</th>
+<th data-quarto-table-cell-role="th">morgan_1641</th>
+<th data-quarto-table-cell-role="th">morgan_1642</th>
+<th data-quarto-table-cell-role="th">morgan_1643</th>
+<th data-quarto-table-cell-role="th">morgan_1644</th>
+<th data-quarto-table-cell-role="th">morgan_1645</th>
+<th data-quarto-table-cell-role="th">morgan_1646</th>
+<th data-quarto-table-cell-role="th">morgan_1647</th>
+<th data-quarto-table-cell-role="th">morgan_1648</th>
+<th data-quarto-table-cell-role="th">morgan_1649</th>
+<th data-quarto-table-cell-role="th">morgan_1650</th>
+<th data-quarto-table-cell-role="th">morgan_1651</th>
+<th data-quarto-table-cell-role="th">morgan_1652</th>
+<th data-quarto-table-cell-role="th">morgan_1653</th>
+<th data-quarto-table-cell-role="th">morgan_1654</th>
+<th data-quarto-table-cell-role="th">morgan_1655</th>
+<th data-quarto-table-cell-role="th">morgan_1656</th>
+<th data-quarto-table-cell-role="th">morgan_1657</th>
+<th data-quarto-table-cell-role="th">morgan_1658</th>
+<th data-quarto-table-cell-role="th">morgan_1659</th>
+<th data-quarto-table-cell-role="th">morgan_1660</th>
+<th data-quarto-table-cell-role="th">morgan_1661</th>
+<th data-quarto-table-cell-role="th">morgan_1662</th>
+<th data-quarto-table-cell-role="th">morgan_1663</th>
+<th data-quarto-table-cell-role="th">morgan_1664</th>
+<th data-quarto-table-cell-role="th">morgan_1665</th>
+<th data-quarto-table-cell-role="th">morgan_1666</th>
+<th data-quarto-table-cell-role="th">morgan_1667</th>
+<th data-quarto-table-cell-role="th">morgan_1668</th>
+<th data-quarto-table-cell-role="th">morgan_1669</th>
+<th data-quarto-table-cell-role="th">morgan_1670</th>
+<th data-quarto-table-cell-role="th">morgan_1671</th>
+<th data-quarto-table-cell-role="th">morgan_1672</th>
+<th data-quarto-table-cell-role="th">morgan_1673</th>
+<th data-quarto-table-cell-role="th">morgan_1674</th>
+<th data-quarto-table-cell-role="th">morgan_1675</th>
+<th data-quarto-table-cell-role="th">morgan_1676</th>
+<th data-quarto-table-cell-role="th">morgan_1677</th>
+<th data-quarto-table-cell-role="th">morgan_1678</th>
+<th data-quarto-table-cell-role="th">morgan_1679</th>
+<th data-quarto-table-cell-role="th">morgan_1680</th>
+<th data-quarto-table-cell-role="th">morgan_1681</th>
+<th data-quarto-table-cell-role="th">morgan_1682</th>
+<th data-quarto-table-cell-role="th">morgan_1683</th>
+<th data-quarto-table-cell-role="th">morgan_1684</th>
+<th data-quarto-table-cell-role="th">morgan_1685</th>
+<th data-quarto-table-cell-role="th">morgan_1686</th>
+<th data-quarto-table-cell-role="th">morgan_1687</th>
+<th data-quarto-table-cell-role="th">morgan_1688</th>
+<th data-quarto-table-cell-role="th">morgan_1689</th>
+<th data-quarto-table-cell-role="th">morgan_1690</th>
+<th data-quarto-table-cell-role="th">morgan_1691</th>
+<th data-quarto-table-cell-role="th">morgan_1692</th>
+<th data-quarto-table-cell-role="th">morgan_1693</th>
+<th data-quarto-table-cell-role="th">morgan_1694</th>
+<th data-quarto-table-cell-role="th">morgan_1695</th>
+<th data-quarto-table-cell-role="th">morgan_1696</th>
+<th data-quarto-table-cell-role="th">morgan_1697</th>
+<th data-quarto-table-cell-role="th">morgan_1698</th>
+<th data-quarto-table-cell-role="th">morgan_1699</th>
+<th data-quarto-table-cell-role="th">morgan_1700</th>
+<th data-quarto-table-cell-role="th">morgan_1701</th>
+<th data-quarto-table-cell-role="th">morgan_1702</th>
+<th data-quarto-table-cell-role="th">morgan_1703</th>
+<th data-quarto-table-cell-role="th">morgan_1704</th>
+<th data-quarto-table-cell-role="th">morgan_1705</th>
+<th data-quarto-table-cell-role="th">morgan_1706</th>
+<th data-quarto-table-cell-role="th">morgan_1707</th>
+<th data-quarto-table-cell-role="th">morgan_1708</th>
+<th data-quarto-table-cell-role="th">morgan_1709</th>
+<th data-quarto-table-cell-role="th">morgan_1710</th>
+<th data-quarto-table-cell-role="th">morgan_1711</th>
+<th data-quarto-table-cell-role="th">morgan_1712</th>
+<th data-quarto-table-cell-role="th">morgan_1713</th>
+<th data-quarto-table-cell-role="th">morgan_1714</th>
+<th data-quarto-table-cell-role="th">morgan_1715</th>
+<th data-quarto-table-cell-role="th">morgan_1716</th>
+<th data-quarto-table-cell-role="th">morgan_1717</th>
+<th data-quarto-table-cell-role="th">morgan_1718</th>
+<th data-quarto-table-cell-role="th">morgan_1719</th>
+<th data-quarto-table-cell-role="th">morgan_1720</th>
+<th data-quarto-table-cell-role="th">morgan_1721</th>
+<th data-quarto-table-cell-role="th">morgan_1722</th>
+<th data-quarto-table-cell-role="th">morgan_1723</th>
+<th data-quarto-table-cell-role="th">morgan_1724</th>
+<th data-quarto-table-cell-role="th">morgan_1725</th>
+<th data-quarto-table-cell-role="th">morgan_1726</th>
+<th data-quarto-table-cell-role="th">morgan_1727</th>
+<th data-quarto-table-cell-role="th">morgan_1728</th>
+<th data-quarto-table-cell-role="th">morgan_1729</th>
+<th data-quarto-table-cell-role="th">morgan_1730</th>
+<th data-quarto-table-cell-role="th">morgan_1731</th>
+<th data-quarto-table-cell-role="th">morgan_1732</th>
+<th data-quarto-table-cell-role="th">morgan_1733</th>
+<th data-quarto-table-cell-role="th">morgan_1734</th>
+<th data-quarto-table-cell-role="th">morgan_1735</th>
+<th data-quarto-table-cell-role="th">morgan_1736</th>
+<th data-quarto-table-cell-role="th">morgan_1737</th>
+<th data-quarto-table-cell-role="th">morgan_1738</th>
+<th data-quarto-table-cell-role="th">morgan_1739</th>
+<th data-quarto-table-cell-role="th">morgan_1740</th>
+<th data-quarto-table-cell-role="th">morgan_1741</th>
+<th data-quarto-table-cell-role="th">morgan_1742</th>
+<th data-quarto-table-cell-role="th">morgan_1743</th>
+<th data-quarto-table-cell-role="th">morgan_1744</th>
+<th data-quarto-table-cell-role="th">morgan_1745</th>
+<th data-quarto-table-cell-role="th">morgan_1746</th>
+<th data-quarto-table-cell-role="th">morgan_1747</th>
+<th data-quarto-table-cell-role="th">morgan_1748</th>
+<th data-quarto-table-cell-role="th">morgan_1749</th>
+<th data-quarto-table-cell-role="th">morgan_1750</th>
+<th data-quarto-table-cell-role="th">morgan_1751</th>
+<th data-quarto-table-cell-role="th">morgan_1752</th>
+<th data-quarto-table-cell-role="th">morgan_1753</th>
+<th data-quarto-table-cell-role="th">morgan_1754</th>
+<th data-quarto-table-cell-role="th">morgan_1755</th>
+<th data-quarto-table-cell-role="th">morgan_1756</th>
+<th data-quarto-table-cell-role="th">morgan_1757</th>
+<th data-quarto-table-cell-role="th">morgan_1758</th>
+<th data-quarto-table-cell-role="th">morgan_1759</th>
+<th data-quarto-table-cell-role="th">morgan_1760</th>
+<th data-quarto-table-cell-role="th">morgan_1761</th>
+<th data-quarto-table-cell-role="th">morgan_1762</th>
+<th data-quarto-table-cell-role="th">morgan_1763</th>
+<th data-quarto-table-cell-role="th">morgan_1764</th>
+<th data-quarto-table-cell-role="th">morgan_1765</th>
+<th data-quarto-table-cell-role="th">morgan_1766</th>
+<th data-quarto-table-cell-role="th">morgan_1767</th>
+<th data-quarto-table-cell-role="th">morgan_1768</th>
+<th data-quarto-table-cell-role="th">morgan_1769</th>
+<th data-quarto-table-cell-role="th">morgan_1770</th>
+<th data-quarto-table-cell-role="th">morgan_1771</th>
+<th data-quarto-table-cell-role="th">morgan_1772</th>
+<th data-quarto-table-cell-role="th">morgan_1773</th>
+<th data-quarto-table-cell-role="th">morgan_1774</th>
+<th data-quarto-table-cell-role="th">morgan_1775</th>
+<th data-quarto-table-cell-role="th">morgan_1776</th>
+<th data-quarto-table-cell-role="th">morgan_1777</th>
+<th data-quarto-table-cell-role="th">morgan_1778</th>
+<th data-quarto-table-cell-role="th">morgan_1779</th>
+<th data-quarto-table-cell-role="th">morgan_1780</th>
+<th data-quarto-table-cell-role="th">morgan_1781</th>
+<th data-quarto-table-cell-role="th">morgan_1782</th>
+<th data-quarto-table-cell-role="th">morgan_1783</th>
+<th data-quarto-table-cell-role="th">morgan_1784</th>
+<th data-quarto-table-cell-role="th">morgan_1785</th>
+<th data-quarto-table-cell-role="th">morgan_1786</th>
+<th data-quarto-table-cell-role="th">morgan_1787</th>
+<th data-quarto-table-cell-role="th">morgan_1788</th>
+<th data-quarto-table-cell-role="th">morgan_1789</th>
+<th data-quarto-table-cell-role="th">morgan_1790</th>
+<th data-quarto-table-cell-role="th">morgan_1791</th>
+<th data-quarto-table-cell-role="th">morgan_1792</th>
+<th data-quarto-table-cell-role="th">morgan_1793</th>
+<th data-quarto-table-cell-role="th">morgan_1794</th>
+<th data-quarto-table-cell-role="th">morgan_1795</th>
+<th data-quarto-table-cell-role="th">morgan_1796</th>
+<th data-quarto-table-cell-role="th">morgan_1797</th>
+<th data-quarto-table-cell-role="th">morgan_1798</th>
+<th data-quarto-table-cell-role="th">morgan_1799</th>
+<th data-quarto-table-cell-role="th">morgan_1800</th>
+<th data-quarto-table-cell-role="th">morgan_1801</th>
+<th data-quarto-table-cell-role="th">morgan_1802</th>
+<th data-quarto-table-cell-role="th">morgan_1803</th>
+<th data-quarto-table-cell-role="th">morgan_1804</th>
+<th data-quarto-table-cell-role="th">morgan_1805</th>
+<th data-quarto-table-cell-role="th">morgan_1806</th>
+<th data-quarto-table-cell-role="th">morgan_1807</th>
+<th data-quarto-table-cell-role="th">morgan_1808</th>
+<th data-quarto-table-cell-role="th">morgan_1809</th>
+<th data-quarto-table-cell-role="th">morgan_1810</th>
+<th data-quarto-table-cell-role="th">morgan_1811</th>
+<th data-quarto-table-cell-role="th">morgan_1812</th>
+<th data-quarto-table-cell-role="th">morgan_1813</th>
+<th data-quarto-table-cell-role="th">morgan_1814</th>
+<th data-quarto-table-cell-role="th">morgan_1815</th>
+<th data-quarto-table-cell-role="th">morgan_1816</th>
+<th data-quarto-table-cell-role="th">morgan_1817</th>
+<th data-quarto-table-cell-role="th">morgan_1818</th>
+<th data-quarto-table-cell-role="th">morgan_1819</th>
+<th data-quarto-table-cell-role="th">morgan_1820</th>
+<th data-quarto-table-cell-role="th">morgan_1821</th>
+<th data-quarto-table-cell-role="th">morgan_1822</th>
+<th data-quarto-table-cell-role="th">morgan_1823</th>
+<th data-quarto-table-cell-role="th">morgan_1824</th>
+<th data-quarto-table-cell-role="th">morgan_1825</th>
+<th data-quarto-table-cell-role="th">morgan_1826</th>
+<th data-quarto-table-cell-role="th">morgan_1827</th>
+<th data-quarto-table-cell-role="th">morgan_1828</th>
+<th data-quarto-table-cell-role="th">morgan_1829</th>
+<th data-quarto-table-cell-role="th">morgan_1830</th>
+<th data-quarto-table-cell-role="th">morgan_1831</th>
+<th data-quarto-table-cell-role="th">morgan_1832</th>
+<th data-quarto-table-cell-role="th">morgan_1833</th>
+<th data-quarto-table-cell-role="th">morgan_1834</th>
+<th data-quarto-table-cell-role="th">morgan_1835</th>
+<th data-quarto-table-cell-role="th">morgan_1836</th>
+<th data-quarto-table-cell-role="th">morgan_1837</th>
+<th data-quarto-table-cell-role="th">morgan_1838</th>
+<th data-quarto-table-cell-role="th">morgan_1839</th>
+<th data-quarto-table-cell-role="th">morgan_1840</th>
+<th data-quarto-table-cell-role="th">morgan_1841</th>
+<th data-quarto-table-cell-role="th">morgan_1842</th>
+<th data-quarto-table-cell-role="th">morgan_1843</th>
+<th data-quarto-table-cell-role="th">morgan_1844</th>
+<th data-quarto-table-cell-role="th">morgan_1845</th>
+<th data-quarto-table-cell-role="th">morgan_1846</th>
+<th data-quarto-table-cell-role="th">morgan_1847</th>
+<th data-quarto-table-cell-role="th">morgan_1848</th>
+<th data-quarto-table-cell-role="th">morgan_1849</th>
+<th data-quarto-table-cell-role="th">morgan_1850</th>
+<th data-quarto-table-cell-role="th">morgan_1851</th>
+<th data-quarto-table-cell-role="th">morgan_1852</th>
+<th data-quarto-table-cell-role="th">morgan_1853</th>
+<th data-quarto-table-cell-role="th">morgan_1854</th>
+<th data-quarto-table-cell-role="th">morgan_1855</th>
+<th data-quarto-table-cell-role="th">morgan_1856</th>
+<th data-quarto-table-cell-role="th">morgan_1857</th>
+<th data-quarto-table-cell-role="th">morgan_1858</th>
+<th data-quarto-table-cell-role="th">morgan_1859</th>
+<th data-quarto-table-cell-role="th">morgan_1860</th>
+<th data-quarto-table-cell-role="th">morgan_1861</th>
+<th data-quarto-table-cell-role="th">morgan_1862</th>
+<th data-quarto-table-cell-role="th">morgan_1863</th>
+<th data-quarto-table-cell-role="th">morgan_1864</th>
+<th data-quarto-table-cell-role="th">morgan_1865</th>
+<th data-quarto-table-cell-role="th">morgan_1866</th>
+<th data-quarto-table-cell-role="th">morgan_1867</th>
+<th data-quarto-table-cell-role="th">morgan_1868</th>
+<th data-quarto-table-cell-role="th">morgan_1869</th>
+<th data-quarto-table-cell-role="th">morgan_1870</th>
+<th data-quarto-table-cell-role="th">morgan_1871</th>
+<th data-quarto-table-cell-role="th">morgan_1872</th>
+<th data-quarto-table-cell-role="th">morgan_1873</th>
+<th data-quarto-table-cell-role="th">morgan_1874</th>
+<th data-quarto-table-cell-role="th">morgan_1875</th>
+<th data-quarto-table-cell-role="th">morgan_1876</th>
+<th data-quarto-table-cell-role="th">morgan_1877</th>
+<th data-quarto-table-cell-role="th">morgan_1878</th>
+<th data-quarto-table-cell-role="th">morgan_1879</th>
+<th data-quarto-table-cell-role="th">morgan_1880</th>
+<th data-quarto-table-cell-role="th">morgan_1881</th>
+<th data-quarto-table-cell-role="th">morgan_1882</th>
+<th data-quarto-table-cell-role="th">morgan_1883</th>
+<th data-quarto-table-cell-role="th">morgan_1884</th>
+<th data-quarto-table-cell-role="th">morgan_1885</th>
+<th data-quarto-table-cell-role="th">morgan_1886</th>
+<th data-quarto-table-cell-role="th">morgan_1887</th>
+<th data-quarto-table-cell-role="th">morgan_1888</th>
+<th data-quarto-table-cell-role="th">morgan_1889</th>
+<th data-quarto-table-cell-role="th">morgan_1890</th>
+<th data-quarto-table-cell-role="th">morgan_1891</th>
+<th data-quarto-table-cell-role="th">morgan_1892</th>
+<th data-quarto-table-cell-role="th">morgan_1893</th>
+<th data-quarto-table-cell-role="th">morgan_1894</th>
+<th data-quarto-table-cell-role="th">morgan_1895</th>
+<th data-quarto-table-cell-role="th">morgan_1896</th>
+<th data-quarto-table-cell-role="th">morgan_1897</th>
+<th data-quarto-table-cell-role="th">morgan_1898</th>
+<th data-quarto-table-cell-role="th">morgan_1899</th>
+<th data-quarto-table-cell-role="th">morgan_1900</th>
+<th data-quarto-table-cell-role="th">morgan_1901</th>
+<th data-quarto-table-cell-role="th">morgan_1902</th>
+<th data-quarto-table-cell-role="th">morgan_1903</th>
+<th data-quarto-table-cell-role="th">morgan_1904</th>
+<th data-quarto-table-cell-role="th">morgan_1905</th>
+<th data-quarto-table-cell-role="th">morgan_1906</th>
+<th data-quarto-table-cell-role="th">morgan_1907</th>
+<th data-quarto-table-cell-role="th">morgan_1908</th>
+<th data-quarto-table-cell-role="th">morgan_1909</th>
+<th data-quarto-table-cell-role="th">morgan_1910</th>
+<th data-quarto-table-cell-role="th">morgan_1911</th>
+<th data-quarto-table-cell-role="th">morgan_1912</th>
+<th data-quarto-table-cell-role="th">morgan_1913</th>
+<th data-quarto-table-cell-role="th">morgan_1914</th>
+<th data-quarto-table-cell-role="th">morgan_1915</th>
+<th data-quarto-table-cell-role="th">morgan_1916</th>
+<th data-quarto-table-cell-role="th">morgan_1917</th>
+<th data-quarto-table-cell-role="th">morgan_1918</th>
+<th data-quarto-table-cell-role="th">morgan_1919</th>
+<th data-quarto-table-cell-role="th">morgan_1920</th>
+<th data-quarto-table-cell-role="th">morgan_1921</th>
+<th data-quarto-table-cell-role="th">morgan_1922</th>
+<th data-quarto-table-cell-role="th">morgan_1923</th>
+<th data-quarto-table-cell-role="th">morgan_1924</th>
+<th data-quarto-table-cell-role="th">morgan_1925</th>
+<th data-quarto-table-cell-role="th">morgan_1926</th>
+<th data-quarto-table-cell-role="th">morgan_1927</th>
+<th data-quarto-table-cell-role="th">morgan_1928</th>
+<th data-quarto-table-cell-role="th">morgan_1929</th>
+<th data-quarto-table-cell-role="th">morgan_1930</th>
+<th data-quarto-table-cell-role="th">morgan_1931</th>
+<th data-quarto-table-cell-role="th">morgan_1932</th>
+<th data-quarto-table-cell-role="th">morgan_1933</th>
+<th data-quarto-table-cell-role="th">morgan_1934</th>
+<th data-quarto-table-cell-role="th">morgan_1935</th>
+<th data-quarto-table-cell-role="th">morgan_1936</th>
+<th data-quarto-table-cell-role="th">morgan_1937</th>
+<th data-quarto-table-cell-role="th">morgan_1938</th>
+<th data-quarto-table-cell-role="th">morgan_1939</th>
+<th data-quarto-table-cell-role="th">morgan_1940</th>
+<th data-quarto-table-cell-role="th">morgan_1941</th>
+<th data-quarto-table-cell-role="th">morgan_1942</th>
+<th data-quarto-table-cell-role="th">morgan_1943</th>
+<th data-quarto-table-cell-role="th">morgan_1944</th>
+<th data-quarto-table-cell-role="th">morgan_1945</th>
+<th data-quarto-table-cell-role="th">morgan_1946</th>
+<th data-quarto-table-cell-role="th">morgan_1947</th>
+<th data-quarto-table-cell-role="th">morgan_1948</th>
+<th data-quarto-table-cell-role="th">morgan_1949</th>
+<th data-quarto-table-cell-role="th">morgan_1950</th>
+<th data-quarto-table-cell-role="th">morgan_1951</th>
+<th data-quarto-table-cell-role="th">morgan_1952</th>
+<th data-quarto-table-cell-role="th">morgan_1953</th>
+<th data-quarto-table-cell-role="th">morgan_1954</th>
+<th data-quarto-table-cell-role="th">morgan_1955</th>
+<th data-quarto-table-cell-role="th">morgan_1956</th>
+<th data-quarto-table-cell-role="th">morgan_1957</th>
+<th data-quarto-table-cell-role="th">morgan_1958</th>
+<th data-quarto-table-cell-role="th">morgan_1959</th>
+<th data-quarto-table-cell-role="th">morgan_1960</th>
+<th data-quarto-table-cell-role="th">morgan_1961</th>
+<th data-quarto-table-cell-role="th">morgan_1962</th>
+<th data-quarto-table-cell-role="th">morgan_1963</th>
+<th data-quarto-table-cell-role="th">morgan_1964</th>
+<th data-quarto-table-cell-role="th">morgan_1965</th>
+<th data-quarto-table-cell-role="th">morgan_1966</th>
+<th data-quarto-table-cell-role="th">morgan_1967</th>
+<th data-quarto-table-cell-role="th">morgan_1968</th>
+<th data-quarto-table-cell-role="th">morgan_1969</th>
+<th data-quarto-table-cell-role="th">morgan_1970</th>
+<th data-quarto-table-cell-role="th">morgan_1971</th>
+<th data-quarto-table-cell-role="th">morgan_1972</th>
+<th data-quarto-table-cell-role="th">morgan_1973</th>
+<th data-quarto-table-cell-role="th">morgan_1974</th>
+<th data-quarto-table-cell-role="th">morgan_1975</th>
+<th data-quarto-table-cell-role="th">morgan_1976</th>
+<th data-quarto-table-cell-role="th">morgan_1977</th>
+<th data-quarto-table-cell-role="th">morgan_1978</th>
+<th data-quarto-table-cell-role="th">morgan_1979</th>
+<th data-quarto-table-cell-role="th">morgan_1980</th>
+<th data-quarto-table-cell-role="th">morgan_1981</th>
+<th data-quarto-table-cell-role="th">morgan_1982</th>
+<th data-quarto-table-cell-role="th">morgan_1983</th>
+<th data-quarto-table-cell-role="th">morgan_1984</th>
+<th data-quarto-table-cell-role="th">morgan_1985</th>
+<th data-quarto-table-cell-role="th">morgan_1986</th>
+<th data-quarto-table-cell-role="th">morgan_1987</th>
+<th data-quarto-table-cell-role="th">morgan_1988</th>
+<th data-quarto-table-cell-role="th">morgan_1989</th>
+<th data-quarto-table-cell-role="th">morgan_1990</th>
+<th data-quarto-table-cell-role="th">morgan_1991</th>
+<th data-quarto-table-cell-role="th">morgan_1992</th>
+<th data-quarto-table-cell-role="th">morgan_1993</th>
+<th data-quarto-table-cell-role="th">morgan_1994</th>
+<th data-quarto-table-cell-role="th">morgan_1995</th>
+<th data-quarto-table-cell-role="th">morgan_1996</th>
+<th data-quarto-table-cell-role="th">morgan_1997</th>
+<th data-quarto-table-cell-role="th">morgan_1998</th>
+<th data-quarto-table-cell-role="th">morgan_1999</th>
+<th data-quarto-table-cell-role="th">morgan_2000</th>
+<th data-quarto-table-cell-role="th">morgan_2001</th>
+<th data-quarto-table-cell-role="th">morgan_2002</th>
+<th data-quarto-table-cell-role="th">morgan_2003</th>
+<th data-quarto-table-cell-role="th">morgan_2004</th>
+<th data-quarto-table-cell-role="th">morgan_2005</th>
+<th data-quarto-table-cell-role="th">morgan_2006</th>
+<th data-quarto-table-cell-role="th">morgan_2007</th>
+<th data-quarto-table-cell-role="th">morgan_2008</th>
+<th data-quarto-table-cell-role="th">morgan_2009</th>
+<th data-quarto-table-cell-role="th">morgan_2010</th>
+<th data-quarto-table-cell-role="th">morgan_2011</th>
+<th data-quarto-table-cell-role="th">morgan_2012</th>
+<th data-quarto-table-cell-role="th">morgan_2013</th>
+<th data-quarto-table-cell-role="th">morgan_2014</th>
+<th data-quarto-table-cell-role="th">morgan_2015</th>
+<th data-quarto-table-cell-role="th">morgan_2016</th>
+<th data-quarto-table-cell-role="th">morgan_2017</th>
+<th data-quarto-table-cell-role="th">morgan_2018</th>
+<th data-quarto-table-cell-role="th">morgan_2019</th>
+<th data-quarto-table-cell-role="th">morgan_2020</th>
+<th data-quarto-table-cell-role="th">morgan_2021</th>
+<th data-quarto-table-cell-role="th">morgan_2022</th>
+<th data-quarto-table-cell-role="th">morgan_2023</th>
+<th data-quarto-table-cell-role="th">morgan_2024</th>
+<th data-quarto-table-cell-role="th">morgan_2025</th>
+<th data-quarto-table-cell-role="th">morgan_2026</th>
+<th data-quarto-table-cell-role="th">morgan_2027</th>
+<th data-quarto-table-cell-role="th">morgan_2028</th>
+<th data-quarto-table-cell-role="th">morgan_2029</th>
+<th data-quarto-table-cell-role="th">morgan_2030</th>
+<th data-quarto-table-cell-role="th">morgan_2031</th>
+<th data-quarto-table-cell-role="th">morgan_2032</th>
+<th data-quarto-table-cell-role="th">morgan_2033</th>
+<th data-quarto-table-cell-role="th">morgan_2034</th>
+<th data-quarto-table-cell-role="th">morgan_2035</th>
+<th data-quarto-table-cell-role="th">morgan_2036</th>
+<th data-quarto-table-cell-role="th">morgan_2037</th>
+<th data-quarto-table-cell-role="th">morgan_2038</th>
+<th data-quarto-table-cell-role="th">morgan_2039</th>
+<th data-quarto-table-cell-role="th">morgan_2040</th>
+<th data-quarto-table-cell-role="th">morgan_2041</th>
+<th data-quarto-table-cell-role="th">morgan_2042</th>
+<th data-quarto-table-cell-role="th">morgan_2043</th>
+<th data-quarto-table-cell-role="th">morgan_2044</th>
+<th data-quarto-table-cell-role="th">morgan_2045</th>
+<th data-quarto-table-cell-role="th">morgan_2046</th>
+<th data-quarto-table-cell-role="th">morgan_2047</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>A</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>C</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>E</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>F</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 2049 columns</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>aa_morgan.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(23, 2049)</code></pre>
+</div>
+</div>
+</section>
+<section id="visualize-1" class="level3">
+<h3 class="anchored" data-anchor-id="visualize-1">Visualize</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>plot_cluster(aa_morgan, name_list <span class="op">=</span> aa_info.Name, hue <span class="op">=</span> <span class="st">'aa'</span>, method <span class="op">=</span> <span class="st">'pca'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_01_aa_feature_files/figure-html/cell-20-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>plot_cluster(aa_morgan, name_list <span class="op">=</span> aa_info.Name, hue <span class="op">=</span> <span class="st">'aa'</span>, method <span class="op">=</span> <span class="st">'umap'</span>,complexity<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="tutorial_01_aa_feature_files/figure-html/cell-21-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
