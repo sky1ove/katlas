@@ -8,19 +8,18 @@ website:
         - tutorial_01_aa_feature.ipynb
         - tutorial_02_kinase_feature.ipynb
         - tutorial_03a_target_transform.ipynb
-        - tutorial_03b_target_plot.ipynb
-        - tutorial_04_train.ipynb
+        - tutorial_03b_target_scale.ipynb
+        - tutorial_03c_target_plot.ipynb
+        - tutorial_04_prepare_dataset.ipynb
+        - tutorial_05_train.ipynb
       - section: Modules
         contents:
         - 00_core.ipynb
         - 01_feature.ipynb
         - 02_plot.ipynb
-        - 03_train.ipynb
-      - section: XGB train
-        contents:
-        - xgb_01_dummy.ipynb
-        - xgb_01_T5_aa_feature.ipynb
-        - xgb_01_T5_aa_feature_raw.ipynb
+        - 03_ML_trainer.ipynb
+        - 04_DLmodel.ipynb
+
 
       
 
