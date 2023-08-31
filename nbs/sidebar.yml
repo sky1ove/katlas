@@ -2,23 +2,37 @@ website:
   sidebar:
     contents:
       - index.ipynb
-      - section: Tutorials
+      
+      - section: Features
         contents:
-        - tutorial_00_hierarchical_clustering.ipynb
         - tutorial_01_aa_feature.ipynb
         - tutorial_02_kinase_feature.ipynb
+        
+      - section: Targets
+        contents:
         - tutorial_03a_target_transform.ipynb
         - tutorial_03b_target_scale.ipynb
         - tutorial_03c_target_plot.ipynb
-        - tutorial_04_prepare_dataset.ipynb
-        - tutorial_05_train.ipynb
+        - tutorial_03d_hierarchical_clustering.ipynb
+
+      - section: Prepare Dataset
+        contents:
+        - tutorial_04a_prepare_dataset(protein only).ipynb
+        - tutorial_04b_prepare_dataset.ipynb
+        
+      - section: Train
+        contents:
+        - tutorial_05_train_ML.ipynb
+        - tutorial_05_train_ML_2.ipynb
+        - tutorial_05_train_protein_only.ipynb
+        
       - section: Modules
         contents:
         - 00_core.ipynb
         - 01_feature.ipynb
         - 02_plot.ipynb
-        - 03_ML_trainer.ipynb
-        - 04_DLmodel.ipynb
+        - 03_ML.ipynb
+        - 04_DL.ipynb
 
 
       
