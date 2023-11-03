@@ -5,6 +5,7 @@ __all__ = ['get_splits', 'split_data', 'train_ml', 'predict_ml', 'score_all', 't
            'xgb_predict']
 
 # %% ../nbs/03_ML.ipynb 3
+#| output: False
 from sklearn import set_config
 from .core import Data
 from .feature import *
@@ -21,6 +22,7 @@ from joblib import dump, load
 from sklearn.linear_model import *
 from sklearn.svm import *
 from sklearn.ensemble import *
+
 
 # %% ../nbs/03_ML.ipynb 4
 from sklearn import set_config
@@ -40,6 +42,7 @@ def get_splits(df, # df contains info for split
         for split in kf.split(df.index, df[stratified]):
             splits.append(split)
         print(kf)
+        split = splits[0]
         print(f'# kinase {stratified} in train set: {df.loc[split[0]][stratified].unique().shape[0]}')
         print(f'# kinase {stratified} in test set: {df.loc[split[1]][stratified].unique().shape[0]}')
         
@@ -49,6 +52,7 @@ def get_splits(df, # df contains info for split
             splits.append(split)
             
         print(kf)
+        split = splits[0]
         print(f'# kinase {group} in train set: {df.loc[split[0]][group].unique().shape[0]}')
         print(f'# kinase {group} in test set: {df.loc[split[1]][group].unique().shape[0]}')
         
@@ -58,6 +62,7 @@ def get_splits(df, # df contains info for split
             splits.append(split)
             
         print(kf)    
+        split = splits[0]
         print(f'# kinase {stratified} in train set: {df.loc[split[0]][stratified].unique().shape[0]}')
         print(f'# kinase {stratified} in test set: {df.loc[split[1]][stratified].unique().shape[0]}')
     else:
@@ -112,11 +117,15 @@ def train_ml(df, # dataframe of values
         # Save the model to a file
         # joblib.dump(model, save)
         dump(model, save)
+        
+    # Predict train
+    y_train_pred = model.predict(X_train) # X_test is dataframe, y_pred is numpy array
+    print(f'training set mse: {mean_squared_error(y_train, y_train_pred)}')
     
-    # Predict
+    # Predict test
     y_pred = model.predict(X_test) # X_test is dataframe, y_pred is numpy array
+    print(f'test set mse: {mean_squared_error(y_test, y_pred)}')
     y_pred = pd.DataFrame(y_pred,index=y_test.index, columns = y_test.columns)
-    
     
     return y_test, y_pred #two dataframes
 
@@ -170,7 +179,7 @@ def train_cv(df, # dataframe of values
         print(f'------ fold: {fold} --------')
         
         if save_name is not None: 
-            target, pred = train_ml(df, feat_col, target_col, split, model, f'models/{save_name}_fold.joblib',params)
+            target, pred = train_ml(df, feat_col, target_col, split, model, f'models/{save_name}_{fold}.joblib',params)
         else:
             target, pred = train_ml(df, feat_col, target_col, split, model, params=params)
 

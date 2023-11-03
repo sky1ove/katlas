@@ -11,7 +11,7 @@ import seaborn as sns
 
 from fastbook import *
 
-# %% ../nbs/00_core.ipynb 5
+# %% ../nbs/00_core.ipynb 6
 class Data:
     """
     A class for fetching various datasets.
@@ -158,7 +158,7 @@ class Data:
         return Data._fetch_data(Data.DF_URL)
     
 
-# %% ../nbs/00_core.ipynb 11
+# %% ../nbs/00_core.ipynb 12
 def raw2norm(df, #a single kinase's df that has position as index, and a.a. as columns
          PDHK=False, #whether this kinase belongs to PDHK family
         ):
@@ -179,7 +179,7 @@ def raw2norm(df, #a single kinase's df that has position as index, and a.a. as c
     
     return df2
 
-# %% ../nbs/00_core.ipynb 12
+# %% ../nbs/00_core.ipynb 13
 def get_one_kinase(df, #stacked dataframe (paper's raw data)
                kinase, # a specific kinase
                normalize=False, # normalize according to the paper; special for PDHK1/4
@@ -198,7 +198,7 @@ def get_one_kinase(df, #stacked dataframe (paper's raw data)
         pp = raw2norm(pp, PDHK=True if kinase == 'PDHK1' or kinase == 'PDHK4' else False)
     return pp
 
-# %% ../nbs/00_core.ipynb 25
+# %% ../nbs/00_core.ipynb 26
 def unstack(df, name):
     # Unstack
     df = df.unstack().reset_index(name = name)
@@ -221,7 +221,7 @@ def unstack(df, name):
     
     return df
 
-# %% ../nbs/00_core.ipynb 31
+# %% ../nbs/00_core.ipynb 32
 def get_dict(input_string):
     "Given a substrate string, returns a dictionary, and positions to be calculated"
     
@@ -242,7 +242,7 @@ def get_dict(input_string):
 
     return aa_dict,columns
 
-# %% ../nbs/00_core.ipynb 38
+# %% ../nbs/00_core.ipynb 39
 def paper_score_func(r, columns):
     "Functions of calculating the kinase score given substrate string, according to the paper"
     
@@ -251,7 +251,7 @@ def paper_score_func(r, columns):
     score_log = np.log2(score_raw)
     return score_raw, round(score_log,2)
 
-# %% ../nbs/00_core.ipynb 39
+# %% ../nbs/00_core.ipynb 40
 def get_paper_score(df, # Reference df where kinase is index, position+substrate is column
                     input_string # Format of string should be sth like this "PSVEPPLs*QET"
                    ):
@@ -266,14 +266,14 @@ def get_paper_score(df, # Reference df where kinase is index, position+substrate
     # out_df = pd.DataFrame(norm.apply(func, axis=1),columns=['raw_score','log2(score)'])
     return out_df
 
-# %% ../nbs/00_core.ipynb 49
+# %% ../nbs/00_core.ipynb 50
 def average_score_func(r, columns):
     "Functions of calculating the average score of each position"
     
     average = r[columns].sum()/len(columns)
     return average
 
-# %% ../nbs/00_core.ipynb 50
+# %% ../nbs/00_core.ipynb 51
 def get_average_score(df,  # Reference df, where index is kinase, and columns is position+substrate
                       input_string, # string of substrate, following the format of "PSVEPPLs*QETFSDL"
                      ):
