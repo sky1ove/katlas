@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['logo_func', 'get_logo', 'plot_rank', 'get_heatmap', 'plot_heatmap', 'plot_cluster', 'assign_colors', 'plot_bokeh',
-           'plot_bokeh_category', 'plot_bar', 'draw_corr']
+           'plot_bokeh_category', 'plot_bar', 'plot_corr', 'draw_corr']
 
 # %% ../nbs/02_plot.ipynb 3
 #| output: False
@@ -386,6 +386,43 @@ def plot_bar(df, # dataframe with a column of values, and a column of category t
                       alpha=0.8,
                       ax=g.ax,
                       **marker);
+
+# %% ../nbs/02_plot.ipynb 38
+def plot_corr(
+              x,
+              y,
+              xlabel=None,# x axis label
+              ylabel=None,# y axis label
+            data = None,
+            text_location = [0.8,0.1],
+            **kwargs
+             ):
+    "Given a dataframe and the name of two columns, plot the two columns' correlation"
+    if data is not None:
+        x=data[x]
+        y=data[y]
+        
+    pear, pvalue = pearsonr(x, y)
+        
+    sns.regplot(
+                x=x,
+                y=y,
+                line_kws={'color': 'gray'}, **kwargs
+           )
+    
+    if xlabel is not None:
+        plt.xlabel(xlabel)
+        
+    if ylabel is not None:
+        plt.ylabel(ylabel)
+    
+    # correlation_text = f'Spearman: {correlation:.2f}' if method == 'spearman' else f'Pearson: {correlation:.2f}'
+
+    # plt.text(x=0.8, y=0.1, s=correlation_text, transform=plt.gca().transAxes, ha='center', va='center')
+    plt.text(s=f'Pearson = {round(pear,2)}\n   p = {"{:.2e}".format(pvalue)}',
+             x=text_location[0],y=text_location[1],
+            transform=plt.gca().transAxes, 
+             ha='center', va='center')
 
 # %% ../nbs/02_plot.ipynb 44
 def draw_corr(corr):
