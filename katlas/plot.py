@@ -358,7 +358,8 @@ def plot_bar(df, # dataframe with a column of values, and a column of category t
              category, # colname of categories which is used to groupby values
              circle = True, # whether or not add dots in the graph
              aspect = 3, # the biger the value is, the wider the graph is
-             rotation=45
+             rotation=45,
+             **kwargs
               ):
     
     order = df.groupby(category)[values].mean().sort_values(ascending=False).index
@@ -369,7 +370,7 @@ def plot_bar(df, # dataframe with a column of values, and a column of category t
                 order=order,
                 kind='bar',
                 ci='sd',
-                palette='tab20',)
+                **kwargs)
     g.set_xticklabels(rotation=rotation)
     
     if circle:
