@@ -387,7 +387,7 @@ def plot_bar(df, # dataframe with a column of values, and a column of category t
                       ax=g.ax,
                       **marker);
 
-# %% ../nbs/02_plot.ipynb 43
+# %% ../nbs/02_plot.ipynb 44
 def draw_corr(corr):
     # Mask for the upper triangle
     mask = np.triu(np.ones_like(corr, dtype=bool))
