@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['Data', 'raw2norm', 'get_one_kinase', 'unstack', 'get_dict', 'paper_score_func', 'get_paper_score',
-           'average_score_func', 'get_average_score']
+           'average_score_func', 'get_average_score', 'get_freq']
 
 # %% ../nbs/00_core.ipynb 2
 import pandas as pd
@@ -183,6 +183,7 @@ def raw2norm(df, #a single kinase's df that has position as index, and a.a. as c
 def get_one_kinase(df, #stacked dataframe (paper's raw data)
                kinase, # a specific kinase
                normalize=False, # normalize according to the paper; special for PDHK1/4
+                drop_s = True # drop s if s is in column
               ):
     "Obtain a specific kinase data from stacked dataframe, decide whether or not to normalize"
     
@@ -191,8 +192,9 @@ def get_one_kinase(df, #stacked dataframe (paper's raw data)
     p['aa'] = p.substrate.str[-1]
     p.position = p.position.astype(int)
     pp = p.pivot(index='position', columns='aa', values=kinase)
-    if 's' in pp.columns:
-        pp = pp.drop(columns=['s'])
+    if drop_s:
+        if 's' in pp.columns:
+            pp = pp.drop(columns=['s'])
 
     if normalize:
         pp = raw2norm(pp, PDHK=True if kinase == 'PDHK1' or kinase == 'PDHK4' else False)
@@ -289,3 +291,44 @@ def get_average_score(df,  # Reference df, where index is kinase, and columns is
     out_df.columns = ['average']
     # out_df = pd.DataFrame(norm.apply(func, axis=1),columns=['raw_score','log2(score)'])
     return out_df
+
+# %% ../nbs/00_core.ipynb 55
+def get_freq(df_k,
+             aa_order = [i for i in 'PGACSTVILMFYWHKRQNDEsty'],
+            aa_order_paper = [i for i in 'PGACSTVILMFYWHKRQNDEsty'],
+             position = [i for i in range(-7,8)],
+             position_paper = [-5,-4,-3,-2,-1,1,2,3,4]
+            ):
+    
+    "Get frequency of each amino acid at each position"
+    
+
+    #Count frequency for each amino acid at each position
+    melted_k = df_k.melt(id_vars=['Kinase', 'substrate'], 
+                    value_vars=[i for i in range(-7, 8)],
+                    var_name='Position', 
+                    value_name='aa')
+    
+    # Group by Position and Amino Acid and count occurrences
+    grouped = melted_k.groupby(['Position', 'aa']).size().reset_index(name='Count')
+    
+
+    # Remove wired amino acid
+    aa_include = [i for i in 'PGACSTVILMFYWHKRQNDEsty']
+    grouped = grouped[grouped.aa.isin(aa_include)].reset_index(drop=True)
+    
+    # get pivot table
+    pivot_k = grouped.pivot(index='aa', columns='Position', values='Count').fillna(0)
+    
+    # Get frequency by dividing the sum of each column
+    freq_k = pivot_k/pivot_k.sum()
+
+    
+    # data from the kinase-substrate dataset, and format is Lew's paper's format
+    paper = freq_k.reindex(index=aa_order_paper,columns=position_paper,fill_value=0)
+
+    # full pivot data from kinase-substrate dataset
+    full = freq_k.reindex(index=aa_order,columns=position, fill_value=0)
+
+    
+    return paper,full
