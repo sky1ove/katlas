@@ -91,7 +91,7 @@ def get_logo(df, # Stacked Dataframe with kinase as index, substrates as columns
     logo_func(ratio2, kinase)
 
 # %% ../nbs/02_plot.ipynb 9
-def get_logo2(full, title,ax=None):
+def get_logo2(full, title):
     S_ratio,T_ratio,Y_ratio = full[0][['s','t','y']]/full[0][['s','t','y']].sum()
 
     full = full.drop(columns=[0])
@@ -114,7 +114,7 @@ def get_logo2(full, title,ax=None):
 
     ratio2 = pd.concat([ratio, new_row], ignore_index=False).fillna(0)
 
-    logo_func(ratio2,title,ax=ax)
+    logo_func(ratio2,title)
 
 # %% ../nbs/02_plot.ipynb 14
 def plot_rank(sorted_df, x, y, n_hi=10,n_lo=10,figsize=(10,8),**kwargs):
