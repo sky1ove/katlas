@@ -57,6 +57,9 @@ class Data:
     # Prepared dataset
     DF_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/df_esm64_aa16.parquet"
     
+    # Kinase substrate datasets
+    KS_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/ks_datasets.parquet"
+    
     def __init__(self):
         pass
     
@@ -157,6 +160,12 @@ class Data:
     def get_prepared_data():
         return Data._fetch_data(Data.DF_URL)
     
+    @staticmethod
+    def get_ks():
+        df = Data._fetch_data(Data.KS_URL)
+        #Convert the number in the column name into integer
+        df.columns = [int(col) if col.lstrip('-').isdigit() else col for col in df.columns]
+        return df
 
 # %% ../nbs/00_core.ipynb 12
 def raw2norm(df, #a single kinase's df that has position as index, and a.a. as columns
