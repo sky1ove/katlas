@@ -60,6 +60,14 @@ class Data:
     # Kinase substrate datasets
     KS_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/ks_datasets.parquet"
     
+    KS_MAIN_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/ks_main.parquet"
+    KS_MAIN_UPPER_URL ="https://github.com/sky1ove/katlas/raw/main/dataset/ks_main_upper.parquet"
+    KS_MAIN_INFO_URL="https://github.com/sky1ove/katlas/raw/main/dataset/ks_main_info.parquet"
+    
+    KS_OTHERS_URL="https://github.com/sky1ove/katlas/raw/main/dataset/ks_others.parquet"
+    KS_OTHERS_INFO_URL="https://github.com/sky1ove/katlas/raw/main/dataset/ks_others_info.parquet"
+
+    
     def __init__(self):
         pass
     
@@ -166,6 +174,26 @@ class Data:
         #Convert the number in the column name into integer
         df.columns = [int(col) if col.lstrip('-').isdigit() else col for col in df.columns]
         return df
+        
+    @staticmethod
+    def get_ks_main():
+        return Data._fetch_data(Data.KS_MAIN_URL)
+    
+    @staticmethod
+    def get_ks_main_upper():
+        return Data._fetch_data(Data.KS_MAIN_UPPER_URL)
+    
+    @staticmethod
+    def get_ks_main_info():
+        return Data._fetch_data(Data.KS_MAIN_INFO_URL)
+    
+    @staticmethod
+    def get_ks_others():
+        return Data._fetch_data(Data.KS_OTHERS_URL)
+    
+    @staticmethod
+    def get_ks_others_info():
+        return Data._fetch_data(Data.KS_OTHERS_INFO_URL)
 
 # %% ../nbs/00_core.ipynb 12
 def raw2norm(df, #a single kinase's df that has position as index, and a.a. as columns
