@@ -34,12 +34,16 @@ class Data:
     # Amino acid info
     AA_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/aa_info.parquet"
     AA_FEATURE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/aa_rdkit.parquet"
+    AA_MORGAN_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/aa_morgan.parquet"
     
     # Paper raw data
     RAW_KINASE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_raw.parquet"
     NORM_KINASE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_norm.parquet"
+    NORM_KINASE_WITH_0POSITION = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_norm_0position.parquet"
+    
     SCALE_KINASE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_scale.parquet"
-
+    
+    
     # Unstacked target
     RAW_UNSTACK_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/unstack_raw.parquet"
     
@@ -67,6 +71,14 @@ class Data:
     KS_OTHERS_URL="https://github.com/sky1ove/katlas/raw/main/dataset/ks_others.parquet"
     KS_OTHERS_INFO_URL="https://github.com/sky1ove/katlas/raw/main/dataset/ks_others_info.parquet"
 
+    # scaled PSPA based on KS format
+    PSPA_MAIN_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/pspa_main.parquet"
+    PSPA_MAIN_UPPER_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/pspa_main_upper.parquet"
+    
+    # Combined PSPA and KS
+    COMBINE_MAIN_URL =  "https://github.com/sky1ove/katlas/raw/main/dataset/combine_main.parquet"
+    COMBINE_MAIN_UPPER_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/combine_main_upper.parquet"
+    
     
     def __init__(self):
         pass
@@ -89,6 +101,11 @@ class Data:
     @staticmethod
     def get_stack_norm():
         return Data._fetch_data(Data.NORM_KINASE_URL)
+    
+    @staticmethod
+    def get_stack_norm_0position():
+        return Data._fetch_data(Data.NORM_KINASE_WITH_0POSITION)
+    
     
     
     @staticmethod
@@ -194,6 +211,22 @@ class Data:
     @staticmethod
     def get_ks_others_info():
         return Data._fetch_data(Data.KS_OTHERS_INFO_URL)
+    
+    @staticmethod
+    def get_pspa_main_upper():
+        return Data._fetch_data(Data.PSPA_MAIN_UPPER_URL)
+    
+    @staticmethod
+    def get_pspa_main():
+        return Data._fetch_data(Data.PSPA_MAIN_URL)
+    
+    @staticmethod
+    def get_combine_main_upper():
+        return Data._fetch_data(Data.COMBINE_MAIN_UPPER_URL)
+    
+    @staticmethod
+    def get_combine_main():
+        return Data._fetch_data(Data.COMBINE_MAIN_URL)
 
 # %% ../nbs/00_core.ipynb 12
 def raw2norm(df, #a single kinase's df that has position as index, and a.a. as columns
