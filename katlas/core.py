@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['Data', 'CPTAC', 'extract_site_seq', 'raw2norm', 'get_one_kinase', 'unstack', 'get_dict', 'get_dict_star',
-           'multiply_score_func', 'average_score_func', 'get_score', 'predict_kinase', 'agg_seq', 'get_freq']
+           'multiply_score_func1', 'average_score_func', 'get_score', 'predict_kinase', 'agg_seq', 'get_freq']
 
 # %% ../nbs/00_core.ipynb 3
 import pandas as pd
@@ -41,8 +41,6 @@ class Data:
     # Paper raw data
     RAW_KINASE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_raw.parquet"
     NORM_KINASE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_norm.parquet"
-    NORM_KINASE_WITH_0POSITION = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_norm_0position.parquet"
-    
     SCALE_KINASE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/paper_scale.parquet"
     
     
@@ -76,6 +74,8 @@ class Data:
     # scaled PSPA based on KS format
     PSPA_MAIN_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/pspa_main.parquet"
     PSPA_MAIN_UPPER_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/pspa_main_upper.parquet"
+    # original pspa norm data with 0 position
+    PSPA_ORIGINAL = "https://github.com/sky1ove/katlas/raw/main/dataset/pspa_original.parquet"
     
     # Combined PSPA and KS
     COMBINE_MAIN_URL =  "https://github.com/sky1ove/katlas/raw/main/dataset/combine_main.parquet"
@@ -116,11 +116,6 @@ class Data:
     @staticmethod
     def get_stack_norm():
         return Data._fetch_data(Data.NORM_KINASE_URL)
-    
-    @staticmethod
-    def get_stack_norm_0position():
-        return Data._fetch_data(Data.NORM_KINASE_WITH_0POSITION)
-    
     
     
     @staticmethod
@@ -236,6 +231,10 @@ class Data:
         return Data._fetch_data(Data.PSPA_MAIN_URL)
     
     @staticmethod
+    def get_pspa_original():
+        return Data._fetch_data(Data.PSPA_ORIGINAL)
+    
+    @staticmethod
     def get_combine_main_upper():
         return Data._fetch_data(Data.COMBINE_MAIN_UPPER_URL)
     
@@ -265,6 +264,8 @@ class Data:
     @staticmethod
     def get_cptac_unique_site():
         return Data._fetch_data(Data.CPTAC_UNIQUE_URL)
+    
+
     
 
 # %% ../nbs/00_core.ipynb 11
@@ -498,7 +499,7 @@ def get_dict_star(input_string):
     return columns
 
 # %% ../nbs/00_core.ipynb 44
-def multiply_score_func(r,columns):
+def multiply_score_func1(r,columns):
     "Functions of calculating the kinase score given substrate string, according to the paper"
     
     divide = 16 if 'PDHK' in r.name else 17
@@ -506,14 +507,14 @@ def multiply_score_func(r,columns):
     score_log = np.log2(score_raw)
     return round(score_log,2) # can also return raw score
 
-# %% ../nbs/00_core.ipynb 48
+# %% ../nbs/00_core.ipynb 50
 def average_score_func(r, columns):
     "Functions of calculating the average score of each position"
     
     average = r[columns].sum()/len(columns)
     return average
 
-# %% ../nbs/00_core.ipynb 49
+# %% ../nbs/00_core.ipynb 51
 def get_score(df, # Reference df where kinase is index, position+substrate is column
                     input_string, # Format of string should be sth like this "PSVEPPLs*QET"
                    func = multiply_score_func):
@@ -533,7 +534,7 @@ def get_score(df, # Reference df where kinase is index, position+substrate is co
     # out_df = pd.DataFrame(norm.apply(func, axis=1),columns=['raw_score','log2(score)'])
     return out
 
-# %% ../nbs/00_core.ipynb 74
+# %% ../nbs/00_core.ipynb 76
 def predict_kinase(df, ref, seq_col, seq_id=None):
     results=[]
     for i,r in tqdm(ref.iterrows(), total=ref.shape[0]):
@@ -552,7 +553,7 @@ def predict_kinase(df, ref, seq_col, seq_id=None):
         
     return out
 
-# %% ../nbs/00_core.ipynb 79
+# %% ../nbs/00_core.ipynb 81
 def agg_seq(df, # contains split columns
             agg_col = None, # column of weight, if None, will count number
            ):
@@ -569,7 +570,7 @@ def agg_seq(df, # contains split columns
     pivot = pivot.reindex(index=aa_order).fillna(0)
     return pivot
 
-# %% ../nbs/00_core.ipynb 81
+# %% ../nbs/00_core.ipynb 83
 def get_freq(df_k,
              aa_order = [i for i in 'PGACSTVILMFYWHKRQNDEsty'],
             aa_order_paper = [i for i in 'PGACSTVILMFYWHKRQNDEsty'],
