@@ -2,7 +2,8 @@
 
 # %% auto 0
 __all__ = ['Data', 'CPTAC', 'extract_site_seq', 'agg_seq', 'get_dict', 'predict_kinase', 'raw2norm', 'get_one_kinase', 'unstack',
-           'paper_score_func', 'get_paper_score', 'average_score_func', 'get_average_score', 'get_freq']
+           'get_dict_star', 'paper_score_func', 'get_paper_score', 'average_score_func', 'get_average_score',
+           'get_freq']
 
 # %% ../nbs/00_core.ipynb 2
 import pandas as pd
@@ -441,7 +442,7 @@ def predict_kinase(df, ref, seq_col, seq_id):
 
         results.append(result)
         
-    return pd.DataFrame(results,index=ref.index,columns=df[seq_id])
+    return pd.DataFrame(results,index=ref.index,columns=df[seq_id]).T
 
 # %% ../nbs/00_core.ipynb 20
 def raw2norm(df, #a single kinase's df that has position as index, and a.a. as columns
@@ -509,7 +510,7 @@ def unstack(df, name):
     return df
 
 # %% ../nbs/00_core.ipynb 40
-def get_dict(input_string):
+def get_dict_star(input_string):
     "Given a substrate string, returns a dictionary, and positions to be calculated"
     
     acceptor_position = input_string.find('*') - 1

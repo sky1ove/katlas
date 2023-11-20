@@ -216,8 +216,8 @@ def get_t5_bfd(df,
 # %% ../nbs/01_feature.ipynb 27
 def reduce_feature(df, 
                method='pca',
-                n=2, 
-               complexity = 20, # umap default: 15, tsne default: 30
+               complexity = 20, # umap recommend: 15, tsne recommend: 30
+                   n=2,
                load=None, # load a previous model
                save=None, # pkl file to be saved, e.g. pca_model.pkl
                seed =123, **kwargs):
