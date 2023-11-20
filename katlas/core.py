@@ -2,7 +2,8 @@
 
 # %% auto 0
 __all__ = ['Data', 'CPTAC', 'extract_site_seq', 'raw2norm', 'get_one_kinase', 'unstack', 'get_dict', 'get_dict_star',
-           'multiply_score_func1', 'average_score_func', 'get_score', 'predict_kinase', 'agg_seq', 'get_freq']
+           'multiply_score_func1', 'multiply_score_func', 'average_score_func', 'get_score', 'predict_kinase',
+           'agg_seq', 'get_freq']
 
 # %% ../nbs/00_core.ipynb 3
 import pandas as pd
@@ -506,6 +507,15 @@ def multiply_score_func1(r,columns):
     score_raw = r.product() * divide ** (len(columns)-1)
     score_log = np.log2(score_raw)
     return round(score_log,2) # can also return raw score
+
+# %% ../nbs/00_core.ipynb 46
+def multiply_score_func(r,columns):
+    "Functions of calculating the kinase score given substrate string, according to the paper"
+    
+    divide = 16 if 'PDHK' in r.name else 17
+    
+    log2_score = np.sum(np.log2(r)) + (len(r) - 1) * np.log2(divide)
+    return log2_score
 
 # %% ../nbs/00_core.ipynb 50
 def average_score_func(r, columns):
