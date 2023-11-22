@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['logo_func', 'get_logo', 'get_logo2', 'plot_rank', 'get_heatmap', 'plot_heatmap', 'plot_2d', 'plot_cluster',
-           'assign_colors', 'plot_bokeh', 'plot_bokeh_category', 'plot_bar', 'plot_corr', 'draw_corr']
+           'assign_colors', 'get_color_dict', 'plot_bokeh', 'plot_bokeh_category', 'plot_bar', 'plot_corr', 'draw_corr']
 
 # %% ../nbs/02_plot.ipynb 3
 #| output: False
@@ -23,7 +23,7 @@ from bokeh.models import HoverTool, AutocompleteInput, CustomJS
 from bokeh.layouts import column
 from itertools import cycle
 from bokeh.palettes import Category20_20
-from itertools import cycle
+
 
 # %% ../nbs/02_plot.ipynb 7
 def logo_func(df, 
@@ -209,6 +209,14 @@ def assign_colors(categories, palette):
     return [color_map[category] for category in categories]
 
 # %% ../nbs/02_plot.ipynb 28
+def get_color_dict(categories, palette='tab20'):
+    "assign colors to category in a dataframe, returns the same length of df"
+    p=sns.color_palette(palette)
+    color_cycle = cycle(p)
+    color_map = {category: next(color_cycle) for category in categories}
+    return color_map
+
+# %% ../nbs/02_plot.ipynb 29
 def plot_bokeh(X, 
                idx:list, # identities for searching box & autocompletion
                colors=None,
@@ -293,7 +301,7 @@ def plot_bokeh(X,
     layout = column(autocomplete, p)
     show(layout)
 
-# %% ../nbs/02_plot.ipynb 29
+# %% ../nbs/02_plot.ipynb 30
 def plot_bokeh_category(X, 
                idx:list, # identities for searching box
                cat=None, # categories to color
@@ -378,7 +386,7 @@ def plot_bokeh_category(X,
     layout = column(autocomplete, p)
     show(layout)
 
-# %% ../nbs/02_plot.ipynb 34
+# %% ../nbs/02_plot.ipynb 35
 def plot_bar(df, # dataframe with a column of values, and a column of category to groupby
              values, # colname of values
              category, # colname of categories which is used to groupby values
@@ -414,7 +422,7 @@ def plot_bar(df, # dataframe with a column of values, and a column of category t
                       ax=g.ax,
                       **marker);
 
-# %% ../nbs/02_plot.ipynb 39
+# %% ../nbs/02_plot.ipynb 40
 def plot_corr(
               x,
               y,
@@ -451,7 +459,7 @@ def plot_corr(
             transform=plt.gca().transAxes, 
              ha='center', va='center')
 
-# %% ../nbs/02_plot.ipynb 45
+# %% ../nbs/02_plot.ipynb 46
 def draw_corr(corr):
     # Mask for the upper triangle
     mask = np.triu(np.ones_like(corr, dtype=bool))
