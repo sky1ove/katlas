@@ -2,7 +2,8 @@
 
 # %% auto 0
 __all__ = ['logo_func', 'get_logo', 'get_logo2', 'plot_rank', 'get_heatmap', 'plot_heatmap', 'plot_2d', 'plot_cluster',
-           'assign_colors', 'get_color_dict', 'plot_bokeh', 'plot_bokeh_category', 'plot_bar', 'plot_corr', 'draw_corr']
+           'assign_colors', 'get_color_dict', 'plot_bokeh', 'plot_bokeh_category', 'plot_count', 'plot_bar',
+           'plot_corr', 'draw_corr']
 
 # %% ../nbs/02_plot.ipynb 3
 #| output: False
@@ -12,6 +13,7 @@ from fastbook import *
 import seaborn as sns
 from scipy.stats import spearmanr, pearsonr
 import logomaker
+from matplotlib.ticker import MultipleLocator
 
 import joblib
 from adjustText import adjust_text
@@ -387,6 +389,18 @@ def plot_bokeh_category(X,
     show(layout)
 
 # %% ../nbs/02_plot.ipynb 35
+def plot_count(cnt,tick_spacing = None,palette='tab20'):
+
+    c = sns.color_palette(palette)
+    ax = cnt.plot.barh(color = c)
+
+    for index, value in enumerate(cnt):
+        plt.text(value, index, str(value),fontsize=10,rotation=-90, va='center')
+        # Set x-ticks at regular intervals
+    if tick_spacing is not None:
+        ax.xaxis.set_major_locator(MultipleLocator(tick_spacing))
+
+# %% ../nbs/02_plot.ipynb 36
 def plot_bar(df, # dataframe with a column of values, and a column of category to groupby
              values, # colname of values
              category, # colname of categories which is used to groupby values
@@ -422,7 +436,7 @@ def plot_bar(df, # dataframe with a column of values, and a column of category t
                       ax=g.ax,
                       **marker);
 
-# %% ../nbs/02_plot.ipynb 40
+# %% ../nbs/02_plot.ipynb 41
 def plot_corr(
               x,
               y,
@@ -459,7 +473,7 @@ def plot_corr(
             transform=plt.gca().transAxes, 
              ha='center', va='center')
 
-# %% ../nbs/02_plot.ipynb 46
+# %% ../nbs/02_plot.ipynb 47
 def draw_corr(corr):
     # Mask for the upper triangle
     mask = np.triu(np.ones_like(corr, dtype=bool))
