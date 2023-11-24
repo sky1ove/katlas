@@ -269,8 +269,8 @@ class Data:
     
     @staticmethod
     def get_combine_site_pplus_ochoa():
-        return Data._fetch_data(Data.CPTAC_UNIQUE_URL)
-COMBINE_PPLUS_OCHOA_URL
+        return Data._fetch_data(Data.COMBINE_PPLUS_OCHOA_URL)
+
     
 
 # %% ../nbs/00_core.ipynb 11
