@@ -92,7 +92,8 @@ class Data:
     PPLUS_HUMAN_URL = "https://github.com/sky1ove/katlas/raw/main/database/pplus_human.parquet"
     # from ochoa et al. The functional landscape of the human phosphoproteome
     OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/database/ochoa_site.parquet"
-    
+    # combined PPLUS low throughput and ochoa
+    COMBINE_PPLUS_OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/database/combine_site_ochoa_pplus.parquet"
     
     
     def __init__(self):
@@ -265,7 +266,11 @@ class Data:
     def get_cptac_unique_site():
         return Data._fetch_data(Data.CPTAC_UNIQUE_URL)
     
-
+    
+    @staticmethod
+    def get_combine_site_pplus_ochoa():
+        return Data._fetch_data(Data.CPTAC_UNIQUE_URL)
+COMBINE_PPLUS_OCHOA_URL
     
 
 # %% ../nbs/00_core.ipynb 11
