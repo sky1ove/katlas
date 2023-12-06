@@ -493,4 +493,3 @@ def draw_corr(corr):
     # Plotting the heatmap
     plt.figure(figsize=(20, 16))  # Set the figure size
     sns.heatmap(corr, annot=True, cmap='coolwarm', vmin=-1, vmax=1, mask=mask, fmt='.2f')
-    plt.title("Correlation heatmap between amino acids")
