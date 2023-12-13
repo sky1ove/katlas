@@ -79,7 +79,7 @@ def get_splits(df, # df contains info for split
     
     return splits
 
-# %% ../nbs/03_ML.ipynb 13
+# %% ../nbs/03_ML.ipynb 7
 def split_data(df, # dataframe of values
                feat_col, # feature columns
                target_col, # target columns
@@ -94,7 +94,7 @@ def split_data(df, # dataframe of values
     
     return X_train, y_train, X_test, y_test
 
-# %% ../nbs/03_ML.ipynb 19
+# %% ../nbs/03_ML.ipynb 9
 def train_ml(df, # dataframe of values
              feat_col, # feature columns
              target_col, # target columns
@@ -129,7 +129,7 @@ def train_ml(df, # dataframe of values
     
     return y_test, y_pred #two dataframes
 
-# %% ../nbs/03_ML.ipynb 23
+# %% ../nbs/03_ML.ipynb 10
 def predict_ml(df, # Dataframe that contains features
                feat_col, # feature columns
                model_pth # models.joblib
@@ -145,7 +145,7 @@ def predict_ml(df, # Dataframe that contains features
     
     return pred_df
 
-# %% ../nbs/03_ML.ipynb 26
+# %% ../nbs/03_ML.ipynb 11
 def score_all(target, pred):
     
     "Calculate the overall correlation between two dataframes; need to have same index and columns"
@@ -165,7 +165,7 @@ def score_all(target, pred):
     
     # return mse,spearman_corr, pearson_corr
 
-# %% ../nbs/03_ML.ipynb 28
+# %% ../nbs/03_ML.ipynb 13
 def train_cv(df, # dataframe of values
              feat_col, # feature columns
              target_col,  # target columns
@@ -190,7 +190,7 @@ def train_cv(df, # dataframe of values
     
     return oof_df
 
-# %% ../nbs/03_ML.ipynb 34
+# %% ../nbs/03_ML.ipynb 15
 def score_each(target, 
                pred,
                absolute=False, # If absolute, then will get absolute value of spearman and pearson
@@ -210,7 +210,7 @@ def score_each(target,
     print(f'average pearson for each row is {df.pearson.mean()}')
     return df
 
-# %% ../nbs/03_ML.ipynb 38
+# %% ../nbs/03_ML.ipynb 17
 def xgb_trainer(df,
                 feature_col,
                 target_col,
@@ -300,7 +300,7 @@ def xgb_trainer(df,
     
     return pred_df, gain, weight
 
-# %% ../nbs/03_ML.ipynb 40
+# %% ../nbs/03_ML.ipynb 18
 def xgb_predict(df, # a dataframe that contains ID and features for prediction
                 feature_col, #feature column name
                 ID_col = "ID", #ID column name

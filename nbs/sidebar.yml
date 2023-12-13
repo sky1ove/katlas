@@ -3,29 +3,6 @@ website:
     contents:
       - index.ipynb
       
-      - section: Features
-        contents:
-        - tutorial_01_aa_feature.ipynb
-        - tutorial_02_kinase_feature.ipynb
-        
-      - section: Targets
-        contents:
-        - tutorial_03a_target_transform.ipynb
-        - tutorial_03b_target_scale.ipynb
-        - tutorial_03c_target_plot.ipynb
-        - tutorial_03d_hierarchical_clustering.ipynb
-
-      - section: Prepare Dataset
-        contents:
-        - tutorial_04a_prepare_dataset(protein only).ipynb
-        - tutorial_04b_prepare_dataset.ipynb
-        
-      - section: Train
-        contents:
-        - tutorial_05_train_ML.ipynb
-        - tutorial_05_train_ML_2.ipynb
-        - tutorial_05_train_protein_only.ipynb
-        
       - section: Modules
         contents:
         - 00_core.ipynb
@@ -33,6 +10,41 @@ website:
         - 02_plot.ipynb
         - 03_ML.ipynb
         - 04_DL.ipynb
+      
+      - section: Kinase-Substrate Dataset
+        contents:
+        - paper_00_Preprocessing_LS.ipynb
+        - paper_01_Prepare_Dataset_PP_LS.ipynb
+        - paper_03a_Compare_between_datasets.ipynb
+        - paper_03b_Compare_datasets_PSPA.ipynb
+        - paper_04_Plot_heatmap_logo.ipynb
+        
+      - section: Specificity and STY ratio
+        contents:
+        - paper_03a_Compare_between_datasets.ipynb
+        - paper_03b_Compare_datasets_PSPA.ipynb
+
+      - section: Dataset characterization
+        contents:
+        - paper_05a_Hierarchical_clustering.ipynb
+        - paper_05b_Clustering_pspa.ipynb
+        - paper_05c_target_plot.ipynb
+        - paper_05d_aa_feature.ipynb
+        
+      - section: Scoring
+        contents:
+        - paper_06_Scale_PSPA.ipynb
+        - paper_07_Phosphoproteomics_scoring.ipynb
+        - paper_07a_AKT_inhibitor.ipynb
+        - paper_07b_EGFR_inhibitor.ipynb
+        
+      - section: DL/ML
+        contents:
+        - paper_08_Combine_PSPA_KS.ipynb
+        - paper_09a_dataset.ipynb
+        - paper_09b_DL_ML_training.ipynb
+        
+
 
 
       

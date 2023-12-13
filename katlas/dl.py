@@ -53,7 +53,7 @@ class GeneralDataset:
             y = torch.Tensor(self.y[index])
             return X, y
 
-# %% ../nbs/04_DL.ipynb 21
+# %% ../nbs/04_DL.ipynb 13
 def MLP_1(num_features, 
           num_targets,
           hidden_units = [512, 218],
@@ -83,7 +83,7 @@ def MLP_1(num_features,
     
     return model
 
-# %% ../nbs/04_DL.ipynb 29
+# %% ../nbs/04_DL.ipynb 19
 class CNN1D_1(Module):
     
     def __init__(self, 
@@ -108,7 +108,7 @@ class CNN1D_1(Module):
         x = self.fc2(x)
         return x
 
-# %% ../nbs/04_DL.ipynb 32
+# %% ../nbs/04_DL.ipynb 21
 def ConvBlock(in_channels, 
               out_channels, 
               kernel_size, 
@@ -122,7 +122,7 @@ def ConvBlock(in_channels,
         nn.ReLU()
     )
 
-# %% ../nbs/04_DL.ipynb 33
+# %% ../nbs/04_DL.ipynb 22
 class CNN1D_2(Module):
     
     def __init__(self, 
@@ -205,7 +205,7 @@ class CNN1D_2(Module):
 
         return x
 
-# %% ../nbs/04_DL.ipynb 37
+# %% ../nbs/04_DL.ipynb 25
 def train_dl(df, 
             feat_col, 
             target_col,
@@ -243,7 +243,7 @@ def train_dl(df,
     
     return learn
 
-# %% ../nbs/04_DL.ipynb 42
+# %% ../nbs/04_DL.ipynb 30
 def predict_dl(df, 
                feat_col, 
                model, # model architecture
@@ -270,7 +270,7 @@ def predict_dl(df,
 
     return preds
 
-# %% ../nbs/04_DL.ipynb 45
+# %% ../nbs/04_DL.ipynb 33
 def train_dl_cv(df, 
                 feat_col, 
                 target_col, 
