@@ -5,37 +5,37 @@ __all__ = ['get_splits', 'split_data', 'train_ml', 'predict_ml', 'score_all', 't
            'xgb_predict']
 
 # %% ../nbs/03_ML.ipynb 3
-#| output: False
-from sklearn import set_config
+# katlas
 from .core import Data
 from .feature import *
+
+# essentials
 from fastbook import *
-import xgboost as xgb
-import matplotlib.pyplot as plt
-from scipy.stats import spearmanr,pearsonr
-from sklearn.model_selection import *
-from pathlib import Path
-from sklearn.metrics import mean_squared_error
-import math
-from scipy.stats import spearmanr, pearsonr
 from joblib import dump, load
+import math, xgboost as xgb, matplotlib.pyplot as plt
+from pathlib import Path
+
+# scipy
+from scipy.stats import spearmanr, pearsonr
+from scipy.stats import spearmanr,pearsonr
+
+# sklearn
+from sklearn.model_selection import *
+from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import *
 from sklearn.svm import *
 from sklearn.ensemble import *
-
-
-# %% ../nbs/03_ML.ipynb 4
 from sklearn import set_config
 set_config(transform_output="pandas")
 
-# %% ../nbs/03_ML.ipynb 6
-def get_splits(df, # df contains info for split
-               stratified=None, # colname to make stratified kfold; sampling from different groups
-               group=None, # colname to make group kfold; test and train are from different groups
-               nfold=5,
-              seed=123):
-    # train_idx, test_idx = None, None
+# %% ../nbs/03_ML.ipynb 5
+def get_splits(df: pd.DataFrame, # df contains info for split
+               stratified: str=None, # colname to make stratified kfold; sampling from different groups
+               group: str=None, # colname to make group kfold; test and train are from different groups
+               nfold: int=5,
+               seed: int=123):
     
+    "Split samples in a dataframe based on Stratified, Group, or StratifiedGroup Kfold method"
     splits = []
     if stratified is not None and group is None:
         kf = StratifiedKFold(nfold, shuffle=True, random_state=seed)
@@ -79,12 +79,13 @@ def get_splits(df, # df contains info for split
     
     return splits
 
-# %% ../nbs/03_ML.ipynb 7
-def split_data(df, # dataframe of values
-               feat_col, # feature columns
-               target_col, # target columns
-               split # one of the split in splits
-              ):
+# %% ../nbs/03_ML.ipynb 8
+def split_data(df: pd.DataFrame, # dataframe of values
+               feat_col: list, # feature columns
+               target_col: list, # target columns
+               split: tuple # one of the split in splits
+               ):
+    "Given feature column, target column, and split tuple, split dataframe into X_train, y_train, X_test, y_test"
     
     X_train = df.loc[split[0]][feat_col]
     y_train = df.loc[split[0]][target_col]
@@ -94,7 +95,7 @@ def split_data(df, # dataframe of values
     
     return X_train, y_train, X_test, y_test
 
-# %% ../nbs/03_ML.ipynb 9
+# %% ../nbs/03_ML.ipynb 12
 def train_ml(df, # dataframe of values
              feat_col, # feature columns
              target_col, # target columns
@@ -104,7 +105,7 @@ def train_ml(df, # dataframe of values
              params={},
             ):
     
-    " Train one split of data. Need to specify dataframe, feature columns, target columns, split, and which sklearn models to use"
+    "Fit and predict using sklearn model format, return target and pred of valid dataset"
     
     # split data
     X_train, y_train, X_test, y_test = split_data(df, feat_col, target_col, split)
@@ -127,9 +128,9 @@ def train_ml(df, # dataframe of values
     print(f'test set mse: {mean_squared_error(y_test, y_pred)}')
     y_pred = pd.DataFrame(y_pred,index=y_test.index, columns = y_test.columns)
     
-    return y_test, y_pred #two dataframes
+    return y_test, y_pred # target and pred
 
-# %% ../nbs/03_ML.ipynb 10
+# %% ../nbs/03_ML.ipynb 15
 def predict_ml(df, # Dataframe that contains features
                feat_col, # feature columns
                model_pth # models.joblib
@@ -145,7 +146,7 @@ def predict_ml(df, # Dataframe that contains features
     
     return pred_df
 
-# %% ../nbs/03_ML.ipynb 11
+# %% ../nbs/03_ML.ipynb 16
 def score_all(target, pred):
     
     "Calculate the overall correlation between two dataframes; need to have same index and columns"
@@ -165,7 +166,7 @@ def score_all(target, pred):
     
     # return mse,spearman_corr, pearson_corr
 
-# %% ../nbs/03_ML.ipynb 13
+# %% ../nbs/03_ML.ipynb 18
 def train_cv(df, # dataframe of values
              feat_col, # feature columns
              target_col,  # target columns
@@ -190,7 +191,7 @@ def train_cv(df, # dataframe of values
     
     return oof_df
 
-# %% ../nbs/03_ML.ipynb 15
+# %% ../nbs/03_ML.ipynb 20
 def score_each(target, 
                pred,
                absolute=False, # If absolute, then will get absolute value of spearman and pearson
@@ -210,7 +211,7 @@ def score_each(target,
     print(f'average pearson for each row is {df.pearson.mean()}')
     return df
 
-# %% ../nbs/03_ML.ipynb 17
+# %% ../nbs/03_ML.ipynb 23
 def xgb_trainer(df,
                 feature_col,
                 target_col,
@@ -300,7 +301,7 @@ def xgb_trainer(df,
     
     return pred_df, gain, weight
 
-# %% ../nbs/03_ML.ipynb 18
+# %% ../nbs/03_ML.ipynb 24
 def xgb_predict(df, # a dataframe that contains ID and features for prediction
                 feature_col, #feature column name
                 ID_col = "ID", #ID column name

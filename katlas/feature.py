@@ -3,42 +3,37 @@
 # %% auto 0
 __all__ = ['get_rdkit', 'get_morgan', 'get_esm', 'get_t5', 'get_t5_bfd', 'reduce_feature', 'remove_hi_corr', 'preprocess']
 
-# %% ../nbs/01_feature.ipynb 3
-#| output: False
-from transformers import T5Tokenizer, T5EncoderModel, T5Model
-import torch
-import re
-from .core import Data
-import seaborn as sns
-import numpy as np
-from rdkit import Chem
-from rdkit.Chem import AllChem
-from rdkit.ML.Descriptors import MoleculeDescriptors
-import pandas as pd
-from rdkit.Chem import Draw
-from rdkit.Chem import Descriptors
-from sklearn.preprocessing import StandardScaler
-import joblib
-
+# %% ../nbs/01_feature.ipynb 4
 from fastbook import *
+import torch,re,joblib,gc,esm
+from tqdm.notebook import tqdm; tqdm.pandas()
+from .core import Data
+
+# Rdkit
+from rdkit import Chem
+from rdkit.ML.Descriptors import MoleculeDescriptors
+from rdkit.Chem import Draw,Descriptors,AllChem
+
+# Models
 from fairscale.nn.data_parallel import FullyShardedDataParallel as FSDP
 from fairscale.nn.wrap import enable_wrap, wrap
-import esm
-from tqdm.notebook import tqdm; tqdm.pandas()
-import gc
+from transformers import T5Tokenizer, T5EncoderModel, T5Model
+
+# Dimension Reduction
 from sklearn import set_config
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
+from sklearn.preprocessing import StandardScaler
 from umap.umap_ import UMAP
-# from umap import UMAP
+
 set_config(transform_output="pandas")
 
-# %% ../nbs/01_feature.ipynb 6
-def get_rdkit(df, # df with index as ID
-             col = "SMILES", # colname of smile
-             normalize = True, # normalize features using StandardScaler()
-            ):
-    "Extract ~209 features from smiles via rdkit.Chem.Descriptors; if normalize, apply StandardScaler"
+# %% ../nbs/01_feature.ipynb 7
+def get_rdkit(df: pd.DataFrame, # a dataframe that contains smiles
+              col:str = "SMILES", # colname of smile
+              normalize: bool = True, # normalize features using StandardScaler()
+              ):
+    "Extract chemical features from smiles via rdkit.Chem.Descriptors; if normalize, apply StandardScaler"
     
     mols = [Chem.MolFromSmiles(smi) for smi in df[col]]
     desc_names = [desc_name[0] for desc_name in Descriptors.descList]
@@ -52,25 +47,24 @@ def get_rdkit(df, # df with index as ID
     # feature_df = feature_df.reset_index()
     return feature_df
 
-# %% ../nbs/01_feature.ipynb 12
-def get_morgan(df, # a dataframe contains ID and SMILES columns
-               col = "SMILES", # set smiles columne name
+# %% ../nbs/01_feature.ipynb 11
+def get_morgan(df: pd.DataFrame, # a dataframe that contains smiles
+               col: str = "SMILES", # colname of smile
               ):
-    "Like `smi2prop`, get 2048 morgan feature (0/1) given a dataframe that contains ID&smiles"
+    "Get 2048 morgan fingerprint (binary feature) from smiles in a dataframe"
     mols = [Chem.MolFromSmiles(smi) for smi in df[col]]
     morgan_fps = [AllChem.GetMorganFingerprintAsBitVect(mol, 2, nBits=2048) for mol in mols]
     fp_df = pd.DataFrame(np.array(morgan_fps), index=df.index)
     fp_df.columns = "morgan_" + fp_df.columns.astype(str)
     return fp_df
 
-# %% ../nbs/01_feature.ipynb 17
-def get_esm(df, 
-                   col = 'sequence', # colname of a.a. sequence
-                   model_name = "esm2_t33_650M_UR50D", # The name of the ESM model to use for the embeddings.
-                  ):
-    """
-    Extract 1280 esmfold2 embeddings from protein sequence.
-    """
+# %% ../nbs/01_feature.ipynb 15
+def get_esm(df:pd.DataFrame, # a dataframe that contains amino acid sequence
+            col: str = 'sequence', # colname of amino acid sequence
+            model_name: str = "esm2_t33_650M_UR50D", # Name of the ESM model to use for the embeddings.
+            ):
+    
+    "Extract esmfold2 embeddings from protein sequence in a dataframe"
     
     # Initialize distributed world with world_size 1
     if not torch.distributed.is_initialized():
@@ -131,11 +125,12 @@ def get_esm(df,
 
         return df_feature
 
-# %% ../nbs/01_feature.ipynb 21
-def get_t5(df, 
-           col = 'sequence'
-          ):
-
+# %% ../nbs/01_feature.ipynb 19
+def get_t5(df: pd.DataFrame, 
+           col: str = 'sequence'
+           ):
+    "Extract ProtT5-XL-uniref50 embeddings from protein sequence in a dataframe"
+    
     # Reference: https://github.com/agemagician/ProtTrans/tree/master/Embedding/PyTorch/Advanced
     # Load the tokenizer
     tokenizer = T5Tokenizer.from_pretrained('Rostlab/prot_t5_xl_half_uniref50-enc', do_lower_case=False)
@@ -172,11 +167,12 @@ def get_t5(df,
     
     return T5_feature
 
-# %% ../nbs/01_feature.ipynb 24
-def get_t5_bfd(df, 
-           col = 'sequence'
-          ):
-
+# %% ../nbs/01_feature.ipynb 22
+def get_t5_bfd(df:pd.DataFrame, 
+               col: str = 'sequence'
+               ):
+    
+    "Extract ProtT5-XL-BFD embeddings from protein sequence in a dataframe"
     # Reference: https://github.com/agemagician/ProtTrans/tree/master/Embedding/PyTorch/Advanced
     # Load the tokenizer
     tokenizer = T5Tokenizer.from_pretrained('Rostlab/prot_t5_xl_bfd', do_lower_case=False)
@@ -213,16 +209,20 @@ def get_t5_bfd(df,
     
     return T5_feature
 
-# %% ../nbs/01_feature.ipynb 27
-def reduce_feature(df, 
-               method='pca',
-               complexity = 20, # umap recommend: 15, tsne recommend: 30
-                   n=2,
-               load=None, # load a previous model
-               save=None, # pkl file to be saved, e.g. pca_model.pkl
-               seed =123, **kwargs):
+# %% ../nbs/01_feature.ipynb 26
+def reduce_feature(df: pd.DataFrame, 
+                   method: str='pca', # dimensionality reduction method, accept both capital and lower case
+                   complexity: int=20, # None for PCA; perfplexity for TSNE, recommend: 30; n_neigbors for UMAP, recommend: 15
+                   n: int=2, # n_components
+                   load: str=None, # load a previous model, e.g. model.pkl
+                   save: str=None, # pkl file to be saved, e.g. pca_model.pkl
+                   seed: int=123, # seed for random_state
+                   **kwargs):
     
     "Reduce the dimensionality given a dataframe of values"
+    
+    method = method.lower()
+    assert method in ['pca','tsne','umap'], "Please choose a method among PCA, TSNE, and UMAP"
     
     if load is not None:
         reducer = joblib.load(load)
@@ -255,9 +255,11 @@ def reduce_feature(df,
     return embedding_df
 
 # %% ../nbs/01_feature.ipynb 29
-def remove_hi_corr(df, 
-                   thr=0.98 # threshold
-                  ):
+def remove_hi_corr(df: pd.DataFrame, 
+                   thr: float=0.98 # threshold
+                   ):
+    "Remove highly correlated features in a dataframe given a pearson threshold"
+    
     # Create correlation matrix
     corr_matrix = df.corr().abs()
     
@@ -272,9 +274,12 @@ def remove_hi_corr(df,
     
     return df
 
-# %% ../nbs/01_feature.ipynb 30
-def preprocess(df,thr=0.98):
-    "Remove features with no variance; remove highly correlated features based on threshold"
+# %% ../nbs/01_feature.ipynb 33
+def preprocess(df: pd.DataFrame,
+               thr: float=0.98):
+    
+    "Remove features with no variance, and highly correlated features based on threshold"
+    
     df_original = df.copy()
     df = df.loc[:,df.std() != 0]
     df = remove_hi_corr(df, thr)

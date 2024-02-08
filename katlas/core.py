@@ -265,7 +265,12 @@ class Data:
     
     @staticmethod
     def get_combine_site_pplus_ochoa():
-        return Data._fetch_data(Data.COMBINE_PPLUS_OCHOA_URL)
+        
+        df = Data._fetch_data(Data.COMBINE_PPLUS_OCHOA_URL)
+        
+        #Convert the number in the column name into integer
+        df.columns = [int(col) if col.lstrip('-').isdigit() else col for col in df.columns]
+        return df
 
 # %% ../nbs/00_core.ipynb 15
 class CPTAC:
@@ -652,7 +657,7 @@ def predict_kinase_df(df:pd.DataFrame, # dataframe that contains site sequence
     results=[]
     num = list(set(ref.columns.str[:-1].astype(int)))
     num.sort()
-    print(f'according to the reference \nwill calculate position: {num}')
+    print(f'Calculating position: {num}')
     
     for kinase,row in tqdm(ref.iterrows(), total=ref.shape[0]):
         r_dict = row.to_dict() # To hash, PSSM dictionary for a single kinase
@@ -683,7 +688,7 @@ def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains
     
 
     #Count frequency for each amino acid at each position
-    melted_k = df_k.melt(id_vars=['Kinase', 'substrate'], 
+    melted_k = df_k.melt(
                     value_vars=[i for i in range(-7, 8)],
                     var_name='Position', 
                     value_name='aa')
