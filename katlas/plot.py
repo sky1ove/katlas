@@ -304,15 +304,15 @@ def plot_bar(df, # dataframe with a column of values, and a column of category t
                       ax=g.ax,
                       **marker);
 
-# %% ../nbs/02_plot.ipynb 44
-def plot_corr(x,
-              y,
+# %% ../nbs/02_plot.ipynb 43
+def plot_corr(x, # x axis values, or colname of x axis
+              y, # y axis values, or colname of y axis
               xlabel=None,# x axis label
               ylabel=None,# y axis label
-            data = None,
-            text_location = [0.8,0.1],
-            **kwargs
-             ):
+              data = None, # dataframe that contains data
+              text_location = [0.8,0.1],
+              **kwargs
+              ):
     "Given a dataframe and the name of two columns, plot the two columns' correlation"
     if data is not None:
         x=data[x]
@@ -340,7 +340,7 @@ def plot_corr(x,
             transform=plt.gca().transAxes, 
              ha='center', va='center')
 
-# %% ../nbs/02_plot.ipynb 48
+# %% ../nbs/02_plot.ipynb 47
 def draw_corr(corr):
     
     "plot heatmap from df.corr()"

@@ -36,35 +36,34 @@ def get_splits(df: pd.DataFrame, # df contains info for split
                seed: int=123):
     
     "Split samples in a dataframe based on Stratified, Group, or StratifiedGroup Kfold method"
+    def _log(colname):
+        print(kf)
+        split=splits[0]
+        print(f'# kinase {colname} in train set: {df.loc[split[0]][colname].unique().shape[0]}')
+        print(f'# kinase {colname} in test set: {df.loc[split[1]][colname].unique().shape[0]}')
+        
     splits = []
     if stratified is not None and group is None:
         kf = StratifiedKFold(nfold, shuffle=True, random_state=seed)
         for split in kf.split(df.index, df[stratified]):
             splits.append(split)
-        print(kf)
-        split = splits[0]
-        print(f'# kinase {stratified} in train set: {df.loc[split[0]][stratified].unique().shape[0]}')
-        print(f'# kinase {stratified} in test set: {df.loc[split[1]][stratified].unique().shape[0]}')
+            
+        _log(stratified)
         
     elif group is not None and stratified is None:
         kf = GroupKFold(nfold)
         for split in kf.split(df.index, groups=df[group]):
             splits.append(split)
             
-        print(kf)
-        split = splits[0]
-        print(f'# kinase {group} in train set: {df.loc[split[0]][group].unique().shape[0]}')
-        print(f'# kinase {group} in test set: {df.loc[split[1]][group].unique().shape[0]}')
+        _log(group)
         
     elif stratified is not None and group is not None:
         kf = StratifiedGroupKFold(nfold, shuffle=True, random_state=seed)
         for split in kf.split(df.index, groups=df[group], y=df[stratified]):
             splits.append(split)
             
-        print(kf)    
-        split = splits[0]
-        print(f'# kinase {stratified} in train set: {df.loc[split[0]][stratified].unique().shape[0]}')
-        print(f'# kinase {stratified} in test set: {df.loc[split[1]][stratified].unique().shape[0]}')
+        _log(stratified)
+
     else:
         raise ValueError("Either 'stratified' or 'group' argument must be provided.")
         
