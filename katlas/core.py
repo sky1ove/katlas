@@ -616,13 +616,13 @@ def predict_kinase(input_string: str, # site sequence
 # %% ../nbs/00_core.ipynb 66
 # PSPA
 param1 = {'ref':Data.get_pspa_original(), 'func':multiply, 'to_lower': False} # Johnson et al. Nature official
-param2 = {'ref':Data.get_pspa_original(), 'func':multiply, 'to_lower': True} # recommended
+param2 = {'ref':Data.get_pspa_original(), 'func':multiply, 'to_lower': True} # convert all STY to sty in a sequence
 
 # Kinase-substrate dataset
-param3 = {'ref':Data.get_ks(), 'func':sumup, 'to_lower': True}
+param3 = {'ref':Data.get_ks(), 'func':sumup, 'to_lower': False}
 param4 = {'ref':Data.get_ks_upper(), 'func':sumup, 'to_lower': False} # specific for all uppercase
 
-# %% ../nbs/00_core.ipynb 68
+# %% ../nbs/00_core.ipynb 70
 def predict_kinase_df(df:pd.DataFrame, # dataframe that contains site sequence
                       seq_col: str, # column name of site sequence
                       ref: pd.DataFrame, # reference df for scoring
@@ -676,7 +676,7 @@ def predict_kinase_df(df:pd.DataFrame, # dataframe that contains site sequence
         
     return out
 
-# %% ../nbs/00_core.ipynb 71
+# %% ../nbs/00_core.ipynb 73
 def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains phosphorylation sequence splitted by their position
              aa_order = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the full matrix 
              aa_order_paper = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the partial matrix
