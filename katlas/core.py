@@ -95,6 +95,7 @@ class Data:
     # combined PPLUS low throughput and ochoa
     COMBINE_PPLUS_OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/database/combine_site_ochoa_pplus.parquet"
     
+    OCHOA_PSPA_SCORE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/ochoa_pspa_score.parquet"
 
     
     @staticmethod
@@ -106,6 +107,10 @@ class Data:
         if 'Unnamed: 0' in df.columns:
             df = df.rename(columns={'Unnamed: 0': 'kinase'})
         return df
+    
+    @staticmethod
+    def get_ochoa_score():
+        return Data._fetch_data(Data.OCHOA_PSPA_SCORE_URL)
     
 
     @staticmethod
@@ -622,7 +627,7 @@ param2 = {'ref':Data.get_pspa_original(), 'func':multiply, 'to_lower': True} # c
 param3 = {'ref':Data.get_ks(), 'func':sumup, 'to_lower': False}
 param4 = {'ref':Data.get_ks_upper(), 'func':sumup, 'to_lower': False} # specific for all uppercase
 
-# %% ../nbs/00_core.ipynb 71
+# %% ../nbs/00_core.ipynb 69
 def predict_kinase_df(df:pd.DataFrame, # dataframe that contains site sequence
                       seq_col: str, # column name of site sequence
                       ref: pd.DataFrame, # reference df for scoring
@@ -676,7 +681,7 @@ def predict_kinase_df(df:pd.DataFrame, # dataframe that contains site sequence
         
     return out
 
-# %% ../nbs/00_core.ipynb 74
+# %% ../nbs/00_core.ipynb 72
 def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains phosphorylation sequence splitted by their position
              aa_order = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the full matrix 
              aa_order_paper = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the partial matrix
