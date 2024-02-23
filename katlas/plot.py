@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['get_color_dict', 'logo_func', 'get_logo', 'get_logo2', 'plot_rank', 'plot_hist', 'plot_heatmap', 'plot_2d',
-           'plot_cluster', 'plot_count', 'plot_bar', 'plot_corr', 'draw_corr']
+           'plot_cluster', 'plot_count', 'plot_bar', 'plot_corr', 'draw_corr', 'get_AUCDF']
 
 # %% ../nbs/02_plot.ipynb 3
 import joblib,logomaker,seaborn as sns
@@ -351,3 +351,53 @@ def draw_corr(corr):
     # Plotting the heatmap
     plt.figure(figsize=(20, 16))  # Set the figure size
     sns.heatmap(corr, annot=True, cmap='coolwarm', vmin=-1, vmax=1, mask=mask, fmt='.2f')
+
+# %% ../nbs/02_plot.ipynb 51
+def get_AUCDF(df,col, plot=True,xlabel='Rank of reported kinase'):
+    
+    # sort col values as x values
+    x_values = df[col].sort_values().values
+    
+    # get y_values evenly distributed from 0 to 1
+    # y_values = np.arange(1, len(x_values) + 1) / len(x_values) # this method assumes equal distribution of each x value
+    y_values = pd.Series(x_values).rank(method='average', pct=True).values # this method takes duplicates into account
+    
+    # calculate the area under the curve using the trapezoidal rule
+    area_under_curve = trapz(y_values, x_values)
+    
+    # calculate total area
+    total_area = (x_values[-1] - x_values[0]) * (y_values[-1] - y_values[0])
+    AUCDF = area_under_curve / total_area
+    
+    if plot:
+        # Create a figure and a primary axis
+        fig, ax1 = plt.subplots(figsize=(7,5))
+        
+        # fontsize
+        fontsize=17
+        
+        # Plot the histogram on the primary axis
+        sns.histplot(x_values,bins=20,ax=ax1)
+        ax1.set_xlabel(xlabel,fontsize=fontsize)
+        ax1.set_ylabel('Substrates',color='darkblue',fontsize=fontsize)
+        ax1.tick_params(axis='y', labelcolor='darkblue',labelsize=fontsize)
+        ax1.tick_params(axis='x', labelcolor='black',labelsize=fontsize)
+        ax1.set_xlim(min(x_values),max(x_values))
+
+        # Create a secondary axis for the CDF
+        ax2 = ax1.twinx()
+
+        # Plot the CDF on the secondary axis
+        # ax2.plot(bin_edges[:-1], cumulative_data, color='red', linestyle='-', linewidth=2.0)
+        ax2.plot(x_values, y_values, color='darkred', linestyle='-', linewidth=2.0)
+        ax2.plot([0, max(x_values)], [0, max(y_values)], 'k--')  # 'k--' is for a black dashed line
+        ax2.set_ylabel('Probability', color='darkred',fontsize=fontsize,rotation=270,labelpad=18)
+        ax2.text(0.95, 0.3, f"AUCDF:{AUCDF.round(4)}", transform=plt.gca().transAxes, ha='right', va='bottom',fontsize=fontsize)
+        ax2.tick_params(axis='y', labelcolor='darkred',labelsize=fontsize)
+        ax2.set_ylim(0, 1)  # Probabilities range from 0 to 1
+
+        # Show the plot
+        plt.title(f'{len(x_values)} kinase-substrate pairs',fontsize=fontsize)
+        plt.show()
+        
+    return AUCDF

@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['param1', 'param2', 'param3', 'param4', 'Data', 'CPTAC', 'get_unique_site', 'convert_string', 'checker', 'STY2sty',
            'cut_seq', 'extract_site_seq', 'raw2norm', 'get_one_kinase', 'unstack', 'get_metaP', 'get_dict', 'multiply',
-           'sumup', 'predict_kinase', 'predict_kinase_df', 'get_freq']
+           'sumup', 'predict_kinase', 'get_pct', 'predict_kinase_df', 'get_freq', 'query_gene']
 
 # %% ../nbs/00_core.ipynb 4
 import math, pandas as pd, numpy as np, seaborn as sns
@@ -83,17 +83,17 @@ class Data:
     
     # reference databaase
     # For ref of linkedomicsKB, contains unique EnsemblProteinID+site
-    CPTAC_KB_URL = "https://github.com/sky1ove/katlas/raw/main/database/linkedOmicsKB_ref_pan.parquet"
+    CPTAC_KB_URL = "https://github.com/sky1ove/katlas/raw/main/phosphosites/linkedOmicsKB_ref_pan.parquet"
     # From the above, but keep the unique site seq, with gene_site separated by |
-    CPTAC_UNIQUE_URL = "https://github.com/sky1ove/katlas/raw/main/database/cptac_unique_site.parquet"
+    CPTAC_UNIQUE_URL = "https://github.com/sky1ove/katlas/raw/main/phosphosites/cptac_unique_site.parquet"
     # for ref of linkedomics, contains unique Gene+site
-    CPTAC_URL = "https://github.com/sky1ove/katlas/raw/main/database/linkedOmics_ref_pan.parquet"
+    CPTAC_URL = "https://github.com/sky1ove/katlas/raw/main/phosphosites/linkedOmics_ref_pan.parquet"
     # from pplus, contains Gene+site
-    PPLUS_HUMAN_URL = "https://github.com/sky1ove/katlas/raw/main/database/pplus_human.parquet"
+    PPLUS_HUMAN_URL = "https://github.com/sky1ove/katlas/raw/main/phosphosites/pplus_human.parquet"
     # from ochoa et al. The functional landscape of the human phosphoproteome
-    OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/database/ochoa_site.parquet"
+    OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/phosphosites/ochoa_site.parquet"
     # combined PPLUS low throughput and ochoa
-    COMBINE_PPLUS_OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/database/combine_site_ochoa_pplus.parquet"
+    COMBINE_PPLUS_OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/phosphosites/combine_site_ochoa_pplus.parquet"
     
     OCHOA_PSPA_SCORE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/ochoa_pspa_score.parquet"
 
@@ -628,6 +628,28 @@ param3 = {'ref':Data.get_ks(), 'func':sumup, 'to_lower': False}
 param4 = {'ref':Data.get_ks_upper(), 'func':sumup, 'to_lower': False} # specific for all uppercase
 
 # %% ../nbs/00_core.ipynb 69
+def get_pct(site,ref):
+    
+    score = predict_kinase(site.upper(),**param1)
+    
+    percentiles = {}
+    for kinase in score.index: 
+        # Get the values from `ref` for this kinase
+        ref_values = ref[kinase].values
+        # Calculate how many values in `ref` are less than the new score
+        less = np.sum(ref_values < score[kinase])
+        # Calculate how many values are equal to the new score
+        equal = np.sum(ref_values == score[kinase])
+        # Calculate the percentile rank
+        percentile = (less + 0.5 * equal) / len(ref_values) * 100
+        percentiles[kinase] = percentile
+        
+    pct = pd.Series(percentiles)
+    final = pd.concat([score,pct],axis=1)
+    final.columns=['log2(score)','percentile']
+    return final
+
+# %% ../nbs/00_core.ipynb 71
 def predict_kinase_df(df:pd.DataFrame, # dataframe that contains site sequence
                       seq_col: str, # column name of site sequence
                       ref: pd.DataFrame, # reference df for scoring
@@ -681,7 +703,7 @@ def predict_kinase_df(df:pd.DataFrame, # dataframe that contains site sequence
         
     return out
 
-# %% ../nbs/00_core.ipynb 72
+# %% ../nbs/00_core.ipynb 78
 def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains phosphorylation sequence splitted by their position
              aa_order = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the full matrix 
              aa_order_paper = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the partial matrix
@@ -721,3 +743,17 @@ def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains
 
     
     return paper,full
+
+# %% ../nbs/00_core.ipynb 81
+def query_gene(df,gene):
+    
+    "Query gene in the phosphoproteomics dataset"
+    
+    # query gene in the dataframe
+    df_gene = df[df.gene_site.str.contains(f'{gene}_')]
+    
+    # sort dataframe based on position
+    sort_position = df_gene.gene_site.str.split('_').str[-1].str[1:].astype(int).sort_values().index
+    df_gene = df_gene.loc[sort_position]
+    
+    return df_gene
