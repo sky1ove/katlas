@@ -95,6 +95,7 @@ class Data:
     # combined PPLUS low throughput and ochoa
     COMBINE_PPLUS_OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/phosphosites/combine_site_ochoa_pplus.parquet"
     
+    # scoring via PSPA (all capital)
     OCHOA_PSPA_SCORE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/ochoa_pspa_score.parquet"
 
     
@@ -109,7 +110,7 @@ class Data:
         return df
     
     @staticmethod
-    def get_ochoa_score():
+    def get_pct_ref():
         return Data._fetch_data(Data.OCHOA_PSPA_SCORE_URL)
     
 

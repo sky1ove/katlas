@@ -11,6 +11,7 @@ from pathlib import Path
 from fastbook import *
 from scipy.stats import spearmanr, pearsonr
 from matplotlib.ticker import MultipleLocator
+from numpy import trapz
 
 # Katlas
 from .feature import *
@@ -353,7 +354,9 @@ def draw_corr(corr):
     sns.heatmap(corr, annot=True, cmap='coolwarm', vmin=-1, vmax=1, mask=mask, fmt='.2f')
 
 # %% ../nbs/02_plot.ipynb 51
-def get_AUCDF(df,col, plot=True,xlabel='Rank of reported kinase'):
+def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
+    
+    "Plot CDF curve and get relative area under the curve"
     
     # sort col values as x values
     x_values = df[col].sort_values().values
@@ -362,12 +365,18 @@ def get_AUCDF(df,col, plot=True,xlabel='Rank of reported kinase'):
     # y_values = np.arange(1, len(x_values) + 1) / len(x_values) # this method assumes equal distribution of each x value
     y_values = pd.Series(x_values).rank(method='average', pct=True).values # this method takes duplicates into account
     
+    if reverse:
+        y_values = 1 - y_values + y_values.min()  # Adjust for reverse while keeping the distribution's integrity
     # calculate the area under the curve using the trapezoidal rule
     area_under_curve = trapz(y_values, x_values)
     
     # calculate total area
     total_area = (x_values[-1] - x_values[0]) * (y_values[-1] - y_values[0])
+    
+
     AUCDF = area_under_curve / total_area
+    if reverse:
+        AUCDF = -AUCDF
     
     if plot:
         # Create a figure and a primary axis
@@ -390,9 +399,16 @@ def get_AUCDF(df,col, plot=True,xlabel='Rank of reported kinase'):
         # Plot the CDF on the secondary axis
         # ax2.plot(bin_edges[:-1], cumulative_data, color='red', linestyle='-', linewidth=2.0)
         ax2.plot(x_values, y_values, color='darkred', linestyle='-', linewidth=2.0)
-        ax2.plot([0, max(x_values)], [0, max(y_values)], 'k--')  # 'k--' is for a black dashed line
+        if reverse:
+            ax2.plot([max(x_values),0],[0, max(y_values)], 'k--')  # 'k--' is for a black dashed line
+        else:
+            ax2.plot([0, max(x_values)], [0, max(y_values)], 'k--')  # 'k--' is for a black dashed line
+
         ax2.set_ylabel('Probability', color='darkred',fontsize=fontsize,rotation=270,labelpad=18)
-        ax2.text(0.95, 0.3, f"AUCDF:{AUCDF.round(4)}", transform=plt.gca().transAxes, ha='right', va='bottom',fontsize=fontsize)
+        if reverse:
+            ax2.text(0.45, 0.3, f"AUCDF:{AUCDF.round(4)}", transform=plt.gca().transAxes, ha='right', va='bottom',fontsize=fontsize)
+        else:
+            ax2.text(0.95, 0.3, f"AUCDF:{AUCDF.round(4)}", transform=plt.gca().transAxes, ha='right', va='bottom',fontsize=fontsize)
         ax2.tick_params(axis='y', labelcolor='darkred',labelsize=fontsize)
         ax2.set_ylim(0, 1)  # Probabilities range from 0 to 1
 
