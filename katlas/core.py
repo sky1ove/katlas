@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['param1', 'param2', 'param3', 'param4', 'Data', 'CPTAC', 'get_unique_site', 'convert_string', 'checker', 'STY2sty',
            'cut_seq', 'extract_site_seq', 'raw2norm', 'get_one_kinase', 'unstack', 'get_metaP', 'get_dict', 'multiply',
-           'sumup', 'predict_kinase', 'get_pct', 'predict_kinase_df', 'get_freq', 'query_gene']
+           'sumup', 'predict_kinase', 'get_pct', 'predict_kinase_df', 'get_pct_df', 'get_freq', 'query_gene']
 
 # %% ../nbs/00_core.ipynb 4
 import math, pandas as pd, numpy as np, seaborn as sns
@@ -702,6 +702,26 @@ def predict_kinase_df(df:pd.DataFrame, # dataframe that contains site sequence
     out =pd.DataFrame(results,index=ref.index,columns=df.index).T
         
     return out
+
+# %% ../nbs/00_core.ipynb 74
+def get_pct_df(score_df, ref):
+    # Create an array to hold percentile ranks
+    percentiles = np.zeros(score_df.shape)
+    
+    # Calculate percentiles for each column in a vectorized manner
+    for i, kinase in tqdm(enumerate(score_df.columns),total=len(score_df.columns)):
+        ref_values = np.sort(ref[kinase].values)
+        
+        # Use searchsorted to find indices where the scores would be inserted to maintain order
+        indices = np.searchsorted(ref_values, score_df[kinase].values, side='right')
+        
+        # Calculate percentile ranks
+        percentiles[:, i] = indices / len(ref_values) * 100
+
+    # Convert the array to a DataFrame with appropriate indices and columns
+    percentiles_df = pd.DataFrame(percentiles, index=score_df.index, columns=score_df.columns).astype(float).round(3)
+    
+    return percentiles_df
 
 # %% ../nbs/00_core.ipynb 78
 def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains phosphorylation sequence splitted by their position
