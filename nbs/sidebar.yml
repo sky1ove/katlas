@@ -3,6 +3,10 @@ website:
     contents:
       - index.ipynb
       
+      - section: Tutorials
+        contents:
+        - tutorial_02_query_gene.ipynb
+      
       - section: Modules
         contents:
         - 00_core.ipynb
