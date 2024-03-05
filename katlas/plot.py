@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['get_color_dict', 'logo_func', 'get_logo', 'get_logo2', 'plot_rank', 'plot_hist', 'plot_heatmap', 'plot_2d',
-           'plot_cluster', 'plot_count', 'plot_bar', 'plot_corr', 'draw_corr', 'get_AUCDF']
+           'plot_cluster', 'plot_bokeh', 'plot_count', 'plot_bar', 'plot_corr', 'draw_corr', 'get_AUCDF']
 
 # %% ../nbs/02_plot.ipynb 3
 import joblib,logomaker,seaborn as sns
@@ -250,6 +250,104 @@ def plot_cluster(df: pd.DataFrame, # a dataframe of values that is waited for di
     if name_list is not None:
         texts = [plt.text(embedding_df[x_col][i], embedding_df[y_col][i], name_list[i],fontsize=8) for i in range(len(embedding_df))]
         adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
+
+# %% ../nbs/02_plot.ipynb 35
+def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality reduction
+               idx, # pd.Series or list that indicates identities for searching box
+               hue:None, # pd.Series or list that indicates category for each sample
+               s: int=3, # dot size
+               **kwargs # key:args format for information to include in the dot information box
+               ):
+    
+    "Make interactive 2D plot with a searching box and window of dot information when pointing "
+        
+    output_notebook()
+    
+    idx = list(idx)
+    hue = list(hue)
+    
+    def assign_colors(categories, palette):
+        "assign each unique name in a list with a color, returns a color list of same length"
+        color_cycle = cycle(palette)
+        color_map = {category: next(color_cycle) for category in categories}
+        return [color_map[category] for category in categories]
+    
+    if hue is not None:
+        colors  = assign_colors(hue, Category20_20) 
+    else:
+        colors = ['navy'] * len(X)
+    
+    data_dict={
+    'x': X.iloc[:,0],
+    'y': X.iloc[:,1],
+    'identity': idx,
+    'color': colors,
+    'original_color': colors,
+    'size': [s] * len(X), 
+    'highlighted': ['no'] * len(X)  # To keep track of which dot is highlighted
+    }
+    
+    for key, value in kwargs.items():
+        data_dict[key] = value
+    
+    source = ColumnDataSource(data=data_dict)
+    
+    p = figure(tools="pan,box_zoom,wheel_zoom,reset")
+    p.scatter('x', 'y', source=source, alpha=0.6, color='color', size='size')
+
+    # Disable grid lines
+    p.xgrid.visible = False
+    p.ygrid.visible = False
+    
+    # Add hover tool
+    hover = HoverTool()
+    
+    tooltips = [("Identity", "@identity")]
+
+    for key in kwargs.keys():
+        tooltips.append((key.capitalize(), f"@{key}"))
+
+    
+    hover.tooltips = tooltips
+    p.add_tools(hover)
+    
+    
+    autocomplete = AutocompleteInput(title="Search by Identity:", completions=idx)
+
+    callback = CustomJS(args=dict(source=source, plot=p), code="""
+        const data = source.data;
+        const search_val = cb_obj.value.toLowerCase();
+        const x = data['x'];
+        const y = data['y'];
+        const identity = data['identity'];
+        const color = data['color'];
+        const original_color = data['original_color'];
+        const size = data['size'];
+        const highlighted = data['highlighted'];
+
+        for (let i = 0; i < identity.length; i++) {
+            if (highlighted[i] === 'yes') {
+                color[i] = original_color[i];
+                size[i] = 10;
+                highlighted[i] = 'no';
+            }
+            if (identity[i].toLowerCase() === search_val) {
+                plot.x_range.start = x[i] - 5;
+                plot.x_range.end = x[i] + 5;
+                plot.y_range.start = y[i] - 5;
+                plot.y_range.end = y[i] + 5;
+                color[i] = 'red';
+                size[i] = 15;
+                highlighted[i] = 'yes';
+            }
+        }
+        source.change.emit();
+    """)
+    autocomplete.js_on_change('value', callback)
+
+    # Show layout
+    layout = column(autocomplete, p)
+    show(layout)
 
 # %% ../nbs/02_plot.ipynb 38
 def plot_count(cnt, # from df['x'].value_counts()
