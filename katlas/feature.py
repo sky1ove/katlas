@@ -209,7 +209,7 @@ def get_t5_bfd(df:pd.DataFrame,
     
     return T5_feature
 
-# %% ../nbs/01_feature.ipynb 26
+# %% ../nbs/01_feature.ipynb 27
 def reduce_feature(df: pd.DataFrame, 
                    method: str='pca', # dimensionality reduction method, accept both capital and lower case
                    complexity: int=20, # None for PCA; perfplexity for TSNE, recommend: 30; n_neigbors for UMAP, recommend: 15
@@ -217,7 +217,8 @@ def reduce_feature(df: pd.DataFrame,
                    load: str=None, # load a previous model, e.g. model.pkl
                    save: str=None, # pkl file to be saved, e.g. pca_model.pkl
                    seed: int=123, # seed for random_state
-                   **kwargs):
+                   **kwargs, # arguments from PCA, TSNE, or UMAP depends on which method to use
+                  ):
     
     "Reduce the dimensionality given a dataframe of values"
     
@@ -254,7 +255,7 @@ def reduce_feature(df: pd.DataFrame,
 
     return embedding_df
 
-# %% ../nbs/01_feature.ipynb 29
+# %% ../nbs/01_feature.ipynb 30
 def remove_hi_corr(df: pd.DataFrame, 
                    thr: float=0.98 # threshold
                    ):
@@ -274,7 +275,7 @@ def remove_hi_corr(df: pd.DataFrame,
     
     return df
 
-# %% ../nbs/01_feature.ipynb 33
+# %% ../nbs/01_feature.ipynb 34
 def preprocess(df: pd.DataFrame,
                thr: float=0.98):
     
