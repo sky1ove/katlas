@@ -6,6 +6,7 @@ __all__ = ['get_color_dict', 'logo_func', 'get_logo', 'get_logo2', 'plot_rank', 
 
 # %% ../nbs/02_plot.ipynb 3
 import joblib,logomaker,seaborn as sns
+import fastcore.all as fc
 from adjustText import adjust_text
 from pathlib import Path
 from fastbook import *
@@ -146,6 +147,7 @@ def get_logo2(full: pd.DataFrame, # a dataframe that contains the full matrix of
     logo_func(ratio2,title)
 
 # %% ../nbs/02_plot.ipynb 18
+@fc.delegates(sns.scatterplot)
 def plot_rank(sorted_df: pd.DataFrame, # a sorted dataframe
               x: str, # column name for x axis
               y: str, # column name for y aixs
@@ -189,6 +191,7 @@ def plot_rank(sorted_df: pd.DataFrame, # a sorted dataframe
     plt.tight_layout()
 
 # %% ../nbs/02_plot.ipynb 22
+@fc.delegates(sns.histplot)
 def plot_hist(df: pd.DataFrame, # a dataframe that contain values for plot
               x: str, # column name of values
               figsize: tuple=(6,2),
@@ -205,6 +208,7 @@ def plot_hist(df: pd.DataFrame, # a dataframe that contain values for plot
     sns.histplot(data=df,x=x,**hist_params,**kwargs)
 
 # %% ../nbs/02_plot.ipynb 26
+@fc.delegates(sns.heatmap)
 def plot_heatmap(matrix, # a matrix of values
                  title: str='heatmap', # title of the heatmap
                  figsize: tuple=(6,10), # figure size of the heatmap
@@ -219,6 +223,7 @@ def plot_heatmap(matrix, # a matrix of values
     plt.title(title)
 
 # %% ../nbs/02_plot.ipynb 30
+@fc.delegates(sns.scatterplot)
 def plot_2d(X: pd.DataFrame, # a dataframe that has first column to be x, and second column to be y
             **kwargs, # arguments for sns.scatterplot
             ):
@@ -236,7 +241,7 @@ def plot_cluster(df: pd.DataFrame, # a dataframe of values that is waited for di
                  name_list=None, # a list of names to annotate each dot in the plot
                  seed: int=123, # seed for dimensionality reduction
                  s: int=50, # size of the dot
-                 **kwargs # arguments for reduce_feature
+                 **kwargs # arguments for dimensional reduction method to be used
                  ):
     
     "Given a dataframe of values, plot it in 2d, method could be pca, tsne, or umap"
@@ -366,6 +371,7 @@ def plot_count(cnt, # from df['x'].value_counts()
         ax.xaxis.set_major_locator(MultipleLocator(tick_spacing))
 
 # %% ../nbs/02_plot.ipynb 40
+@fc.delegates(sns.catplot)
 def plot_bar(df, # dataframe with a column of values, and a column of category to groupby
              values, # colname of values
              category, # colname of categories which is used to groupby values
