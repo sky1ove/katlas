@@ -4,7 +4,7 @@
 __all__ = ['get_color_dict', 'logo_func', 'get_logo', 'get_logo2', 'plot_rank', 'plot_hist', 'plot_heatmap', 'plot_2d',
            'plot_cluster', 'plot_bokeh', 'plot_count', 'plot_bar', 'plot_corr', 'draw_corr', 'get_AUCDF']
 
-# %% ../nbs/02_plot.ipynb 3
+# %% ../nbs/02_plot.ipynb 4
 import joblib,logomaker,seaborn as sns
 import fastcore.all as fc
 from adjustText import adjust_text
@@ -26,7 +26,7 @@ from bokeh.layouts import column
 from bokeh.palettes import Category20_20
 from itertools import cycle
 
-# %% ../nbs/02_plot.ipynb 6
+# %% ../nbs/02_plot.ipynb 7
 def get_color_dict(categories, # list of names to assign color
                    palette: str='tab20', # for sns.color_palette
                    ):
@@ -36,7 +36,7 @@ def get_color_dict(categories, # list of names to assign color
     color_map = {category: next(color_cycle) for category in categories}
     return color_map
 
-# %% ../nbs/02_plot.ipynb 10
+# %% ../nbs/02_plot.ipynb 11
 def logo_func(df:pd.DataFrame, # a dataframe that contains ratios for each amino acid at each position
               title: str='logo', # title of the motif logo
              ):
@@ -68,7 +68,7 @@ def logo_func(df:pd.DataFrame, # a dataframe that contains ratios for each amino
     logo.ax.set_yticks([])
     logo.ax.set_title(title)
 
-# %% ../nbs/02_plot.ipynb 11
+# %% ../nbs/02_plot.ipynb 12
 def get_logo(df: pd.DataFrame, # stacked Dataframe with kinase as index, substrates as columns
              kinase: str, # a specific kinase name in index
              ):
@@ -107,7 +107,7 @@ def get_logo(df: pd.DataFrame, # stacked Dataframe with kinase as index, substra
     # plot logo
     logo_func(ratio2, kinase)
 
-# %% ../nbs/02_plot.ipynb 15
+# %% ../nbs/02_plot.ipynb 16
 def get_logo2(full: pd.DataFrame, # a dataframe that contains the full matrix of a kinase, with index as amino acid, and columns as positions
               title: str = 'logo', # title of the graph
               ):
@@ -146,7 +146,7 @@ def get_logo2(full: pd.DataFrame, # a dataframe that contains the full matrix of
 
     logo_func(ratio2,title)
 
-# %% ../nbs/02_plot.ipynb 18
+# %% ../nbs/02_plot.ipynb 19
 @fc.delegates(sns.scatterplot)
 def plot_rank(sorted_df: pd.DataFrame, # a sorted dataframe
               x: str, # column name for x axis
@@ -190,7 +190,7 @@ def plot_rank(sorted_df: pd.DataFrame, # a sorted dataframe
 
     plt.tight_layout()
 
-# %% ../nbs/02_plot.ipynb 22
+# %% ../nbs/02_plot.ipynb 23
 @fc.delegates(sns.histplot)
 def plot_hist(df: pd.DataFrame, # a dataframe that contain values for plot
               x: str, # column name of values
@@ -207,7 +207,7 @@ def plot_hist(df: pd.DataFrame, # a dataframe that contain values for plot
     plt.figure(figsize=figsize)
     sns.histplot(data=df,x=x,**hist_params,**kwargs)
 
-# %% ../nbs/02_plot.ipynb 26
+# %% ../nbs/02_plot.ipynb 27
 @fc.delegates(sns.heatmap)
 def plot_heatmap(matrix, # a matrix of values
                  title: str='heatmap', # title of the heatmap
@@ -222,7 +222,7 @@ def plot_heatmap(matrix, # a matrix of values
     sns.heatmap(matrix, cmap=cmap, annot=False,**kwargs)
     plt.title(title)
 
-# %% ../nbs/02_plot.ipynb 30
+# %% ../nbs/02_plot.ipynb 31
 @fc.delegates(sns.scatterplot)
 def plot_2d(X: pd.DataFrame, # a dataframe that has first column to be x, and second column to be y
             **kwargs, # arguments for sns.scatterplot
@@ -231,7 +231,7 @@ def plot_2d(X: pd.DataFrame, # a dataframe that has first column to be x, and se
     plt.figure(figsize=(7,7))
     sns.scatterplot(data = X,x=X.columns[0],y=X.columns[1],s=3,alpha=0.7,**kwargs)
 
-# %% ../nbs/02_plot.ipynb 31
+# %% ../nbs/02_plot.ipynb 32
 def plot_cluster(df: pd.DataFrame, # a dataframe of values that is waited for dimensionality reduction
                  method: str='pca', # dimensionality reduction method, choose from pca, umap, and tsne
                  hue: str=None, # colname of color
@@ -256,7 +256,7 @@ def plot_cluster(df: pd.DataFrame, # a dataframe of values that is waited for di
         texts = [plt.text(embedding_df[x_col][i], embedding_df[y_col][i], name_list[i],fontsize=8) for i in range(len(embedding_df))]
         adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
 
-# %% ../nbs/02_plot.ipynb 35
+# %% ../nbs/02_plot.ipynb 36
 def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality reduction
                idx, # pd.Series or list that indicates identities for searching box
                hue:None, # pd.Series or list that indicates category for each sample
@@ -354,7 +354,7 @@ def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality 
     layout = column(autocomplete, p)
     show(layout)
 
-# %% ../nbs/02_plot.ipynb 38
+# %% ../nbs/02_plot.ipynb 39
 def plot_count(cnt, # from df['x'].value_counts()
                tick_spacing: float= None, # tick spacing for x axis
                palette: str='tab20'):
@@ -370,7 +370,7 @@ def plot_count(cnt, # from df['x'].value_counts()
     if tick_spacing is not None:
         ax.xaxis.set_major_locator(MultipleLocator(tick_spacing))
 
-# %% ../nbs/02_plot.ipynb 40
+# %% ../nbs/02_plot.ipynb 41
 @fc.delegates(sns.catplot)
 def plot_bar(df, # dataframe with a column of values, and a column of category to groupby
              values, # colname of values
@@ -409,7 +409,8 @@ def plot_bar(df, # dataframe with a column of values, and a column of category t
                       ax=g.ax,
                       **marker);
 
-# %% ../nbs/02_plot.ipynb 43
+# %% ../nbs/02_plot.ipynb 44
+@fc.delegates(sns.regplot)
 def plot_corr(x, # x axis values, or colname of x axis
               y, # y axis values, or colname of y axis
               xlabel=None,# x axis label
@@ -445,7 +446,7 @@ def plot_corr(x, # x axis values, or colname of x axis
             transform=plt.gca().transAxes, 
              ha='center', va='center')
 
-# %% ../nbs/02_plot.ipynb 47
+# %% ../nbs/02_plot.ipynb 48
 def draw_corr(corr):
     
     "plot heatmap from df.corr()"
@@ -457,7 +458,7 @@ def draw_corr(corr):
     plt.figure(figsize=(20, 16))  # Set the figure size
     sns.heatmap(corr, annot=True, cmap='coolwarm', vmin=-1, vmax=1, mask=mask, fmt='.2f')
 
-# %% ../nbs/02_plot.ipynb 51
+# %% ../nbs/02_plot.ipynb 52
 def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
     
     "Plot CDF curve and get relative area under the curve"
