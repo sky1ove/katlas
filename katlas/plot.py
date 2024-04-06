@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['get_color_dict', 'logo_func', 'get_logo', 'get_logo2', 'plot_rank', 'plot_hist', 'plot_heatmap', 'plot_2d',
-           'plot_cluster', 'plot_bokeh', 'plot_count', 'plot_bar', 'plot_corr', 'draw_corr', 'get_AUCDF']
+           'plot_cluster', 'plot_bokeh', 'plot_count', 'plot_bar', 'plot_box', 'plot_corr', 'draw_corr', 'get_AUCDF']
 
 # %% ../nbs/02_plot.ipynb 4
 import joblib,logomaker,seaborn as sns
@@ -371,45 +371,102 @@ def plot_count(cnt, # from df['x'].value_counts()
         ax.xaxis.set_major_locator(MultipleLocator(tick_spacing))
 
 # %% ../nbs/02_plot.ipynb 41
-@fc.delegates(sns.catplot)
-def plot_bar(df, # dataframe with a column of values, and a column of category to groupby
-             values, # colname of values
-             category, # colname of categories which is used to groupby values
-             circle = True, # whether or not add dots in the graph
-             aspect = 3, # the biger the value is, the wider the graph is
-             rotation=45,
+@fc.delegates(sns.barplot)
+def plot_bar(df, 
+             value, # colname of value
+             group, # colname of group
+             title = None,
+             figsize = (12,5),
+             fontsize=14,
+             dots = True, # whether or not add dots in the graph
+             rotation=90,
              **kwargs
               ):
     
     "Plot bar graph from unstacked dataframe; need to indicate columns of values and categories"
     
-    order = df.groupby(category)[values].mean().sort_values(ascending=False).index
-    g = sns.catplot(data=df,
-                x=category,
-                y=values,
-                aspect=aspect,
-                order=order,
-                kind='bar',
-                ci='sd',
-                **kwargs)
-    g.set_xticklabels(rotation=rotation)
+    plt.figure(figsize=figsize)
     
-    if circle:
+    idx = df.groupby(group)[value].mean().sort_values(ascending=False).index
+    
+    sns.barplot(data=df, x=group, y=value, order=idx, **kwargs)
+    
+    if dots:
         marker = {'marker': 'o', 
                   'color': 'white', 
                   'edgecolor': 'black', 
                   'linewidth': 1.5, 
-                  's': 6}
+                  'jitter':True,
+                  's': 5}
 
         sns.stripplot(data=df, 
-                      x=category, 
-                      y=values,
-                      order=order,
+                      x=group, 
+                      y=value,
+                      order=idx,
                       alpha=0.8,
-                      ax=g.ax,
-                      **marker);
+                      # ax=g.ax,
+                      **marker)
+        
+    # Increase font size for the x-axis and y-axis tick labels
+    plt.tick_params(axis='x', labelsize=fontsize)  # Increase x-axis label size
+    plt.tick_params(axis='y', labelsize=fontsize)  # Increase y-axis label size
+    
+    # Modify x and y label and increase font size
+    plt.xlabel('', fontsize=fontsize)
+    plt.ylabel(value, fontsize=fontsize)
+    
+    # Rotate X labels
+    plt.xticks(rotation=rotation)
+    
+    # Plot titles
+    if title is not None:
+        plt.title(title,fontsize=fontsize)
+    
+    plt.gca().spines[['right', 'top']].set_visible(False)
 
-# %% ../nbs/02_plot.ipynb 44
+# %% ../nbs/02_plot.ipynb 45
+@fc.delegates(sns.boxplot)
+def plot_box(df,
+             value, # colname of value
+             group, # colname of group
+             title=None, 
+             figsize=(6,3),
+             fontsize=14,
+             dots=True, 
+             rotation=90,
+             **kwargs
+            ):
+    
+    "Plot box plot."
+    
+    plt.figure(figsize=figsize)
+    
+    idx = df[[group,value]].groupby(group).median().sort_values(value,ascending=False).index
+    
+    
+    sns.boxplot(data=df, x=group, y=value, order=idx, **kwargs)
+    
+    if dots:
+        sns.stripplot(x=group, y=value, data=df, order=idx, jitter=True, color='black', size=3)
+        
+
+    # Increase font size for the x-axis and y-axis tick labels
+    plt.tick_params(axis='x', labelsize=fontsize)  # Increase x-axis label size
+    plt.tick_params(axis='y', labelsize=fontsize)  # Increase y-axis label size
+
+    plt.xlabel('', fontsize=fontsize)
+    plt.ylabel(value, fontsize=fontsize)
+
+    plt.xticks(rotation=rotation)
+    
+    if title is not None:
+        plt.title(title,fontsize=fontsize)
+    
+    # Remove right and top spines 
+    # plt.gca().spines[['right', 'top']].set_visible(False)
+    
+
+# %% ../nbs/02_plot.ipynb 48
 @fc.delegates(sns.regplot)
 def plot_corr(x, # x axis values, or colname of x axis
               y, # y axis values, or colname of y axis
@@ -446,7 +503,7 @@ def plot_corr(x, # x axis values, or colname of x axis
             transform=plt.gca().transAxes, 
              ha='center', va='center')
 
-# %% ../nbs/02_plot.ipynb 48
+# %% ../nbs/02_plot.ipynb 52
 def draw_corr(corr):
     
     "plot heatmap from df.corr()"
@@ -458,7 +515,7 @@ def draw_corr(corr):
     plt.figure(figsize=(20, 16))  # Set the figure size
     sns.heatmap(corr, annot=True, cmap='coolwarm', vmin=-1, vmax=1, mask=mask, fmt='.2f')
 
-# %% ../nbs/02_plot.ipynb 52
+# %% ../nbs/02_plot.ipynb 56
 def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
     
     "Plot CDF curve and get relative area under the curve"
