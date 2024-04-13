@@ -54,14 +54,17 @@ from katlas.core import *
 
 # Quick start
 
-We provide two methods to calculate substrate sequence: - Computational
-Data-Driven Method (CDDM) - Positional Scanning Peptide Array (PSPA)
+We provide two methods to calculate substrate sequence: 
+- Computational Data-Driven Method (CDDM) 
+- Positional Scanning Peptide Array (PSPA)
 
-We consider the input in two circumstances: - single phosphorylation
-site - a csv/dataframe that contains multiple phosphorylation sites
+We consider the input in two circumstances: 
+- single phosphorylation site 
+- a csv/dataframe that contains multiple phosphorylation sites
 
-For input sequences, we also consider two circumstances: - all capital -
-contains lower cases indicating phosphorylation status
+For input sequences, we also consider two circumstances: 
+- all capital 
+- contains lower cases indicating phosphorylation status
 
 ## Single sequence as input
 
