@@ -589,7 +589,7 @@ def sumup(values, # list of values, possibilities of amino acids at certain posi
 def predict_kinase(input_string: str, # site sequence
                    ref: pd.DataFrame, # reference dataframe for scoring
                    func: Callable, # function to calculate score
-                   to_lower: bool=True # convert capital STY to lower case
+                   to_lower: bool=False # convert capital STY to lower case
                    ):
     "Predict kinase given a phosphorylation site sequence"
     
@@ -622,16 +622,19 @@ def predict_kinase(input_string: str, # site sequence
 
 # %% ../nbs/00_core.ipynb 66
 # PSPA
-param_PSPA = {'ref':Data.get_pspa_original(), 'func':multiply, 'to_lower': False} # Johnson et al. Nature official
+param_PSPA = {'ref':Data.get_pspa_original(), 'func':multiply} # Johnson et al. Nature official
 # param2 = {'ref':Data.get_pspa_original(), 'func':multiply, 'to_lower': True} # convert all STY to sty in a sequence
 
-# Kinase-substrate dataset
-param_CDDM = {'ref':Data.get_ks(), 'func':sumup, 'to_lower': False}
-param_CDDM_upper = {'ref':Data.get_ks_upper(), 'func':sumup, 'to_lower': False} # specific for all uppercase
+# Kinase-substrate dataset, CDDM
+param_CDDM = {'ref':Data.get_ks(), 'func':sumup}
+param_CDDM_upper = {'ref':Data.get_ks_upper(), 'func':sumup} # specific for all uppercase
 
-# %% ../nbs/00_core.ipynb 69
+# %% ../nbs/00_core.ipynb 68
 def get_pct(site,ref):
     
+    "Replicate the precentile results from The Kinase Library."
+    
+    # As here we try to replicate the results, we use site.upper(); consider removing it for future version.
     score = predict_kinase(site.upper(),**param_PSPA)
     
     percentiles = {}
@@ -651,12 +654,12 @@ def get_pct(site,ref):
     final.columns=['log2(score)','percentile']
     return final
 
-# %% ../nbs/00_core.ipynb 71
+# %% ../nbs/00_core.ipynb 70
 def predict_kinase_df(df:pd.DataFrame, # dataframe that contains site sequence
                       seq_col: str, # column name of site sequence
                       ref: pd.DataFrame, # reference df for scoring
                       func, # function to calculate score
-                      to_lower: bool
+                      to_lower: bool=False, # convert all S/T/Y to s/t/y in the sequence
                       ):
     "Predict kinase given a dataframe that contains phosphorylation site sequence and id"
     
@@ -705,8 +708,13 @@ def predict_kinase_df(df:pd.DataFrame, # dataframe that contains site sequence
         
     return out
 
-# %% ../nbs/00_core.ipynb 74
-def get_pct_df(score_df, ref):
+# %% ../nbs/00_core.ipynb 72
+def get_pct_df(score_df, # output from predict_kinase_df 
+               ref, # a reference df for percentile calculation
+              ):
+    
+    "Replicate the precentile results from The Kinase Library."
+
     # Create an array to hold percentile ranks
     percentiles = np.zeros(score_df.shape)
     
@@ -725,7 +733,7 @@ def get_pct_df(score_df, ref):
     
     return percentiles_df
 
-# %% ../nbs/00_core.ipynb 78
+# %% ../nbs/00_core.ipynb 76
 def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains phosphorylation sequence splitted by their position
              aa_order = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the full matrix 
              aa_order_paper = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the partial matrix
@@ -766,7 +774,7 @@ def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains
     
     return paper,full
 
-# %% ../nbs/00_core.ipynb 81
+# %% ../nbs/00_core.ipynb 79
 def query_gene(df,gene):
     
     "Query gene in the phosphoproteomics dataset"
