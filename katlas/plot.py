@@ -380,6 +380,7 @@ def plot_bar(df,
              fontsize=14,
              dots = True, # whether or not add dots in the graph
              rotation=90,
+             ascending=False,
              **kwargs
               ):
     
@@ -387,7 +388,7 @@ def plot_bar(df,
     
     plt.figure(figsize=figsize)
     
-    idx = df.groupby(group)[value].mean().sort_values(ascending=False).index
+    idx = df.groupby(group)[value].mean().sort_values(ascending=ascending).index
     
     sns.barplot(data=df, x=group, y=value, order=idx, **kwargs)
     
