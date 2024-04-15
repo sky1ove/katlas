@@ -2,7 +2,8 @@
 
 # %% auto 0
 __all__ = ['get_color_dict', 'logo_func', 'get_logo', 'get_logo2', 'plot_rank', 'plot_hist', 'plot_heatmap', 'plot_2d',
-           'plot_cluster', 'plot_bokeh', 'plot_count', 'plot_bar', 'plot_box', 'plot_corr', 'draw_corr', 'get_AUCDF']
+           'plot_cluster', 'plot_bokeh', 'plot_count', 'plot_bar', 'plot_group_bar', 'plot_box', 'plot_corr',
+           'draw_corr', 'get_AUCDF', 'plot_confusion_matrix']
 
 # %% ../nbs/02_plot.ipynb 4
 import joblib,logomaker,seaborn as sns
@@ -13,6 +14,7 @@ from fastbook import *
 from scipy.stats import spearmanr, pearsonr
 from matplotlib.ticker import MultipleLocator
 from numpy import trapz
+from sklearn.metrics import confusion_matrix
 
 # Katlas
 from .feature import *
@@ -425,7 +427,53 @@ def plot_bar(df,
     
     plt.gca().spines[['right', 'top']].set_visible(False)
 
-# %% ../nbs/02_plot.ipynb 45
+# %% ../nbs/02_plot.ipynb 44
+@fc.delegates(sns.barplot)
+def plot_group_bar(df, 
+                   value_cols,  # list of column names for values, the order depends on the first item
+                   group,       # column name of group (e.g., 'kinase')
+                   title=None,
+                   figsize=(12, 5),
+                   fontsize=14,
+                   rotation=90,
+                   ascending=False,
+                   **kwargs):
+    
+    " Plot grouped bar graph from dataframe. "
+
+    # Prepare the dataframe for plotting
+    # Melt the dataframe to go from wide to long format
+    df_melted = df.melt(id_vars=group, value_vars=value_cols, var_name='Ranking', value_name='Value')
+
+    plt.figure(figsize=figsize)
+    
+    # Sort the groups based on the average of the first ranking column
+    order = df.groupby(group)[value_cols[0]].mean().sort_values(ascending=ascending).index
+
+    # Create the bar plot
+    sns.barplot(data=df_melted, x=group, y='Value', hue='Ranking', order=order, 
+                capsize=0.1,errwidth=1.5,errcolor='gray', # adjust the error bar settings
+                **kwargs)
+    
+    # Increase font size for the x-axis and y-axis tick labels
+    plt.tick_params(axis='x', labelsize=fontsize)  # Increase x-axis label size
+    plt.tick_params(axis='y', labelsize=fontsize)  # Increase y-axis label size
+    
+    # Modify x and y label and increase font size
+    plt.xlabel('', fontsize=fontsize)
+    plt.ylabel('Value', fontsize=fontsize)
+    
+    # Rotate X labels
+    plt.xticks(rotation=rotation)
+    
+    # Plot titles
+    if title is not None:
+        plt.title(title, fontsize=fontsize)
+    
+    plt.gca().spines[['right', 'top']].set_visible(False)
+    plt.legend(title='Ranking')
+
+# %% ../nbs/02_plot.ipynb 47
 @fc.delegates(sns.boxplot)
 def plot_box(df,
              value, # colname of value
@@ -467,7 +515,7 @@ def plot_box(df,
     # plt.gca().spines[['right', 'top']].set_visible(False)
     
 
-# %% ../nbs/02_plot.ipynb 48
+# %% ../nbs/02_plot.ipynb 50
 @fc.delegates(sns.regplot)
 def plot_corr(x, # x axis values, or colname of x axis
               y, # y axis values, or colname of y axis
@@ -504,7 +552,7 @@ def plot_corr(x, # x axis values, or colname of x axis
             transform=plt.gca().transAxes, 
              ha='center', va='center')
 
-# %% ../nbs/02_plot.ipynb 52
+# %% ../nbs/02_plot.ipynb 54
 def draw_corr(corr):
     
     "plot heatmap from df.corr()"
@@ -516,7 +564,7 @@ def draw_corr(corr):
     plt.figure(figsize=(20, 16))  # Set the figure size
     sns.heatmap(corr, annot=True, cmap='coolwarm', vmin=-1, vmax=1, mask=mask, fmt='.2f')
 
-# %% ../nbs/02_plot.ipynb 56
+# %% ../nbs/02_plot.ipynb 58
 def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
     
     "Plot CDF curve and get relative area under the curve"
@@ -580,3 +628,30 @@ def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
         plt.show()
         
     return AUCDF
+
+# %% ../nbs/02_plot.ipynb 61
+def plot_confusion_matrix(target, # pd.Series 
+                          pred, # pd.Series
+                          class_names:list=['0','1'],
+                          normalize=False,
+                          title='Confusion matrix',
+                          cmap=plt.cm.Blues):
+    
+    "Plot the confusion matrix."
+    
+    cm = confusion_matrix(target, pred)
+    
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+
+    plt.figure(figsize=(6,6))
+    sns.heatmap(cm, annot=True, cmap=cmap)  # Plot the heatmap
+    plt.title(title)
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.xticks(np.arange(len(class_names)) + 0.5, class_names)
+    plt.yticks(np.arange(len(class_names)) + 0.5, class_names, rotation=0)
