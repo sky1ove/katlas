@@ -30,7 +30,7 @@ from itertools import cycle
 
 # %% ../nbs/02_plot.ipynb 7
 def get_color_dict(categories, # list of names to assign color
-                   palette: str='tab20', # for sns.color_palette
+                   palette: str='tab20', # choose from sns.color_palette
                    ):
     "Assign colors to a list of names (allow duplicates), returns a dictionary of unique name with corresponding color"
     p=sns.color_palette(palette)
@@ -231,7 +231,7 @@ def plot_2d(X: pd.DataFrame, # a dataframe that has first column to be x, and se
             ):
     "Make 2D plot from a dataframe that has first column to be x, and second column to be y"
     plt.figure(figsize=(7,7))
-    sns.scatterplot(data = X,x=X.columns[0],y=X.columns[1],s=3,alpha=0.7,**kwargs)
+    sns.scatterplot(data = X,x=X.columns[0],y=X.columns[1],alpha=0.7,**kwargs)
 
 # %% ../nbs/02_plot.ipynb 32
 def plot_cluster(df: pd.DataFrame, # a dataframe of values that is waited for dimensionality reduction
