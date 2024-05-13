@@ -99,6 +99,10 @@ class Data:
     # scoring via PSPA (all capital)
     OCHOA_PSPA_SCORE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/ochoa_pspa_score.parquet"
 
+    # PSPA number of random amino acids
+    PSPA_NUM_RANDOM_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/pspa_divide_num.csv"
+    
+
     
     @staticmethod
     def _fetch_data(url):
@@ -278,6 +282,17 @@ class Data:
         #Convert the number in the column name into integer
         df.columns = [int(col) if col.lstrip('-').isdigit() else col for col in df.columns]
         return df
+    
+    
+    @staticmethod
+    def get_num_dict():
+        """
+        Fetches the data from the given URL and returns a DataFrame
+        """
+        num = pd.read_csv(Data.PSPA_NUM_RANDOM_URL)
+        num_dict = num.set_index('kinase')['num_random_aa'].to_dict()
+
+        return num_dict
 
 # %% ../nbs/00_core.ipynb 15
 class CPTAC:
