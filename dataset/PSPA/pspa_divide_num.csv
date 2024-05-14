@@ -1,0 +1,397 @@
+﻿kinase,num_random_aa,random_aa,kinase_type
+SYK,18,"exclude Y,C",Tyr kinase
+PTK2,18,"exclude Y,C",Tyr kinase
+ZAP70,18,"exclude Y,C",Tyr kinase
+ERBB2,18,"exclude Y,C",Tyr kinase
+CSK,18,"exclude Y,C",Tyr kinase
+FGFR4,18,"exclude Y,C",Tyr kinase
+EGFR,18,"exclude Y,C",Tyr kinase
+ERBB4,18,"exclude Y,C",Tyr kinase
+EPHA8,18,"exclude Y,C",Tyr kinase
+EPHA7,18,"exclude Y,C",Tyr kinase
+EPHA5,18,"exclude Y,C",Tyr kinase
+EPHA2,18,"exclude Y,C",Tyr kinase
+EPHB2,18,"exclude Y,C",Tyr kinase
+EPHB1,18,"exclude Y,C",Tyr kinase
+EPHB3,18,"exclude Y,C",Tyr kinase
+EPHB4,18,"exclude Y,C",Tyr kinase
+EPHA4,18,"exclude Y,C",Tyr kinase
+EPHA3,18,"exclude Y,C",Tyr kinase
+EPHA6,18,"exclude Y,C",Tyr kinase
+FRK,18,"exclude Y,C",Tyr kinase
+EPHA1,18,"exclude Y,C",Tyr kinase
+TEC,18,"exclude Y,C",Tyr kinase
+BTK,18,"exclude Y,C",Tyr kinase
+ITK,18,"exclude Y,C",Tyr kinase
+BMX,18,"exclude Y,C",Tyr kinase
+TXK,16,"exclude S,T,Y,C",Tyr kinase
+ABL2,18,"exclude Y,C",Tyr kinase
+ABL1,18,"exclude Y,C",Tyr kinase
+SRMS,18,"exclude Y,C",Tyr kinase
+PTK2B,18,"exclude Y,C",Tyr kinase
+FER,18,"exclude Y,C",Tyr kinase
+MERTK,18,"exclude Y,C",Tyr kinase
+AXL,18,"exclude Y,C",Tyr kinase
+FES,18,"exclude Y,C",Tyr kinase
+PTK6,18,"exclude Y,C",Tyr kinase
+YES1,18,"exclude Y,C",Tyr kinase
+FGR,18,"exclude Y,C",Tyr kinase
+SRC,18,"exclude Y,C",Tyr kinase
+FYN,18,"exclude Y,C",Tyr kinase
+LCK,18,"exclude Y,C",Tyr kinase
+BLK,18,"exclude Y,C",Tyr kinase
+LYN,18,"exclude Y,C",Tyr kinase
+HCK,18,"exclude Y,C",Tyr kinase
+PDGFRB,18,"exclude Y,C",Tyr kinase
+PDGFRA,18,"exclude Y,C",Tyr kinase
+FLT3,18,"exclude Y,C",Tyr kinase
+TYRO3,18,"exclude Y,C",Tyr kinase
+ROS1,18,"exclude Y,C",Tyr kinase
+TEK,18,"exclude Y,C",Tyr kinase
+LTK,18,"exclude Y,C",Tyr kinase
+ALK,18,"exclude Y,C",Tyr kinase
+MUSK,18,"exclude Y,C",Tyr kinase
+KIT,18,"exclude Y,C",Tyr kinase
+CSF1R,18,"exclude Y,C",Tyr kinase
+MET,18,"exclude Y,C",Tyr kinase
+KDR,18,"exclude Y,C",Tyr kinase
+RET,18,"exclude Y,C",Tyr kinase
+MST1R,16,"exclude S,T,Y,C",Tyr kinase
+JAK3,16,"exclude S,T,Y,C",Tyr kinase
+FLT1,16,"exclude S,T,Y,C",Tyr kinase
+MATK,18,"exclude Y,C",Tyr kinase
+FGFR3,18,"exclude Y,C",Tyr kinase
+FGFR2,18,"exclude Y,C",Tyr kinase
+FGFR1,18,"exclude Y,C",Tyr kinase
+FLT4,18,"exclude Y,C",Tyr kinase
+INSR,18,"exclude Y,C",Tyr kinase
+IGF1R,18,"exclude Y,C",Tyr kinase
+INSRR,16,"exclude S,T,Y,C",Tyr kinase
+NTRK3,18,"exclude Y,C",Tyr kinase
+NTRK1,18,"exclude Y,C",Tyr kinase
+NTRK2,18,"exclude Y,C",Tyr kinase
+TNK1,18,"exclude Y,C",Tyr kinase
+TNK2,18,"exclude Y,C",Tyr kinase
+DDR2,18,"exclude Y,C",Tyr kinase
+DDR1,18,"exclude Y,C",Tyr kinase
+TYK2,18,"exclude Y,C",Tyr kinase
+JAK2,18,"exclude Y,C",Tyr kinase
+JAK1,18,"exclude Y,C",Tyr kinase
+TNNI3K_TYR,18,"exclude Y,C",Tyr kinase
+NEK10_TYR,16,"exclude S,T,Y,C",Tyr kinase
+PINK1_TYR,16,"exclude S,T,Y,C",Tyr kinase
+MAP2K7_TYR,16,"exclude S,T,Y,C",Tyr kinase
+PKMYT1_TYR,16,"exclude S,T,Y,C",Tyr kinase
+TESK1_TYR,16,"exclude S,T,Y,C",Tyr kinase
+LIMK1_TYR,16,"exclude S,T,Y,C",Tyr kinase
+LIMK2_TYR,16,"exclude S,T,Y,C",Tyr kinase
+WEE1_TYR,18,"exclude Y,C",Tyr kinase
+MAP2K6_TYR,16,"exclude S,T,Y,C",Tyr kinase
+MAP2K4_TYR,16,"exclude S,T,Y,C",Tyr kinase
+PDHK1_TYR,16,"exclude S,T,Y,C",Tyr kinase
+BMPR2_TYR,16,"exclude S,T,Y,C",Tyr kinase
+PDHK4_TYR,16,"exclude S,T,Y,C",Tyr kinase
+PDHK3_TYR,16,"exclude S,T,Y,C",Tyr kinase
+AAK1,17,"exclude S, T, C",ST kinase
+ACVR2A,17,"exclude S, T, C",ST kinase
+ACVR2B,17,"exclude S, T, C",ST kinase
+AKT1,17,"exclude S, T, C",ST kinase
+AKT2,17,"exclude S, T, C",ST kinase
+AKT3,17,"exclude S, T, C",ST kinase
+ALK2,17,"exclude S, T, C",ST kinase
+ALK4,17,"exclude S, T, C",ST kinase
+ALPHAK3,17,"exclude S, T, C",ST kinase
+AMPKA1,17,"exclude S, T, C",ST kinase
+AMPKA2,17,"exclude S, T, C",ST kinase
+ANKRD3,17,"exclude S, T, C",ST kinase
+ATM,17,"exclude S, T, C",ST kinase
+ATR,17,"exclude S, T, C",ST kinase
+AURA,17,"exclude S, T, C",ST kinase
+AURB,17,"exclude S, T, C",ST kinase
+AURC,17,"exclude S, T, C",ST kinase
+GRK2,17,"exclude S, T, C",ST kinase
+GRK3,17,"exclude S, T, C",ST kinase
+BCKDK,17,"exclude S, T, C",ST kinase
+BIKE,17,"exclude S, T, C",ST kinase
+BMPR1A,17,"exclude S, T, C",ST kinase
+BMPR1B,17,"exclude S, T, C",ST kinase
+BMPR2,17,"exclude S, T, C",ST kinase
+BRAF,17,"exclude S, T, C",ST kinase
+BRSK1,17,"exclude S, T, C",ST kinase
+BRSK2,17,"exclude S, T, C",ST kinase
+BUB1,17,"exclude S, T, C",ST kinase
+CAMK1A,17,"exclude S, T, C",ST kinase
+CAMK1B,17,"exclude S, T, C",ST kinase
+CAMK1D,17,"exclude S, T, C",ST kinase
+CAMK1G,17,"exclude S, T, C",ST kinase
+CAMK2A,17,"exclude S, T, C",ST kinase
+CAMK2B,17,"exclude S, T, C",ST kinase
+CAMK2D,17,"exclude S, T, C",ST kinase
+CAMK2G,17,"exclude S, T, C",ST kinase
+CAMK4,17,"exclude S, T, C",ST kinase
+CAMKK1,17,"exclude S, T, C",ST kinase
+CAMKK2,17,"exclude S, T, C",ST kinase
+CAMLCK,17,"exclude S, T, C",ST kinase
+CDK1,17,"exclude S, T, C",ST kinase
+CDC7,17,"exclude S, T, C",ST kinase
+CDK10,17,"exclude S, T, C",ST kinase
+CDK19,17,"exclude S, T, C",ST kinase
+CDK2,17,"exclude S, T, C",ST kinase
+CDK3,17,"exclude S, T, C",ST kinase
+CDK4,17,"exclude S, T, C",ST kinase
+CDK5,17,"exclude S, T, C",ST kinase
+CDK6,17,"exclude S, T, C",ST kinase
+CDK7,17,"exclude S, T, C",ST kinase
+CDK8,17,"exclude S, T, C",ST kinase
+CDK9,17,"exclude S, T, C",ST kinase
+CDKL1,17,"exclude S, T, C",ST kinase
+CDKL5,17,"exclude S, T, C",ST kinase
+CHAK1,17,"exclude S, T, C",ST kinase
+CHAK2,17,"exclude S, T, C",ST kinase
+CDK13,17,"exclude S, T, C",ST kinase
+CHK1,17,"exclude S, T, C",ST kinase
+CHK2,17,"exclude S, T, C",ST kinase
+CK1A,17,"exclude S, T, C",ST kinase
+CK1A2,17,"exclude S, T, C",ST kinase
+CK1D,17,"exclude S, T, C",ST kinase
+CK1E,17,"exclude S, T, C",ST kinase
+CK1G1,17,"exclude S, T, C",ST kinase
+CK1G2,17,"exclude S, T, C",ST kinase
+CK1G3,17,"exclude S, T, C",ST kinase
+CK2A1,17,"exclude S, T, C",ST kinase
+CK2A2,17,"exclude S, T, C",ST kinase
+CLK1,17,"exclude S, T, C",ST kinase
+CLK2,17,"exclude S, T, C",ST kinase
+CLK3,17,"exclude S, T, C",ST kinase
+CLK4,17,"exclude S, T, C",ST kinase
+COT,17,"exclude S, T, C",ST kinase
+CRIK,17,"exclude S, T, C",ST kinase
+CDK12,17,"exclude S, T, C",ST kinase
+DAPK1,17,"exclude S, T, C",ST kinase
+DAPK2,17,"exclude S, T, C",ST kinase
+DAPK3,17,"exclude S, T, C",ST kinase
+DCAMKL1,17,"exclude S, T, C",ST kinase
+DCAMKL2,17,"exclude S, T, C",ST kinase
+DLK,17,"exclude S, T, C",ST kinase
+DMPK1,17,"exclude S, T, C",ST kinase
+DNAPK,17,"exclude S, T, C",ST kinase
+DRAK1,17,"exclude S, T, C",ST kinase
+DYRK1A,17,"exclude S, T, C",ST kinase
+DYRK1B,17,"exclude S, T, C",ST kinase
+DYRK2,17,"exclude S, T, C",ST kinase
+DYRK3,17,"exclude S, T, C",ST kinase
+DYRK4,17,"exclude S, T, C",ST kinase
+ERK1,17,"exclude S, T, C",ST kinase
+ERK2,17,"exclude S, T, C",ST kinase
+ERK5,17,"exclude S, T, C",ST kinase
+ERK7,17,"exclude S, T, C",ST kinase
+MTOR,17,"exclude S, T, C",ST kinase
+GAK,17,"exclude S, T, C",ST kinase
+GCK,17,"exclude S, T, C",ST kinase
+GCN2,17,"exclude S, T, C",ST kinase
+GRK4,17,"exclude S, T, C",ST kinase
+GRK5,17,"exclude S, T, C",ST kinase
+GRK6,17,"exclude S, T, C",ST kinase
+GRK7,17,"exclude S, T, C",ST kinase
+GSK3A,17,"exclude S, T, C",ST kinase
+GSK3B,17,"exclude S, T, C",ST kinase
+HASPIN,17,"exclude S, T, C",ST kinase
+HGK,17,"exclude S, T, C",ST kinase
+HIPK1,17,"exclude S, T, C",ST kinase
+HIPK2,17,"exclude S, T, C",ST kinase
+HIPK3,17,"exclude S, T, C",ST kinase
+HIPK4,17,"exclude S, T, C",ST kinase
+HPK1,17,"exclude S, T, C",ST kinase
+HRI,17,"exclude S, T, C",ST kinase
+HUNK,17,"exclude S, T, C",ST kinase
+ICK,17,"exclude S, T, C",ST kinase
+IKKA,17,"exclude S, T, C",ST kinase
+IKKB,17,"exclude S, T, C",ST kinase
+IKKE,17,"exclude S, T, C",ST kinase
+IRAK1,17,"exclude S, T, C",ST kinase
+IRAK4,17,"exclude S, T, C",ST kinase
+IRE1,17,"exclude S, T, C",ST kinase
+IRE2,17,"exclude S, T, C",ST kinase
+JNK1,17,"exclude S, T, C",ST kinase
+JNK2,17,"exclude S, T, C",ST kinase
+JNK3,17,"exclude S, T, C",ST kinase
+KHS1,17,"exclude S, T, C",ST kinase
+KHS2,17,"exclude S, T, C",ST kinase
+KIS,17,"exclude S, T, C",ST kinase
+LATS1,17,"exclude S, T, C",ST kinase
+LATS2,17,"exclude S, T, C",ST kinase
+LKB1,17,"exclude S, T, C",ST kinase
+LOK,17,"exclude S, T, C",ST kinase
+LRRK2,17,"exclude S, T, C",ST kinase
+MAK,17,"exclude S, T, C",ST kinase
+MEK1,17,"exclude S, T, C",ST kinase
+MEK2,17,"exclude S, T, C",ST kinase
+MEK5,17,"exclude S, T, C",ST kinase
+MEKK1,17,"exclude S, T, C",ST kinase
+YSK4,17,"exclude S, T, C",ST kinase
+MEKK2,17,"exclude S, T, C",ST kinase
+MEKK3,17,"exclude S, T, C",ST kinase
+ASK1,17,"exclude S, T, C",ST kinase
+MEKK6,17,"exclude S, T, C",ST kinase
+MAP3K15,17,"exclude S, T, C",ST kinase
+MAPKAPK2,17,"exclude S, T, C",ST kinase
+MAPKAPK3,17,"exclude S, T, C",ST kinase
+MAPKAPK5,17,"exclude S, T, C",ST kinase
+MARK1,17,"exclude S, T, C",ST kinase
+MARK2,17,"exclude S, T, C",ST kinase
+MARK3,17,"exclude S, T, C",ST kinase
+MARK4,17,"exclude S, T, C",ST kinase
+MASTL,17,"exclude S, T, C",ST kinase
+MELK,17,"exclude S, T, C",ST kinase
+MINK,17,"exclude S, T, C",ST kinase
+MLK1,17,"exclude S, T, C",ST kinase
+MLK2,17,"exclude S, T, C",ST kinase
+MLK3,17,"exclude S, T, C",ST kinase
+MLK4,17,"exclude S, T, C",ST kinase
+MNK1,17,"exclude S, T, C",ST kinase
+MNK2,17,"exclude S, T, C",ST kinase
+MOK,17,"exclude S, T, C",ST kinase
+MOS,17,"exclude S, T, C",ST kinase
+MPSK1,17,"exclude S, T, C",ST kinase
+MRCKA,17,"exclude S, T, C",ST kinase
+MRCKB,17,"exclude S, T, C",ST kinase
+MSK1,17,"exclude S, T, C",ST kinase
+MSK2,17,"exclude S, T, C",ST kinase
+SRPK3,17,"exclude S, T, C",ST kinase
+MST1,17,"exclude S, T, C",ST kinase
+MST2,17,"exclude S, T, C",ST kinase
+MST3,17,"exclude S, T, C",ST kinase
+MST4,17,"exclude S, T, C",ST kinase
+MYO3A,17,"exclude S, T, C",ST kinase
+MYO3B,17,"exclude S, T, C",ST kinase
+NDR1,17,"exclude S, T, C",ST kinase
+NDR2,17,"exclude S, T, C",ST kinase
+NEK1,17,"exclude S, T, C",ST kinase
+NEK11,17,"exclude S, T, C",ST kinase
+NEK2,17,"exclude S, T, C",ST kinase
+NEK3,17,"exclude S, T, C",ST kinase
+NEK4,17,"exclude S, T, C",ST kinase
+NEK5,17,"exclude S, T, C",ST kinase
+NEK6,17,"exclude S, T, C",ST kinase
+NEK7,17,"exclude S, T, C",ST kinase
+NEK8,17,"exclude S, T, C",ST kinase
+NEK9,17,"exclude S, T, C",ST kinase
+NIK,17,"exclude S, T, C",ST kinase
+NIM1,17,"exclude S, T, C",ST kinase
+NLK,17,"exclude S, T, C",ST kinase
+NUAK1,17,"exclude S, T, C",ST kinase
+NUAK2,17,"exclude S, T, C",ST kinase
+OSR1,17,"exclude S, T, C",ST kinase
+P38A,17,"exclude S, T, C",ST kinase
+P38B,17,"exclude S, T, C",ST kinase
+P38D,17,"exclude S, T, C",ST kinase
+P38G,17,"exclude S, T, C",ST kinase
+P70S6K,17,"exclude S, T, C",ST kinase
+P70S6KB,17,"exclude S, T, C",ST kinase
+PAK1,17,"exclude S, T, C",ST kinase
+PAK2,17,"exclude S, T, C",ST kinase
+PAK3,17,"exclude S, T, C",ST kinase
+PAK4,17,"exclude S, T, C",ST kinase
+PAK5,17,"exclude S, T, C",ST kinase
+PAK6,17,"exclude S, T, C",ST kinase
+PASK,17,"exclude S, T, C",ST kinase
+PBK,17,"exclude S, T, C",ST kinase
+CDK16,17,"exclude S, T, C",ST kinase
+CDK17,17,"exclude S, T, C",ST kinase
+CDK18,17,"exclude S, T, C",ST kinase
+PDHK1,16,"exclude S, T, C, Y",ST kinase
+PDHK4,16,"exclude S, T, C, Y",ST kinase
+PDK1,17,"exclude S, T, C",ST kinase
+PERK,17,"exclude S, T, C",ST kinase
+CDK14,17,"exclude S, T, C",ST kinase
+PHKG1,17,"exclude S, T, C",ST kinase
+PHKG2,17,"exclude S, T, C",ST kinase
+PIM1,17,"exclude S, T, C",ST kinase
+PIM2,17,"exclude S, T, C",ST kinase
+PIM3,17,"exclude S, T, C",ST kinase
+PINK1,17,"exclude S, T, C",ST kinase
+PKACA,17,"exclude S, T, C",ST kinase
+PKACB,17,"exclude S, T, C",ST kinase
+PKACG,17,"exclude S, T, C",ST kinase
+PKCA,17,"exclude S, T, C",ST kinase
+PKCB,17,"exclude S, T, C",ST kinase
+PKCD,17,"exclude S, T, C",ST kinase
+PKCE,17,"exclude S, T, C",ST kinase
+PKCG,17,"exclude S, T, C",ST kinase
+PKCH,17,"exclude S, T, C",ST kinase
+PKCI,17,"exclude S, T, C",ST kinase
+PKCT,17,"exclude S, T, C",ST kinase
+PKCZ,17,"exclude S, T, C",ST kinase
+PRKD1,17,"exclude S, T, C",ST kinase
+PRKD2,17,"exclude S, T, C",ST kinase
+PRKD3,17,"exclude S, T, C",ST kinase
+PKG1,17,"exclude S, T, C",ST kinase
+PKG2,17,"exclude S, T, C",ST kinase
+PKN1,17,"exclude S, T, C",ST kinase
+PKN2,17,"exclude S, T, C",ST kinase
+PKN3,17,"exclude S, T, C",ST kinase
+PKR,17,"exclude S, T, C",ST kinase
+PLK1,17,"exclude S, T, C",ST kinase
+PLK2,17,"exclude S, T, C",ST kinase
+PLK3,17,"exclude S, T, C",ST kinase
+PLK4,17,"exclude S, T, C",ST kinase
+PRKX,17,"exclude S, T, C",ST kinase
+PRP4,17,"exclude S, T, C",ST kinase
+PRPK,17,"exclude S, T, C",ST kinase
+QIK,17,"exclude S, T, C",ST kinase
+QSK,17,"exclude S, T, C",ST kinase
+RAF1,17,"exclude S, T, C",ST kinase
+GRK1,17,"exclude S, T, C",ST kinase
+RIPK1,17,"exclude S, T, C",ST kinase
+RIPK2,17,"exclude S, T, C",ST kinase
+RIPK3,17,"exclude S, T, C",ST kinase
+ROCK1,17,"exclude S, T, C",ST kinase
+ROCK2,17,"exclude S, T, C",ST kinase
+P90RSK,17,"exclude S, T, C",ST kinase
+RSK2,17,"exclude S, T, C",ST kinase
+RSK3,17,"exclude S, T, C",ST kinase
+RSK4,17,"exclude S, T, C",ST kinase
+SBK,17,"exclude S, T, C",ST kinase
+MYLK4,17,"exclude S, T, C",ST kinase
+SGK1,17,"exclude S, T, C",ST kinase
+SGK3,17,"exclude S, T, C",ST kinase
+DSTYK,17,"exclude S, T, C",ST kinase
+SIK,17,"exclude S, T, C",ST kinase
+SKMLCK,17,"exclude S, T, C",ST kinase
+SLK,17,"exclude S, T, C",ST kinase
+SMG1,17,"exclude S, T, C",ST kinase
+SMMLCK,17,"exclude S, T, C",ST kinase
+SNRK,17,"exclude S, T, C",ST kinase
+SRPK1,17,"exclude S, T, C",ST kinase
+SRPK2,17,"exclude S, T, C",ST kinase
+SSTK,17,"exclude S, T, C",ST kinase
+STK33,17,"exclude S, T, C",ST kinase
+STLK3,17,"exclude S, T, C",ST kinase
+TAK1,17,"exclude S, T, C",ST kinase
+TAO1,17,"exclude S, T, C",ST kinase
+TAO2,17,"exclude S, T, C",ST kinase
+TAO3,17,"exclude S, T, C",ST kinase
+TBK1,17,"exclude S, T, C",ST kinase
+TGFBR1,17,"exclude S, T, C",ST kinase
+TGFBR2,17,"exclude S, T, C",ST kinase
+TLK1,17,"exclude S, T, C",ST kinase
+TLK2,17,"exclude S, T, C",ST kinase
+TNIK,17,"exclude S, T, C",ST kinase
+TSSK1,17,"exclude S, T, C",ST kinase
+TSSK2,17,"exclude S, T, C",ST kinase
+TTBK1,17,"exclude S, T, C",ST kinase
+TTBK2,17,"exclude S, T, C",ST kinase
+TTK,17,"exclude S, T, C",ST kinase
+ULK1,17,"exclude S, T, C",ST kinase
+ULK2,17,"exclude S, T, C",ST kinase
+VRK1,17,"exclude S, T, C",ST kinase
+VRK2,17,"exclude S, T, C",ST kinase
+WNK1,17,"exclude S, T, C",ST kinase
+WNK3,17,"exclude S, T, C",ST kinase
+WNK4,17,"exclude S, T, C",ST kinase
+YANK2,17,"exclude S, T, C",ST kinase
+YANK3,17,"exclude S, T, C",ST kinase
+YSK1,17,"exclude S, T, C",ST kinase
+ZAK,17,"exclude S, T, C",ST kinase
+EEF2K,17,"exclude S, T, C",ST kinase
+FAM20C,17,"exclude S, T, C",ST kinase
