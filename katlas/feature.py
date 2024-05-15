@@ -50,10 +50,11 @@ def get_rdkit(df: pd.DataFrame, # a dataframe that contains smiles
 # %% ../nbs/01_feature.ipynb 11
 def get_morgan(df: pd.DataFrame, # a dataframe that contains smiles
                col: str = "SMILES", # colname of smile
+               radius=3
               ):
     "Get 2048 morgan fingerprint (binary feature) from smiles in a dataframe"
     mols = [Chem.MolFromSmiles(smi) for smi in df[col]]
-    morgan_fps = [AllChem.GetMorganFingerprintAsBitVect(mol, 2, nBits=2048) for mol in mols]
+    morgan_fps = [AllChem.GetMorganFingerprintAsBitVect(mol, radius=radius, nBits=2048) for mol in mols]
     fp_df = pd.DataFrame(np.array(morgan_fps), index=df.index)
     fp_df.columns = "morgan_" + fp_df.columns.astype(str)
     return fp_df
@@ -209,7 +210,7 @@ def get_t5_bfd(df:pd.DataFrame,
     
     return T5_feature
 
-# %% ../nbs/01_feature.ipynb 27
+# %% ../nbs/01_feature.ipynb 26
 def reduce_feature(df: pd.DataFrame, 
                    method: str='pca', # dimensionality reduction method, accept both capital and lower case
                    complexity: int=20, # None for PCA; perfplexity for TSNE, recommend: 30; n_neigbors for UMAP, recommend: 15
@@ -255,7 +256,7 @@ def reduce_feature(df: pd.DataFrame,
 
     return embedding_df
 
-# %% ../nbs/01_feature.ipynb 30
+# %% ../nbs/01_feature.ipynb 29
 def remove_hi_corr(df: pd.DataFrame, 
                    thr: float=0.98 # threshold
                    ):
@@ -275,7 +276,7 @@ def remove_hi_corr(df: pd.DataFrame,
     
     return df
 
-# %% ../nbs/01_feature.ipynb 34
+# %% ../nbs/01_feature.ipynb 33
 def preprocess(df: pd.DataFrame,
                thr: float=0.98):
     
