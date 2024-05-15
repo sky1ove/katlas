@@ -3,8 +3,8 @@
 # %% auto 0
 __all__ = ['param_PSPA_st', 'param_PSPA_y', 'param_CDDM', 'param_CDDM_upper', 'fetch_data', 'Data', 'CPTAC', 'get_unique_site',
            'convert_string', 'checker', 'STY2sty', 'cut_seq', 'extract_site_seq', 'raw2norm', 'get_one_kinase',
-           'get_metaP', 'get_dict', 'multiply', 'sumup', 'predict_kinase', 'predict_kinase_df', 'get_pct', 'get_pct_df',
-           'get_freq', 'query_gene']
+           'get_metaP', 'get_dict', 'multiply_func', 'multiply', 'sumup', 'predict_kinase', 'predict_kinase_df',
+           'get_pct', 'get_pct_df', 'get_freq', 'query_gene']
 
 # %% ../nbs/00_core.ipynb 4
 import math, pandas as pd, numpy as np, seaborn as sns
@@ -58,9 +58,10 @@ class Data:
     def get_pspa_st_pct():
         return fetch_data(Data.PSPA_ST_PCT_URL)
     
-    # @staticmethod
-    # def get_pspa_tyr_pct():
-    #     return fetch_data(Data.PSPA_TYR_PCT_URL)
+    PSPA_TYR_PCT_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/PSPA/pspa_pct_tyr.parquet"
+    @staticmethod
+    def get_pspa_tyr_pct():
+        return fetch_data(Data.PSPA_TYR_PCT_URL)
     
     # PSPA number of random amino acids
     PSPA_NUM_RANDOM_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/PSPA/pspa_divide_num.csv"
@@ -436,6 +437,22 @@ def get_dict(input_string:str, # phosphorylation site sequence
 
     return result
 
+# %% ../nbs/00_core.ipynb 58
+def multiply_func(values, # list of values, possibilities of amino acids at certain positions
+             kinase:str, # kinase name
+            ):
+    
+    "Multiply the possibilities of the amino acids at each position in a phosphorylation site"
+    
+    # divide = 16 if 'PDHK' in kinase else 17
+    divide=17 # for general usage
+
+    # Using the logarithmic property: log(a*b) = log(a) + log(b)
+    # Compute the sum of the logarithms of the values and the divide factor
+    log_sum = np.sum(np.log2(values)) + (len(values) - 1) * np.log2(divide)
+
+    return log_sum
+
 # %% ../nbs/00_core.ipynb 62
 class multiply:
     "Include both Ser/Thr and Tyr kinases. "
@@ -496,10 +513,9 @@ def predict_kinase(input_string: str, # site sequence
         
     return out.round(3)
 
-# %% ../nbs/00_core.ipynb 71
+# %% ../nbs/00_core.ipynb 72
 # PSPA
 param_PSPA_st = {'ref':Data.get_pspa_st_norm(), 'func':multiply().func} # Johnson et al. Nature official
-# param2 = {'ref':Data.get_pspa_original(), 'func':multiply, 'to_lower': True} # convert all STY to sty in a sequence
 param_PSPA_y = {'ref':Data.get_pspa_tyr_norm(), 'func':multiply().func}
 
 
@@ -507,7 +523,7 @@ param_PSPA_y = {'ref':Data.get_pspa_tyr_norm(), 'func':multiply().func}
 param_CDDM = {'ref':Data.get_cddm(), 'func':sumup}
 param_CDDM_upper = {'ref':Data.get_cddm_upper(), 'func':sumup} # specific for all uppercase
 
-# %% ../nbs/00_core.ipynb 74
+# %% ../nbs/00_core.ipynb 77
 def predict_kinase_df(df:pd.DataFrame, # dataframe that contains site sequence
                       seq_col: str, # column name of site sequence
                       ref: pd.DataFrame, # reference df for scoring
@@ -561,18 +577,18 @@ def predict_kinase_df(df:pd.DataFrame, # dataframe that contains site sequence
         
     return out
 
-# %% ../nbs/00_core.ipynb 77
-def get_pct(site,ref):
+# %% ../nbs/00_core.ipynb 87
+def get_pct(site,ref,func,pct_ref):
     
     "Replicate the precentile results from The Kinase Library."
     
     # As here we try to replicate the results, we use site.upper(); consider removing it for future version.
-    score = predict_kinase(site.upper(),**param_PSPA_st)
+    score = predict_kinase(site.upper(),ref=ref,func=func)
     
     percentiles = {}
     for kinase in score.index: 
         # Get the values from `ref` for this kinase
-        ref_values = ref[kinase].values
+        ref_values = pct_ref[kinase].values
         # Calculate how many values in `ref` are less than the new score
         less = np.sum(ref_values < score[kinase])
         # Calculate how many values are equal to the new score
@@ -586,9 +602,9 @@ def get_pct(site,ref):
     final.columns=['log2(score)','percentile']
     return final
 
-# %% ../nbs/00_core.ipynb 80
+# %% ../nbs/00_core.ipynb 93
 def get_pct_df(score_df, # output from predict_kinase_df 
-               ref, # a reference df for percentile calculation
+               pct_ref, # a reference df for percentile calculation
               ):
     
     "Replicate the precentile results from The Kinase Library."
@@ -598,7 +614,7 @@ def get_pct_df(score_df, # output from predict_kinase_df
     
     # Calculate percentiles for each column in a vectorized manner
     for i, kinase in tqdm(enumerate(score_df.columns),total=len(score_df.columns)):
-        ref_values = np.sort(ref[kinase].values)
+        ref_values = np.sort(pct_ref[kinase].values)
         
         # Use searchsorted to find indices where the scores would be inserted to maintain order
         indices = np.searchsorted(ref_values, score_df[kinase].values, side='right')
@@ -611,7 +627,7 @@ def get_pct_df(score_df, # output from predict_kinase_df
     
     return percentiles_df
 
-# %% ../nbs/00_core.ipynb 84
+# %% ../nbs/00_core.ipynb 99
 def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains phosphorylation sequence splitted by their position
              aa_order = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the full matrix 
              aa_order_paper = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the partial matrix
@@ -652,7 +668,7 @@ def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains
     
     return paper,full
 
-# %% ../nbs/00_core.ipynb 88
+# %% ../nbs/00_core.ipynb 103
 def query_gene(df,gene):
     
     "Query gene in the phosphoproteomics dataset"
