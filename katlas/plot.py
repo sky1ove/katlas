@@ -6,15 +6,17 @@ __all__ = ['get_color_dict', 'logo_func', 'get_logo', 'get_logo2', 'plot_rank', 
            'draw_corr', 'get_AUCDF', 'plot_confusion_matrix']
 
 # %% ../nbs/02_plot.ipynb 4
-import joblib,logomaker,seaborn as sns
-import fastcore.all as fc
+import joblib,logomaker
+import fastcore.all as fc, pandas as pd, numpy as np, seaborn as sns
 from adjustText import adjust_text
 from pathlib import Path
-from fastbook import *
+
 from scipy.stats import spearmanr, pearsonr
+from sklearn.metrics import confusion_matrix
+from matplotlib import pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from numpy import trapz
-from sklearn.metrics import confusion_matrix
+
 
 # Katlas
 from .feature import *
@@ -233,7 +235,7 @@ def plot_2d(X: pd.DataFrame, # a dataframe that has first column to be x, and se
     plt.figure(figsize=(7,7))
     sns.scatterplot(data = X,x=X.columns[0],y=X.columns[1],alpha=0.7,**kwargs)
 
-# %% ../nbs/02_plot.ipynb 32
+# %% ../nbs/02_plot.ipynb 33
 def plot_cluster(df: pd.DataFrame, # a dataframe of values that is waited for dimensionality reduction
                  method: str='pca', # dimensionality reduction method, choose from pca, umap, and tsne
                  hue: str=None, # colname of color
@@ -258,7 +260,7 @@ def plot_cluster(df: pd.DataFrame, # a dataframe of values that is waited for di
         texts = [plt.text(embedding_df[x_col][i], embedding_df[y_col][i], name_list[i],fontsize=8) for i in range(len(embedding_df))]
         adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
 
-# %% ../nbs/02_plot.ipynb 36
+# %% ../nbs/02_plot.ipynb 37
 def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality reduction
                idx, # pd.Series or list that indicates identities for searching box
                hue:None, # pd.Series or list that indicates category for each sample
@@ -356,7 +358,7 @@ def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality 
     layout = column(autocomplete, p)
     show(layout)
 
-# %% ../nbs/02_plot.ipynb 39
+# %% ../nbs/02_plot.ipynb 40
 def plot_count(cnt, # from df['x'].value_counts()
                tick_spacing: float= None, # tick spacing for x axis
                palette: str='tab20'):
@@ -372,7 +374,7 @@ def plot_count(cnt, # from df['x'].value_counts()
     if tick_spacing is not None:
         ax.xaxis.set_major_locator(MultipleLocator(tick_spacing))
 
-# %% ../nbs/02_plot.ipynb 41
+# %% ../nbs/02_plot.ipynb 42
 @fc.delegates(sns.barplot)
 def plot_bar(df, 
              value, # colname of value
@@ -427,16 +429,16 @@ def plot_bar(df,
     
     plt.gca().spines[['right', 'top']].set_visible(False)
 
-# %% ../nbs/02_plot.ipynb 44
+# %% ../nbs/02_plot.ipynb 45
 @fc.delegates(sns.barplot)
 def plot_group_bar(df, 
                    value_cols,  # list of column names for values, the order depends on the first item
                    group,       # column name of group (e.g., 'kinase')
-                   title=None,
                    figsize=(12, 5),
+                   order=None,
+                   title=None,
                    fontsize=14,
                    rotation=90,
-                   ascending=False,
                    **kwargs):
     
     " Plot grouped bar graph from dataframe. "
@@ -447,9 +449,6 @@ def plot_group_bar(df,
 
     plt.figure(figsize=figsize)
     
-    # Sort the groups based on the average of the first ranking column
-    order = df.groupby(group)[value_cols[0]].mean().sort_values(ascending=ascending).index
-
     # Create the bar plot
     sns.barplot(data=df_melted, x=group, y='Value', hue='Ranking', order=order, 
                 capsize=0.1,errwidth=1.5,errcolor='gray', # adjust the error bar settings
@@ -471,9 +470,9 @@ def plot_group_bar(df,
         plt.title(title, fontsize=fontsize)
     
     plt.gca().spines[['right', 'top']].set_visible(False)
-    plt.legend(title='Ranking')
+    plt.legend(fontsize=fontsize) # if change legend location, use loc='upper right'
 
-# %% ../nbs/02_plot.ipynb 47
+# %% ../nbs/02_plot.ipynb 48
 @fc.delegates(sns.boxplot)
 def plot_box(df,
              value, # colname of value
@@ -515,7 +514,7 @@ def plot_box(df,
     # plt.gca().spines[['right', 'top']].set_visible(False)
     
 
-# %% ../nbs/02_plot.ipynb 50
+# %% ../nbs/02_plot.ipynb 51
 @fc.delegates(sns.regplot)
 def plot_corr(x, # x axis values, or colname of x axis
               y, # y axis values, or colname of y axis
@@ -552,7 +551,7 @@ def plot_corr(x, # x axis values, or colname of x axis
             transform=plt.gca().transAxes, 
              ha='center', va='center')
 
-# %% ../nbs/02_plot.ipynb 54
+# %% ../nbs/02_plot.ipynb 55
 def draw_corr(corr):
     
     "plot heatmap from df.corr()"
@@ -564,7 +563,7 @@ def draw_corr(corr):
     plt.figure(figsize=(20, 16))  # Set the figure size
     sns.heatmap(corr, annot=True, cmap='coolwarm', vmin=-1, vmax=1, mask=mask, fmt='.2f')
 
-# %% ../nbs/02_plot.ipynb 58
+# %% ../nbs/02_plot.ipynb 59
 def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
     
     "Plot CDF curve and get relative area under the curve"
@@ -629,7 +628,7 @@ def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
         
     return AUCDF
 
-# %% ../nbs/02_plot.ipynb 61
+# %% ../nbs/02_plot.ipynb 62
 def plot_confusion_matrix(target, # pd.Series 
                           pred, # pd.Series
                           class_names:list=['0','1'],

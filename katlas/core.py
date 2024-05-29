@@ -9,7 +9,6 @@ __all__ = ['param_PSPA_st', 'param_PSPA_y', 'param_PSPA', 'param_CDDM', 'param_C
 # %% ../nbs/00_core.ipynb 4
 import math, pandas as pd, numpy as np, seaborn as sns
 from tqdm import tqdm
-from fastcore.basics import partial
 from scipy.stats import chi2
 from typing import Callable
 from functools import partial
