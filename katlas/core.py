@@ -2,9 +2,9 @@
 
 # %% auto 0
 __all__ = ['param_PSPA_st', 'param_PSPA_y', 'param_PSPA', 'param_CDDM', 'param_CDDM_upper', 'Data', 'CPTAC', 'convert_string',
-           'checker', 'STY2sty', 'cut_seq', 'get_dict', 'multiply_func', 'sumup', 'predict_kinase', 'predict_kinase_df',
-           'get_pct', 'get_pct_df', 'get_unique_site', 'extract_site_seq', 'get_freq', 'query_gene', 'raw2norm',
-           'get_one_kinase', 'get_metaP']
+           'checker', 'STY2sty', 'cut_seq', 'get_dict', 'multiply_func', 'multiply', 'sumup', 'predict_kinase',
+           'predict_kinase_df', 'get_pct', 'get_pct_df', 'get_unique_site', 'extract_site_seq', 'get_freq',
+           'query_gene', 'get_metaP', 'raw2norm', 'get_one_kinase']
 
 # %% ../nbs/00_core.ipynb 4
 import math, pandas as pd, numpy as np, seaborn as sns
@@ -360,6 +360,28 @@ def multiply_func(values, # list of values, possibilities of amino acids at cert
 
     return log_sum
 
+# %% ../nbs/00_core.ipynb 34
+class multiply:
+    "Multiply values, consider the dynamics of scale factor, which is PSPA random aa number."
+    def __init__(self):
+        self.num_dict = Data.get_num_dict()
+        
+    def func(self, values, kinase):
+        
+        # Check if any values are less than or equal to zero
+        if np.any(np.array(values) == 0):
+            return np.nan
+        
+        else:
+            # Retrieve the divide factor from the dictionary
+            self.divide = self.num_dict[kinase]
+
+            # Using the logarithmic property: log(a*b) = log(a) + log(b)
+            # Compute the sum of the logarithms of the values and the divide factor
+            log_sum = np.sum(np.log2(values)) + (len(values) - 1) * np.log2(self.divide)
+
+            return log_sum
+
 # %% ../nbs/00_core.ipynb 38
 def sumup(values, # list of values, possibilities of amino acids at certain positions
           kinase=None, 
@@ -620,6 +642,18 @@ def query_gene(df,gene):
     return df_gene
 
 # %% ../nbs/00_core.ipynb 83
+def get_metaP(p_values):
+    
+    "Use Fisher's method to calculate a combined p value given a list of p values; this function also allows negative p values (negative correlation)"
+
+    logs = [math.log(abs(p))*-1 if p<0 else math.log(abs(p)) for p in p_values]
+    chi_square_stat = -2 * sum(logs)
+    degrees_of_freedom = 2 * len(p_values)
+    score = stats.chi2.sf(abs(chi_square_stat), degrees_of_freedom)*-1 if chi_square_stat<0 else chi2.sf(abs(chi_square_stat), degrees_of_freedom)
+
+    return score
+
+# %% ../nbs/00_core.ipynb 86
 def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and single amino acid as columns
              PDHK: bool=False, # whether this kinase belongs to PDHK family 
             ):
@@ -642,7 +676,7 @@ def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and s
     
     return df2
 
-# %% ../nbs/00_core.ipynb 85
+# %% ../nbs/00_core.ipynb 88
 def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
                    kinase:str, # a specific kinase
                    normalize: bool=False, # normalize according to the paper; special for PDHK1/4
@@ -662,15 +696,3 @@ def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
     if normalize:
         pp = raw2norm(pp, PDHK=True if kinase == 'PDHK1' or kinase == 'PDHK4' else False)
     return pp
-
-# %% ../nbs/00_core.ipynb 101
-def get_metaP(p_values):
-    
-    "Use Fisher's method to calculate a combined p value given a list of p values; this function also allows negative p values (negative correlation)"
-
-    logs = [math.log(abs(p))*-1 if p<0 else math.log(abs(p)) for p in p_values]
-    chi_square_stat = -2 * sum(logs)
-    degrees_of_freedom = 2 * len(p_values)
-    score = stats.chi2.sf(abs(chi_square_stat), degrees_of_freedom)*-1 if chi_square_stat<0 else chi2.sf(abs(chi_square_stat), degrees_of_freedom)
-
-    return score
