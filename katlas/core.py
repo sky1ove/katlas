@@ -4,7 +4,7 @@
 __all__ = ['param_PSPA_st', 'param_PSPA_y', 'param_PSPA', 'param_CDDM', 'param_CDDM_upper', 'Data', 'CPTAC', 'convert_string',
            'checker', 'STY2sty', 'cut_seq', 'get_dict', 'multiply_func', 'multiply', 'sumup', 'predict_kinase',
            'predict_kinase_df', 'get_pct', 'get_pct_df', 'get_unique_site', 'extract_site_seq', 'get_freq',
-           'query_gene', 'get_metaP', 'raw2norm', 'get_one_kinase']
+           'query_gene', 'get_ttest', 'get_metaP', 'raw2norm', 'get_one_kinase']
 
 # %% ../nbs/00_core.ipynb 4
 import math, pandas as pd, numpy as np, seaborn as sns
@@ -641,6 +641,76 @@ def query_gene(df,gene):
     return df_gene
 
 # %% ../nbs/00_core.ipynb 83
+def get_ttest(df, 
+              columns1, # list of column names for group1
+              columns2, # list of column names for group2
+              FC_method = 'median', # or mean
+              alpha=0.05, # significance level in multipletests for p_adj
+              correction_method='fdr_bh', # method in multipletests for p_adj
+             ):
+    """
+    Performs t-tests and calculates log2 fold change between two groups of columns in a DataFrame.
+    NaN p-values are excluded from the multiple testing correction.
+
+    Returns:
+    DataFrame: Results including log2FC, p-values, adjusted p-values, significance, signed log10 P value, and signed log10 Padj
+    """
+    group1 = df[columns1]
+    group2 = df[columns2]
+
+    # Compute median values for each gene in both groups
+    if FC_method == "median":
+        m1 = group1.median(axis=1)
+        m2 = group2.median(axis=1)
+    elif FC_method == "mean":
+        m1 = group1.mean(axis=1)
+        m2 = group2.mean(axis=1)
+
+    # As phosphoproteomics data has already been log transformed, we can directly use subtraction
+    FCs = m2 - m1
+
+    # Perform t-tests and handle NaN p-values    
+    t_results = [ttest_ind(group1.loc[idx], group2.loc[idx], nan_policy='omit') for idx in tqdm(df.index, desc="Computing t-tests")]
+
+    # Exclude NaN p-values before multiple testing correction
+    p_values = [result.pvalue if result.pvalue is not np.nan else np.nan for result in t_results]
+    valid_p_values = np.array(p_values, dtype=float)  # Ensure the correct data type
+
+    # valid_p_values = np.array(p_values)
+    valid_p_values = valid_p_values[~np.isnan(valid_p_values)]
+    
+    # Adjust for multiple testing on valid p-values only
+    reject, pvals_corrected, _, _ = multipletests(valid_p_values, alpha=alpha, method=correction_method)
+    
+    # Create a full list of corrected p-values including NaNs
+    full_pvals_corrected = np.empty_like(p_values)
+    full_pvals_corrected[:] = np.nan
+    np.place(full_pvals_corrected, ~np.isnan(p_values), pvals_corrected)
+    
+    # Adjust the significance accordingly
+    full_reject = np.zeros_like(p_values, dtype=bool)
+    np.place(full_reject, ~np.isnan(p_values), reject)
+
+    # Create DataFrame with results
+    results = pd.DataFrame({
+        'log2FC': FCs,
+        'p_value': p_values,
+        'p_adj': full_pvals_corrected,
+        'significant': full_reject
+    })
+
+    results['p_value'] = results['p_value'].astype(float)
+    
+    def get_signed_logP(r,p_col):
+        log10 = -np.log10(r[p_col])
+        return -log10 if r['log2FC']<0 else log10
+    
+    results['signed_logP'] = results.apply(partial(get_signed_logP,p_col='p_value'),axis=1)
+    results['signed_logPadj'] = results.apply(partial(get_signed_logP,p_col='p_adj'),axis=1)
+    
+    return results
+
+# %% ../nbs/00_core.ipynb 84
 def get_metaP(p_values):
     
     "Use Fisher's method to calculate a combined p value given a list of p values; this function also allows negative p values (negative correlation)"
@@ -652,7 +722,7 @@ def get_metaP(p_values):
 
     return score
 
-# %% ../nbs/00_core.ipynb 86
+# %% ../nbs/00_core.ipynb 87
 def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and single amino acid as columns
              PDHK: bool=False, # whether this kinase belongs to PDHK family 
             ):
@@ -675,7 +745,7 @@ def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and s
     
     return df2
 
-# %% ../nbs/00_core.ipynb 88
+# %% ../nbs/00_core.ipynb 89
 def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
                    kinase:str, # a specific kinase
                    normalize: bool=False, # normalize according to the paper; special for PDHK1/4
