@@ -16,7 +16,7 @@ from joblib import Parallel, delayed
 from scipy.stats import ttest_ind
 from statsmodels.stats.multitest import multipletests
 
-# %% ../nbs/00_core.ipynb 8
+# %% ../nbs/00_core.ipynb 7
 class Data:
     
     "A class for fetching various datasets."
@@ -188,7 +188,7 @@ class Data:
         return df
     
 
-# %% ../nbs/00_core.ipynb 13
+# %% ../nbs/00_core.ipynb 12
 class CPTAC:
     
     "A class for fetching CPTAC phosphoproteomics data."
@@ -286,7 +286,7 @@ class CPTAC:
         assert cancer_type in CPTAC.list_cancer(), "cancer type is not included, check available cancer types from CPTAC.list_cancer()"
         return CPTAC._fetch_data(cancer_type,is_Tumor, is_KB)
 
-# %% ../nbs/00_core.ipynb 20
+# %% ../nbs/00_core.ipynb 19
 def convert_string(input_string:str):
     
     "Convert amino acids of lower case other than s,t,y to capital; convert rare amino acids to _"
@@ -300,7 +300,7 @@ def convert_string(input_string:str):
         result += result_char if result_char in allowed_chars else '_'
     return result
 
-# %% ../nbs/00_core.ipynb 23
+# %% ../nbs/00_core.ipynb 22
 def checker(input_string):
     "Check if the input string contains non-s/t/y at the middle position"
     acceptor = input_string[len(input_string)//2]
@@ -310,7 +310,7 @@ def STY2sty(input_string: str):
     "Replace 'STY' with 'sty'"    
     return input_string.replace('S', 's').replace('T', 't').replace('Y', 'y')
 
-# %% ../nbs/00_core.ipynb 25
+# %% ../nbs/00_core.ipynb 24
 def cut_seq(input_string: str, # site sequence
             min_position: int, # minimum position relative to its center
             max_position: int, # maximum position relative to its center
@@ -328,7 +328,7 @@ def cut_seq(input_string: str, # site sequence
     # Extract and return the substring
     return input_string[start_index:end_index]
 
-# %% ../nbs/00_core.ipynb 27
+# %% ../nbs/00_core.ipynb 26
 def get_dict(input_string:str, # phosphorylation site sequence
             ):
     
@@ -347,7 +347,7 @@ def get_dict(input_string:str, # phosphorylation site sequence
 
     return result
 
-# %% ../nbs/00_core.ipynb 30
+# %% ../nbs/00_core.ipynb 29
 def multiply_func(values, # list of values, possibilities of amino acids at certain positions
              factor=17, # scale factor
             ):
@@ -361,7 +361,7 @@ def multiply_func(values, # list of values, possibilities of amino acids at cert
 
     return log_sum
 
-# %% ../nbs/00_core.ipynb 34
+# %% ../nbs/00_core.ipynb 33
 class multiply:
     "Multiply values, consider the dynamics of scale factor, which is PSPA random aa number."
     def __init__(self):
@@ -383,14 +383,14 @@ class multiply:
 
             return log_sum
 
-# %% ../nbs/00_core.ipynb 38
+# %% ../nbs/00_core.ipynb 37
 def sumup(values, # list of values, possibilities of amino acids at certain positions
           kinase=None, 
          ):
     "Sum up the possibilities of the amino acids at each position in a phosphorylation site sequence"
     return sum(values)
 
-# %% ../nbs/00_core.ipynb 41
+# %% ../nbs/00_core.ipynb 40
 def predict_kinase(input_string: str, # site sequence
                    ref: pd.DataFrame, # reference dataframe for scoring
                    func: Callable, # function to calculate score
@@ -437,7 +437,7 @@ def predict_kinase(input_string: str, # site sequence
         
     return out.round(3)  # Return the scores rounded to three decimal places
 
-# %% ../nbs/00_core.ipynb 43
+# %% ../nbs/00_core.ipynb 42
 # PSPA
 param_PSPA_st = {'ref':Data.get_pspa_st_norm(), 'func':multiply().func} # Johnson et al. Nature official
 param_PSPA_y = {'ref':Data.get_pspa_tyr_norm(), 'func':multiply().func}
@@ -448,7 +448,7 @@ param_PSPA = {'ref':Data.get_pspa_all_norm(), 'func':multiply().func}
 param_CDDM = {'ref':Data.get_cddm(), 'func':sumup}
 param_CDDM_upper = {'ref':Data.get_cddm_upper(), 'func':sumup} # specific for all uppercase
 
-# %% ../nbs/00_core.ipynb 47
+# %% ../nbs/00_core.ipynb 46
 def predict_kinase_df(df, seq_col, ref, func, to_lower=False):
     print('input dataframe has a length', df.shape[0])
     print('Preprocessing')
@@ -495,7 +495,7 @@ def predict_kinase_df(df, seq_col, ref, func, to_lower=False):
     return pd.DataFrame(results, index=ref.index, columns=df.index).T
 
 
-# %% ../nbs/00_core.ipynb 56
+# %% ../nbs/00_core.ipynb 55
 def get_pct(site,ref,func,pct_ref):
     
     "Replicate the precentile results from The Kinase Library."
@@ -520,7 +520,7 @@ def get_pct(site,ref,func,pct_ref):
     final.columns=['log2(score)','percentile']
     return final
 
-# %% ../nbs/00_core.ipynb 62
+# %% ../nbs/00_core.ipynb 61
 def get_pct_df(score_df, # output from predict_kinase_df 
                pct_ref, # a reference df for percentile calculation
               ):
@@ -545,7 +545,7 @@ def get_pct_df(score_df, # output from predict_kinase_df
     
     return percentiles_df
 
-# %% ../nbs/00_core.ipynb 67
+# %% ../nbs/00_core.ipynb 66
 def get_unique_site(df:pd.DataFrame = None,# dataframe that contains phosphorylation sites
                     seq_col: str='site_seq', # column name of site sequence
                     id_col: str='gene_site' # column name of site id
@@ -561,7 +561,7 @@ def get_unique_site(df:pd.DataFrame = None,# dataframe that contains phosphoryla
     
     return unique
 
-# %% ../nbs/00_core.ipynb 70
+# %% ../nbs/00_core.ipynb 69
 def extract_site_seq(df: pd.DataFrame, # dataframe that contains protein sequence
                      seq_col: str, # column name of protein sequence
                      position_col: str # column name of position 0
@@ -587,7 +587,7 @@ def extract_site_seq(df: pd.DataFrame, # dataframe that contains protein sequenc
         
     return np.array(data)
 
-# %% ../nbs/00_core.ipynb 75
+# %% ../nbs/00_core.ipynb 74
 def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains phosphorylation sequence splitted by their position
              aa_order = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the full matrix 
              aa_order_paper = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the partial matrix
@@ -628,7 +628,7 @@ def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains
     
     return paper,full
 
-# %% ../nbs/00_core.ipynb 79
+# %% ../nbs/00_core.ipynb 78
 def query_gene(df,gene):
     
     "Query gene in the phosphoproteomics dataset"
@@ -642,7 +642,7 @@ def query_gene(df,gene):
     
     return df_gene
 
-# %% ../nbs/00_core.ipynb 83
+# %% ../nbs/00_core.ipynb 82
 def get_ttest(df, 
               columns1, # list of column names for group1
               columns2, # list of column names for group2
@@ -712,7 +712,7 @@ def get_ttest(df,
     
     return results
 
-# %% ../nbs/00_core.ipynb 84
+# %% ../nbs/00_core.ipynb 83
 def get_metaP(p_values):
     
     "Use Fisher's method to calculate a combined p value given a list of p values; this function also allows negative p values (negative correlation)"
@@ -724,7 +724,7 @@ def get_metaP(p_values):
 
     return score
 
-# %% ../nbs/00_core.ipynb 87
+# %% ../nbs/00_core.ipynb 86
 def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and single amino acid as columns
              PDHK: bool=False, # whether this kinase belongs to PDHK family 
             ):
@@ -747,7 +747,7 @@ def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and s
     
     return df2
 
-# %% ../nbs/00_core.ipynb 89
+# %% ../nbs/00_core.ipynb 88
 def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
                    kinase:str, # a specific kinase
                    normalize: bool=False, # normalize according to the paper; special for PDHK1/4

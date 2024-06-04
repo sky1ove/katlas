@@ -9,7 +9,7 @@ from .core import Data
 from .feature import *
 
 # essentials
-from fastbook import *
+import pandas as pd, numpy as np
 from joblib import dump, load
 import math, xgboost as xgb, matplotlib.pyplot as plt
 from pathlib import Path

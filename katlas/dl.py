@@ -344,7 +344,7 @@ def predict_dl(df,
     
     preds = []
     for data in test_dl:
-        inputs = data.cuda()
+        inputs = data.to(def_device)
         outputs = learn.model(inputs) #learn.model(x).sigmoid().detach().cpu().numpy()
 
         preds.append(outputs.detach().cpu().numpy())
