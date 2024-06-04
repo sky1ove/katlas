@@ -13,6 +13,8 @@ from scipy.stats import chi2
 from typing import Callable
 from functools import partial
 from joblib import Parallel, delayed
+from scipy.stats import ttest_ind
+from statsmodels.stats.multitest import multipletests
 
 # %% ../nbs/00_core.ipynb 8
 class Data:
