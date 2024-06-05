@@ -11,7 +11,7 @@ from fastai.callback.training import GradientClip
 from torch.utils.data import WeightedRandomSampler
 
 # katlas
-from .core import *
+from .core import Data
 from .feature import *
 from .train import *
 
