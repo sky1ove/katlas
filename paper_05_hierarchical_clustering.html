@@ -1,0 +1,5505 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>katlas - Hierarchical clustering</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="katlas - Hierarchical clustering">
+<meta property="og:description" content="tools for predicting kinome specificities">
+<meta property="og:site_name" content="katlas">
+<meta name="twitter:title" content="katlas - Hierarchical clustering">
+<meta name="twitter:description" content="tools for predicting kinome specificities">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">katlas</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Hierarchical clustering</li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">KATLAS</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Tutorials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_01_sinlge_input.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring with single input sequence</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_02_high_throughput.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Phosphoproteomics scoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_03_query_gene.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Query phosphosites for a specific protein/gene</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_04a_enrichment_akti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinase enrichment analysis - AKTi</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_04b_enrichment_egfri.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinase enrichment analysis - EGFRi</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Core</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train ML</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dl.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train DL</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#plot-dendrogram" id="toc-plot-dendrogram" class="nav-link" data-scroll-target="#plot-dendrogram">Plot dendrogram</a></li>
+  <li><a href="#save-tree" id="toc-save-tree" class="nav-link" data-scroll-target="#save-tree">Save Tree</a></li>
+  <li><a href="#determine-threshold-to-cut-tree" id="toc-determine-threshold-to-cut-tree" class="nav-link" data-scroll-target="#determine-threshold-to-cut-tree">Determine threshold to cut tree</a></li>
+  <li><a href="#umap" id="toc-umap" class="nav-link" data-scroll-target="#umap">UMAP</a>
+  <ul class="collapse">
+  <li><a href="#determine-parameters-in-umap" id="toc-determine-parameters-in-umap" class="nav-link" data-scroll-target="#determine-parameters-in-umap">Determine parameters in UMAP</a></li>
+  <li><a href="#visualize-threshold-for-clusters" id="toc-visualize-threshold-for-clusters" class="nav-link" data-scroll-target="#visualize-threshold-for-clusters">Visualize threshold for clusters</a></li>
+  </ul></li>
+  <li><a href="#plot-umap" id="toc-plot-umap" class="nav-link" data-scroll-target="#plot-umap">Plot UMAP</a>
+  <ul class="collapse">
+  <li><a href="#colored-by-cddm-cluster" id="toc-colored-by-cddm-cluster" class="nav-link" data-scroll-target="#colored-by-cddm-cluster">colored by CDDM cluster</a></li>
+  <li><a href="#colored-by-kinase-familygroup" id="toc-colored-by-kinase-familygroup" class="nav-link" data-scroll-target="#colored-by-kinase-familygroup">colored by kinase family/group</a></li>
+  <li><a href="#pspa-category" id="toc-pspa-category" class="nav-link" data-scroll-target="#pspa-category">PSPA category</a></li>
+  <li><a href="#main-location" id="toc-main-location" class="nav-link" data-scroll-target="#main-location">Main location</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Hierarchical clustering</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<div id="82bbe759-ab42-4a43-909b-2a6f9c0da4ff" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd, numpy <span class="im">as</span> np, seaborn <span class="im">as</span> sns, matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.core <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.feature <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.plot <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.cluster.hierarchy <span class="im">import</span> linkage, dendrogram, to_tree,fcluster</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Bio <span class="im">import</span> Phylo</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> StringIO</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<div id="d7e29d68-c1ac-4c46-a989-a50a8d7f921e" class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> Data.get_cddm().iloc[:,:<span class="op">-</span><span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="2d9734d4-58e2-410e-b967-b8428971526b" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">substrate</th>
+<th data-quarto-table-cell-role="th">-7P</th>
+<th data-quarto-table-cell-role="th">-7G</th>
+<th data-quarto-table-cell-role="th">-7A</th>
+<th data-quarto-table-cell-role="th">-7C</th>
+<th data-quarto-table-cell-role="th">-7S</th>
+<th data-quarto-table-cell-role="th">-7T</th>
+<th data-quarto-table-cell-role="th">-7V</th>
+<th data-quarto-table-cell-role="th">-7I</th>
+<th data-quarto-table-cell-role="th">-7L</th>
+<th data-quarto-table-cell-role="th">-7M</th>
+<th data-quarto-table-cell-role="th">-7F</th>
+<th data-quarto-table-cell-role="th">-7Y</th>
+<th data-quarto-table-cell-role="th">-7W</th>
+<th data-quarto-table-cell-role="th">-7H</th>
+<th data-quarto-table-cell-role="th">-7K</th>
+<th data-quarto-table-cell-role="th">-7R</th>
+<th data-quarto-table-cell-role="th">-7Q</th>
+<th data-quarto-table-cell-role="th">-7N</th>
+<th data-quarto-table-cell-role="th">-7D</th>
+<th data-quarto-table-cell-role="th">-7E</th>
+<th data-quarto-table-cell-role="th">-7s</th>
+<th data-quarto-table-cell-role="th">-7t</th>
+<th data-quarto-table-cell-role="th">-7y</th>
+<th data-quarto-table-cell-role="th">-6P</th>
+<th data-quarto-table-cell-role="th">-6G</th>
+<th data-quarto-table-cell-role="th">-6A</th>
+<th data-quarto-table-cell-role="th">-6C</th>
+<th data-quarto-table-cell-role="th">-6S</th>
+<th data-quarto-table-cell-role="th">-6T</th>
+<th data-quarto-table-cell-role="th">-6V</th>
+<th data-quarto-table-cell-role="th">-6I</th>
+<th data-quarto-table-cell-role="th">-6L</th>
+<th data-quarto-table-cell-role="th">-6M</th>
+<th data-quarto-table-cell-role="th">-6F</th>
+<th data-quarto-table-cell-role="th">-6Y</th>
+<th data-quarto-table-cell-role="th">-6W</th>
+<th data-quarto-table-cell-role="th">-6H</th>
+<th data-quarto-table-cell-role="th">-6K</th>
+<th data-quarto-table-cell-role="th">-6R</th>
+<th data-quarto-table-cell-role="th">-6Q</th>
+<th data-quarto-table-cell-role="th">-6N</th>
+<th data-quarto-table-cell-role="th">-6D</th>
+<th data-quarto-table-cell-role="th">-6E</th>
+<th data-quarto-table-cell-role="th">-6s</th>
+<th data-quarto-table-cell-role="th">-6t</th>
+<th data-quarto-table-cell-role="th">-6y</th>
+<th data-quarto-table-cell-role="th">-5P</th>
+<th data-quarto-table-cell-role="th">-5G</th>
+<th data-quarto-table-cell-role="th">-5A</th>
+<th data-quarto-table-cell-role="th">-5C</th>
+<th data-quarto-table-cell-role="th">-5S</th>
+<th data-quarto-table-cell-role="th">-5T</th>
+<th data-quarto-table-cell-role="th">-5V</th>
+<th data-quarto-table-cell-role="th">-5I</th>
+<th data-quarto-table-cell-role="th">-5L</th>
+<th data-quarto-table-cell-role="th">-5M</th>
+<th data-quarto-table-cell-role="th">-5F</th>
+<th data-quarto-table-cell-role="th">-5Y</th>
+<th data-quarto-table-cell-role="th">-5W</th>
+<th data-quarto-table-cell-role="th">-5H</th>
+<th data-quarto-table-cell-role="th">-5K</th>
+<th data-quarto-table-cell-role="th">-5R</th>
+<th data-quarto-table-cell-role="th">-5Q</th>
+<th data-quarto-table-cell-role="th">-5N</th>
+<th data-quarto-table-cell-role="th">-5D</th>
+<th data-quarto-table-cell-role="th">-5E</th>
+<th data-quarto-table-cell-role="th">-5s</th>
+<th data-quarto-table-cell-role="th">-5t</th>
+<th data-quarto-table-cell-role="th">-5y</th>
+<th data-quarto-table-cell-role="th">-4P</th>
+<th data-quarto-table-cell-role="th">-4G</th>
+<th data-quarto-table-cell-role="th">-4A</th>
+<th data-quarto-table-cell-role="th">-4C</th>
+<th data-quarto-table-cell-role="th">-4S</th>
+<th data-quarto-table-cell-role="th">-4T</th>
+<th data-quarto-table-cell-role="th">-4V</th>
+<th data-quarto-table-cell-role="th">-4I</th>
+<th data-quarto-table-cell-role="th">-4L</th>
+<th data-quarto-table-cell-role="th">-4M</th>
+<th data-quarto-table-cell-role="th">-4F</th>
+<th data-quarto-table-cell-role="th">-4Y</th>
+<th data-quarto-table-cell-role="th">-4W</th>
+<th data-quarto-table-cell-role="th">-4H</th>
+<th data-quarto-table-cell-role="th">-4K</th>
+<th data-quarto-table-cell-role="th">-4R</th>
+<th data-quarto-table-cell-role="th">-4Q</th>
+<th data-quarto-table-cell-role="th">-4N</th>
+<th data-quarto-table-cell-role="th">-4D</th>
+<th data-quarto-table-cell-role="th">-4E</th>
+<th data-quarto-table-cell-role="th">-4s</th>
+<th data-quarto-table-cell-role="th">-4t</th>
+<th data-quarto-table-cell-role="th">-4y</th>
+<th data-quarto-table-cell-role="th">-3P</th>
+<th data-quarto-table-cell-role="th">-3G</th>
+<th data-quarto-table-cell-role="th">-3A</th>
+<th data-quarto-table-cell-role="th">-3C</th>
+<th data-quarto-table-cell-role="th">-3S</th>
+<th data-quarto-table-cell-role="th">-3T</th>
+<th data-quarto-table-cell-role="th">-3V</th>
+<th data-quarto-table-cell-role="th">-3I</th>
+<th data-quarto-table-cell-role="th">-3L</th>
+<th data-quarto-table-cell-role="th">-3M</th>
+<th data-quarto-table-cell-role="th">-3F</th>
+<th data-quarto-table-cell-role="th">-3Y</th>
+<th data-quarto-table-cell-role="th">-3W</th>
+<th data-quarto-table-cell-role="th">-3H</th>
+<th data-quarto-table-cell-role="th">-3K</th>
+<th data-quarto-table-cell-role="th">-3R</th>
+<th data-quarto-table-cell-role="th">-3Q</th>
+<th data-quarto-table-cell-role="th">-3N</th>
+<th data-quarto-table-cell-role="th">-3D</th>
+<th data-quarto-table-cell-role="th">-3E</th>
+<th data-quarto-table-cell-role="th">-3s</th>
+<th data-quarto-table-cell-role="th">-3t</th>
+<th data-quarto-table-cell-role="th">-3y</th>
+<th data-quarto-table-cell-role="th">-2P</th>
+<th data-quarto-table-cell-role="th">-2G</th>
+<th data-quarto-table-cell-role="th">-2A</th>
+<th data-quarto-table-cell-role="th">-2C</th>
+<th data-quarto-table-cell-role="th">-2S</th>
+<th data-quarto-table-cell-role="th">-2T</th>
+<th data-quarto-table-cell-role="th">-2V</th>
+<th data-quarto-table-cell-role="th">-2I</th>
+<th data-quarto-table-cell-role="th">-2L</th>
+<th data-quarto-table-cell-role="th">-2M</th>
+<th data-quarto-table-cell-role="th">-2F</th>
+<th data-quarto-table-cell-role="th">-2Y</th>
+<th data-quarto-table-cell-role="th">-2W</th>
+<th data-quarto-table-cell-role="th">-2H</th>
+<th data-quarto-table-cell-role="th">-2K</th>
+<th data-quarto-table-cell-role="th">-2R</th>
+<th data-quarto-table-cell-role="th">-2Q</th>
+<th data-quarto-table-cell-role="th">-2N</th>
+<th data-quarto-table-cell-role="th">-2D</th>
+<th data-quarto-table-cell-role="th">-2E</th>
+<th data-quarto-table-cell-role="th">-2s</th>
+<th data-quarto-table-cell-role="th">-2t</th>
+<th data-quarto-table-cell-role="th">-2y</th>
+<th data-quarto-table-cell-role="th">-1P</th>
+<th data-quarto-table-cell-role="th">-1G</th>
+<th data-quarto-table-cell-role="th">-1A</th>
+<th data-quarto-table-cell-role="th">-1C</th>
+<th data-quarto-table-cell-role="th">-1S</th>
+<th data-quarto-table-cell-role="th">-1T</th>
+<th data-quarto-table-cell-role="th">-1V</th>
+<th data-quarto-table-cell-role="th">-1I</th>
+<th data-quarto-table-cell-role="th">-1L</th>
+<th data-quarto-table-cell-role="th">-1M</th>
+<th data-quarto-table-cell-role="th">-1F</th>
+<th data-quarto-table-cell-role="th">-1Y</th>
+<th data-quarto-table-cell-role="th">-1W</th>
+<th data-quarto-table-cell-role="th">-1H</th>
+<th data-quarto-table-cell-role="th">-1K</th>
+<th data-quarto-table-cell-role="th">-1R</th>
+<th data-quarto-table-cell-role="th">-1Q</th>
+<th data-quarto-table-cell-role="th">-1N</th>
+<th data-quarto-table-cell-role="th">-1D</th>
+<th data-quarto-table-cell-role="th">-1E</th>
+<th data-quarto-table-cell-role="th">-1s</th>
+<th data-quarto-table-cell-role="th">-1t</th>
+<th data-quarto-table-cell-role="th">-1y</th>
+<th data-quarto-table-cell-role="th">1P</th>
+<th data-quarto-table-cell-role="th">1G</th>
+<th data-quarto-table-cell-role="th">1A</th>
+<th data-quarto-table-cell-role="th">1C</th>
+<th data-quarto-table-cell-role="th">1S</th>
+<th data-quarto-table-cell-role="th">1T</th>
+<th data-quarto-table-cell-role="th">1V</th>
+<th data-quarto-table-cell-role="th">1I</th>
+<th data-quarto-table-cell-role="th">1L</th>
+<th data-quarto-table-cell-role="th">1M</th>
+<th data-quarto-table-cell-role="th">1F</th>
+<th data-quarto-table-cell-role="th">1Y</th>
+<th data-quarto-table-cell-role="th">1W</th>
+<th data-quarto-table-cell-role="th">1H</th>
+<th data-quarto-table-cell-role="th">1K</th>
+<th data-quarto-table-cell-role="th">1R</th>
+<th data-quarto-table-cell-role="th">1Q</th>
+<th data-quarto-table-cell-role="th">1N</th>
+<th data-quarto-table-cell-role="th">1D</th>
+<th data-quarto-table-cell-role="th">1E</th>
+<th data-quarto-table-cell-role="th">1s</th>
+<th data-quarto-table-cell-role="th">1t</th>
+<th data-quarto-table-cell-role="th">1y</th>
+<th data-quarto-table-cell-role="th">2P</th>
+<th data-quarto-table-cell-role="th">2G</th>
+<th data-quarto-table-cell-role="th">2A</th>
+<th data-quarto-table-cell-role="th">2C</th>
+<th data-quarto-table-cell-role="th">2S</th>
+<th data-quarto-table-cell-role="th">2T</th>
+<th data-quarto-table-cell-role="th">2V</th>
+<th data-quarto-table-cell-role="th">2I</th>
+<th data-quarto-table-cell-role="th">2L</th>
+<th data-quarto-table-cell-role="th">2M</th>
+<th data-quarto-table-cell-role="th">2F</th>
+<th data-quarto-table-cell-role="th">2Y</th>
+<th data-quarto-table-cell-role="th">2W</th>
+<th data-quarto-table-cell-role="th">2H</th>
+<th data-quarto-table-cell-role="th">2K</th>
+<th data-quarto-table-cell-role="th">2R</th>
+<th data-quarto-table-cell-role="th">2Q</th>
+<th data-quarto-table-cell-role="th">2N</th>
+<th data-quarto-table-cell-role="th">2D</th>
+<th data-quarto-table-cell-role="th">2E</th>
+<th data-quarto-table-cell-role="th">2s</th>
+<th data-quarto-table-cell-role="th">2t</th>
+<th data-quarto-table-cell-role="th">2y</th>
+<th data-quarto-table-cell-role="th">3P</th>
+<th data-quarto-table-cell-role="th">3G</th>
+<th data-quarto-table-cell-role="th">3A</th>
+<th data-quarto-table-cell-role="th">3C</th>
+<th data-quarto-table-cell-role="th">3S</th>
+<th data-quarto-table-cell-role="th">3T</th>
+<th data-quarto-table-cell-role="th">3V</th>
+<th data-quarto-table-cell-role="th">3I</th>
+<th data-quarto-table-cell-role="th">3L</th>
+<th data-quarto-table-cell-role="th">3M</th>
+<th data-quarto-table-cell-role="th">3F</th>
+<th data-quarto-table-cell-role="th">3Y</th>
+<th data-quarto-table-cell-role="th">3W</th>
+<th data-quarto-table-cell-role="th">3H</th>
+<th data-quarto-table-cell-role="th">3K</th>
+<th data-quarto-table-cell-role="th">3R</th>
+<th data-quarto-table-cell-role="th">3Q</th>
+<th data-quarto-table-cell-role="th">3N</th>
+<th data-quarto-table-cell-role="th">3D</th>
+<th data-quarto-table-cell-role="th">3E</th>
+<th data-quarto-table-cell-role="th">3s</th>
+<th data-quarto-table-cell-role="th">3t</th>
+<th data-quarto-table-cell-role="th">3y</th>
+<th data-quarto-table-cell-role="th">4P</th>
+<th data-quarto-table-cell-role="th">4G</th>
+<th data-quarto-table-cell-role="th">4A</th>
+<th data-quarto-table-cell-role="th">4C</th>
+<th data-quarto-table-cell-role="th">4S</th>
+<th data-quarto-table-cell-role="th">4T</th>
+<th data-quarto-table-cell-role="th">4V</th>
+<th data-quarto-table-cell-role="th">4I</th>
+<th data-quarto-table-cell-role="th">4L</th>
+<th data-quarto-table-cell-role="th">4M</th>
+<th data-quarto-table-cell-role="th">4F</th>
+<th data-quarto-table-cell-role="th">4Y</th>
+<th data-quarto-table-cell-role="th">4W</th>
+<th data-quarto-table-cell-role="th">4H</th>
+<th data-quarto-table-cell-role="th">4K</th>
+<th data-quarto-table-cell-role="th">4R</th>
+<th data-quarto-table-cell-role="th">4Q</th>
+<th data-quarto-table-cell-role="th">4N</th>
+<th data-quarto-table-cell-role="th">4D</th>
+<th data-quarto-table-cell-role="th">4E</th>
+<th data-quarto-table-cell-role="th">4s</th>
+<th data-quarto-table-cell-role="th">4t</th>
+<th data-quarto-table-cell-role="th">4y</th>
+<th data-quarto-table-cell-role="th">5P</th>
+<th data-quarto-table-cell-role="th">5G</th>
+<th data-quarto-table-cell-role="th">5A</th>
+<th data-quarto-table-cell-role="th">5C</th>
+<th data-quarto-table-cell-role="th">5S</th>
+<th data-quarto-table-cell-role="th">5T</th>
+<th data-quarto-table-cell-role="th">5V</th>
+<th data-quarto-table-cell-role="th">5I</th>
+<th data-quarto-table-cell-role="th">5L</th>
+<th data-quarto-table-cell-role="th">5M</th>
+<th data-quarto-table-cell-role="th">5F</th>
+<th data-quarto-table-cell-role="th">5Y</th>
+<th data-quarto-table-cell-role="th">5W</th>
+<th data-quarto-table-cell-role="th">5H</th>
+<th data-quarto-table-cell-role="th">5K</th>
+<th data-quarto-table-cell-role="th">5R</th>
+<th data-quarto-table-cell-role="th">5Q</th>
+<th data-quarto-table-cell-role="th">5N</th>
+<th data-quarto-table-cell-role="th">5D</th>
+<th data-quarto-table-cell-role="th">5E</th>
+<th data-quarto-table-cell-role="th">5s</th>
+<th data-quarto-table-cell-role="th">5t</th>
+<th data-quarto-table-cell-role="th">5y</th>
+<th data-quarto-table-cell-role="th">6P</th>
+<th data-quarto-table-cell-role="th">6G</th>
+<th data-quarto-table-cell-role="th">6A</th>
+<th data-quarto-table-cell-role="th">6C</th>
+<th data-quarto-table-cell-role="th">6S</th>
+<th data-quarto-table-cell-role="th">6T</th>
+<th data-quarto-table-cell-role="th">6V</th>
+<th data-quarto-table-cell-role="th">6I</th>
+<th data-quarto-table-cell-role="th">6L</th>
+<th data-quarto-table-cell-role="th">6M</th>
+<th data-quarto-table-cell-role="th">6F</th>
+<th data-quarto-table-cell-role="th">6Y</th>
+<th data-quarto-table-cell-role="th">6W</th>
+<th data-quarto-table-cell-role="th">6H</th>
+<th data-quarto-table-cell-role="th">6K</th>
+<th data-quarto-table-cell-role="th">6R</th>
+<th data-quarto-table-cell-role="th">6Q</th>
+<th data-quarto-table-cell-role="th">6N</th>
+<th data-quarto-table-cell-role="th">6D</th>
+<th data-quarto-table-cell-role="th">6E</th>
+<th data-quarto-table-cell-role="th">6s</th>
+<th data-quarto-table-cell-role="th">6t</th>
+<th data-quarto-table-cell-role="th">6y</th>
+<th data-quarto-table-cell-role="th">7P</th>
+<th data-quarto-table-cell-role="th">7G</th>
+<th data-quarto-table-cell-role="th">7A</th>
+<th data-quarto-table-cell-role="th">7C</th>
+<th data-quarto-table-cell-role="th">7S</th>
+<th data-quarto-table-cell-role="th">7T</th>
+<th data-quarto-table-cell-role="th">7V</th>
+<th data-quarto-table-cell-role="th">7I</th>
+<th data-quarto-table-cell-role="th">7L</th>
+<th data-quarto-table-cell-role="th">7M</th>
+<th data-quarto-table-cell-role="th">7F</th>
+<th data-quarto-table-cell-role="th">7Y</th>
+<th data-quarto-table-cell-role="th">7W</th>
+<th data-quarto-table-cell-role="th">7H</th>
+<th data-quarto-table-cell-role="th">7K</th>
+<th data-quarto-table-cell-role="th">7R</th>
+<th data-quarto-table-cell-role="th">7Q</th>
+<th data-quarto-table-cell-role="th">7N</th>
+<th data-quarto-table-cell-role="th">7D</th>
+<th data-quarto-table-cell-role="th">7E</th>
+<th data-quarto-table-cell-role="th">7s</th>
+<th data-quarto-table-cell-role="th">7t</th>
+<th data-quarto-table-cell-role="th">7y</th>
+<th data-quarto-table-cell-role="th">0s</th>
+<th data-quarto-table-cell-role="th">0t</th>
+<th data-quarto-table-cell-role="th">0y</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">kinase</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">SRC</td>
+<td>0.055749</td>
+<td>0.064895</td>
+<td>0.060105</td>
+<td>0.010017</td>
+<td>0.045732</td>
+<td>0.033101</td>
+<td>0.049216</td>
+<td>0.037892</td>
+<td>0.080139</td>
+<td>0.020035</td>
+<td>0.032230</td>
+<td>0.012195</td>
+<td>0.009146</td>
+<td>0.017422</td>
+<td>0.091899</td>
+<td>0.077091</td>
+<td>0.044861</td>
+<td>0.040941</td>
+<td>0.073606</td>
+<td>0.086237</td>
+<td>0.025697</td>
+<td>0.013066</td>
+<td>0.018728</td>
+<td>0.058747</td>
+<td>0.069626</td>
+<td>0.061358</td>
+<td>0.010879</td>
+<td>0.038729</td>
+<td>0.033943</td>
+<td>0.053525</td>
+<td>0.038294</td>
+<td>0.067885</td>
+<td>0.019147</td>
+<td>0.034378</td>
+<td>0.007833</td>
+<td>0.004787</td>
+<td>0.020453</td>
+<td>0.084421</td>
+<td>0.062663</td>
+<td>0.051784</td>
+<td>0.037424</td>
+<td>0.081375</td>
+<td>0.100522</td>
+<td>0.023934</td>
+<td>0.015666</td>
+<td>0.022628</td>
+<td>0.051193</td>
+<td>0.068547</td>
+<td>0.067679</td>
+<td>0.015184</td>
+<td>0.031670</td>
+<td>0.028633</td>
+<td>0.050325</td>
+<td>0.044685</td>
+<td>0.068980</td>
+<td>0.018221</td>
+<td>0.034707</td>
+<td>0.003037</td>
+<td>0.004772</td>
+<td>0.022126</td>
+<td>0.072885</td>
+<td>0.049458</td>
+<td>0.047722</td>
+<td>0.041649</td>
+<td>0.088069</td>
+<td>0.109328</td>
+<td>0.030803</td>
+<td>0.019957</td>
+<td>0.030369</td>
+<td>0.056301</td>
+<td>0.077090</td>
+<td>0.059333</td>
+<td>0.017324</td>
+<td>0.037246</td>
+<td>0.025552</td>
+<td>0.048939</td>
+<td>0.036379</td>
+<td>0.081854</td>
+<td>0.016890</td>
+<td>0.031182</td>
+<td>0.005630</td>
+<td>0.005630</td>
+<td>0.017324</td>
+<td>0.052837</td>
+<td>0.051104</td>
+<td>0.045041</td>
+<td>0.044608</td>
+<td>0.086618</td>
+<td>0.104807</td>
+<td>0.045041</td>
+<td>0.022521</td>
+<td>0.030749</td>
+<td>0.050195</td>
+<td>0.068801</td>
+<td>0.075725</td>
+<td>0.008654</td>
+<td>0.031588</td>
+<td>0.023799</td>
+<td>0.051493</td>
+<td>0.031155</td>
+<td>0.058416</td>
+<td>0.012981</td>
+<td>0.023367</td>
+<td>0.007789</td>
+<td>0.005625</td>
+<td>0.018174</td>
+<td>0.057551</td>
+<td>0.043704</td>
+<td>0.056253</td>
+<td>0.043704</td>
+<td>0.092168</td>
+<td>0.144093</td>
+<td>0.041108</td>
+<td>0.020770</td>
+<td>0.032886</td>
+<td>0.065311</td>
+<td>0.081747</td>
+<td>0.062716</td>
+<td>0.011678</td>
+<td>0.028114</td>
+<td>0.019031</td>
+<td>0.053201</td>
+<td>0.035035</td>
+<td>0.052336</td>
+<td>0.011678</td>
+<td>0.026817</td>
+<td>0.003460</td>
+<td>0.006920</td>
+<td>0.021194</td>
+<td>0.061419</td>
+<td>0.035467</td>
+<td>0.048875</td>
+<td>0.053201</td>
+<td>0.102076</td>
+<td>0.109862</td>
+<td>0.049740</td>
+<td>0.026817</td>
+<td>0.033304</td>
+<td>0.057958</td>
+<td>0.047578</td>
+<td>0.066176</td>
+<td>0.016436</td>
+<td>0.022059</td>
+<td>0.022059</td>
+<td>0.098616</td>
+<td>0.080882</td>
+<td>0.102076</td>
+<td>0.009083</td>
+<td>0.038062</td>
+<td>0.005623</td>
+<td>0.008651</td>
+<td>0.024654</td>
+<td>0.035035</td>
+<td>0.022059</td>
+<td>0.037630</td>
+<td>0.035035</td>
+<td>0.068772</td>
+<td>0.091263</td>
+<td>0.031574</td>
+<td>0.036765</td>
+<td>0.041955</td>
+<td>0.020815</td>
+<td>0.101041</td>
+<td>0.066349</td>
+<td>0.013877</td>
+<td>0.033825</td>
+<td>0.015611</td>
+<td>0.062446</td>
+<td>0.049436</td>
+<td>0.065048</td>
+<td>0.014310</td>
+<td>0.031223</td>
+<td>0.003469</td>
+<td>0.006938</td>
+<td>0.021683</td>
+<td>0.049436</td>
+<td>0.033825</td>
+<td>0.056375</td>
+<td>0.037294</td>
+<td>0.089332</td>
+<td>0.114484</td>
+<td>0.044666</td>
+<td>0.026453</td>
+<td>0.042064</td>
+<td>0.048387</td>
+<td>0.066696</td>
+<td>0.071927</td>
+<td>0.016565</td>
+<td>0.034002</td>
+<td>0.025719</td>
+<td>0.064516</td>
+<td>0.043592</td>
+<td>0.078466</td>
+<td>0.017873</td>
+<td>0.028771</td>
+<td>0.005667</td>
+<td>0.009590</td>
+<td>0.019180</td>
+<td>0.042284</td>
+<td>0.043156</td>
+<td>0.048823</td>
+<td>0.044028</td>
+<td>0.074978</td>
+<td>0.104621</td>
+<td>0.046643</td>
+<td>0.027899</td>
+<td>0.036617</td>
+<td>0.064799</td>
+<td>0.057793</td>
+<td>0.064361</td>
+<td>0.016200</td>
+<td>0.030210</td>
+<td>0.021454</td>
+<td>0.067426</td>
+<td>0.052539</td>
+<td>0.109457</td>
+<td>0.017075</td>
+<td>0.047285</td>
+<td>0.012697</td>
+<td>0.007881</td>
+<td>0.028897</td>
+<td>0.046848</td>
+<td>0.055166</td>
+<td>0.031961</td>
+<td>0.034588</td>
+<td>0.067426</td>
+<td>0.072242</td>
+<td>0.034151</td>
+<td>0.021016</td>
+<td>0.038529</td>
+<td>0.060140</td>
+<td>0.073310</td>
+<td>0.068481</td>
+<td>0.013169</td>
+<td>0.033363</td>
+<td>0.018437</td>
+<td>0.061018</td>
+<td>0.039508</td>
+<td>0.074627</td>
+<td>0.021071</td>
+<td>0.032924</td>
+<td>0.009219</td>
+<td>0.009658</td>
+<td>0.021949</td>
+<td>0.075944</td>
+<td>0.068481</td>
+<td>0.038191</td>
+<td>0.034241</td>
+<td>0.069359</td>
+<td>0.092186</td>
+<td>0.032485</td>
+<td>0.019315</td>
+<td>0.032924</td>
+<td>0.055090</td>
+<td>0.079330</td>
+<td>0.068753</td>
+<td>0.007933</td>
+<td>0.038784</td>
+<td>0.032173</td>
+<td>0.049361</td>
+<td>0.033054</td>
+<td>0.073160</td>
+<td>0.014985</td>
+<td>0.029528</td>
+<td>0.011900</td>
+<td>0.007052</td>
+<td>0.021595</td>
+<td>0.089907</td>
+<td>0.066108</td>
+<td>0.046276</td>
+<td>0.033495</td>
+<td>0.070956</td>
+<td>0.089467</td>
+<td>0.035258</td>
+<td>0.020714</td>
+<td>0.025121</td>
+<td>0.063415</td>
+<td>0.073614</td>
+<td>0.073614</td>
+<td>0.013304</td>
+<td>0.040355</td>
+<td>0.026608</td>
+<td>0.051885</td>
+<td>0.039911</td>
+<td>0.077162</td>
+<td>0.016408</td>
+<td>0.028381</td>
+<td>0.011973</td>
+<td>0.006208</td>
+<td>0.024390</td>
+<td>0.082040</td>
+<td>0.068293</td>
+<td>0.045233</td>
+<td>0.033259</td>
+<td>0.072284</td>
+<td>0.083814</td>
+<td>0.029268</td>
+<td>0.015078</td>
+<td>0.023503</td>
+<td>0.061552</td>
+<td>0.070027</td>
+<td>0.058876</td>
+<td>0.013381</td>
+<td>0.045495</td>
+<td>0.030330</td>
+<td>0.054862</td>
+<td>0.038359</td>
+<td>0.078947</td>
+<td>0.026316</td>
+<td>0.032560</td>
+<td>0.007136</td>
+<td>0.011151</td>
+<td>0.022302</td>
+<td>0.082070</td>
+<td>0.063782</td>
+<td>0.045941</td>
+<td>0.036574</td>
+<td>0.074487</td>
+<td>0.085192</td>
+<td>0.029438</td>
+<td>0.013381</td>
+<td>0.017841</td>
+<td>0.038927</td>
+<td>0.034602</td>
+<td>0.926471</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">EPHA3</td>
+<td>0.042881</td>
+<td>0.075316</td>
+<td>0.068169</td>
+<td>0.013194</td>
+<td>0.039582</td>
+<td>0.031336</td>
+<td>0.048378</td>
+<td>0.043430</td>
+<td>0.079714</td>
+<td>0.021440</td>
+<td>0.026938</td>
+<td>0.012644</td>
+<td>0.013744</td>
+<td>0.024739</td>
+<td>0.096756</td>
+<td>0.085761</td>
+<td>0.038483</td>
+<td>0.035734</td>
+<td>0.073117</td>
+<td>0.073667</td>
+<td>0.025289</td>
+<td>0.011545</td>
+<td>0.018142</td>
+<td>0.065349</td>
+<td>0.070291</td>
+<td>0.056013</td>
+<td>0.015925</td>
+<td>0.041735</td>
+<td>0.030752</td>
+<td>0.047227</td>
+<td>0.038990</td>
+<td>0.064250</td>
+<td>0.019220</td>
+<td>0.026359</td>
+<td>0.008237</td>
+<td>0.007688</td>
+<td>0.020868</td>
+<td>0.099396</td>
+<td>0.071389</td>
+<td>0.044481</td>
+<td>0.040637</td>
+<td>0.074684</td>
+<td>0.103789</td>
+<td>0.014278</td>
+<td>0.019769</td>
+<td>0.018671</td>
+<td>0.045430</td>
+<td>0.068966</td>
+<td>0.063492</td>
+<td>0.012042</td>
+<td>0.031199</td>
+<td>0.025725</td>
+<td>0.049261</td>
+<td>0.036672</td>
+<td>0.057471</td>
+<td>0.016420</td>
+<td>0.035030</td>
+<td>0.007663</td>
+<td>0.007663</td>
+<td>0.025178</td>
+<td>0.085386</td>
+<td>0.065134</td>
+<td>0.055282</td>
+<td>0.051450</td>
+<td>0.081007</td>
+<td>0.103448</td>
+<td>0.027367</td>
+<td>0.016420</td>
+<td>0.032293</td>
+<td>0.049645</td>
+<td>0.085652</td>
+<td>0.064921</td>
+<td>0.016367</td>
+<td>0.029460</td>
+<td>0.022913</td>
+<td>0.056738</td>
+<td>0.040917</td>
+<td>0.069285</td>
+<td>0.020185</td>
+<td>0.034915</td>
+<td>0.003273</td>
+<td>0.003819</td>
+<td>0.020731</td>
+<td>0.066558</td>
+<td>0.061102</td>
+<td>0.036552</td>
+<td>0.037643</td>
+<td>0.094926</td>
+<td>0.092199</td>
+<td>0.039825</td>
+<td>0.022913</td>
+<td>0.029460</td>
+<td>0.054526</td>
+<td>0.070883</td>
+<td>0.074700</td>
+<td>0.009269</td>
+<td>0.022356</td>
+<td>0.021265</td>
+<td>0.056161</td>
+<td>0.044166</td>
+<td>0.074155</td>
+<td>0.011450</td>
+<td>0.028353</td>
+<td>0.003817</td>
+<td>0.004907</td>
+<td>0.023446</td>
+<td>0.066521</td>
+<td>0.049618</td>
+<td>0.049073</td>
+<td>0.043621</td>
+<td>0.078517</td>
+<td>0.105234</td>
+<td>0.047983</td>
+<td>0.019084</td>
+<td>0.040894</td>
+<td>0.056707</td>
+<td>0.076881</td>
+<td>0.070338</td>
+<td>0.013086</td>
+<td>0.027263</td>
+<td>0.015267</td>
+<td>0.039258</td>
+<td>0.043621</td>
+<td>0.050164</td>
+<td>0.011450</td>
+<td>0.020174</td>
+<td>0.001636</td>
+<td>0.007088</td>
+<td>0.017993</td>
+<td>0.075791</td>
+<td>0.046892</td>
+<td>0.053980</td>
+<td>0.041439</td>
+<td>0.082334</td>
+<td>0.117230</td>
+<td>0.052345</td>
+<td>0.031080</td>
+<td>0.047983</td>
+<td>0.024537</td>
+<td>0.043621</td>
+<td>0.053980</td>
+<td>0.008179</td>
+<td>0.015267</td>
+<td>0.019629</td>
+<td>0.065976</td>
+<td>0.063795</td>
+<td>0.106325</td>
+<td>0.004907</td>
+<td>0.035442</td>
+<td>0.001636</td>
+<td>0.007088</td>
+<td>0.015267</td>
+<td>0.038168</td>
+<td>0.031080</td>
+<td>0.034351</td>
+<td>0.073610</td>
+<td>0.125409</td>
+<td>0.101418</td>
+<td>0.035987</td>
+<td>0.040349</td>
+<td>0.053980</td>
+<td>0.014746</td>
+<td>0.089569</td>
+<td>0.072638</td>
+<td>0.015838</td>
+<td>0.013654</td>
+<td>0.005461</td>
+<td>0.083015</td>
+<td>0.052977</td>
+<td>0.068269</td>
+<td>0.020208</td>
+<td>0.025123</td>
+<td>0.002185</td>
+<td>0.009285</td>
+<td>0.023484</td>
+<td>0.035500</td>
+<td>0.020754</td>
+<td>0.060076</td>
+<td>0.030584</td>
+<td>0.098307</td>
+<td>0.146368</td>
+<td>0.039323</td>
+<td>0.019661</td>
+<td>0.052977</td>
+<td>0.040659</td>
+<td>0.053297</td>
+<td>0.072527</td>
+<td>0.013736</td>
+<td>0.017582</td>
+<td>0.013736</td>
+<td>0.062637</td>
+<td>0.034066</td>
+<td>0.064835</td>
+<td>0.015385</td>
+<td>0.033516</td>
+<td>0.002747</td>
+<td>0.009890</td>
+<td>0.020330</td>
+<td>0.048901</td>
+<td>0.034066</td>
+<td>0.039011</td>
+<td>0.045604</td>
+<td>0.122527</td>
+<td>0.129121</td>
+<td>0.046703</td>
+<td>0.028022</td>
+<td>0.051099</td>
+<td>0.058564</td>
+<td>0.055801</td>
+<td>0.066298</td>
+<td>0.019337</td>
+<td>0.019337</td>
+<td>0.017680</td>
+<td>0.079558</td>
+<td>0.059116</td>
+<td>0.134807</td>
+<td>0.019337</td>
+<td>0.040331</td>
+<td>0.003867</td>
+<td>0.004420</td>
+<td>0.023204</td>
+<td>0.037569</td>
+<td>0.051934</td>
+<td>0.035359</td>
+<td>0.027624</td>
+<td>0.072376</td>
+<td>0.066298</td>
+<td>0.034807</td>
+<td>0.029282</td>
+<td>0.043094</td>
+<td>0.053127</td>
+<td>0.066962</td>
+<td>0.070836</td>
+<td>0.015495</td>
+<td>0.037078</td>
+<td>0.022136</td>
+<td>0.061981</td>
+<td>0.038185</td>
+<td>0.063641</td>
+<td>0.019923</td>
+<td>0.035971</td>
+<td>0.006087</td>
+<td>0.009961</td>
+<td>0.021583</td>
+<td>0.063641</td>
+<td>0.054234</td>
+<td>0.038738</td>
+<td>0.046486</td>
+<td>0.076923</td>
+<td>0.097399</td>
+<td>0.034311</td>
+<td>0.026563</td>
+<td>0.038738</td>
+<td>0.050028</td>
+<td>0.076709</td>
+<td>0.073374</td>
+<td>0.010006</td>
+<td>0.028905</td>
+<td>0.028349</td>
+<td>0.044469</td>
+<td>0.024458</td>
+<td>0.062813</td>
+<td>0.012785</td>
+<td>0.022235</td>
+<td>0.011117</td>
+<td>0.003891</td>
+<td>0.019455</td>
+<td>0.090606</td>
+<td>0.066704</td>
+<td>0.052807</td>
+<td>0.041690</td>
+<td>0.085603</td>
+<td>0.106726</td>
+<td>0.032796</td>
+<td>0.023346</td>
+<td>0.031128</td>
+<td>0.054433</td>
+<td>0.069585</td>
+<td>0.073513</td>
+<td>0.014590</td>
+<td>0.025253</td>
+<td>0.021324</td>
+<td>0.065095</td>
+<td>0.049944</td>
+<td>0.078563</td>
+<td>0.011785</td>
+<td>0.029181</td>
+<td>0.006734</td>
+<td>0.005051</td>
+<td>0.023569</td>
+<td>0.080247</td>
+<td>0.067340</td>
+<td>0.040965</td>
+<td>0.038159</td>
+<td>0.076880</td>
+<td>0.092593</td>
+<td>0.031425</td>
+<td>0.020202</td>
+<td>0.023569</td>
+<td>0.047968</td>
+<td>0.067720</td>
+<td>0.061512</td>
+<td>0.010158</td>
+<td>0.034424</td>
+<td>0.027088</td>
+<td>0.058126</td>
+<td>0.037246</td>
+<td>0.079007</td>
+<td>0.023702</td>
+<td>0.027652</td>
+<td>0.011287</td>
+<td>0.011287</td>
+<td>0.019752</td>
+<td>0.091422</td>
+<td>0.072235</td>
+<td>0.046275</td>
+<td>0.046840</td>
+<td>0.073928</td>
+<td>0.092551</td>
+<td>0.024266</td>
+<td>0.013544</td>
+<td>0.022009</td>
+<td>0.054526</td>
+<td>0.035442</td>
+<td>0.910033</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">FES</td>
+<td>0.049633</td>
+<td>0.075578</td>
+<td>0.065990</td>
+<td>0.012972</td>
+<td>0.036097</td>
+<td>0.029893</td>
+<td>0.055274</td>
+<td>0.040045</td>
+<td>0.080090</td>
+<td>0.014100</td>
+<td>0.033841</td>
+<td>0.015228</td>
+<td>0.008460</td>
+<td>0.024253</td>
+<td>0.098139</td>
+<td>0.075014</td>
+<td>0.044557</td>
+<td>0.042865</td>
+<td>0.071066</td>
+<td>0.075578</td>
+<td>0.023125</td>
+<td>0.008460</td>
+<td>0.019741</td>
+<td>0.058625</td>
+<td>0.067080</td>
+<td>0.064262</td>
+<td>0.016911</td>
+<td>0.037768</td>
+<td>0.027621</td>
+<td>0.046787</td>
+<td>0.038895</td>
+<td>0.068207</td>
+<td>0.016347</td>
+<td>0.034949</td>
+<td>0.009019</td>
+<td>0.007892</td>
+<td>0.020857</td>
+<td>0.100902</td>
+<td>0.065389</td>
+<td>0.047351</td>
+<td>0.036640</td>
+<td>0.082864</td>
+<td>0.094701</td>
+<td>0.021421</td>
+<td>0.016347</td>
+<td>0.019166</td>
+<td>0.052277</td>
+<td>0.060708</td>
+<td>0.075885</td>
+<td>0.015739</td>
+<td>0.034289</td>
+<td>0.024171</td>
+<td>0.052277</td>
+<td>0.042159</td>
+<td>0.065767</td>
+<td>0.013491</td>
+<td>0.033165</td>
+<td>0.004497</td>
+<td>0.006745</td>
+<td>0.021360</td>
+<td>0.086003</td>
+<td>0.043845</td>
+<td>0.050590</td>
+<td>0.045531</td>
+<td>0.087690</td>
+<td>0.105677</td>
+<td>0.030916</td>
+<td>0.018550</td>
+<td>0.028668</td>
+<td>0.061728</td>
+<td>0.074074</td>
+<td>0.056678</td>
+<td>0.020202</td>
+<td>0.028620</td>
+<td>0.029181</td>
+<td>0.059484</td>
+<td>0.037037</td>
+<td>0.076319</td>
+<td>0.019080</td>
+<td>0.038721</td>
+<td>0.005051</td>
+<td>0.006173</td>
+<td>0.017957</td>
+<td>0.061167</td>
+<td>0.050505</td>
+<td>0.037598</td>
+<td>0.043771</td>
+<td>0.090348</td>
+<td>0.090909</td>
+<td>0.042088</td>
+<td>0.023569</td>
+<td>0.029742</td>
+<td>0.048233</td>
+<td>0.068424</td>
+<td>0.085250</td>
+<td>0.012339</td>
+<td>0.025238</td>
+<td>0.016826</td>
+<td>0.052720</td>
+<td>0.034212</td>
+<td>0.070107</td>
+<td>0.013460</td>
+<td>0.022995</td>
+<td>0.003365</td>
+<td>0.003365</td>
+<td>0.020752</td>
+<td>0.066741</td>
+<td>0.049916</td>
+<td>0.056646</td>
+<td>0.042064</td>
+<td>0.088615</td>
+<td>0.112170</td>
+<td>0.040942</td>
+<td>0.022434</td>
+<td>0.043186</td>
+<td>0.058890</td>
+<td>0.076276</td>
+<td>0.063937</td>
+<td>0.013460</td>
+<td>0.021873</td>
+<td>0.014021</td>
+<td>0.053842</td>
+<td>0.037577</td>
+<td>0.056646</td>
+<td>0.012900</td>
+<td>0.019069</td>
+<td>0.002243</td>
+<td>0.010095</td>
+<td>0.017947</td>
+<td>0.079080</td>
+<td>0.035334</td>
+<td>0.053842</td>
+<td>0.047672</td>
+<td>0.090297</td>
+<td>0.115536</td>
+<td>0.050477</td>
+<td>0.029164</td>
+<td>0.039821</td>
+<td>0.044868</td>
+<td>0.047672</td>
+<td>0.067863</td>
+<td>0.013460</td>
+<td>0.017386</td>
+<td>0.014021</td>
+<td>0.077398</td>
+<td>0.069546</td>
+<td>0.102075</td>
+<td>0.008974</td>
+<td>0.043746</td>
+<td>0.001683</td>
+<td>0.008413</td>
+<td>0.024678</td>
+<td>0.045990</td>
+<td>0.030847</td>
+<td>0.042625</td>
+<td>0.048794</td>
+<td>0.088054</td>
+<td>0.085810</td>
+<td>0.032529</td>
+<td>0.039260</td>
+<td>0.044307</td>
+<td>0.028121</td>
+<td>0.089989</td>
+<td>0.078178</td>
+<td>0.015748</td>
+<td>0.023060</td>
+<td>0.012373</td>
+<td>0.066367</td>
+<td>0.047244</td>
+<td>0.059055</td>
+<td>0.012936</td>
+<td>0.026434</td>
+<td>0.002250</td>
+<td>0.005062</td>
+<td>0.023060</td>
+<td>0.042745</td>
+<td>0.022497</td>
+<td>0.059055</td>
+<td>0.037683</td>
+<td>0.102362</td>
+<td>0.129359</td>
+<td>0.048931</td>
+<td>0.025872</td>
+<td>0.041620</td>
+<td>0.053551</td>
+<td>0.062007</td>
+<td>0.067080</td>
+<td>0.015220</td>
+<td>0.017475</td>
+<td>0.015784</td>
+<td>0.067080</td>
+<td>0.047914</td>
+<td>0.079481</td>
+<td>0.017475</td>
+<td>0.039459</td>
+<td>0.001127</td>
+<td>0.014092</td>
+<td>0.020857</td>
+<td>0.050733</td>
+<td>0.032694</td>
+<td>0.036077</td>
+<td>0.046787</td>
+<td>0.097520</td>
+<td>0.101466</td>
+<td>0.041150</td>
+<td>0.034386</td>
+<td>0.040586</td>
+<td>0.046380</td>
+<td>0.062217</td>
+<td>0.065045</td>
+<td>0.016403</td>
+<td>0.022059</td>
+<td>0.014140</td>
+<td>0.063914</td>
+<td>0.055995</td>
+<td>0.101810</td>
+<td>0.021493</td>
+<td>0.037330</td>
+<td>0.002828</td>
+<td>0.009050</td>
+<td>0.021493</td>
+<td>0.048643</td>
+<td>0.048077</td>
+<td>0.042986</td>
+<td>0.032805</td>
+<td>0.087104</td>
+<td>0.084842</td>
+<td>0.037896</td>
+<td>0.031109</td>
+<td>0.046380</td>
+<td>0.050396</td>
+<td>0.072480</td>
+<td>0.078709</td>
+<td>0.015289</td>
+<td>0.030578</td>
+<td>0.020951</td>
+<td>0.070781</td>
+<td>0.035108</td>
+<td>0.077576</td>
+<td>0.015855</td>
+<td>0.034541</td>
+<td>0.007361</td>
+<td>0.010193</td>
+<td>0.020951</td>
+<td>0.071348</td>
+<td>0.056625</td>
+<td>0.041903</td>
+<td>0.039071</td>
+<td>0.070781</td>
+<td>0.083805</td>
+<td>0.037373</td>
+<td>0.025481</td>
+<td>0.032843</td>
+<td>0.052811</td>
+<td>0.081204</td>
+<td>0.066440</td>
+<td>0.008518</td>
+<td>0.030097</td>
+<td>0.028961</td>
+<td>0.049972</td>
+<td>0.034639</td>
+<td>0.064736</td>
+<td>0.014196</td>
+<td>0.031800</td>
+<td>0.005679</td>
+<td>0.007382</td>
+<td>0.022714</td>
+<td>0.091993</td>
+<td>0.064168</td>
+<td>0.051675</td>
+<td>0.039182</td>
+<td>0.080636</td>
+<td>0.088018</td>
+<td>0.034639</td>
+<td>0.022714</td>
+<td>0.027825</td>
+<td>0.060606</td>
+<td>0.070898</td>
+<td>0.081761</td>
+<td>0.011435</td>
+<td>0.031447</td>
+<td>0.021155</td>
+<td>0.058319</td>
+<td>0.049743</td>
+<td>0.078902</td>
+<td>0.011435</td>
+<td>0.029731</td>
+<td>0.006861</td>
+<td>0.005718</td>
+<td>0.027444</td>
+<td>0.080617</td>
+<td>0.059463</td>
+<td>0.039451</td>
+<td>0.037164</td>
+<td>0.078902</td>
+<td>0.088050</td>
+<td>0.029731</td>
+<td>0.018868</td>
+<td>0.022298</td>
+<td>0.047701</td>
+<td>0.072414</td>
+<td>0.060920</td>
+<td>0.011494</td>
+<td>0.032184</td>
+<td>0.028161</td>
+<td>0.055172</td>
+<td>0.039655</td>
+<td>0.082184</td>
+<td>0.020690</td>
+<td>0.031034</td>
+<td>0.010920</td>
+<td>0.010920</td>
+<td>0.021839</td>
+<td>0.089080</td>
+<td>0.068966</td>
+<td>0.048276</td>
+<td>0.044828</td>
+<td>0.074138</td>
+<td>0.084483</td>
+<td>0.024713</td>
+<td>0.017816</td>
+<td>0.022414</td>
+<td>0.038699</td>
+<td>0.026921</td>
+<td>0.934380</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">NTRK3</td>
+<td>0.042771</td>
+<td>0.074699</td>
+<td>0.073494</td>
+<td>0.012048</td>
+<td>0.034940</td>
+<td>0.022289</td>
+<td>0.052410</td>
+<td>0.044578</td>
+<td>0.080723</td>
+<td>0.016867</td>
+<td>0.031928</td>
+<td>0.013253</td>
+<td>0.012048</td>
+<td>0.021687</td>
+<td>0.098795</td>
+<td>0.077108</td>
+<td>0.039759</td>
+<td>0.049398</td>
+<td>0.062048</td>
+<td>0.077108</td>
+<td>0.025904</td>
+<td>0.016867</td>
+<td>0.019277</td>
+<td>0.051143</td>
+<td>0.066787</td>
+<td>0.066185</td>
+<td>0.015644</td>
+<td>0.028881</td>
+<td>0.027076</td>
+<td>0.050542</td>
+<td>0.037906</td>
+<td>0.077617</td>
+<td>0.018051</td>
+<td>0.029483</td>
+<td>0.008424</td>
+<td>0.008424</td>
+<td>0.018051</td>
+<td>0.111312</td>
+<td>0.066787</td>
+<td>0.039711</td>
+<td>0.042720</td>
+<td>0.075211</td>
+<td>0.099880</td>
+<td>0.018051</td>
+<td>0.023466</td>
+<td>0.018652</td>
+<td>0.049880</td>
+<td>0.064904</td>
+<td>0.067308</td>
+<td>0.012019</td>
+<td>0.030048</td>
+<td>0.028846</td>
+<td>0.049279</td>
+<td>0.042067</td>
+<td>0.072716</td>
+<td>0.013221</td>
+<td>0.030649</td>
+<td>0.003606</td>
+<td>0.003606</td>
+<td>0.018630</td>
+<td>0.088341</td>
+<td>0.058293</td>
+<td>0.044471</td>
+<td>0.049880</td>
+<td>0.084736</td>
+<td>0.100361</td>
+<td>0.030048</td>
+<td>0.025240</td>
+<td>0.031851</td>
+<td>0.059353</td>
+<td>0.077938</td>
+<td>0.070743</td>
+<td>0.019784</td>
+<td>0.020983</td>
+<td>0.021583</td>
+<td>0.056954</td>
+<td>0.041367</td>
+<td>0.084532</td>
+<td>0.020384</td>
+<td>0.038369</td>
+<td>0.003597</td>
+<td>0.005995</td>
+<td>0.019185</td>
+<td>0.058153</td>
+<td>0.057554</td>
+<td>0.039568</td>
+<td>0.041367</td>
+<td>0.076739</td>
+<td>0.083333</td>
+<td>0.041367</td>
+<td>0.023981</td>
+<td>0.037170</td>
+<td>0.051528</td>
+<td>0.071300</td>
+<td>0.091072</td>
+<td>0.011384</td>
+<td>0.020371</td>
+<td>0.017376</td>
+<td>0.058119</td>
+<td>0.038945</td>
+<td>0.071899</td>
+<td>0.011983</td>
+<td>0.024566</td>
+<td>0.002996</td>
+<td>0.006591</td>
+<td>0.025165</td>
+<td>0.071300</td>
+<td>0.051528</td>
+<td>0.044338</td>
+<td>0.050330</td>
+<td>0.071899</td>
+<td>0.091072</td>
+<td>0.048532</td>
+<td>0.030557</td>
+<td>0.037148</td>
+<td>0.051497</td>
+<td>0.076048</td>
+<td>0.073653</td>
+<td>0.017365</td>
+<td>0.015569</td>
+<td>0.011377</td>
+<td>0.046707</td>
+<td>0.046108</td>
+<td>0.065269</td>
+<td>0.015569</td>
+<td>0.028743</td>
+<td>0.002395</td>
+<td>0.008982</td>
+<td>0.016168</td>
+<td>0.073054</td>
+<td>0.038922</td>
+<td>0.046108</td>
+<td>0.047904</td>
+<td>0.092814</td>
+<td>0.105389</td>
+<td>0.047305</td>
+<td>0.033533</td>
+<td>0.039521</td>
+<td>0.040719</td>
+<td>0.067066</td>
+<td>0.077844</td>
+<td>0.016168</td>
+<td>0.012575</td>
+<td>0.011377</td>
+<td>0.056287</td>
+<td>0.046707</td>
+<td>0.091018</td>
+<td>0.004790</td>
+<td>0.035928</td>
+<td>0.000599</td>
+<td>0.008982</td>
+<td>0.022754</td>
+<td>0.045509</td>
+<td>0.034132</td>
+<td>0.043114</td>
+<td>0.067066</td>
+<td>0.091018</td>
+<td>0.079641</td>
+<td>0.045509</td>
+<td>0.038323</td>
+<td>0.062874</td>
+<td>0.022782</td>
+<td>0.087530</td>
+<td>0.071343</td>
+<td>0.019784</td>
+<td>0.011391</td>
+<td>0.010192</td>
+<td>0.092326</td>
+<td>0.059353</td>
+<td>0.084532</td>
+<td>0.016187</td>
+<td>0.041367</td>
+<td>0.000000</td>
+<td>0.004796</td>
+<td>0.025180</td>
+<td>0.049161</td>
+<td>0.025180</td>
+<td>0.044964</td>
+<td>0.035372</td>
+<td>0.069544</td>
+<td>0.089928</td>
+<td>0.046763</td>
+<td>0.036571</td>
+<td>0.055755</td>
+<td>0.047590</td>
+<td>0.068072</td>
+<td>0.087349</td>
+<td>0.019880</td>
+<td>0.014458</td>
+<td>0.014458</td>
+<td>0.068675</td>
+<td>0.045783</td>
+<td>0.074699</td>
+<td>0.017470</td>
+<td>0.034337</td>
+<td>0.001205</td>
+<td>0.011446</td>
+<td>0.015663</td>
+<td>0.057831</td>
+<td>0.039759</td>
+<td>0.042771</td>
+<td>0.044578</td>
+<td>0.076506</td>
+<td>0.093373</td>
+<td>0.050000</td>
+<td>0.033133</td>
+<td>0.040964</td>
+<td>0.053776</td>
+<td>0.071903</td>
+<td>0.077946</td>
+<td>0.022356</td>
+<td>0.021148</td>
+<td>0.013897</td>
+<td>0.073716</td>
+<td>0.051964</td>
+<td>0.109366</td>
+<td>0.018127</td>
+<td>0.032024</td>
+<td>0.001813</td>
+<td>0.006647</td>
+<td>0.021752</td>
+<td>0.051360</td>
+<td>0.048943</td>
+<td>0.036254</td>
+<td>0.035650</td>
+<td>0.072508</td>
+<td>0.070091</td>
+<td>0.042296</td>
+<td>0.030211</td>
+<td>0.036254</td>
+<td>0.046005</td>
+<td>0.075061</td>
+<td>0.073245</td>
+<td>0.016344</td>
+<td>0.029661</td>
+<td>0.013923</td>
+<td>0.066586</td>
+<td>0.040557</td>
+<td>0.076271</td>
+<td>0.025424</td>
+<td>0.029056</td>
+<td>0.003027</td>
+<td>0.010291</td>
+<td>0.020581</td>
+<td>0.073850</td>
+<td>0.049637</td>
+<td>0.038741</td>
+<td>0.042978</td>
+<td>0.072034</td>
+<td>0.085956</td>
+<td>0.041162</td>
+<td>0.028450</td>
+<td>0.041162</td>
+<td>0.049210</td>
+<td>0.075334</td>
+<td>0.083840</td>
+<td>0.006683</td>
+<td>0.022479</td>
+<td>0.020656</td>
+<td>0.051033</td>
+<td>0.037667</td>
+<td>0.068651</td>
+<td>0.012758</td>
+<td>0.030377</td>
+<td>0.010328</td>
+<td>0.006075</td>
+<td>0.018834</td>
+<td>0.098420</td>
+<td>0.066829</td>
+<td>0.040705</td>
+<td>0.044350</td>
+<td>0.075334</td>
+<td>0.085662</td>
+<td>0.040097</td>
+<td>0.024301</td>
+<td>0.030377</td>
+<td>0.050245</td>
+<td>0.071078</td>
+<td>0.087623</td>
+<td>0.013480</td>
+<td>0.027574</td>
+<td>0.017157</td>
+<td>0.064338</td>
+<td>0.052083</td>
+<td>0.079657</td>
+<td>0.013480</td>
+<td>0.022672</td>
+<td>0.009191</td>
+<td>0.004289</td>
+<td>0.026348</td>
+<td>0.081495</td>
+<td>0.058211</td>
+<td>0.036152</td>
+<td>0.039216</td>
+<td>0.080270</td>
+<td>0.087010</td>
+<td>0.032475</td>
+<td>0.023284</td>
+<td>0.022672</td>
+<td>0.042001</td>
+<td>0.084002</td>
+<td>0.067326</td>
+<td>0.016059</td>
+<td>0.033972</td>
+<td>0.020383</td>
+<td>0.058061</td>
+<td>0.038295</td>
+<td>0.074120</td>
+<td>0.025942</td>
+<td>0.031501</td>
+<td>0.006794</td>
+<td>0.013589</td>
+<td>0.021618</td>
+<td>0.093267</td>
+<td>0.071032</td>
+<td>0.040148</td>
+<td>0.040148</td>
+<td>0.071032</td>
+<td>0.079679</td>
+<td>0.026560</td>
+<td>0.022236</td>
+<td>0.022236</td>
+<td>0.101796</td>
+<td>0.060479</td>
+<td>0.837725</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ALK</td>
+<td>0.045482</td>
+<td>0.076214</td>
+<td>0.070682</td>
+<td>0.014136</td>
+<td>0.034419</td>
+<td>0.028273</td>
+<td>0.049170</td>
+<td>0.035648</td>
+<td>0.079902</td>
+<td>0.018439</td>
+<td>0.036878</td>
+<td>0.012907</td>
+<td>0.011063</td>
+<td>0.020283</td>
+<td>0.097726</td>
+<td>0.087892</td>
+<td>0.039336</td>
+<td>0.044868</td>
+<td>0.061463</td>
+<td>0.079902</td>
+<td>0.022127</td>
+<td>0.013522</td>
+<td>0.019668</td>
+<td>0.055249</td>
+<td>0.073665</td>
+<td>0.068140</td>
+<td>0.015347</td>
+<td>0.033763</td>
+<td>0.028852</td>
+<td>0.052179</td>
+<td>0.031921</td>
+<td>0.058318</td>
+<td>0.017188</td>
+<td>0.027624</td>
+<td>0.007366</td>
+<td>0.008594</td>
+<td>0.019030</td>
+<td>0.109269</td>
+<td>0.087784</td>
+<td>0.041743</td>
+<td>0.042971</td>
+<td>0.071209</td>
+<td>0.096992</td>
+<td>0.019030</td>
+<td>0.017188</td>
+<td>0.016575</td>
+<td>0.043452</td>
+<td>0.058140</td>
+<td>0.075275</td>
+<td>0.009792</td>
+<td>0.033048</td>
+<td>0.026928</td>
+<td>0.047124</td>
+<td>0.037944</td>
+<td>0.064871</td>
+<td>0.014076</td>
+<td>0.024480</td>
+<td>0.005508</td>
+<td>0.009180</td>
+<td>0.024480</td>
+<td>0.084455</td>
+<td>0.061812</td>
+<td>0.047736</td>
+<td>0.050796</td>
+<td>0.096083</td>
+<td>0.110771</td>
+<td>0.029988</td>
+<td>0.018972</td>
+<td>0.025092</td>
+<td>0.048141</td>
+<td>0.081048</td>
+<td>0.068251</td>
+<td>0.019500</td>
+<td>0.031079</td>
+<td>0.017672</td>
+<td>0.051798</td>
+<td>0.034735</td>
+<td>0.085314</td>
+<td>0.021938</td>
+<td>0.031688</td>
+<td>0.003656</td>
+<td>0.004875</td>
+<td>0.016453</td>
+<td>0.066423</td>
+<td>0.069470</td>
+<td>0.037782</td>
+<td>0.037782</td>
+<td>0.080439</td>
+<td>0.101158</td>
+<td>0.041438</td>
+<td>0.020110</td>
+<td>0.029250</td>
+<td>0.047503</td>
+<td>0.064555</td>
+<td>0.082826</td>
+<td>0.012180</td>
+<td>0.015225</td>
+<td>0.017661</td>
+<td>0.055420</td>
+<td>0.034714</td>
+<td>0.078563</td>
+<td>0.011571</td>
+<td>0.022533</td>
+<td>0.003045</td>
+<td>0.005481</td>
+<td>0.023143</td>
+<td>0.074909</td>
+<td>0.052984</td>
+<td>0.051157</td>
+<td>0.042022</td>
+<td>0.079781</td>
+<td>0.123630</td>
+<td>0.043849</td>
+<td>0.021315</td>
+<td>0.035932</td>
+<td>0.051735</td>
+<td>0.076080</td>
+<td>0.064516</td>
+<td>0.014607</td>
+<td>0.018868</td>
+<td>0.016433</td>
+<td>0.045648</td>
+<td>0.039562</td>
+<td>0.055995</td>
+<td>0.013999</td>
+<td>0.020085</td>
+<td>0.001217</td>
+<td>0.007304</td>
+<td>0.016433</td>
+<td>0.080341</td>
+<td>0.040779</td>
+<td>0.054169</td>
+<td>0.048083</td>
+<td>0.101643</td>
+<td>0.112599</td>
+<td>0.048691</td>
+<td>0.026172</td>
+<td>0.045040</td>
+<td>0.048691</td>
+<td>0.060256</td>
+<td>0.068777</td>
+<td>0.009738</td>
+<td>0.014607</td>
+<td>0.009130</td>
+<td>0.079732</td>
+<td>0.068168</td>
+<td>0.103469</td>
+<td>0.005478</td>
+<td>0.026172</td>
+<td>0.000609</td>
+<td>0.006695</td>
+<td>0.015216</td>
+<td>0.043214</td>
+<td>0.032258</td>
+<td>0.032867</td>
+<td>0.049909</td>
+<td>0.094340</td>
+<td>0.096166</td>
+<td>0.038344</td>
+<td>0.035910</td>
+<td>0.060256</td>
+<td>0.019488</td>
+<td>0.085871</td>
+<td>0.077345</td>
+<td>0.020706</td>
+<td>0.014007</td>
+<td>0.010353</td>
+<td>0.082217</td>
+<td>0.056638</td>
+<td>0.075518</td>
+<td>0.017661</td>
+<td>0.032887</td>
+<td>0.001218</td>
+<td>0.007308</td>
+<td>0.021924</td>
+<td>0.052375</td>
+<td>0.031669</td>
+<td>0.051766</td>
+<td>0.030451</td>
+<td>0.072473</td>
+<td>0.115104</td>
+<td>0.048112</td>
+<td>0.025579</td>
+<td>0.049330</td>
+<td>0.053659</td>
+<td>0.061585</td>
+<td>0.081098</td>
+<td>0.019512</td>
+<td>0.014024</td>
+<td>0.010976</td>
+<td>0.076220</td>
+<td>0.048780</td>
+<td>0.079878</td>
+<td>0.020122</td>
+<td>0.037805</td>
+<td>0.003049</td>
+<td>0.008537</td>
+<td>0.017683</td>
+<td>0.064634</td>
+<td>0.051220</td>
+<td>0.042073</td>
+<td>0.043293</td>
+<td>0.065244</td>
+<td>0.085366</td>
+<td>0.042683</td>
+<td>0.029268</td>
+<td>0.043293</td>
+<td>0.048200</td>
+<td>0.051861</td>
+<td>0.057962</td>
+<td>0.024405</td>
+<td>0.020744</td>
+<td>0.014643</td>
+<td>0.093960</td>
+<td>0.065894</td>
+<td>0.117145</td>
+<td>0.018304</td>
+<td>0.037218</td>
+<td>0.004881</td>
+<td>0.010372</td>
+<td>0.021965</td>
+<td>0.050641</td>
+<td>0.070775</td>
+<td>0.031727</td>
+<td>0.031727</td>
+<td>0.056132</td>
+<td>0.061013</td>
+<td>0.036608</td>
+<td>0.032337</td>
+<td>0.041489</td>
+<td>0.050061</td>
+<td>0.060440</td>
+<td>0.077534</td>
+<td>0.016484</td>
+<td>0.026862</td>
+<td>0.016484</td>
+<td>0.062882</td>
+<td>0.048840</td>
+<td>0.079976</td>
+<td>0.018926</td>
+<td>0.037851</td>
+<td>0.007326</td>
+<td>0.010989</td>
+<td>0.020147</td>
+<td>0.084860</td>
+<td>0.059219</td>
+<td>0.037851</td>
+<td>0.040293</td>
+<td>0.069597</td>
+<td>0.072650</td>
+<td>0.035409</td>
+<td>0.029304</td>
+<td>0.036020</td>
+<td>0.046569</td>
+<td>0.072304</td>
+<td>0.072304</td>
+<td>0.013480</td>
+<td>0.025123</td>
+<td>0.024510</td>
+<td>0.050245</td>
+<td>0.037377</td>
+<td>0.079657</td>
+<td>0.012255</td>
+<td>0.034314</td>
+<td>0.011029</td>
+<td>0.006127</td>
+<td>0.018995</td>
+<td>0.098039</td>
+<td>0.072304</td>
+<td>0.042892</td>
+<td>0.041054</td>
+<td>0.075368</td>
+<td>0.074142</td>
+<td>0.034314</td>
+<td>0.025123</td>
+<td>0.032475</td>
+<td>0.055487</td>
+<td>0.078298</td>
+<td>0.070900</td>
+<td>0.013564</td>
+<td>0.035758</td>
+<td>0.020345</td>
+<td>0.062269</td>
+<td>0.043773</td>
+<td>0.088163</td>
+<td>0.014180</td>
+<td>0.023428</td>
+<td>0.009864</td>
+<td>0.006165</td>
+<td>0.027744</td>
+<td>0.083847</td>
+<td>0.072750</td>
+<td>0.038224</td>
+<td>0.036375</td>
+<td>0.072133</td>
+<td>0.078915</td>
+<td>0.028360</td>
+<td>0.019112</td>
+<td>0.020345</td>
+<td>0.045877</td>
+<td>0.071296</td>
+<td>0.057037</td>
+<td>0.014259</td>
+<td>0.036578</td>
+<td>0.026038</td>
+<td>0.047737</td>
+<td>0.040918</td>
+<td>0.076875</td>
+<td>0.023559</td>
+<td>0.029758</td>
+<td>0.009299</td>
+<td>0.009299</td>
+<td>0.030378</td>
+<td>0.092374</td>
+<td>0.082455</td>
+<td>0.046497</td>
+<td>0.039058</td>
+<td>0.068196</td>
+<td>0.081835</td>
+<td>0.028518</td>
+<td>0.018599</td>
+<td>0.023559</td>
+<td>0.059038</td>
+<td>0.044431</td>
+<td>0.896531</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">CDK8</td>
+<td>0.056818</td>
+<td>0.079545</td>
+<td>0.090909</td>
+<td>0.011364</td>
+<td>0.011364</td>
+<td>0.022727</td>
+<td>0.068182</td>
+<td>0.045455</td>
+<td>0.011364</td>
+<td>0.011364</td>
+<td>0.011364</td>
+<td>0.000000</td>
+<td>0.011364</td>
+<td>0.000000</td>
+<td>0.034091</td>
+<td>0.090909</td>
+<td>0.056818</td>
+<td>0.034091</td>
+<td>0.090909</td>
+<td>0.113636</td>
+<td>0.045455</td>
+<td>0.068182</td>
+<td>0.034091</td>
+<td>0.034091</td>
+<td>0.056818</td>
+<td>0.056818</td>
+<td>0.000000</td>
+<td>0.045455</td>
+<td>0.011364</td>
+<td>0.090909</td>
+<td>0.056818</td>
+<td>0.079545</td>
+<td>0.011364</td>
+<td>0.022727</td>
+<td>0.011364</td>
+<td>0.011364</td>
+<td>0.022727</td>
+<td>0.102273</td>
+<td>0.022727</td>
+<td>0.079545</td>
+<td>0.022727</td>
+<td>0.090909</td>
+<td>0.090909</td>
+<td>0.056818</td>
+<td>0.022727</td>
+<td>0.000000</td>
+<td>0.011364</td>
+<td>0.090909</td>
+<td>0.068182</td>
+<td>0.000000</td>
+<td>0.056818</td>
+<td>0.022727</td>
+<td>0.079545</td>
+<td>0.022727</td>
+<td>0.079545</td>
+<td>0.022727</td>
+<td>0.022727</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.011364</td>
+<td>0.034091</td>
+<td>0.011364</td>
+<td>0.034091</td>
+<td>0.056818</td>
+<td>0.090909</td>
+<td>0.113636</td>
+<td>0.068182</td>
+<td>0.056818</td>
+<td>0.045455</td>
+<td>0.056180</td>
+<td>0.134831</td>
+<td>0.056180</td>
+<td>0.000000</td>
+<td>0.022472</td>
+<td>0.000000</td>
+<td>0.089888</td>
+<td>0.011236</td>
+<td>0.044944</td>
+<td>0.033708</td>
+<td>0.044944</td>
+<td>0.000000</td>
+<td>0.011236</td>
+<td>0.033708</td>
+<td>0.033708</td>
+<td>0.022472</td>
+<td>0.033708</td>
+<td>0.044944</td>
+<td>0.112360</td>
+<td>0.101124</td>
+<td>0.067416</td>
+<td>0.033708</td>
+<td>0.011236</td>
+<td>0.078652</td>
+<td>0.044944</td>
+<td>0.123596</td>
+<td>0.022472</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.033708</td>
+<td>0.022472</td>
+<td>0.101124</td>
+<td>0.000000</td>
+<td>0.022472</td>
+<td>0.033708</td>
+<td>0.011236</td>
+<td>0.011236</td>
+<td>0.033708</td>
+<td>0.033708</td>
+<td>0.033708</td>
+<td>0.033708</td>
+<td>0.123596</td>
+<td>0.112360</td>
+<td>0.101124</td>
+<td>0.022472</td>
+<td>0.000000</td>
+<td>0.157303</td>
+<td>0.067416</td>
+<td>0.056180</td>
+<td>0.022472</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.056180</td>
+<td>0.011236</td>
+<td>0.089888</td>
+<td>0.022472</td>
+<td>0.022472</td>
+<td>0.000000</td>
+<td>0.011236</td>
+<td>0.011236</td>
+<td>0.033708</td>
+<td>0.044944</td>
+<td>0.089888</td>
+<td>0.078652</td>
+<td>0.067416</td>
+<td>0.044944</td>
+<td>0.067416</td>
+<td>0.033708</td>
+<td>0.011236</td>
+<td>0.044944</td>
+<td>0.078652</td>
+<td>0.078652</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.056180</td>
+<td>0.011236</td>
+<td>0.146067</td>
+<td>0.078652</td>
+<td>0.011236</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.022472</td>
+<td>0.067416</td>
+<td>0.011236</td>
+<td>0.101124</td>
+<td>0.044944</td>
+<td>0.056180</td>
+<td>0.089888</td>
+<td>0.078652</td>
+<td>0.022472</td>
+<td>0.000000</td>
+<td>0.306818</td>
+<td>0.068182</td>
+<td>0.034091</td>
+<td>0.000000</td>
+<td>0.011364</td>
+<td>0.011364</td>
+<td>0.102273</td>
+<td>0.011364</td>
+<td>0.068182</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.022727</td>
+<td>0.056818</td>
+<td>0.045455</td>
+<td>0.022727</td>
+<td>0.090909</td>
+<td>0.034091</td>
+<td>0.011364</td>
+<td>0.045455</td>
+<td>0.034091</td>
+<td>0.022727</td>
+<td>0.034091</td>
+<td>0.102273</td>
+<td>0.079545</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.011364</td>
+<td>0.045455</td>
+<td>0.034091</td>
+<td>0.045455</td>
+<td>0.011364</td>
+<td>0.034091</td>
+<td>0.011364</td>
+<td>0.000000</td>
+<td>0.011364</td>
+<td>0.079545</td>
+<td>0.068182</td>
+<td>0.034091</td>
+<td>0.056818</td>
+<td>0.090909</td>
+<td>0.136364</td>
+<td>0.068182</td>
+<td>0.034091</td>
+<td>0.011364</td>
+<td>0.090909</td>
+<td>0.136364</td>
+<td>0.022727</td>
+<td>0.011364</td>
+<td>0.034091</td>
+<td>0.011364</td>
+<td>0.090909</td>
+<td>0.034091</td>
+<td>0.034091</td>
+<td>0.011364</td>
+<td>0.022727</td>
+<td>0.000000</td>
+<td>0.011364</td>
+<td>0.011364</td>
+<td>0.045455</td>
+<td>0.022727</td>
+<td>0.034091</td>
+<td>0.000000</td>
+<td>0.056818</td>
+<td>0.204545</td>
+<td>0.090909</td>
+<td>0.011364</td>
+<td>0.011364</td>
+<td>0.022727</td>
+<td>0.022727</td>
+<td>0.090909</td>
+<td>0.011364</td>
+<td>0.034091</td>
+<td>0.011364</td>
+<td>0.045455</td>
+<td>0.045455</td>
+<td>0.045455</td>
+<td>0.045455</td>
+<td>0.045455</td>
+<td>0.000000</td>
+<td>0.011364</td>
+<td>0.011364</td>
+<td>0.045455</td>
+<td>0.079545</td>
+<td>0.045455</td>
+<td>0.022727</td>
+<td>0.045455</td>
+<td>0.136364</td>
+<td>0.125000</td>
+<td>0.022727</td>
+<td>0.034091</td>
+<td>0.034091</td>
+<td>0.056818</td>
+<td>0.056818</td>
+<td>0.000000</td>
+<td>0.034091</td>
+<td>0.000000</td>
+<td>0.045455</td>
+<td>0.022727</td>
+<td>0.068182</td>
+<td>0.000000</td>
+<td>0.034091</td>
+<td>0.022727</td>
+<td>0.000000</td>
+<td>0.045455</td>
+<td>0.102273</td>
+<td>0.045455</td>
+<td>0.022727</td>
+<td>0.056818</td>
+<td>0.102273</td>
+<td>0.113636</td>
+<td>0.090909</td>
+<td>0.022727</td>
+<td>0.022727</td>
+<td>0.057471</td>
+<td>0.103448</td>
+<td>0.057471</td>
+<td>0.000000</td>
+<td>0.034483</td>
+<td>0.011494</td>
+<td>0.034483</td>
+<td>0.034483</td>
+<td>0.126437</td>
+<td>0.011494</td>
+<td>0.022989</td>
+<td>0.011494</td>
+<td>0.011494</td>
+<td>0.045977</td>
+<td>0.034483</td>
+<td>0.057471</td>
+<td>0.057471</td>
+<td>0.011494</td>
+<td>0.080460</td>
+<td>0.114943</td>
+<td>0.057471</td>
+<td>0.022989</td>
+<td>0.000000</td>
+<td>0.045977</td>
+<td>0.114943</td>
+<td>0.068966</td>
+<td>0.000000</td>
+<td>0.034483</td>
+<td>0.011494</td>
+<td>0.045977</td>
+<td>0.011494</td>
+<td>0.091954</td>
+<td>0.011494</td>
+<td>0.022989</td>
+<td>0.000000</td>
+<td>0.011494</td>
+<td>0.000000</td>
+<td>0.045977</td>
+<td>0.091954</td>
+<td>0.080460</td>
+<td>0.057471</td>
+<td>0.080460</td>
+<td>0.103448</td>
+<td>0.045977</td>
+<td>0.022989</td>
+<td>0.000000</td>
+<td>0.752809</td>
+<td>0.202247</td>
+<td>0.044944</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">BUB1</td>
+<td>0.023256</td>
+<td>0.069767</td>
+<td>0.081395</td>
+<td>0.000000</td>
+<td>0.023256</td>
+<td>0.011628</td>
+<td>0.058140</td>
+<td>0.023256</td>
+<td>0.058140</td>
+<td>0.023256</td>
+<td>0.034884</td>
+<td>0.000000</td>
+<td>0.023256</td>
+<td>0.000000</td>
+<td>0.069767</td>
+<td>0.081395</td>
+<td>0.069767</td>
+<td>0.058140</td>
+<td>0.058140</td>
+<td>0.116279</td>
+<td>0.058140</td>
+<td>0.058140</td>
+<td>0.000000</td>
+<td>0.011628</td>
+<td>0.023256</td>
+<td>0.081395</td>
+<td>0.000000</td>
+<td>0.011628</td>
+<td>0.011628</td>
+<td>0.058140</td>
+<td>0.034884</td>
+<td>0.081395</td>
+<td>0.046512</td>
+<td>0.023256</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.081395</td>
+<td>0.069767</td>
+<td>0.081395</td>
+<td>0.023256</td>
+<td>0.046512</td>
+<td>0.069767</td>
+<td>0.127907</td>
+<td>0.093023</td>
+<td>0.023256</td>
+<td>0.000000</td>
+<td>0.058140</td>
+<td>0.069767</td>
+<td>0.104651</td>
+<td>0.000000</td>
+<td>0.011628</td>
+<td>0.011628</td>
+<td>0.127907</td>
+<td>0.069767</td>
+<td>0.151163</td>
+<td>0.023256</td>
+<td>0.011628</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.011628</td>
+<td>0.034884</td>
+<td>0.000000</td>
+<td>0.069767</td>
+<td>0.011628</td>
+<td>0.034884</td>
+<td>0.081395</td>
+<td>0.034884</td>
+<td>0.034884</td>
+<td>0.046512</td>
+<td>0.034884</td>
+<td>0.127907</td>
+<td>0.011628</td>
+<td>0.000000</td>
+<td>0.023256</td>
+<td>0.011628</td>
+<td>0.058140</td>
+<td>0.034884</td>
+<td>0.069767</td>
+<td>0.058140</td>
+<td>0.046512</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.011628</td>
+<td>0.069767</td>
+<td>0.069767</td>
+<td>0.046512</td>
+<td>0.034884</td>
+<td>0.093023</td>
+<td>0.104651</td>
+<td>0.046512</td>
+<td>0.046512</td>
+<td>0.000000</td>
+<td>0.116279</td>
+<td>0.081395</td>
+<td>0.034884</td>
+<td>0.023256</td>
+<td>0.034884</td>
+<td>0.023256</td>
+<td>0.104651</td>
+<td>0.000000</td>
+<td>0.081395</td>
+<td>0.000000</td>
+<td>0.011628</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.046512</td>
+<td>0.069767</td>
+<td>0.081395</td>
+<td>0.023256</td>
+<td>0.034884</td>
+<td>0.069767</td>
+<td>0.069767</td>
+<td>0.081395</td>
+<td>0.011628</td>
+<td>0.046512</td>
+<td>0.093023</td>
+<td>0.069767</td>
+<td>0.011628</td>
+<td>0.011628</td>
+<td>0.000000</td>
+<td>0.127907</td>
+<td>0.058140</td>
+<td>0.081395</td>
+<td>0.046512</td>
+<td>0.011628</td>
+<td>0.000000</td>
+<td>0.011628</td>
+<td>0.011628</td>
+<td>0.069767</td>
+<td>0.034884</td>
+<td>0.046512</td>
+<td>0.011628</td>
+<td>0.034884</td>
+<td>0.093023</td>
+<td>0.034884</td>
+<td>0.093023</td>
+<td>0.000000</td>
+<td>0.093023</td>
+<td>0.139535</td>
+<td>0.093023</td>
+<td>0.000000</td>
+<td>0.023256</td>
+<td>0.023256</td>
+<td>0.023256</td>
+<td>0.046512</td>
+<td>0.081395</td>
+<td>0.011628</td>
+<td>0.058140</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.011628</td>
+<td>0.046512</td>
+<td>0.069767</td>
+<td>0.023256</td>
+<td>0.011628</td>
+<td>0.046512</td>
+<td>0.081395</td>
+<td>0.046512</td>
+<td>0.058140</td>
+<td>0.011628</td>
+<td>0.034884</td>
+<td>0.139535</td>
+<td>0.034884</td>
+<td>0.000000</td>
+<td>0.023256</td>
+<td>0.000000</td>
+<td>0.116279</td>
+<td>0.058140</td>
+<td>0.058140</td>
+<td>0.023256</td>
+<td>0.034884</td>
+<td>0.000000</td>
+<td>0.011628</td>
+<td>0.034884</td>
+<td>0.069767</td>
+<td>0.058140</td>
+<td>0.093023</td>
+<td>0.046512</td>
+<td>0.034884</td>
+<td>0.081395</td>
+<td>0.034884</td>
+<td>0.000000</td>
+<td>0.011628</td>
+<td>0.058824</td>
+<td>0.070588</td>
+<td>0.129412</td>
+<td>0.000000</td>
+<td>0.011765</td>
+<td>0.011765</td>
+<td>0.070588</td>
+<td>0.035294</td>
+<td>0.058824</td>
+<td>0.011765</td>
+<td>0.047059</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.023529</td>
+<td>0.058824</td>
+<td>0.105882</td>
+<td>0.023529</td>
+<td>0.000000</td>
+<td>0.058824</td>
+<td>0.141176</td>
+<td>0.047059</td>
+<td>0.035294</td>
+<td>0.000000</td>
+<td>0.058824</td>
+<td>0.058824</td>
+<td>0.094118</td>
+<td>0.023529</td>
+<td>0.035294</td>
+<td>0.058824</td>
+<td>0.035294</td>
+<td>0.023529</td>
+<td>0.058824</td>
+<td>0.023529</td>
+<td>0.035294</td>
+<td>0.011765</td>
+<td>0.011765</td>
+<td>0.035294</td>
+<td>0.070588</td>
+<td>0.023529</td>
+<td>0.035294</td>
+<td>0.011765</td>
+<td>0.035294</td>
+<td>0.082353</td>
+<td>0.117647</td>
+<td>0.047059</td>
+<td>0.011765</td>
+<td>0.011765</td>
+<td>0.082353</td>
+<td>0.117647</td>
+<td>0.023529</td>
+<td>0.058824</td>
+<td>0.011765</td>
+<td>0.047059</td>
+<td>0.011765</td>
+<td>0.117647</td>
+<td>0.011765</td>
+<td>0.023529</td>
+<td>0.000000</td>
+<td>0.011765</td>
+<td>0.011765</td>
+<td>0.058824</td>
+<td>0.047059</td>
+<td>0.035294</td>
+<td>0.047059</td>
+<td>0.070588</td>
+<td>0.070588</td>
+<td>0.047059</td>
+<td>0.070588</td>
+<td>0.011765</td>
+<td>0.105882</td>
+<td>0.058824</td>
+<td>0.070588</td>
+<td>0.011765</td>
+<td>0.035294</td>
+<td>0.011765</td>
+<td>0.058824</td>
+<td>0.000000</td>
+<td>0.011765</td>
+<td>0.011765</td>
+<td>0.058824</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.023529</td>
+<td>0.117647</td>
+<td>0.094118</td>
+<td>0.023529</td>
+<td>0.035294</td>
+<td>0.035294</td>
+<td>0.105882</td>
+<td>0.070588</td>
+<td>0.058824</td>
+<td>0.000000</td>
+<td>0.035294</td>
+<td>0.117647</td>
+<td>0.141176</td>
+<td>0.011765</td>
+<td>0.035294</td>
+<td>0.023529</td>
+<td>0.117647</td>
+<td>0.035294</td>
+<td>0.023529</td>
+<td>0.035294</td>
+<td>0.035294</td>
+<td>0.023529</td>
+<td>0.000000</td>
+<td>0.011765</td>
+<td>0.047059</td>
+<td>0.058824</td>
+<td>0.047059</td>
+<td>0.035294</td>
+<td>0.035294</td>
+<td>0.094118</td>
+<td>0.011765</td>
+<td>0.011765</td>
+<td>0.011765</td>
+<td>0.047059</td>
+<td>0.082353</td>
+<td>0.058824</td>
+<td>0.011765</td>
+<td>0.082353</td>
+<td>0.023529</td>
+<td>0.047059</td>
+<td>0.023529</td>
+<td>0.058824</td>
+<td>0.011765</td>
+<td>0.023529</td>
+<td>0.023529</td>
+<td>0.000000</td>
+<td>0.023529</td>
+<td>0.070588</td>
+<td>0.035294</td>
+<td>0.023529</td>
+<td>0.070588</td>
+<td>0.035294</td>
+<td>0.105882</td>
+<td>0.058824</td>
+<td>0.070588</td>
+<td>0.011765</td>
+<td>0.558140</td>
+<td>0.406977</td>
+<td>0.034884</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">MEKK3</td>
+<td>0.083333</td>
+<td>0.071429</td>
+<td>0.059524</td>
+<td>0.000000</td>
+<td>0.071429</td>
+<td>0.000000</td>
+<td>0.047619</td>
+<td>0.059524</td>
+<td>0.059524</td>
+<td>0.011905</td>
+<td>0.035714</td>
+<td>0.011905</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.023810</td>
+<td>0.154762</td>
+<td>0.107143</td>
+<td>0.059524</td>
+<td>0.047619</td>
+<td>0.059524</td>
+<td>0.011905</td>
+<td>0.011905</td>
+<td>0.011905</td>
+<td>0.070588</td>
+<td>0.070588</td>
+<td>0.117647</td>
+<td>0.011765</td>
+<td>0.023529</td>
+<td>0.000000</td>
+<td>0.058824</td>
+<td>0.070588</td>
+<td>0.105882</td>
+<td>0.035294</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.023529</td>
+<td>0.070588</td>
+<td>0.094118</td>
+<td>0.058824</td>
+<td>0.035294</td>
+<td>0.070588</td>
+<td>0.011765</td>
+<td>0.023529</td>
+<td>0.035294</td>
+<td>0.011765</td>
+<td>0.047059</td>
+<td>0.047059</td>
+<td>0.129412</td>
+<td>0.011765</td>
+<td>0.023529</td>
+<td>0.035294</td>
+<td>0.070588</td>
+<td>0.047059</td>
+<td>0.058824</td>
+<td>0.023529</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.047059</td>
+<td>0.058824</td>
+<td>0.035294</td>
+<td>0.023529</td>
+<td>0.070588</td>
+<td>0.094118</td>
+<td>0.082353</td>
+<td>0.047059</td>
+<td>0.023529</td>
+<td>0.023529</td>
+<td>0.011765</td>
+<td>0.129412</td>
+<td>0.058824</td>
+<td>0.011765</td>
+<td>0.047059</td>
+<td>0.000000</td>
+<td>0.058824</td>
+<td>0.035294</td>
+<td>0.035294</td>
+<td>0.011765</td>
+<td>0.011765</td>
+<td>0.035294</td>
+<td>0.035294</td>
+<td>0.000000</td>
+<td>0.094118</td>
+<td>0.035294</td>
+<td>0.035294</td>
+<td>0.047059</td>
+<td>0.105882</td>
+<td>0.082353</td>
+<td>0.058824</td>
+<td>0.058824</td>
+<td>0.000000</td>
+<td>0.058824</td>
+<td>0.082353</td>
+<td>0.070588</td>
+<td>0.000000</td>
+<td>0.011765</td>
+<td>0.000000</td>
+<td>0.058824</td>
+<td>0.035294</td>
+<td>0.035294</td>
+<td>0.011765</td>
+<td>0.047059</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.023529</td>
+<td>0.094118</td>
+<td>0.035294</td>
+<td>0.105882</td>
+<td>0.176471</td>
+<td>0.058824</td>
+<td>0.094118</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.070588</td>
+<td>0.094118</td>
+<td>0.141176</td>
+<td>0.000000</td>
+<td>0.023529</td>
+<td>0.011765</td>
+<td>0.023529</td>
+<td>0.035294</td>
+<td>0.035294</td>
+<td>0.023529</td>
+<td>0.058824</td>
+<td>0.011765</td>
+<td>0.011765</td>
+<td>0.035294</td>
+<td>0.023529</td>
+<td>0.023529</td>
+<td>0.047059</td>
+<td>0.035294</td>
+<td>0.082353</td>
+<td>0.082353</td>
+<td>0.035294</td>
+<td>0.082353</td>
+<td>0.011765</td>
+<td>0.058824</td>
+<td>0.105882</td>
+<td>0.129412</td>
+<td>0.011765</td>
+<td>0.023529</td>
+<td>0.000000</td>
+<td>0.011765</td>
+<td>0.023529</td>
+<td>0.094118</td>
+<td>0.000000</td>
+<td>0.047059</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.011765</td>
+<td>0.000000</td>
+<td>0.023529</td>
+<td>0.070588</td>
+<td>0.082353</td>
+<td>0.117647</td>
+<td>0.117647</td>
+<td>0.047059</td>
+<td>0.011765</td>
+<td>0.011765</td>
+<td>0.082353</td>
+<td>0.058824</td>
+<td>0.082353</td>
+<td>0.011765</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.152941</td>
+<td>0.105882</td>
+<td>0.070588</td>
+<td>0.035294</td>
+<td>0.023529</td>
+<td>0.011765</td>
+<td>0.023529</td>
+<td>0.023529</td>
+<td>0.023529</td>
+<td>0.011765</td>
+<td>0.070588</td>
+<td>0.023529</td>
+<td>0.035294</td>
+<td>0.035294</td>
+<td>0.047059</td>
+<td>0.058824</td>
+<td>0.011765</td>
+<td>0.107143</td>
+<td>0.083333</td>
+<td>0.059524</td>
+<td>0.011905</td>
+<td>0.023810</td>
+<td>0.000000</td>
+<td>0.059524</td>
+<td>0.000000</td>
+<td>0.047619</td>
+<td>0.035714</td>
+<td>0.011905</td>
+<td>0.011905</td>
+<td>0.023810</td>
+<td>0.023810</td>
+<td>0.059524</td>
+<td>0.107143</td>
+<td>0.047619</td>
+<td>0.071429</td>
+<td>0.059524</td>
+<td>0.047619</td>
+<td>0.047619</td>
+<td>0.047619</td>
+<td>0.011905</td>
+<td>0.083333</td>
+<td>0.071429</td>
+<td>0.059524</td>
+<td>0.011905</td>
+<td>0.011905</td>
+<td>0.011905</td>
+<td>0.071429</td>
+<td>0.071429</td>
+<td>0.083333</td>
+<td>0.011905</td>
+<td>0.047619</td>
+<td>0.023810</td>
+<td>0.000000</td>
+<td>0.023810</td>
+<td>0.035714</td>
+<td>0.059524</td>
+<td>0.047619</td>
+<td>0.011905</td>
+<td>0.071429</td>
+<td>0.095238</td>
+<td>0.071429</td>
+<td>0.023810</td>
+<td>0.000000</td>
+<td>0.048193</td>
+<td>0.072289</td>
+<td>0.072289</td>
+<td>0.000000</td>
+<td>0.048193</td>
+<td>0.024096</td>
+<td>0.024096</td>
+<td>0.072289</td>
+<td>0.108434</td>
+<td>0.000000</td>
+<td>0.036145</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.060241</td>
+<td>0.036145</td>
+<td>0.036145</td>
+<td>0.060241</td>
+<td>0.096386</td>
+<td>0.084337</td>
+<td>0.048193</td>
+<td>0.060241</td>
+<td>0.012048</td>
+<td>0.060976</td>
+<td>0.060976</td>
+<td>0.048780</td>
+<td>0.012195</td>
+<td>0.012195</td>
+<td>0.000000</td>
+<td>0.048780</td>
+<td>0.048780</td>
+<td>0.073171</td>
+<td>0.012195</td>
+<td>0.024390</td>
+<td>0.012195</td>
+<td>0.012195</td>
+<td>0.012195</td>
+<td>0.134146</td>
+<td>0.060976</td>
+<td>0.036585</td>
+<td>0.097561</td>
+<td>0.109756</td>
+<td>0.060976</td>
+<td>0.036585</td>
+<td>0.012195</td>
+<td>0.012195</td>
+<td>0.097561</td>
+<td>0.036585</td>
+<td>0.060976</td>
+<td>0.000000</td>
+<td>0.012195</td>
+<td>0.000000</td>
+<td>0.097561</td>
+<td>0.109756</td>
+<td>0.073171</td>
+<td>0.000000</td>
+<td>0.024390</td>
+<td>0.012195</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.121951</td>
+<td>0.085366</td>
+<td>0.073171</td>
+<td>0.012195</td>
+<td>0.060976</td>
+<td>0.048780</td>
+<td>0.024390</td>
+<td>0.036585</td>
+<td>0.012195</td>
+<td>0.060976</td>
+<td>0.060976</td>
+<td>0.121951</td>
+<td>0.000000</td>
+<td>0.024390</td>
+<td>0.024390</td>
+<td>0.097561</td>
+<td>0.036585</td>
+<td>0.097561</td>
+<td>0.012195</td>
+<td>0.036585</td>
+<td>0.024390</td>
+<td>0.012195</td>
+<td>0.000000</td>
+<td>0.060976</td>
+<td>0.073171</td>
+<td>0.060976</td>
+<td>0.024390</td>
+<td>0.036585</td>
+<td>0.073171</td>
+<td>0.048780</td>
+<td>0.012195</td>
+<td>0.000000</td>
+<td>0.458824</td>
+<td>0.470588</td>
+<td>0.070588</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">MAP2K3</td>
+<td>0.045977</td>
+<td>0.057471</td>
+<td>0.114943</td>
+<td>0.000000</td>
+<td>0.045977</td>
+<td>0.045977</td>
+<td>0.022989</td>
+<td>0.022989</td>
+<td>0.022989</td>
+<td>0.011494</td>
+<td>0.011494</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.034483</td>
+<td>0.057471</td>
+<td>0.264368</td>
+<td>0.068966</td>
+<td>0.022989</td>
+<td>0.045977</td>
+<td>0.080460</td>
+<td>0.022989</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.068182</td>
+<td>0.056818</td>
+<td>0.056818</td>
+<td>0.022727</td>
+<td>0.068182</td>
+<td>0.011364</td>
+<td>0.045455</td>
+<td>0.034091</td>
+<td>0.022727</td>
+<td>0.011364</td>
+<td>0.011364</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.034091</td>
+<td>0.068182</td>
+<td>0.136364</td>
+<td>0.068182</td>
+<td>0.034091</td>
+<td>0.102273</td>
+<td>0.068182</td>
+<td>0.056818</td>
+<td>0.011364</td>
+<td>0.011364</td>
+<td>0.034091</td>
+<td>0.079545</td>
+<td>0.159091</td>
+<td>0.000000</td>
+<td>0.022727</td>
+<td>0.056818</td>
+<td>0.022727</td>
+<td>0.034091</td>
+<td>0.102273</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.011364</td>
+<td>0.068182</td>
+<td>0.170455</td>
+<td>0.011364</td>
+<td>0.022727</td>
+<td>0.090909</td>
+<td>0.056818</td>
+<td>0.034091</td>
+<td>0.022727</td>
+<td>0.000000</td>
+<td>0.056180</td>
+<td>0.044944</td>
+<td>0.033708</td>
+<td>0.011236</td>
+<td>0.056180</td>
+<td>0.011236</td>
+<td>0.044944</td>
+<td>0.067416</td>
+<td>0.044944</td>
+<td>0.022472</td>
+<td>0.022472</td>
+<td>0.000000</td>
+<td>0.011236</td>
+<td>0.033708</td>
+<td>0.011236</td>
+<td>0.056180</td>
+<td>0.078652</td>
+<td>0.000000</td>
+<td>0.112360</td>
+<td>0.078652</td>
+<td>0.134831</td>
+<td>0.044944</td>
+<td>0.022472</td>
+<td>0.022472</td>
+<td>0.056180</td>
+<td>0.078652</td>
+<td>0.011236</td>
+<td>0.000000</td>
+<td>0.011236</td>
+<td>0.044944</td>
+<td>0.011236</td>
+<td>0.033708</td>
+<td>0.044944</td>
+<td>0.033708</td>
+<td>0.000000</td>
+<td>0.011236</td>
+<td>0.011236</td>
+<td>0.056180</td>
+<td>0.303371</td>
+<td>0.033708</td>
+<td>0.000000</td>
+<td>0.056180</td>
+<td>0.067416</td>
+<td>0.078652</td>
+<td>0.022472</td>
+<td>0.011236</td>
+<td>0.056180</td>
+<td>0.067416</td>
+<td>0.112360</td>
+<td>0.011236</td>
+<td>0.044944</td>
+<td>0.000000</td>
+<td>0.011236</td>
+<td>0.011236</td>
+<td>0.033708</td>
+<td>0.011236</td>
+<td>0.056180</td>
+<td>0.000000</td>
+<td>0.022472</td>
+<td>0.000000</td>
+<td>0.022472</td>
+<td>0.044944</td>
+<td>0.056180</td>
+<td>0.044944</td>
+<td>0.022472</td>
+<td>0.134831</td>
+<td>0.168539</td>
+<td>0.067416</td>
+<td>0.000000</td>
+<td>0.112360</td>
+<td>0.078652</td>
+<td>0.101124</td>
+<td>0.033708</td>
+<td>0.000000</td>
+<td>0.011236</td>
+<td>0.022472</td>
+<td>0.022472</td>
+<td>0.056180</td>
+<td>0.044944</td>
+<td>0.022472</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.011236</td>
+<td>0.078652</td>
+<td>0.044944</td>
+<td>0.022472</td>
+<td>0.033708</td>
+<td>0.044944</td>
+<td>0.089888</td>
+<td>0.134831</td>
+<td>0.011236</td>
+<td>0.022472</td>
+<td>0.359551</td>
+<td>0.101124</td>
+<td>0.044944</td>
+<td>0.011236</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.112360</td>
+<td>0.056180</td>
+<td>0.033708</td>
+<td>0.033708</td>
+<td>0.011236</td>
+<td>0.000000</td>
+<td>0.022472</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.011236</td>
+<td>0.000000</td>
+<td>0.033708</td>
+<td>0.033708</td>
+<td>0.089888</td>
+<td>0.044944</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.046512</td>
+<td>0.058140</td>
+<td>0.151163</td>
+<td>0.000000</td>
+<td>0.023256</td>
+<td>0.000000</td>
+<td>0.093023</td>
+<td>0.046512</td>
+<td>0.034884</td>
+<td>0.023256</td>
+<td>0.023256</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.011628</td>
+<td>0.023256</td>
+<td>0.034884</td>
+<td>0.034884</td>
+<td>0.023256</td>
+<td>0.104651</td>
+<td>0.104651</td>
+<td>0.093023</td>
+<td>0.034884</td>
+<td>0.034884</td>
+<td>0.226190</td>
+<td>0.023810</td>
+<td>0.047619</td>
+<td>0.023810</td>
+<td>0.023810</td>
+<td>0.023810</td>
+<td>0.083333</td>
+<td>0.023810</td>
+<td>0.071429</td>
+<td>0.011905</td>
+<td>0.023810</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.023810</td>
+<td>0.023810</td>
+<td>0.083333</td>
+<td>0.035714</td>
+<td>0.011905</td>
+<td>0.059524</td>
+<td>0.059524</td>
+<td>0.071429</td>
+<td>0.035714</td>
+<td>0.011905</td>
+<td>0.047619</td>
+<td>0.071429</td>
+<td>0.083333</td>
+<td>0.000000</td>
+<td>0.047619</td>
+<td>0.011905</td>
+<td>0.059524</td>
+<td>0.011905</td>
+<td>0.095238</td>
+<td>0.000000</td>
+<td>0.011905</td>
+<td>0.000000</td>
+<td>0.011905</td>
+<td>0.011905</td>
+<td>0.059524</td>
+<td>0.071429</td>
+<td>0.011905</td>
+<td>0.035714</td>
+<td>0.059524</td>
+<td>0.130952</td>
+<td>0.107143</td>
+<td>0.047619</td>
+<td>0.011905</td>
+<td>0.096386</td>
+<td>0.048193</td>
+<td>0.072289</td>
+<td>0.012048</td>
+<td>0.036145</td>
+<td>0.036145</td>
+<td>0.012048</td>
+<td>0.036145</td>
+<td>0.084337</td>
+<td>0.024096</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.048193</td>
+<td>0.012048</td>
+<td>0.072289</td>
+<td>0.024096</td>
+<td>0.048193</td>
+<td>0.048193</td>
+<td>0.096386</td>
+<td>0.084337</td>
+<td>0.048193</td>
+<td>0.036145</td>
+<td>0.024096</td>
+<td>0.085366</td>
+<td>0.024390</td>
+<td>0.085366</td>
+<td>0.012195</td>
+<td>0.048780</td>
+<td>0.012195</td>
+<td>0.060976</td>
+<td>0.073171</td>
+<td>0.073171</td>
+<td>0.000000</td>
+<td>0.012195</td>
+<td>0.036585</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.060976</td>
+<td>0.073171</td>
+<td>0.048780</td>
+<td>0.012195</td>
+<td>0.097561</td>
+<td>0.060976</td>
+<td>0.073171</td>
+<td>0.036585</td>
+<td>0.012195</td>
+<td>0.073171</td>
+<td>0.024390</td>
+<td>0.085366</td>
+<td>0.012195</td>
+<td>0.060976</td>
+<td>0.000000</td>
+<td>0.012195</td>
+<td>0.024390</td>
+<td>0.048780</td>
+<td>0.000000</td>
+<td>0.012195</td>
+<td>0.012195</td>
+<td>0.073171</td>
+<td>0.024390</td>
+<td>0.036585</td>
+<td>0.109756</td>
+<td>0.024390</td>
+<td>0.060976</td>
+<td>0.073171</td>
+<td>0.109756</td>
+<td>0.085366</td>
+<td>0.036585</td>
+<td>0.000000</td>
+<td>0.528090</td>
+<td>0.191011</td>
+<td>0.280899</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">GRK1</td>
+<td>0.060241</td>
+<td>0.072289</td>
+<td>0.084337</td>
+<td>0.000000</td>
+<td>0.048193</td>
+<td>0.036145</td>
+<td>0.024096</td>
+<td>0.060241</td>
+<td>0.012048</td>
+<td>0.012048</td>
+<td>0.024096</td>
+<td>0.012048</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.084337</td>
+<td>0.096386</td>
+<td>0.036145</td>
+<td>0.012048</td>
+<td>0.060241</td>
+<td>0.144578</td>
+<td>0.036145</td>
+<td>0.060241</td>
+<td>0.024096</td>
+<td>0.048193</td>
+<td>0.060241</td>
+<td>0.060241</td>
+<td>0.000000</td>
+<td>0.024096</td>
+<td>0.000000</td>
+<td>0.072289</td>
+<td>0.072289</td>
+<td>0.048193</td>
+<td>0.036145</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.108434</td>
+<td>0.060241</td>
+<td>0.036145</td>
+<td>0.048193</td>
+<td>0.084337</td>
+<td>0.144578</td>
+<td>0.036145</td>
+<td>0.012048</td>
+<td>0.048193</td>
+<td>0.036145</td>
+<td>0.060241</td>
+<td>0.156627</td>
+<td>0.012048</td>
+<td>0.012048</td>
+<td>0.024096</td>
+<td>0.048193</td>
+<td>0.060241</td>
+<td>0.084337</td>
+<td>0.000000</td>
+<td>0.036145</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.012048</td>
+<td>0.048193</td>
+<td>0.012048</td>
+<td>0.084337</td>
+<td>0.024096</td>
+<td>0.084337</td>
+<td>0.144578</td>
+<td>0.036145</td>
+<td>0.012048</td>
+<td>0.012048</td>
+<td>0.072289</td>
+<td>0.084337</td>
+<td>0.084337</td>
+<td>0.024096</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.048193</td>
+<td>0.012048</td>
+<td>0.036145</td>
+<td>0.024096</td>
+<td>0.024096</td>
+<td>0.000000</td>
+<td>0.012048</td>
+<td>0.024096</td>
+<td>0.096386</td>
+<td>0.036145</td>
+<td>0.024096</td>
+<td>0.048193</td>
+<td>0.072289</td>
+<td>0.168675</td>
+<td>0.060241</td>
+<td>0.036145</td>
+<td>0.012048</td>
+<td>0.024096</td>
+<td>0.048193</td>
+<td>0.144578</td>
+<td>0.024096</td>
+<td>0.012048</td>
+<td>0.000000</td>
+<td>0.084337</td>
+<td>0.036145</td>
+<td>0.048193</td>
+<td>0.000000</td>
+<td>0.024096</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.084337</td>
+<td>0.060241</td>
+<td>0.024096</td>
+<td>0.036145</td>
+<td>0.072289</td>
+<td>0.108434</td>
+<td>0.084337</td>
+<td>0.084337</td>
+<td>0.000000</td>
+<td>0.024096</td>
+<td>0.024096</td>
+<td>0.072289</td>
+<td>0.012048</td>
+<td>0.024096</td>
+<td>0.000000</td>
+<td>0.024096</td>
+<td>0.036145</td>
+<td>0.156627</td>
+<td>0.048193</td>
+<td>0.060241</td>
+<td>0.000000</td>
+<td>0.012048</td>
+<td>0.012048</td>
+<td>0.024096</td>
+<td>0.012048</td>
+<td>0.024096</td>
+<td>0.012048</td>
+<td>0.132530</td>
+<td>0.156627</td>
+<td>0.048193</td>
+<td>0.072289</td>
+<td>0.012048</td>
+<td>0.084337</td>
+<td>0.012048</td>
+<td>0.084337</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.024096</td>
+<td>0.096386</td>
+<td>0.000000</td>
+<td>0.096386</td>
+<td>0.000000</td>
+<td>0.024096</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.024096</td>
+<td>0.048193</td>
+<td>0.000000</td>
+<td>0.048193</td>
+<td>0.060241</td>
+<td>0.120482</td>
+<td>0.156627</td>
+<td>0.060241</td>
+<td>0.060241</td>
+<td>0.000000</td>
+<td>0.012048</td>
+<td>0.048193</td>
+<td>0.048193</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.192771</td>
+<td>0.096386</td>
+<td>0.084337</td>
+<td>0.000000</td>
+<td>0.012048</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.024096</td>
+<td>0.036145</td>
+<td>0.012048</td>
+<td>0.036145</td>
+<td>0.000000</td>
+<td>0.072289</td>
+<td>0.240964</td>
+<td>0.024096</td>
+<td>0.060241</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.060976</td>
+<td>0.060976</td>
+<td>0.012195</td>
+<td>0.012195</td>
+<td>0.012195</td>
+<td>0.109756</td>
+<td>0.048780</td>
+<td>0.048780</td>
+<td>0.012195</td>
+<td>0.012195</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.060976</td>
+<td>0.000000</td>
+<td>0.085366</td>
+<td>0.073171</td>
+<td>0.085366</td>
+<td>0.109756</td>
+<td>0.097561</td>
+<td>0.097561</td>
+<td>0.000000</td>
+<td>0.036585</td>
+<td>0.097561</td>
+<td>0.048780</td>
+<td>0.012195</td>
+<td>0.000000</td>
+<td>0.012195</td>
+<td>0.085366</td>
+<td>0.024390</td>
+<td>0.012195</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.024390</td>
+<td>0.073171</td>
+<td>0.024390</td>
+<td>0.036585</td>
+<td>0.000000</td>
+<td>0.121951</td>
+<td>0.207317</td>
+<td>0.121951</td>
+<td>0.036585</td>
+<td>0.024390</td>
+<td>0.012500</td>
+<td>0.037500</td>
+<td>0.112500</td>
+<td>0.000000</td>
+<td>0.012500</td>
+<td>0.000000</td>
+<td>0.025000</td>
+<td>0.037500</td>
+<td>0.075000</td>
+<td>0.012500</td>
+<td>0.037500</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.012500</td>
+<td>0.037500</td>
+<td>0.050000</td>
+<td>0.037500</td>
+<td>0.062500</td>
+<td>0.100000</td>
+<td>0.225000</td>
+<td>0.050000</td>
+<td>0.025000</td>
+<td>0.037500</td>
+<td>0.025316</td>
+<td>0.088608</td>
+<td>0.063291</td>
+<td>0.012658</td>
+<td>0.037975</td>
+<td>0.037975</td>
+<td>0.088608</td>
+<td>0.012658</td>
+<td>0.012658</td>
+<td>0.025316</td>
+<td>0.012658</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.025316</td>
+<td>0.113924</td>
+<td>0.063291</td>
+<td>0.000000</td>
+<td>0.037975</td>
+<td>0.113924</td>
+<td>0.113924</td>
+<td>0.050633</td>
+<td>0.050633</td>
+<td>0.012658</td>
+<td>0.038961</td>
+<td>0.012987</td>
+<td>0.103896</td>
+<td>0.038961</td>
+<td>0.012987</td>
+<td>0.025974</td>
+<td>0.038961</td>
+<td>0.064935</td>
+<td>0.090909</td>
+<td>0.000000</td>
+<td>0.051948</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.142857</td>
+<td>0.064935</td>
+<td>0.038961</td>
+<td>0.000000</td>
+<td>0.103896</td>
+<td>0.116883</td>
+<td>0.025974</td>
+<td>0.025974</td>
+<td>0.000000</td>
+<td>0.039474</td>
+<td>0.065789</td>
+<td>0.052632</td>
+<td>0.000000</td>
+<td>0.026316</td>
+<td>0.000000</td>
+<td>0.039474</td>
+<td>0.000000</td>
+<td>0.039474</td>
+<td>0.052632</td>
+<td>0.052632</td>
+<td>0.000000</td>
+<td>0.013158</td>
+<td>0.013158</td>
+<td>0.092105</td>
+<td>0.105263</td>
+<td>0.013158</td>
+<td>0.026316</td>
+<td>0.118421</td>
+<td>0.197368</td>
+<td>0.039474</td>
+<td>0.000000</td>
+<td>0.013158</td>
+<td>0.831325</td>
+<td>0.156627</td>
+<td>0.012048</td>
+</tr>
+</tbody>
+</table>
+
+<p>289 rows × 325 columns</p>
+</div>
+</div>
+</div>
+<div id="42a64418-a095-4ac3-b1db-66cf14d5180c" class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ward method to calculate linkage matrix</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>Z <span class="op">=</span> linkage(df, method<span class="op">=</span><span class="st">'ward'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="4e34fc58-5a98-4263-a97f-44fea8ee2d81" class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Z</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[1.20000000e+01, 1.70000000e+01, 8.16324973e-02, 2.00000000e+00],
+       [1.50000000e+01, 2.89000000e+02, 8.70342690e-02, 3.00000000e+00],
+       [2.00000000e+00, 1.60000000e+01, 8.89836215e-02, 2.00000000e+00],
+       ...,
+       [5.69000000e+02, 5.73000000e+02, 4.49856709e+00, 1.67000000e+02],
+       [5.65000000e+02, 5.74000000e+02, 4.58327062e+00, 2.09000000e+02],
+       [5.66000000e+02, 5.75000000e+02, 1.20398599e+01, 2.89000000e+02]])</code></pre>
+</div>
+</div>
+</section>
+<section id="plot-dendrogram" class="level2">
+<h2 class="anchored" data-anchor-id="plot-dendrogram">Plot dendrogram</h2>
+<div id="bf5fe9c4-ec5d-4bb3-a159-45741b5f4f5e" class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>(rc<span class="op">=</span>{<span class="st">"figure.dpi"</span>:<span class="dv">300</span>, <span class="st">'savefig.dpi'</span>:<span class="dv">300</span>})</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>sns.set_context(<span class="st">'notebook'</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">"ticks"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">4</span>,<span class="dv">50</span>))</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>dendrogram(Z,orientation<span class="op">=</span><span class="st">'left'</span>,leaf_font_size<span class="op">=</span><span class="dv">10</span>,labels<span class="op">=</span>df.index,color_threshold<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Hierarchical Clustering Dendrogram'</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.xlabel('Sample index')</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Distance'</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="45e9e1f6-fbb9-4a10-80e3-2a8e04d536a4" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get icoord and dcoord without plotting</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>dendro_data <span class="op">=</span> dendrogram(Z, no_plot<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>icoord <span class="op">=</span> np.array(dendro_data[<span class="st">'icoord'</span>])</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>dcoord <span class="op">=</span> np.array(dendro_data[<span class="st">'dcoord'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="4fc8e85f-3b36-4109-9a80-35a9261776f7" class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> smoothsegment(seg, Nsmooth<span class="op">=</span><span class="dv">100</span>):</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Smooths the segment for better visualization in polar coordinates."""</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.concatenate([[seg[<span class="dv">0</span>]], np.linspace(seg[<span class="dv">1</span>], seg[<span class="dv">2</span>], Nsmooth), [seg[<span class="dv">3</span>]]])</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_dendrogram(icoord, dcoord, labels, figsize, polar<span class="op">=</span><span class="va">True</span>):</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Plots a dendrogram in polar coordinates with labels properly oriented around the circle.</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">        icoord (ndarray): Array of x coordinates for the dendrogram.</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">        dcoord (ndarray): Array of y coordinates for the dendrogram.</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">        labels (list): List of labels corresponding to the dendrogram leaves.</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">        figsize (tuple): Figure size.</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">        polar (bool): If True, plots in polar coordinates.</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    dcoord <span class="op">=</span> <span class="op">-</span>np.log(dcoord <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    imax <span class="op">=</span> icoord.<span class="bu">max</span>()</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    imin <span class="op">=</span> icoord.<span class="bu">min</span>()</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    icoord <span class="op">=</span> (icoord <span class="op">-</span> imin) <span class="op">/</span> (imax <span class="op">-</span> imin) <span class="op">*</span> <span class="dv">2</span> <span class="op">*</span> np.pi</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> plt.style.context(<span class="st">"seaborn-white"</span>):</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>figsize)</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>        ax <span class="op">=</span> fig.add_subplot(<span class="dv">111</span>, polar<span class="op">=</span>polar)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Plot each segment</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> xs, ys <span class="kw">in</span> <span class="bu">zip</span>(icoord, dcoord):</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>            xs <span class="op">=</span> smoothsegment(xs)</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>            ys <span class="op">=</span> smoothsegment(ys)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>            ax.plot(xs, ys, color<span class="op">=</span><span class="st">"black"</span>)</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Remove polar grid and labels</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>        ax.grid(<span class="va">False</span>)</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>        ax.spines[<span class="st">'polar'</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ax.set_xticks(icoord)  # Set ticks at label positions</span></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>        Nxticks <span class="op">=</span> <span class="bu">len</span>(labels)</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>        xticks <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">2</span> <span class="op">*</span> np.pi, Nxticks, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>        ax.set_xticks(xticks)</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a><span class="co">#         for i, label in enumerate(ax.get_xticklabels()):</span></span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a><span class="co">#             label.set_rotation(i*90)</span></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Assuming `icoord`, `dcoord`, and your DataFrame's index (`df.index`) are ready</span></span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a><span class="co"># plot_dendrogram(icoord, dcoord, df.index.tolist(), figsize=(10, 10))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="21bc29e5-1612-4f26-b725-bb09245804ba" class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>plot_dendrogram(icoord, dcoord, figsize<span class="op">=</span>(<span class="dv">30</span>, <span class="dv">30</span>),labels<span class="op">=</span>df.index)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="save-tree" class="level2">
+<h2 class="anchored" data-anchor-id="save-tree">Save Tree</h2>
+<div id="99af9bb6-9190-427e-9555-c521be63224d" class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_newick(node, parent_dist, leaf_names, newick<span class="op">=</span><span class="st">''</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Convert sciply.cluster.hierarchy.to_tree()-output to Newick format.</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">    Referenced from: https://stackoverflow.com/questions/28222179/save-dendrogram-to-newick-format</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">    :param node: output of sciply.cluster.hierarchy.to_tree()</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">    :param parent_dist: output of sciply.cluster.hierarchy.to_tree().dist</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">    :param leaf_names: list of leaf names</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">    :param newick: leave empty, this variable is used in recursion.</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">    :returns: tree in Newick format</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> node.is_leaf():</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"</span><span class="sc">%s</span><span class="st">:</span><span class="sc">%.2f%s</span><span class="st">"</span> <span class="op">%</span> (leaf_names[node.<span class="bu">id</span>], parent_dist <span class="op">-</span> node.dist, newick)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(newick) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>            newick <span class="op">=</span> <span class="st">"):</span><span class="sc">%.2f%s</span><span class="st">"</span> <span class="op">%</span> (parent_dist <span class="op">-</span> node.dist, newick)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>            newick <span class="op">=</span> <span class="st">");"</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>        newick <span class="op">=</span> get_newick(node.get_left(), node.dist, leaf_names, newick<span class="op">=</span>newick)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        newick <span class="op">=</span> get_newick(node.get_right(), node.dist, leaf_names, newick<span class="op">=</span><span class="st">",</span><span class="sc">%s</span><span class="st">"</span> <span class="op">%</span> (newick))</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>        newick <span class="op">=</span> <span class="st">"(</span><span class="sc">%s</span><span class="st">"</span> <span class="op">%</span> (newick)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> newick</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="b6b371f5-7d85-447a-9a4e-d0e8c7cc5d9a" class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>tree <span class="op">=</span> to_tree(Z, <span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="a6d5a8ef-fb69-446b-9d0f-c3da85f81697" class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>newick_str <span class="op">=</span> get_newick(tree, tree.dist, df.index)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="98edeb2e-2ffb-4c65-a377-85b6ccb5423c" class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>newick_str</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'((((((((((((CK1E:0.21,CK1D:0.21):0.14,CK1A:0.35):0.23,((CK1G1:0.24,CK1G2:0.24):0.10,CK1G3:0.34):0.25):0.27,((((GRK2:0.35,TTBK1:0.35):0.06,PLK3:0.41):0.11,(GRK7:0.39,GRK5:0.39):0.12):0.07,GRK1:0.58):0.28):0.32,(CK2A2:0.31,CK2A1:0.31):0.87):0.13,(((TLK2:0.20,TLK1:0.20):0.38,PERK:0.58):0.22,((((TGFBR1:0.23,ALK4:0.23):0.05,ALK2:0.29):0.02,BMPR1B:0.30):0.14,ACVR2A:0.44):0.35):0.51):0.32,(((((MLK3:0.20,MLK1:0.20):0.24,COT:0.45):0.09,(((NEK7:0.18,NEK6:0.18):0.20,DSTYK:0.38):0.01,(NEK9:0.24,NEK2:0.24):0.15):0.15):0.13,((BUB1B:0.27,PLK1:0.27):0.27,PLK4:0.54):0.13):0.29,(((TBK1:0.22,IKKE:0.22):0.16,(IKKA:0.22,IKKB:0.22):0.17):0.12,ULK3:0.50):0.45):0.67):0.46,((ATR:0.36,ATM:0.36):0.26,DNAPK:0.62):1.46):1.25,((((((((((MNK2:0.33,PHKG2:0.33):0.05,PKN1:0.39):0.08,PHKG1:0.47):0.11,PKN2:0.58):0.11,((NDR2:0.37,NDR1:0.37):0.09,(LATS1:0.26,LATS2:0.26):0.20):0.24):0.26,(((((PKCT:0.26,PKCB:0.26):0.02,PKCG:0.28):0.04,PKCH:0.32):0.05,(PKCI:0.30,PKCZ:0.30):0.07):0.10,((PKCD:0.25,PKCA:0.25):0.12,PKCE:0.37):0.11):0.48):0.32,((((AURC:0.21,AURA:0.21):0.07,AURB:0.28):0.22,((PAK2:0.17,PAK1:0.17):0.04,PAK3:0.21):0.29):0.27,((PAK5:0.37,PAK6:0.37):0.04,PAK4:0.41):0.37):0.51):0.27,((((((CHK2:0.37,CHK1:0.37):0.09,SKMLCK:0.46):0.06,(DCAMKL1:0.30,DCAMKL2:0.30):0.22):0.09,(CAMK1A:0.44,MELK:0.44):0.17):0.27,((LRRK2:0.52,DAPK1:0.52):0.05,((ROCK2:0.30,ROCK1:0.30):0.15,MRCKB:0.45):0.12):0.31):0.39,(((CAMK1D:0.44,CAMK4:0.44):0.13,(((PRKD1:0.24,PRKD3:0.24):0.03,PRKD2:0.28):0.08,MAPKAPK3:0.36):0.21):0.15,(((CAMK2D:0.19,CAMK2G:0.19):0.01,CAMK2B:0.20):0.06,CAMK2A:0.26):0.45):0.55):0.28):0.24,(((((NUAK1:0.33,NUAK2:0.33):0.13,(TSSK2:0.26,TSSK1:0.26):0.21):0.03,(AMPKA2:0.26,AMPKA1:0.26):0.24):0.02,BRSK2:0.52):0.20,(((NIM1:0.21,QIK:0.21):0.10,SIK:0.31):0.07,((MARK3:0.19,MARK4:0.19):0.00,(MARK1:0.17,MARK2:0.17):0.02):0.19):0.33):1.08):0.15,(((((((((RSK2:0.21,RSK4:0.21):0.04,RSK3:0.25):0.04,P90RSK:0.29):0.05,P70S6K:0.34):0.12,(MSK2:0.26,MSK1:0.26):0.19):0.26,P70S6KB:0.71):0.08,((PIM3:0.20,PIM1:0.20):0.21,PIM2:0.40):0.39):0.12,((((PKG2:0.25,PKACB:0.25):0.02,PKACA:0.28):0.09,PKG1:0.37):0.02,PRKX:0.39):0.53):0.04,(((SGK2:0.29,SGK1:0.29):0.09,SGK3:0.38):0.11,((AKT3:0.26,AKT2:0.26):0.08,AKT1:0.33):0.16):0.46):0.98):1.40):1.16,((((((((DYRK1A:0.25,DYRK4:0.25):0.10,CDK9:0.35):0.02,HIPK2:0.37):0.19,(HIPK3:0.36,HIPK1:0.36):0.20):0.39,(MAP2K3:0.42,MAP2K4:0.42):0.54):0.11,((((CLK3:0.40,CLK1:0.40):0.12,MAP2K7:0.53):0.14,((MAPKAPK2:0.30,MAPKAPK5:0.30):0.22,HIPK4:0.52):0.15):0.10,((((DYRK3:0.20,DYRK2:0.20):0.29,CDK7:0.50):0.05,MTOR:0.55):0.09,CDK8:0.64):0.13):0.30):0.11,(((MOK:0.38,ICK:0.38):0.13,ERK5:0.51):0.25,ERK7:0.76):0.41):0.55,((((((P38B:0.24,P38A:0.24):0.09,NLK:0.33):0.02,CDK6:0.35):0.22,(((JNK2:0.16,JNK1:0.16):0.09,JNK3:0.24):0.03,(P38G:0.15,P38D:0.15):0.12):0.30):0.14,(GSK3A:0.30,GSK3B:0.30):0.41):0.13,(((ERK1:0.10,ERK2:0.10):0.28,CDK4:0.38):0.12,(((CDK2:0.18,CDK1:0.18):0.05,CDK5:0.22):0.10,CDK3:0.32):0.17):0.35):0.88):2.78):0.08,((((((STLK3:0.47,TAK1:0.47):0.15,ASK1:0.62):0.06,MOS:0.68):0.19,((MEKK3:0.45,MEKK2:0.45):0.14,(MEK1:0.37,MEK2:0.37):0.21):0.28):0.16,((((((IRAK4:0.31,MLK2:0.31):0.07,IRAK1:0.38):0.08,((NEK11:0.28,ZAK:0.28):0.08,MEKK1:0.35):0.11):0.15,BUB1:0.62):0.04,HASPIN:0.66):0.11,((WNK2:0.29,WNK3:0.29):0.02,WNK1:0.31):0.46):0.25):0.36,((((OSR1:0.47,EEF2K:0.47):0.08,(MEK5:0.45,SLK:0.45):0.10):0.13,((((((TNIK:0.16,MINK:0.16):0.02,HGK:0.17):0.05,(MST2:0.14,MST1:0.14):0.09):0.01,GCK:0.24):0.16,(NEK4:0.20,NEK1:0.20):0.20):0.03,(((TAO2:0.21,KHS1:0.21):0.06,((MST4:0.14,MST3:0.14):0.01,YSK1:0.15):0.13):0.06,TAO1:0.34):0.10):0.24):0.25,((MPSK1:0.54,PBK:0.54):0.12,((CAMKK2:0.30,CAMKK1:0.30):0.12,LKB1:0.41):0.25):0.26):0.46):3.20):7.46,((((((((KIT:0.16,CSF1R:0.16):0.07,(JAK2:0.15,JAK3:0.15):0.08):0.03,((FGFR4:0.16,ERBB4:0.16):0.01,FGFR3:0.17):0.09):0.04,((ZAP70:0.14,SYK:0.14):0.05,EGFR:0.19):0.11):0.12,(((((KDR:0.13,FLT4:0.13):0.04,FLT1:0.18):0.04,(((FGFR2:0.10,FGFR1:0.10):0.06,NTRK2:0.16):0.01,((IGF1R:0.09,INSR:0.09):0.03,INSRR:0.13):0.04):0.05):0.01,(NTRK1:0.09,NTRK3:0.09):0.14):0.02,(((((TYRO3:0.11,ROS1:0.11):0.01,ALK:0.12):0.03,MUSK:0.14):0.03,(PDGFRB:0.13,PDGFRA:0.13):0.05):0.01,((MST1R:0.12,MET:0.12):0.01,(RET:0.12,FLT3:0.12):0.01):0.05):0.07):0.17):0.12,((JAK1:0.23,TYK2:0.23):0.17,WEE1:0.40):0.14):0.07,(((((((((MERTK:0.11,AXL:0.11):0.06,PTK2B:0.17):0.07,TNK1:0.24):0.08,DDR2:0.32):0.00,CSK:0.32):0.05,TNK2:0.37):0.06,((((((FER:0.09,FES:0.09):0.07,SRMS:0.16):0.01,((FRK:0.13,BMX:0.13):0.03,TEK:0.15):0.02):0.02,(EPHA1:0.14,LTK:0.14):0.06):0.04,((EPHA8:0.09,EPHA3:0.09):0.05,(((EPHB4:0.08,EPHB1:0.08):0.01,EPHB3:0.09):0.00,EPHB2:0.09):0.06):0.09):0.06,(((EPHA6:0.11,EPHA7:0.11):0.01,(EPHA2:0.11,EPHA5:0.11):0.01):0.07,EPHA4:0.19):0.11):0.14):0.05,PTK2:0.49):0.04,((((((BLK:0.12,LCK:0.12):0.01,(LYN:0.11,YES1:0.11):0.01):0.05,(FYN:0.13,SRC:0.13):0.05):0.04,((HCK:0.15,FGR:0.15):0.02,PTK6:0.17):0.05):0.03,(ABL2:0.12,ABL1:0.12):0.13):0.02,(((TXK:0.15,TEC:0.15):0.01,BTK:0.16):0.04,ITK:0.20):0.08):0.25):0.09):0.81,((LIMK2:0.45,TESK1:0.45):0.10,(MATK:0.38,LIMK1:0.38):0.17):0.87):10.61);'</code></pre>
+</div>
+</div>
+<div id="98a1515d-1ff4-40ee-a46c-9f6842aeed81" class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the Newick string to a file</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="ss">f'supp/CDDM.newick'</span>, <span class="st">'w'</span>) <span class="im">as</span> f:</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    f.write(newick_str)<span class="co"># Open the tree.newick in figtree</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="determine-threshold-to-cut-tree" class="level2">
+<h2 class="anchored" data-anchor-id="determine-threshold-to-cut-tree">Determine threshold to cut tree</h2>
+<div id="ee23b87b-f86c-4ed2-b57e-8264f51c5fd6" class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate a range of possible t values</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>t_values <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">15</span>, <span class="dv">40</span>)  <span class="co"># Example range from 0.05 to 1</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>num_clusters <span class="op">=</span> [<span class="bu">len</span>(np.unique(fcluster(Z, t<span class="op">=</span>t, criterion<span class="op">=</span><span class="st">'distance'</span>))) <span class="cf">for</span> t <span class="kw">in</span> t_values]</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the elbow curve</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>plt.plot(t_values, num_clusters, marker<span class="op">=</span><span class="st">'o'</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Elbow Method to Determine Threshold'</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Threshold (t)'</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Number of clusters'</span>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cc8412d9-c29a-4a66-855b-0b72cfa202eb" class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate a range of possible t values</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>t_values <span class="op">=</span> np.linspace(<span class="fl">1.2</span>, <span class="dv">14</span>, <span class="dv">40</span>)  <span class="co"># Example range from 0.05 to 1</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>num_clusters <span class="op">=</span> [<span class="bu">len</span>(np.unique(fcluster(Z, t<span class="op">=</span>t, criterion<span class="op">=</span><span class="st">'distance'</span>))) <span class="cf">for</span> t <span class="kw">in</span> t_values]</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the elbow curve</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>plt.plot(t_values, num_clusters, marker<span class="op">=</span><span class="st">'o'</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Elbow Method to Determine Threshold'</span>)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Threshold (t)'</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Number of clusters'</span>)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-17-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="umap" class="level2">
+<h2 class="anchored" data-anchor-id="umap">UMAP</h2>
+<section id="determine-parameters-in-umap" class="level3">
+<h3 class="anchored" data-anchor-id="determine-parameters-in-umap">Determine parameters in UMAP</h3>
+<div id="edbda8d9-7e35-473b-b259-253cf0919f2f" class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the lower the value, the more localized</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> [<span class="dv">3</span>,<span class="dv">5</span>,<span class="dv">10</span>,<span class="dv">15</span>,<span class="dv">20</span>,<span class="dv">30</span>]:</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    plot_cluster(df,method<span class="op">=</span><span class="st">'umap'</span>,complexity<span class="op">=</span>i,min_dist<span class="op">=</span><span class="fl">0.6</span>,s<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    plt.close()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")
+/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")
+/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")
+/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")
+/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")
+/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-18-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-18-output-3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-18-output-4.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-18-output-5.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-18-output-6.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-18-output-7.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Complexity 5 looks good</p>
+</section>
+<section id="visualize-threshold-for-clusters" class="level3">
+<h3 class="anchored" data-anchor-id="visualize-threshold-for-clusters">Visualize threshold for clusters</h3>
+<div id="fd9360c3-6775-4f4e-b334-b4b9155ab41f" class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># umap_matrix = reduce_feature(df,'umap',5,min_dist=0.6)</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> [<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">14</span>]:</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># cut tree to get cluster</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    cluster <span class="op">=</span> fcluster(Z, t<span class="op">=</span>i, criterion<span class="op">=</span><span class="st">'distance'</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'q is </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span>) <span class="co"># lower value of q, more clusters</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># plot_2d(umap_matrix,legend=True, s=10, hue=cluster,palette='tab10')</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    plot_cluster(df, hue <span class="op">=</span> cluster,method<span class="op">=</span> <span class="st">'umap'</span>,palette<span class="op">=</span><span class="st">'tab10'</span>,</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>                 s <span class="op">=</span> <span class="dv">10</span>,legend<span class="op">=</span><span class="va">True</span>,complexity <span class="op">=</span> <span class="dv">5</span>,min_dist<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    plt.close()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>q is 3
+q is 4
+q is 6
+q is 14</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")
+/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")
+/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")
+/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-19-output-3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-19-output-4.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-19-output-5.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-19-output-6.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="95f67016-0b05-42ff-b19d-e80b270df0dc" class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>cluster <span class="op">=</span> fcluster(Z, t<span class="op">=</span><span class="dv">3</span>, criterion<span class="op">=</span><span class="st">'distance'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="f0f0e135-109f-4b1f-bedf-27ae209c30e9" class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>cluster_info <span class="op">=</span> pd.DataFrame(df.index)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="100b582f-712b-4fc5-b404-244abec9a547" class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cluster_info[<span class="st">'CDDM_big'</span>] <span class="op">=</span> cluster</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="7fc26583-600e-4863-8f29-3c518a101a40" class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cluster <span class="op">=</span> fcluster(Z, t<span class="op">=</span><span class="fl">0.6</span>, criterion<span class="op">=</span><span class="st">'distance'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="ba378103-7357-4c5c-8460-707ec46847b4" class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>cluster_info[<span class="st">'CDDM_small'</span>] <span class="op">=</span> cluster</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="b7d05d19-bb32-4b12-9bd3-5d6be3085a45" class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>cluster_info.to_csv(<span class="st">'supp/CDDM_cluster.csv'</span>,index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="plot-umap" class="level2">
+<h2 class="anchored" data-anchor-id="plot-umap">Plot UMAP</h2>
+<div id="ddeda067-de07-4a7c-93d4-4bb9320963e3" class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>info <span class="op">=</span> Data.get_kinase_info().query(<span class="st">'pseudo=="0"'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We have already merge the cluster in the info, so no need to merge here</p>
+<div id="e0d2beb6-f190-4531-815b-eed980621936" class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>info <span class="op">=</span> info.set_index(<span class="st">'kinase'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="colored-by-cddm-cluster" class="level3">
+<h3 class="anchored" data-anchor-id="colored-by-cddm-cluster">colored by CDDM cluster</h3>
+<div id="a7570807-0a1c-4a33-8bf1-2bb41afc12dd" class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>plot_cluster(df, hue <span class="op">=</span> info.cddm_big,method<span class="op">=</span> <span class="st">'umap'</span>,palette<span class="op">=</span><span class="st">'tab10'</span>,</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>             s <span class="op">=</span> <span class="dv">10</span>,legend<span class="op">=</span><span class="va">True</span>,complexity <span class="op">=</span> <span class="dv">5</span>,min_dist<span class="op">=</span><span class="fl">0.6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-28-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="colored-by-kinase-familygroup" class="level3">
+<h3 class="anchored" data-anchor-id="colored-by-kinase-familygroup">colored by kinase family/group</h3>
+<div id="d5dabfb8-a245-4fc4-88a6-1be46a286f46" class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.xtras <span class="im">import</span> <span class="op">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="50828a34-a632-45b9-8b77-05e9e4cfa51b" class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>color_group <span class="op">=</span> load_pickle(<span class="st">'raw/kinase_color.pkl'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="b51f4683-148b-4dd0-855c-4263d6db9058" class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>plot_cluster(df, hue <span class="op">=</span> info.group,method<span class="op">=</span> <span class="st">'umap'</span>,palette<span class="op">=</span>color_group,</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>             s <span class="op">=</span> <span class="dv">10</span>,legend<span class="op">=</span><span class="va">True</span>,complexity <span class="op">=</span> <span class="dv">5</span>,min_dist<span class="op">=</span><span class="fl">0.6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-31-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="pspa-category" class="level3">
+<h3 class="anchored" data-anchor-id="pspa-category">PSPA category</h3>
+<div id="fb439fdc-0d15-4b7e-a7d1-81f248ea1eaa" class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>pspa_color <span class="op">=</span> pd.read_csv(<span class="st">'raw/pspa_color.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="a1058104-8af4-40c2-a97a-415f5fcefab0" class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>pspa_color <span class="op">=</span> pspa_color.set_index(<span class="st">'Label'</span>)[<span class="st">'Color'</span>].to_dict()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="c016da10-7bda-4e70-9fd3-460a0a083218" class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>info.pspa_category_big.value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>basophilic                            87
+pro-directed                          45
+acidophilic                           32
+MAP3K                                 17
+MAP4K                                 17
+ALPHA/MLK                             15
+FGF and VEGF receptors                13
+RIPK/WNK                              13
+PKC                                   12
+Ephrin receptors                      11
+assorted                              11
+NEK/ASK                               10
+EIF2AK/TLK                            10
+PDGF receptors                         9
+SRC                                    8
+TEC                                    7
+CMGC                                   7
+TAM receptors                          7
+ULK/TTBK                               7
+Insulin and neurotrophin receptors     6
+Non-canonical (WEE)                    6
+JAK                                    5
+EGF receptors                          5
+LKB/CAMKK                              5
+IKK                                    4
+PIKK                                   4
+Non-canonical (PDHK)                   3
+NAK                                    3
+SYK and FAK                            3
+Discoidin domain receptors             2
+ABL                                    2
+assorted_Non-canonical (PDHK)          2
+ACK                                    2
+assorted_Non-canomical (PDHK)          1
+LKB/CAMKK_Non-canonical (WEE)          1
+Name: pspa_category_big, dtype: int64</code></pre>
+</div>
+</div>
+<div id="a0839aac-add8-45ce-a8e3-d1f167b6e078" class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>info.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Index(['ID_coral', 'uniprot', 'ID_HGNC', 'group', 'family', 'subfamily_coral',
+       'subfamily', 'in_ST_paper', 'in_Tyr_paper', 'in_cddm', 'pseudo',
+       'pspa_category_small', 'pspa_category_big', 'cddm_big', 'cddm_small',
+       'length', 'human_uniprot_sequence', 'kinasecom_domain', 'nucleus',
+       'cytosol', 'cytoskeleton', 'plasma membrane', 'mitochondrion',
+       'Golgi apparatus', 'endoplasmic reticulum', 'vesicle', 'centrosome',
+       'aggresome', 'main_location'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<div id="1361f76a-69fe-4fae-ac5f-f741306adc75" class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>plot_cluster(df, hue <span class="op">=</span> info.pspa_category_big.<span class="bu">str</span>.split(<span class="st">'_'</span>).<span class="bu">str</span>[<span class="dv">0</span>],</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>             method<span class="op">=</span> <span class="st">'umap'</span>,palette<span class="op">=</span>pspa_color,</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>             s <span class="op">=</span> <span class="dv">10</span>,legend<span class="op">=</span><span class="va">True</span>,complexity <span class="op">=</span> <span class="dv">5</span>,min_dist<span class="op">=</span><span class="fl">0.6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-36-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="main-location" class="level3">
+<h3 class="anchored" data-anchor-id="main-location">Main location</h3>
+<div id="aff12f6d-cc22-4383-8633-b69fd03a36b3" class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>plot_cluster(df, hue <span class="op">=</span> info.main_location,method<span class="op">=</span> <span class="st">'umap'</span>,palette<span class="op">=</span><span class="st">'tab20'</span>,</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>             s <span class="op">=</span> <span class="dv">10</span>,legend<span class="op">=</span><span class="va">True</span>,complexity <span class="op">=</span> <span class="dv">5</span>,min_dist<span class="op">=</span><span class="fl">0.6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/usr/local/lib/python3.9/dist-packages/umap/umap_.py:1945: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(f"n_jobs value {self.n_jobs} overridden to 1 by setting random_state. Use no seed for parallelism.")</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="paper_05_Hierarchical_clustering_files/figure-html/cell-37-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/sky1ove\.github\.io\/katlas");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

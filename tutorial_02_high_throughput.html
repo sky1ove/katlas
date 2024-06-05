@@ -1,0 +1,5324 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>katlas - Phosphoproteomics scoring</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="katlas - Phosphoproteomics scoring">
+<meta property="og:description" content="tools for predicting kinome specificities">
+<meta property="og:site_name" content="katlas">
+<meta name="twitter:title" content="katlas - Phosphoproteomics scoring">
+<meta name="twitter:description" content="tools for predicting kinome specificities">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">katlas</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tutorial_01_sinlge_input.html">Tutorials</a></li><li class="breadcrumb-item"><a href="./tutorial_02_high_throughput.html">Phosphoproteomics scoring</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">KATLAS</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Tutorials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_01_sinlge_input.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring with single input sequence</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_02_high_throughput.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Phosphoproteomics scoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_03_query_gene.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Query phosphosites for a specific protein/gene</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_04a_enrichment_akti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinase enrichment analysis - AKTi</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_04b_enrichment_egfri.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinase enrichment analysis - EGFRi</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Core</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train ML</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dl.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train DL</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#phosphoproteomics-dataset" id="toc-phosphoproteomics-dataset" class="nav-link" data-scroll-target="#phosphoproteomics-dataset">Phosphoproteomics dataset</a></li>
+  <li><a href="#scoring-on-all-capital-sequence" id="toc-scoring-on-all-capital-sequence" class="nav-link" data-scroll-target="#scoring-on-all-capital-sequence">Scoring on all-capital sequence</a></li>
+  <li><a href="#scoring-on-phosphorylated-sequence" id="toc-scoring-on-phosphorylated-sequence" class="nav-link" data-scroll-target="#scoring-on-phosphorylated-sequence">Scoring on phosphorylated sequence</a></li>
+  <li><a href="#plot-substrate-score-distribution-of-a-kinase" id="toc-plot-substrate-score-distribution-of-a-kinase" class="nav-link" data-scroll-target="#plot-substrate-score-distribution-of-a-kinase">Plot substrate score distribution of a kinase</a></li>
+  <li><a href="#get-the-gene-names-in-the-positive-peaks" id="toc-get-the-gene-names-in-the-positive-peaks" class="nav-link" data-scroll-target="#get-the-gene-names-in-the-positive-peaks">Get the gene names in the positive peaks</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tutorial_01_sinlge_input.html">Tutorials</a></li><li class="breadcrumb-item"><a href="./tutorial_02_high_throughput.html">Phosphoproteomics scoring</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Phosphoproteomics scoring</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p><a target="_blank" href="https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_03_high_throughput.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> </a></p>
+<p>In this session, instead of scoring sequence one by one, we will score the whole phosphoproteomics dataset at once (within minutes!)</p>
+<p>Moreover, we will plot the score distribution of a kinase, and check its substrates.</p>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<div id="3f0e24ce-6859-4944-9529-11eb8e247f61" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install git<span class="op">+</span>https:<span class="op">//</span>github.com<span class="op">/</span>sky1ove<span class="op">/</span>katlas.git <span class="op">-</span>Uq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="78879e8c-52da-40ad-a8f8-367b0b692771" class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd,numpy <span class="im">as</span> np,seaborn <span class="im">as</span> sns</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.core <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.plot <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>set_sns()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="phosphoproteomics-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="phosphoproteomics-dataset">Phosphoproteomics dataset</h2>
+<p>Three datasets are available:</p>
+<ul>
+<li>PhosphoSitePlus human (2024 Jan)</li>
+<li>Ochoa et al.&nbsp;human phosphoproteom</li>
+<li>Combine Ochoa and PSP low throughput data</li>
+</ul>
+<div id="dc0cb22e-5802-4863-923a-bc1d6cdf4759" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>psp <span class="op">=</span> Data.get_psp_human_site()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ochoa <span class="op">=</span> Data.get_ochoa_site()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>comb <span class="op">=</span> Data.get_combine_site_psp_ochoa()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="76d45f23-dae7-43ce-8702-4b7681c36d1d" class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>psp.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">gene</th>
+<th data-quarto-table-cell-role="th">protein</th>
+<th data-quarto-table-cell-role="th">uniprot</th>
+<th data-quarto-table-cell-role="th">site</th>
+<th data-quarto-table-cell-role="th">gene_site</th>
+<th data-quarto-table-cell-role="th">SITE_GRP_ID</th>
+<th data-quarto-table-cell-role="th">species</th>
+<th data-quarto-table-cell-role="th">site_seq</th>
+<th data-quarto-table-cell-role="th">LT_LIT</th>
+<th data-quarto-table-cell-role="th">MS_LIT</th>
+<th data-quarto-table-cell-role="th">MS_CST</th>
+<th data-quarto-table-cell-role="th">CST_CAT#</th>
+<th data-quarto-table-cell-role="th">Ambiguous_Site</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>YWHAB</td>
+<td>14-3-3 beta</td>
+<td>P31946</td>
+<td>T2</td>
+<td>YWHAB_T2</td>
+<td>15718712</td>
+<td>human</td>
+<td>______MtMDksELV</td>
+<td>NaN</td>
+<td>3.0</td>
+<td>1.0</td>
+<td>None</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>YWHAB</td>
+<td>14-3-3 beta</td>
+<td>P31946</td>
+<td>S6</td>
+<td>YWHAB_S6</td>
+<td>15718709</td>
+<td>human</td>
+<td>__MtMDksELVQkAk</td>
+<td>NaN</td>
+<td>8.0</td>
+<td>NaN</td>
+<td>None</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>YWHAB</td>
+<td>14-3-3 beta</td>
+<td>P31946</td>
+<td>Y21</td>
+<td>YWHAB_Y21</td>
+<td>3426383</td>
+<td>human</td>
+<td>LAEQAERyDDMAAAM</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>4.0</td>
+<td>None</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>YWHAB</td>
+<td>14-3-3 beta</td>
+<td>P31946</td>
+<td>T32</td>
+<td>YWHAB_T32</td>
+<td>23077803</td>
+<td>human</td>
+<td>AAAMkAVtEQGHELs</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>1.0</td>
+<td>None</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>YWHAB</td>
+<td>14-3-3 beta</td>
+<td>P31946</td>
+<td>S39</td>
+<td>YWHAB_S39</td>
+<td>27442700</td>
+<td>human</td>
+<td>tEQGHELsNEERNLL</td>
+<td>NaN</td>
+<td>4.0</td>
+<td>NaN</td>
+<td>None</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="6617d5e8-956f-45f8-a579-3f9938fcaf3f" class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ochoa.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">uniprot</th>
+<th data-quarto-table-cell-role="th">position</th>
+<th data-quarto-table-cell-role="th">residue</th>
+<th data-quarto-table-cell-role="th">is_disopred</th>
+<th data-quarto-table-cell-role="th">disopred_score</th>
+<th data-quarto-table-cell-role="th">log10_hotspot_pval_min</th>
+<th data-quarto-table-cell-role="th">isHotspot</th>
+<th data-quarto-table-cell-role="th">uniprot_position</th>
+<th data-quarto-table-cell-role="th">functional_score</th>
+<th data-quarto-table-cell-role="th">current_uniprot</th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">gene</th>
+<th data-quarto-table-cell-role="th">Sequence</th>
+<th data-quarto-table-cell-role="th">is_valid</th>
+<th data-quarto-table-cell-role="th">site_seq</th>
+<th data-quarto-table-cell-role="th">gene_site</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>A0A075B6Q4</td>
+<td>24</td>
+<td>S</td>
+<td>True</td>
+<td>0.91</td>
+<td>6.839384</td>
+<td>True</td>
+<td>A0A075B6Q4_24</td>
+<td>0.149257</td>
+<td>A0A075B6Q4</td>
+<td>A0A075B6Q4_HUMAN</td>
+<td>None</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKTHRAIADHLFWSEETKSRFTEYSMTSSVMRRNEQLTLHDERFEKFYEQYDDDEIGALDNAELEGSIQVDSNRLQEVLNDYYKEKAEKWQSGIVSL</td>
+<td>True</td>
+<td>VDDEKGDSNDDYDSA</td>
+<td>A0A075B6Q4_S24</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>A0A075B6Q4</td>
+<td>35</td>
+<td>S</td>
+<td>True</td>
+<td>0.87</td>
+<td>9.192622</td>
+<td>False</td>
+<td>A0A075B6Q4_35</td>
+<td>0.136966</td>
+<td>A0A075B6Q4</td>
+<td>A0A075B6Q4_HUMAN</td>
+<td>None</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKTHRAIADHLFWSEETKSRFTEYSMTSSVMRRNEQLTLHDERFEKFYEQYDDDEIGALDNAELEGSIQVDSNRLQEVLNDYYKEKAEKWQSGIVSL</td>
+<td>True</td>
+<td>YDSAGLLSDEDCMSV</td>
+<td>A0A075B6Q4_S35</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>A0A075B6Q4</td>
+<td>57</td>
+<td>S</td>
+<td>False</td>
+<td>0.28</td>
+<td>0.818834</td>
+<td>False</td>
+<td>A0A075B6Q4_57</td>
+<td>0.125364</td>
+<td>A0A075B6Q4</td>
+<td>A0A075B6Q4_HUMAN</td>
+<td>None</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKTHRAIADHLFWSEETKSRFTEYSMTSSVMRRNEQLTLHDERFEKFYEQYDDDEIGALDNAELEGSIQVDSNRLQEVLNDYYKEKAEKWQSGIVSL</td>
+<td>True</td>
+<td>IADHLFWSEETKSRF</td>
+<td>A0A075B6Q4_S57</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>A0A075B6Q4</td>
+<td>68</td>
+<td>S</td>
+<td>False</td>
+<td>0.03</td>
+<td>0.375986</td>
+<td>False</td>
+<td>A0A075B6Q4_68</td>
+<td>0.119811</td>
+<td>A0A075B6Q4</td>
+<td>A0A075B6Q4_HUMAN</td>
+<td>None</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKTHRAIADHLFWSEETKSRFTEYSMTSSVMRRNEQLTLHDERFEKFYEQYDDDEIGALDNAELEGSIQVDSNRLQEVLNDYYKEKAEKWQSGIVSL</td>
+<td>True</td>
+<td>KSRFTEYSMTSSVMR</td>
+<td>A0A075B6Q4_S68</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>A0A075B6Q4</td>
+<td>71</td>
+<td>S</td>
+<td>False</td>
+<td>0.05</td>
+<td>0.000000</td>
+<td>False</td>
+<td>A0A075B6Q4_71</td>
+<td>0.095193</td>
+<td>A0A075B6Q4</td>
+<td>A0A075B6Q4_HUMAN</td>
+<td>None</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKTHRAIADHLFWSEETKSRFTEYSMTSSVMRRNEQLTLHDERFEKFYEQYDDDEIGALDNAELEGSIQVDSNRLQEVLNDYYKEKAEKWQSGIVSL</td>
+<td>True</td>
+<td>FTEYSMTSSVMRRNE</td>
+<td>A0A075B6Q4_S71</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="94a62933-a3de-43f1-9fa8-9eb0d6d538e4" class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>comb.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">site_seq</th>
+<th data-quarto-table-cell-role="th">gene_site</th>
+<th data-quarto-table-cell-role="th">gene</th>
+<th data-quarto-table-cell-role="th">source</th>
+<th data-quarto-table-cell-role="th">num_site</th>
+<th data-quarto-table-cell-role="th">acceptor</th>
+<th data-quarto-table-cell-role="th">-7</th>
+<th data-quarto-table-cell-role="th">-6</th>
+<th data-quarto-table-cell-role="th">-5</th>
+<th data-quarto-table-cell-role="th">-4</th>
+<th data-quarto-table-cell-role="th">-3</th>
+<th data-quarto-table-cell-role="th">-2</th>
+<th data-quarto-table-cell-role="th">-1</th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+<th data-quarto-table-cell-role="th">5</th>
+<th data-quarto-table-cell-role="th">6</th>
+<th data-quarto-table-cell-role="th">7</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AAAAAAASGGAGSDN</td>
+<td>PBX1_S136</td>
+<td>PBX1</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>G</td>
+<td>G</td>
+<td>A</td>
+<td>G</td>
+<td>S</td>
+<td>D</td>
+<td>N</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>AAAAAAASGGGVSPD</td>
+<td>PBX2_S146</td>
+<td>PBX2</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>G</td>
+<td>G</td>
+<td>G</td>
+<td>V</td>
+<td>S</td>
+<td>P</td>
+<td>D</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>AAAAAAASGVTTGKP</td>
+<td>CLASR_S349</td>
+<td>CLASR</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>G</td>
+<td>V</td>
+<td>T</td>
+<td>T</td>
+<td>G</td>
+<td>K</td>
+<td>P</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>AAAAAAASQQGSAKN</td>
+<td>TBL1R_S119</td>
+<td>TBL1R</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>Q</td>
+<td>Q</td>
+<td>G</td>
+<td>S</td>
+<td>A</td>
+<td>K</td>
+<td>N</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>AAAAAAASSPVGVGQ</td>
+<td>SOX3_S249</td>
+<td>SOX3</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>S</td>
+<td>P</td>
+<td>V</td>
+<td>G</td>
+<td>V</td>
+<td>G</td>
+<td>Q</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>It should be noted that while the first two datasets are more like raw data which is directly downloaded from the web, the third one is a combined of them, and processed through get_unique_site (remove duplicated sequence). <code>num_site</code> indicates number of duplicates.</p>
+<div id="a9654c5e-a2f4-4064-affc-2dbeb48103b6" class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>comb.num_site.value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>1     111632
+2       4466
+3        404
+4        157
+5         84
+6         58
+7         47
+8         18
+9          9
+11         3
+10         3
+21         3
+12         2
+14         1
+Name: num_site, dtype: int64</code></pre>
+</div>
+</div>
+</section>
+<section id="scoring-on-all-capital-sequence" class="level2">
+<h2 class="anchored" data-anchor-id="scoring-on-all-capital-sequence">Scoring on all-capital sequence</h2>
+<div id="1cfe0ace-75e5-40c8-93d7-fa0d571dafc2" class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>comb.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">site_seq</th>
+<th data-quarto-table-cell-role="th">gene_site</th>
+<th data-quarto-table-cell-role="th">gene</th>
+<th data-quarto-table-cell-role="th">source</th>
+<th data-quarto-table-cell-role="th">num_site</th>
+<th data-quarto-table-cell-role="th">acceptor</th>
+<th data-quarto-table-cell-role="th">-7</th>
+<th data-quarto-table-cell-role="th">-6</th>
+<th data-quarto-table-cell-role="th">-5</th>
+<th data-quarto-table-cell-role="th">-4</th>
+<th data-quarto-table-cell-role="th">-3</th>
+<th data-quarto-table-cell-role="th">-2</th>
+<th data-quarto-table-cell-role="th">-1</th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+<th data-quarto-table-cell-role="th">5</th>
+<th data-quarto-table-cell-role="th">6</th>
+<th data-quarto-table-cell-role="th">7</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AAAAAAASGGAGSDN</td>
+<td>PBX1_S136</td>
+<td>PBX1</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>G</td>
+<td>G</td>
+<td>A</td>
+<td>G</td>
+<td>S</td>
+<td>D</td>
+<td>N</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>AAAAAAASGGGVSPD</td>
+<td>PBX2_S146</td>
+<td>PBX2</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>G</td>
+<td>G</td>
+<td>G</td>
+<td>V</td>
+<td>S</td>
+<td>P</td>
+<td>D</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>AAAAAAASGVTTGKP</td>
+<td>CLASR_S349</td>
+<td>CLASR</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>G</td>
+<td>V</td>
+<td>T</td>
+<td>T</td>
+<td>G</td>
+<td>K</td>
+<td>P</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>AAAAAAASQQGSAKN</td>
+<td>TBL1R_S119</td>
+<td>TBL1R</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>Q</td>
+<td>Q</td>
+<td>G</td>
+<td>S</td>
+<td>A</td>
+<td>K</td>
+<td>N</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>AAAAAAASSPVGVGQ</td>
+<td>SOX3_S249</td>
+<td>SOX3</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>S</td>
+<td>P</td>
+<td>V</td>
+<td>G</td>
+<td>V</td>
+<td>G</td>
+<td>Q</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="49bc3257-942b-40cf-b318-8d1791ab3cf2" class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>comb.acceptor.value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>S    85208
+T    24250
+Y     7429
+Name: acceptor, dtype: int64</code></pre>
+</div>
+</div>
+<p>It looks that the sequence are in all-capital format, so we will use <code>param_CDDM_upper</code></p>
+<div id="99f47201-d981-4253-a239-2fac3072f4c8" class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>cddm <span class="op">=</span> predict_kinase_df(comb,<span class="st">'site_seq'</span>,<span class="op">**</span>param_CDDM_upper)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>input dataframe has a length 116887
+Preprocessing
+Finish preprocessing
+Calculating position: [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|██████████| 289/289 [02:22&lt;00:00,  2.03it/s]</code></pre>
+</div>
+</div>
+<div id="ffae7b36-4246-428c-831c-1c59723397e8" class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>pspa <span class="op">=</span> predict_kinase_df(comb,<span class="st">'site_seq'</span>,<span class="op">**</span>param_PSPA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>input dataframe has a length 116887
+Preprocessing
+Finish preprocessing
+Calculating position: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|██████████| 396/396 [05:12&lt;00:00,  1.27it/s]</code></pre>
+</div>
+</div>
+<p>To accelerate PSPA scoring, we can split S/T and Y sites for scoring.</p>
+<div id="c4d69605-2517-4804-9ea3-700bff909416" class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>y_idx <span class="op">=</span> comb[<span class="st">'acceptor'</span>]<span class="op">==</span><span class="st">"Y"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="05a4e01d-ab35-4e95-b073-07e5a3caa549" class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>comb_y <span class="op">=</span> comb[y_idx]</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>comb_st <span class="op">=</span> comb[<span class="op">~</span>y_idx]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="1036c202-8fa9-49ec-b257-08dfb34ca3dd" class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pspa_y <span class="op">=</span> predict_kinase_df(comb_y,<span class="st">'site_seq'</span>,<span class="op">**</span>param_PSPA_y)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>pspa_st <span class="op">=</span> predict_kinase_df(comb_st,<span class="st">'site_seq'</span>,<span class="op">**</span>param_PSPA_st)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>input dataframe has a length 7429
+Preprocessing
+Finish preprocessing
+Calculating position: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+input dataframe has a length 109458
+Preprocessing
+Finish preprocessing
+Calculating position: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|██████████| 93/93 [00:04&lt;00:00, 20.84it/s]
+100%|██████████| 303/303 [03:59&lt;00:00,  1.27it/s]</code></pre>
+</div>
+</div>
+</section>
+<section id="scoring-on-phosphorylated-sequence" class="level2">
+<h2 class="anchored" data-anchor-id="scoring-on-phosphorylated-sequence">Scoring on phosphorylated sequence</h2>
+<div id="02da0249-cbcf-4e20-a377-633eb0b3c633" class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>psp.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">gene</th>
+<th data-quarto-table-cell-role="th">protein</th>
+<th data-quarto-table-cell-role="th">uniprot</th>
+<th data-quarto-table-cell-role="th">site</th>
+<th data-quarto-table-cell-role="th">gene_site</th>
+<th data-quarto-table-cell-role="th">SITE_GRP_ID</th>
+<th data-quarto-table-cell-role="th">species</th>
+<th data-quarto-table-cell-role="th">site_seq</th>
+<th data-quarto-table-cell-role="th">LT_LIT</th>
+<th data-quarto-table-cell-role="th">MS_LIT</th>
+<th data-quarto-table-cell-role="th">MS_CST</th>
+<th data-quarto-table-cell-role="th">CST_CAT#</th>
+<th data-quarto-table-cell-role="th">Ambiguous_Site</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>YWHAB</td>
+<td>14-3-3 beta</td>
+<td>P31946</td>
+<td>T2</td>
+<td>YWHAB_T2</td>
+<td>15718712</td>
+<td>human</td>
+<td>______MtMDksELV</td>
+<td>NaN</td>
+<td>3.0</td>
+<td>1.0</td>
+<td>None</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>YWHAB</td>
+<td>14-3-3 beta</td>
+<td>P31946</td>
+<td>S6</td>
+<td>YWHAB_S6</td>
+<td>15718709</td>
+<td>human</td>
+<td>__MtMDksELVQkAk</td>
+<td>NaN</td>
+<td>8.0</td>
+<td>NaN</td>
+<td>None</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>YWHAB</td>
+<td>14-3-3 beta</td>
+<td>P31946</td>
+<td>Y21</td>
+<td>YWHAB_Y21</td>
+<td>3426383</td>
+<td>human</td>
+<td>LAEQAERyDDMAAAM</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>4.0</td>
+<td>None</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>YWHAB</td>
+<td>14-3-3 beta</td>
+<td>P31946</td>
+<td>T32</td>
+<td>YWHAB_T32</td>
+<td>23077803</td>
+<td>human</td>
+<td>AAAMkAVtEQGHELs</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>1.0</td>
+<td>None</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>YWHAB</td>
+<td>14-3-3 beta</td>
+<td>P31946</td>
+<td>S39</td>
+<td>YWHAB_S39</td>
+<td>27442700</td>
+<td>human</td>
+<td>tEQGHELsNEERNLL</td>
+<td>NaN</td>
+<td>4.0</td>
+<td>NaN</td>
+<td>None</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>It looks that the sequence are in phosphorylated status, so we will use <code>param_CDDM</code></p>
+<p>Directly run psp in <a href="https://sky1ove.github.io/katlas/core.html#predict_kinase_df"><code>predict_kinase_df</code></a> will gives an error, as some of the site_sequence do not have S/T/Y at the center. We need to clean them before process.</p>
+<div id="cc044971-8e6f-4711-b11f-2859cb38044f" class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>psp.site_seq.<span class="bu">str</span>[<span class="dv">7</span>].value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>s    141851
+t     58761
+y     39367
+h        14
+k         4
+r         3
+g         3
+p         2
+n         1
+f         1
+l         1
+a         1
+i         1
+d         1
+Name: site_seq, dtype: int64</code></pre>
+</div>
+</div>
+<div id="377f5778-2b82-4096-9a32-aa46d127428b" class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>psp <span class="op">=</span> psp[psp.site_seq.<span class="bu">str</span>[<span class="dv">7</span>].isin([<span class="st">'s'</span>,<span class="st">'t'</span>,<span class="st">'y'</span>])]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="14aa67b4-383d-4073-a413-3731c84aa772" class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cddm <span class="op">=</span> predict_kinase_df(psp,<span class="st">'site_seq'</span>,<span class="op">**</span>param_CDDM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>input dataframe has a length 239979
+Preprocessing
+Finish preprocessing
+Calculating position: [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+  0%|          | 0/289 [00:00&lt;?, ?it/s]
+  3%|▎         | 8/289 [00:00&lt;00:16, 17.10it/s]
+  6%|▌         | 16/289 [00:13&lt;04:26,  1.02it/s]
+  8%|▊         | 24/289 [00:19&lt;03:58,  1.11it/s]
+ 11%|█         | 32/289 [00:27&lt;03:57,  1.08it/s]
+ 14%|█▍        | 40/289 [00:34&lt;03:42,  1.12it/s]
+ 17%|█▋        | 48/289 [00:42&lt;03:42,  1.08it/s]
+ 19%|█▉        | 56/289 [00:49&lt;03:36,  1.08it/s]
+ 22%|██▏       | 64/289 [00:57&lt;03:32,  1.06it/s]
+ 22%|██▏       | 65/289 [00:57&lt;03:23,  1.10it/s]
+ 25%|██▍       | 72/289 [01:05&lt;03:30,  1.03it/s]
+ 25%|██▌       | 73/289 [01:05&lt;03:22,  1.07it/s]
+ 28%|██▊       | 80/289 [01:12&lt;03:16,  1.06it/s]
+ 28%|██▊       | 81/289 [01:13&lt;03:07,  1.11it/s]
+ 28%|██▊       | 82/289 [01:13&lt;02:51,  1.21it/s]
+ 30%|███       | 88/289 [01:20&lt;03:31,  1.05s/it]
+ 31%|███       | 89/289 [01:21&lt;03:14,  1.03it/s]
+ 33%|███▎      | 96/289 [01:27&lt;03:02,  1.06it/s]
+ 36%|███▌      | 104/289 [01:35&lt;02:55,  1.05it/s]
+ 39%|███▉      | 112/289 [01:41&lt;02:39,  1.11it/s]
+ 42%|████▏     | 120/289 [01:50&lt;02:41,  1.05it/s]
+ 44%|████▍     | 128/289 [01:58&lt;02:33,  1.05it/s]
+ 45%|████▍     | 129/289 [01:58&lt;02:25,  1.10it/s]
+ 47%|████▋     | 136/289 [02:06&lt;02:36,  1.02s/it]
+ 47%|████▋     | 137/289 [02:06&lt;02:27,  1.03it/s]
+ 50%|████▉     | 144/289 [02:15&lt;02:33,  1.06s/it]
+ 50%|█████     | 145/289 [02:15&lt;02:24,  1.01s/it]
+ 53%|█████▎    | 152/289 [02:23&lt;02:24,  1.05s/it]
+ 53%|█████▎    | 153/289 [02:23&lt;02:14,  1.01it/s]
+ 55%|█████▌    | 160/289 [02:30&lt;02:05,  1.03it/s]
+ 58%|█████▊    | 168/289 [02:38&lt;01:59,  1.01it/s]
+ 58%|█████▊    | 169/289 [02:38&lt;01:52,  1.07it/s]
+ 59%|█████▉    | 170/289 [02:38&lt;01:42,  1.16it/s]
+ 61%|██████    | 176/289 [02:45&lt;01:53,  1.01s/it]
+ 64%|██████▎   | 184/289 [02:53&lt;01:42,  1.02it/s]
+ 66%|██████▋   | 192/289 [03:01&lt;01:34,  1.02it/s]
+ 67%|██████▋   | 193/289 [03:01&lt;01:29,  1.07it/s]
+ 69%|██████▉   | 200/289 [03:09&lt;01:28,  1.01it/s]
+ 70%|██████▉   | 201/289 [03:09&lt;01:21,  1.08it/s]
+ 72%|███████▏  | 208/289 [03:17&lt;01:19,  1.02it/s]
+ 72%|███████▏  | 209/289 [03:17&lt;01:15,  1.07it/s]
+ 75%|███████▍  | 216/289 [03:24&lt;01:11,  1.02it/s]
+ 75%|███████▌  | 217/289 [03:24&lt;01:08,  1.06it/s]
+ 78%|███████▊  | 224/289 [03:31&lt;01:01,  1.05it/s]
+ 80%|████████  | 232/289 [03:38&lt;00:52,  1.08it/s]
+ 83%|████████▎ | 240/289 [03:46&lt;00:45,  1.08it/s]
+ 86%|████████▌ | 248/289 [03:54&lt;00:38,  1.06it/s]
+ 89%|████████▊ | 256/289 [04:01&lt;00:30,  1.08it/s]
+ 91%|█████████▏| 264/289 [04:10&lt;00:25,  1.00s/it]
+ 92%|█████████▏| 265/289 [04:10&lt;00:22,  1.04it/s]
+ 94%|█████████▍| 272/289 [04:18&lt;00:17,  1.01s/it]
+ 97%|█████████▋| 280/289 [04:27&lt;00:09,  1.06s/it]
+ 97%|█████████▋| 281/289 [04:27&lt;00:08,  1.00s/it]
+100%|█████████▉| 288/289 [04:35&lt;00:01,  1.01s/it]
+100%|██████████| 289/289 [04:35&lt;00:00,  1.05it/s]</code></pre>
+</div>
+</div>
+<div id="6548a8d7-66e8-41cd-8019-97b0d8147a52" class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>pspa <span class="op">=</span> predict_kinase_df(psp,<span class="st">'site_seq'</span>,<span class="op">**</span>param_PSPA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>input dataframe has a length 116887
+Preprocessing
+Finish preprocessing
+Calculating position: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+  0%|          | 0/396 [00:00&lt;?, ?it/s]
+  4%|▍         | 16/396 [00:05&lt;02:00,  3.14it/s]
+  6%|▌         | 24/396 [00:11&lt;03:13,  1.92it/s]
+  8%|▊         | 32/396 [00:18&lt;03:52,  1.56it/s]
+ 10%|█         | 40/396 [00:25&lt;04:16,  1.39it/s]
+ 12%|█▏        | 48/396 [00:32&lt;04:30,  1.29it/s]
+ 12%|█▏        | 49/396 [00:32&lt;04:19,  1.34it/s]
+ 14%|█▍        | 56/396 [00:39&lt;04:42,  1.20it/s]
+ 16%|█▌        | 64/396 [00:46&lt;04:40,  1.18it/s]
+ 18%|█▊        | 72/396 [00:53&lt;04:35,  1.18it/s]
+ 20%|██        | 80/396 [00:59&lt;04:22,  1.21it/s]
+ 22%|██▏       | 88/396 [01:07&lt;04:35,  1.12it/s]
+ 24%|██▍       | 96/396 [01:16&lt;04:40,  1.07it/s]
+ 26%|██▋       | 104/396 [01:22&lt;04:22,  1.11it/s]
+ 28%|██▊       | 112/396 [01:30&lt;04:20,  1.09it/s]
+ 30%|███       | 120/396 [01:37&lt;04:13,  1.09it/s]
+ 32%|███▏      | 128/396 [01:44&lt;03:56,  1.13it/s]
+ 34%|███▍      | 136/396 [01:50&lt;03:47,  1.14it/s]
+ 36%|███▋      | 144/396 [01:57&lt;03:40,  1.14it/s]
+ 38%|███▊      | 152/396 [02:05&lt;03:39,  1.11it/s]
+ 40%|████      | 160/396 [02:11&lt;03:20,  1.18it/s]
+ 42%|████▏     | 168/396 [02:18&lt;03:18,  1.15it/s]
+ 44%|████▍     | 176/396 [02:26&lt;03:14,  1.13it/s]
+ 46%|████▋     | 184/396 [02:32&lt;03:00,  1.17it/s]
+ 48%|████▊     | 192/396 [02:38&lt;02:52,  1.18it/s]
+ 51%|█████     | 200/396 [02:45&lt;02:45,  1.18it/s]
+ 53%|█████▎    | 208/396 [02:53&lt;02:46,  1.13it/s]
+ 55%|█████▍    | 216/396 [02:59&lt;02:33,  1.17it/s]
+ 57%|█████▋    | 224/396 [03:08&lt;02:37,  1.09it/s]
+ 59%|█████▊    | 232/396 [03:16&lt;02:37,  1.04it/s]
+ 61%|██████    | 240/396 [03:23&lt;02:23,  1.09it/s]
+ 63%|██████▎   | 248/396 [03:30&lt;02:15,  1.09it/s]
+ 65%|██████▍   | 256/396 [03:37&lt;02:05,  1.11it/s]
+ 65%|██████▍   | 257/396 [03:37&lt;02:00,  1.15it/s]
+ 67%|██████▋   | 264/396 [03:44&lt;01:57,  1.13it/s]
+ 69%|██████▊   | 272/396 [03:51&lt;01:48,  1.14it/s]
+ 71%|███████   | 280/396 [03:57&lt;01:39,  1.16it/s]
+ 73%|███████▎  | 288/396 [04:04&lt;01:31,  1.17it/s]
+ 75%|███████▍  | 296/396 [04:10&lt;01:23,  1.19it/s]
+ 77%|███████▋  | 304/396 [04:18&lt;01:19,  1.16it/s]
+ 77%|███████▋  | 305/396 [04:18&lt;01:15,  1.20it/s]
+ 79%|███████▉  | 312/396 [04:25&lt;01:15,  1.11it/s]
+ 81%|████████  | 320/396 [04:31&lt;01:02,  1.22it/s]
+ 83%|████████▎ | 328/396 [04:35&lt;00:49,  1.38it/s]
+ 85%|████████▍ | 336/396 [04:40&lt;00:41,  1.43it/s]
+ 87%|████████▋ | 344/396 [04:44&lt;00:33,  1.56it/s]
+ 89%|████████▉ | 352/396 [04:49&lt;00:27,  1.60it/s]
+ 91%|█████████ | 360/396 [04:54&lt;00:22,  1.57it/s]
+ 93%|█████████▎| 368/396 [04:59&lt;00:17,  1.62it/s]
+ 95%|█████████▍| 376/396 [05:05&lt;00:13,  1.51it/s]
+ 97%|█████████▋| 384/396 [05:10&lt;00:07,  1.57it/s]
+100%|██████████| 396/396 [05:14&lt;00:00,  1.26it/s]</code></pre>
+</div>
+</div>
+</section>
+<section id="plot-substrate-score-distribution-of-a-kinase" class="level2">
+<h2 class="anchored" data-anchor-id="plot-substrate-score-distribution-of-a-kinase">Plot substrate score distribution of a kinase</h2>
+<div id="07bc0648-8c74-4c92-933b-40383c30b145" class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>psp[<span class="st">'acceptor'</span>] <span class="op">=</span> psp[<span class="st">'site_seq'</span>].<span class="bu">str</span>[<span class="dv">7</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="45047c33-7f05-48bd-a418-ee1ca5ce5609" class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>palette <span class="op">=</span> get_color_dict([<span class="st">'S'</span>,<span class="st">'T'</span>,<span class="st">'Y'</span>,<span class="st">'t'</span>, <span class="st">'s'</span>, <span class="st">'y'</span>],<span class="st">'tab10'</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>hist_params <span class="op">=</span> {<span class="st">'element'</span>:<span class="st">'poly'</span>,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">'edgecolor'</span>: <span class="va">None</span>,</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">'alpha'</span>:<span class="fl">0.5</span>,</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>              <span class="st">'bins'</span>:<span class="dv">100</span>,</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>              <span class="st">'kde'</span>:<span class="va">True</span>,</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>              <span class="st">'palette'</span>:palette}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="a9c9bc1d-3144-4bb2-93fc-e595588aae34" class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_hist(df,kinase,hue<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(<span class="dv">6</span>,<span class="dv">2</span>))</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    sns.histplot(data<span class="op">=</span>df,x<span class="op">=</span>kinase,hue<span class="op">=</span>hue,<span class="op">**</span>hist_params)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">''</span>)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    plt.title(kinase)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="98b4cccc-5b65-4cc7-82da-902d6b7ffba4" class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>set_sns()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="93af2d02-06fe-4e32-a046-b038dec4f8ce" class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>plot_hist(cddm,<span class="st">'CDK1'</span>,hue<span class="op">=</span>psp[<span class="st">'acceptor'</span>] )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="tutorial_02_high_throughput_files/figure-html/cell-25-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="get-the-gene-names-in-the-positive-peaks" class="level2">
+<h2 class="anchored" data-anchor-id="get-the-gene-names-in-the-positive-peaks">Get the gene names in the positive peaks</h2>
+<div id="7cacbfc5-a775-494b-a668-8a0b0eb3c6d0" class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>cddm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">kinase</th>
+<th data-quarto-table-cell-role="th">SRC</th>
+<th data-quarto-table-cell-role="th">EPHA3</th>
+<th data-quarto-table-cell-role="th">FES</th>
+<th data-quarto-table-cell-role="th">NTRK3</th>
+<th data-quarto-table-cell-role="th">ALK</th>
+<th data-quarto-table-cell-role="th">EPHA8</th>
+<th data-quarto-table-cell-role="th">ABL1</th>
+<th data-quarto-table-cell-role="th">FLT3</th>
+<th data-quarto-table-cell-role="th">EPHB2</th>
+<th data-quarto-table-cell-role="th">FYN</th>
+<th data-quarto-table-cell-role="th">RET</th>
+<th data-quarto-table-cell-role="th">PKACA</th>
+<th data-quarto-table-cell-role="th">EPHB1</th>
+<th data-quarto-table-cell-role="th">MUSK</th>
+<th data-quarto-table-cell-role="th">INSR</th>
+<th data-quarto-table-cell-role="th">EPHB3</th>
+<th data-quarto-table-cell-role="th">FER</th>
+<th data-quarto-table-cell-role="th">EPHB4</th>
+<th data-quarto-table-cell-role="th">NTRK1</th>
+<th data-quarto-table-cell-role="th">ROS1</th>
+<th data-quarto-table-cell-role="th">TYRO3</th>
+<th data-quarto-table-cell-role="th">SYK</th>
+<th data-quarto-table-cell-role="th">TNK1</th>
+<th data-quarto-table-cell-role="th">YES1</th>
+<th data-quarto-table-cell-role="th">MET</th>
+<th data-quarto-table-cell-role="th">BMX</th>
+<th data-quarto-table-cell-role="th">FLT4</th>
+<th data-quarto-table-cell-role="th">LTK</th>
+<th data-quarto-table-cell-role="th">FRK</th>
+<th data-quarto-table-cell-role="th">ERK2</th>
+<th data-quarto-table-cell-role="th">LCK</th>
+<th data-quarto-table-cell-role="th">FGFR1</th>
+<th data-quarto-table-cell-role="th">MST1R</th>
+<th data-quarto-table-cell-role="th">EPHA5</th>
+<th data-quarto-table-cell-role="th">FGFR2</th>
+<th data-quarto-table-cell-role="th">CDK1</th>
+<th data-quarto-table-cell-role="th">TEK</th>
+<th data-quarto-table-cell-role="th">IKKB</th>
+<th data-quarto-table-cell-role="th">FGR</th>
+<th data-quarto-table-cell-role="th">JAK3</th>
+<th data-quarto-table-cell-role="th">LYN</th>
+<th data-quarto-table-cell-role="th">SRMS</th>
+<th data-quarto-table-cell-role="th">TEC</th>
+<th data-quarto-table-cell-role="th">EPHA2</th>
+<th data-quarto-table-cell-role="th">EPHA1</th>
+<th data-quarto-table-cell-role="th">PDGFRA</th>
+<th data-quarto-table-cell-role="th">INSRR</th>
+<th data-quarto-table-cell-role="th">IGF1R</th>
+<th data-quarto-table-cell-role="th">ERK1</th>
+<th data-quarto-table-cell-role="th">BTK</th>
+<th data-quarto-table-cell-role="th">AXL</th>
+<th data-quarto-table-cell-role="th">PKCA</th>
+<th data-quarto-table-cell-role="th">EPHA7</th>
+<th data-quarto-table-cell-role="th">CDK2</th>
+<th data-quarto-table-cell-role="th">ERBB4</th>
+<th data-quarto-table-cell-role="th">MERTK</th>
+<th data-quarto-table-cell-role="th">BLK</th>
+<th data-quarto-table-cell-role="th">JAK2</th>
+<th data-quarto-table-cell-role="th">PTK6</th>
+<th data-quarto-table-cell-role="th">HCK</th>
+<th data-quarto-table-cell-role="th">ABL2</th>
+<th data-quarto-table-cell-role="th">JNK1</th>
+<th data-quarto-table-cell-role="th">P38A</th>
+<th data-quarto-table-cell-role="th">MLK1</th>
+<th data-quarto-table-cell-role="th">PDGFRB</th>
+<th data-quarto-table-cell-role="th">EPHA6</th>
+<th data-quarto-table-cell-role="th">KDR</th>
+<th data-quarto-table-cell-role="th">NEK6</th>
+<th data-quarto-table-cell-role="th">PLK1</th>
+<th data-quarto-table-cell-role="th">CK2A1</th>
+<th data-quarto-table-cell-role="th">PTK2B</th>
+<th data-quarto-table-cell-role="th">EGFR</th>
+<th data-quarto-table-cell-role="th">DYRK2</th>
+<th data-quarto-table-cell-role="th">P38D</th>
+<th data-quarto-table-cell-role="th">HGK</th>
+<th data-quarto-table-cell-role="th">TTBK1</th>
+<th data-quarto-table-cell-role="th">MST3</th>
+<th data-quarto-table-cell-role="th">NTRK2</th>
+<th data-quarto-table-cell-role="th">MST1</th>
+<th data-quarto-table-cell-role="th">IKKE</th>
+<th data-quarto-table-cell-role="th">MST2</th>
+<th data-quarto-table-cell-role="th">CSF1R</th>
+<th data-quarto-table-cell-role="th">MINK</th>
+<th data-quarto-table-cell-role="th">DDR2</th>
+<th data-quarto-table-cell-role="th">NEK7</th>
+<th data-quarto-table-cell-role="th">NEK2</th>
+<th data-quarto-table-cell-role="th">TXK</th>
+<th data-quarto-table-cell-role="th">ZAP70</th>
+<th data-quarto-table-cell-role="th">CDK5</th>
+<th data-quarto-table-cell-role="th">NEK1</th>
+<th data-quarto-table-cell-role="th">MST4</th>
+<th data-quarto-table-cell-role="th">QIK</th>
+<th data-quarto-table-cell-role="th">P38G</th>
+<th data-quarto-table-cell-role="th">KIT</th>
+<th data-quarto-table-cell-role="th">CHK1</th>
+<th data-quarto-table-cell-role="th">CAMK2A</th>
+<th data-quarto-table-cell-role="th">KHS1</th>
+<th data-quarto-table-cell-role="th">FGFR3</th>
+<th data-quarto-table-cell-role="th">YSK1</th>
+<th data-quarto-table-cell-role="th">CK1D</th>
+<th data-quarto-table-cell-role="th">AKT1</th>
+<th data-quarto-table-cell-role="th">RSK3</th>
+<th data-quarto-table-cell-role="th">NEK4</th>
+<th data-quarto-table-cell-role="th">GSK3B</th>
+<th data-quarto-table-cell-role="th">TNIK</th>
+<th data-quarto-table-cell-role="th">ITK</th>
+<th data-quarto-table-cell-role="th">MAPKAPK3</th>
+<th data-quarto-table-cell-role="th">TAO2</th>
+<th data-quarto-table-cell-role="th">AURB</th>
+<th data-quarto-table-cell-role="th">NIM1</th>
+<th data-quarto-table-cell-role="th">FGFR4</th>
+<th data-quarto-table-cell-role="th">MLK3</th>
+<th data-quarto-table-cell-role="th">PAK3</th>
+<th data-quarto-table-cell-role="th">FLT1</th>
+<th data-quarto-table-cell-role="th">AURA</th>
+<th data-quarto-table-cell-role="th">PIM1</th>
+<th data-quarto-table-cell-role="th">EPHA4</th>
+<th data-quarto-table-cell-role="th">AURC</th>
+<th data-quarto-table-cell-role="th">MSK1</th>
+<th data-quarto-table-cell-role="th">MARK4</th>
+<th data-quarto-table-cell-role="th">CAMK2G</th>
+<th data-quarto-table-cell-role="th">PLK3</th>
+<th data-quarto-table-cell-role="th">ZAK</th>
+<th data-quarto-table-cell-role="th">NEK9</th>
+<th data-quarto-table-cell-role="th">P70S6K</th>
+<th data-quarto-table-cell-role="th">PAK1</th>
+<th data-quarto-table-cell-role="th">SGK3</th>
+<th data-quarto-table-cell-role="th">MARK2</th>
+<th data-quarto-table-cell-role="th">GCK</th>
+<th data-quarto-table-cell-role="th">MLK2</th>
+<th data-quarto-table-cell-role="th">PAK2</th>
+<th data-quarto-table-cell-role="th">MEKK1</th>
+<th data-quarto-table-cell-role="th">TBK1</th>
+<th data-quarto-table-cell-role="th">CAMK2D</th>
+<th data-quarto-table-cell-role="th">P90RSK</th>
+<th data-quarto-table-cell-role="th">PHKG2</th>
+<th data-quarto-table-cell-role="th">DYRK3</th>
+<th data-quarto-table-cell-role="th">IKKA</th>
+<th data-quarto-table-cell-role="th">P38B</th>
+<th data-quarto-table-cell-role="th">TSSK1</th>
+<th data-quarto-table-cell-role="th">ERK5</th>
+<th data-quarto-table-cell-role="th">PIM3</th>
+<th data-quarto-table-cell-role="th">TLK1</th>
+<th data-quarto-table-cell-role="th">TAK1</th>
+<th data-quarto-table-cell-role="th">JNK2</th>
+<th data-quarto-table-cell-role="th">NLK</th>
+<th data-quarto-table-cell-role="th">LIMK1</th>
+<th data-quarto-table-cell-role="th">MAPKAPK5</th>
+<th data-quarto-table-cell-role="th">SIK</th>
+<th data-quarto-table-cell-role="th">DCAMKL2</th>
+<th data-quarto-table-cell-role="th">MATK</th>
+<th data-quarto-table-cell-role="th">AMPKA1</th>
+<th data-quarto-table-cell-role="th">MAPKAPK2</th>
+<th data-quarto-table-cell-role="th">CK2A2</th>
+<th data-quarto-table-cell-role="th">CDK9</th>
+<th data-quarto-table-cell-role="th">PKCB</th>
+<th data-quarto-table-cell-role="th">JNK3</th>
+<th data-quarto-table-cell-role="th">ALK4</th>
+<th data-quarto-table-cell-role="th">IRAK1</th>
+<th data-quarto-table-cell-role="th">RSK4</th>
+<th data-quarto-table-cell-role="th">TNK2</th>
+<th data-quarto-table-cell-role="th">IRAK4</th>
+<th data-quarto-table-cell-role="th">DSTYK</th>
+<th data-quarto-table-cell-role="th">CAMK2B</th>
+<th data-quarto-table-cell-role="th">PKACB</th>
+<th data-quarto-table-cell-role="th">PRKD3</th>
+<th data-quarto-table-cell-role="th">PKCT</th>
+<th data-quarto-table-cell-role="th">MARK1</th>
+<th data-quarto-table-cell-role="th">MNK2</th>
+<th data-quarto-table-cell-role="th">SGK1</th>
+<th data-quarto-table-cell-role="th">DYRK4</th>
+<th data-quarto-table-cell-role="th">MARK3</th>
+<th data-quarto-table-cell-role="th">TAO1</th>
+<th data-quarto-table-cell-role="th">TLK2</th>
+<th data-quarto-table-cell-role="th">TSSK2</th>
+<th data-quarto-table-cell-role="th">CK1E</th>
+<th data-quarto-table-cell-role="th">PKG2</th>
+<th data-quarto-table-cell-role="th">PRKD1</th>
+<th data-quarto-table-cell-role="th">RSK2</th>
+<th data-quarto-table-cell-role="th">AKT2</th>
+<th data-quarto-table-cell-role="th">BUB1B</th>
+<th data-quarto-table-cell-role="th">ULK3</th>
+<th data-quarto-table-cell-role="th">DAPK1</th>
+<th data-quarto-table-cell-role="th">GRK2</th>
+<th data-quarto-table-cell-role="th">ROCK1</th>
+<th data-quarto-table-cell-role="th">BMPR1B</th>
+<th data-quarto-table-cell-role="th">PTK2</th>
+<th data-quarto-table-cell-role="th">NEK11</th>
+<th data-quarto-table-cell-role="th">LATS2</th>
+<th data-quarto-table-cell-role="th">DYRK1A</th>
+<th data-quarto-table-cell-role="th">CSK</th>
+<th data-quarto-table-cell-role="th">CK1G2</th>
+<th data-quarto-table-cell-role="th">CDK6</th>
+<th data-quarto-table-cell-role="th">CK1A</th>
+<th data-quarto-table-cell-role="th">PKCZ</th>
+<th data-quarto-table-cell-role="th">GRK5</th>
+<th data-quarto-table-cell-role="th">WNK3</th>
+<th data-quarto-table-cell-role="th">ROCK2</th>
+<th data-quarto-table-cell-role="th">ALK2</th>
+<th data-quarto-table-cell-role="th">CAMKK1</th>
+<th data-quarto-table-cell-role="th">ATM</th>
+<th data-quarto-table-cell-role="th">PKG1</th>
+<th data-quarto-table-cell-role="th">TGFBR1</th>
+<th data-quarto-table-cell-role="th">AMPKA2</th>
+<th data-quarto-table-cell-role="th">TYK2</th>
+<th data-quarto-table-cell-role="th">PKN1</th>
+<th data-quarto-table-cell-role="th">PKCG</th>
+<th data-quarto-table-cell-role="th">MSK2</th>
+<th data-quarto-table-cell-role="th">JAK1</th>
+<th data-quarto-table-cell-role="th">NUAK2</th>
+<th data-quarto-table-cell-role="th">GRK7</th>
+<th data-quarto-table-cell-role="th">LKB1</th>
+<th data-quarto-table-cell-role="th">WNK1</th>
+<th data-quarto-table-cell-role="th">AKT3</th>
+<th data-quarto-table-cell-role="th">PKCD</th>
+<th data-quarto-table-cell-role="th">ICK</th>
+<th data-quarto-table-cell-role="th">PBK</th>
+<th data-quarto-table-cell-role="th">SKMLCK</th>
+<th data-quarto-table-cell-role="th">LATS1</th>
+<th data-quarto-table-cell-role="th">SGK2</th>
+<th data-quarto-table-cell-role="th">WNK2</th>
+<th data-quarto-table-cell-role="th">CAMK4</th>
+<th data-quarto-table-cell-role="th">CK1G1</th>
+<th data-quarto-table-cell-role="th">PRKD2</th>
+<th data-quarto-table-cell-role="th">PLK4</th>
+<th data-quarto-table-cell-role="th">PKCH</th>
+<th data-quarto-table-cell-role="th">WEE1</th>
+<th data-quarto-table-cell-role="th">CDK3</th>
+<th data-quarto-table-cell-role="th">CHK2</th>
+<th data-quarto-table-cell-role="th">CDK7</th>
+<th data-quarto-table-cell-role="th">PKCE</th>
+<th data-quarto-table-cell-role="th">CK1G3</th>
+<th data-quarto-table-cell-role="th">PKCI</th>
+<th data-quarto-table-cell-role="th">SLK</th>
+<th data-quarto-table-cell-role="th">PRKX</th>
+<th data-quarto-table-cell-role="th">DCAMKL1</th>
+<th data-quarto-table-cell-role="th">EEF2K</th>
+<th data-quarto-table-cell-role="th">MELK</th>
+<th data-quarto-table-cell-role="th">CAMKK2</th>
+<th data-quarto-table-cell-role="th">MEK2</th>
+<th data-quarto-table-cell-role="th">HIPK2</th>
+<th data-quarto-table-cell-role="th">CDK4</th>
+<th data-quarto-table-cell-role="th">MTOR</th>
+<th data-quarto-table-cell-role="th">PAK6</th>
+<th data-quarto-table-cell-role="th">GSK3A</th>
+<th data-quarto-table-cell-role="th">MOK</th>
+<th data-quarto-table-cell-role="th">NDR1</th>
+<th data-quarto-table-cell-role="th">NUAK1</th>
+<th data-quarto-table-cell-role="th">PIM2</th>
+<th data-quarto-table-cell-role="th">MEK1</th>
+<th data-quarto-table-cell-role="th">TESK1</th>
+<th data-quarto-table-cell-role="th">ERK7</th>
+<th data-quarto-table-cell-role="th">NDR2</th>
+<th data-quarto-table-cell-role="th">OSR1</th>
+<th data-quarto-table-cell-role="th">CLK1</th>
+<th data-quarto-table-cell-role="th">COT</th>
+<th data-quarto-table-cell-role="th">ACVR2A</th>
+<th data-quarto-table-cell-role="th">HIPK4</th>
+<th data-quarto-table-cell-role="th">MEKK2</th>
+<th data-quarto-table-cell-role="th">LRRK2</th>
+<th data-quarto-table-cell-role="th">PHKG1</th>
+<th data-quarto-table-cell-role="th">MAP2K4</th>
+<th data-quarto-table-cell-role="th">PAK5</th>
+<th data-quarto-table-cell-role="th">PERK</th>
+<th data-quarto-table-cell-role="th">MOS</th>
+<th data-quarto-table-cell-role="th">DNAPK</th>
+<th data-quarto-table-cell-role="th">P70S6KB</th>
+<th data-quarto-table-cell-role="th">CLK3</th>
+<th data-quarto-table-cell-role="th">LIMK2</th>
+<th data-quarto-table-cell-role="th">BRSK2</th>
+<th data-quarto-table-cell-role="th">PAK4</th>
+<th data-quarto-table-cell-role="th">STLK3</th>
+<th data-quarto-table-cell-role="th">CAMK1A</th>
+<th data-quarto-table-cell-role="th">CAMK1D</th>
+<th data-quarto-table-cell-role="th">HASPIN</th>
+<th data-quarto-table-cell-role="th">HIPK1</th>
+<th data-quarto-table-cell-role="th">ASK1</th>
+<th data-quarto-table-cell-role="th">ATR</th>
+<th data-quarto-table-cell-role="th">MPSK1</th>
+<th data-quarto-table-cell-role="th">MEK5</th>
+<th data-quarto-table-cell-role="th">PKN2</th>
+<th data-quarto-table-cell-role="th">MAP2K7</th>
+<th data-quarto-table-cell-role="th">MRCKB</th>
+<th data-quarto-table-cell-role="th">HIPK3</th>
+<th data-quarto-table-cell-role="th">CDK8</th>
+<th data-quarto-table-cell-role="th">BUB1</th>
+<th data-quarto-table-cell-role="th">MEKK3</th>
+<th data-quarto-table-cell-role="th">MAP2K3</th>
+<th data-quarto-table-cell-role="th">GRK1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>0.433796</td>
+<td>0.498380</td>
+<td>0.454458</td>
+<td>0.473864</td>
+<td>0.428906</td>
+<td>0.483233</td>
+<td>0.430170</td>
+<td>0.446031</td>
+<td>0.471336</td>
+<td>0.453847</td>
+<td>0.460419</td>
+<td>0.508408</td>
+<td>0.484407</td>
+<td>0.467609</td>
+<td>0.457033</td>
+<td>0.443433</td>
+<td>0.484840</td>
+<td>0.468533</td>
+<td>0.468457</td>
+<td>0.467941</td>
+<td>0.478715</td>
+<td>0.489762</td>
+<td>0.422144</td>
+<td>0.466954</td>
+<td>0.472683</td>
+<td>0.482010</td>
+<td>0.513100</td>
+<td>0.473902</td>
+<td>0.485369</td>
+<td>0.612148</td>
+<td>0.449466</td>
+<td>0.455054</td>
+<td>0.451669</td>
+<td>0.483101</td>
+<td>0.473075</td>
+<td>0.755992</td>
+<td>0.461925</td>
+<td>0.556426</td>
+<td>0.466985</td>
+<td>0.459445</td>
+<td>0.405355</td>
+<td>0.496064</td>
+<td>0.489487</td>
+<td>0.520342</td>
+<td>0.467685</td>
+<td>0.469986</td>
+<td>0.449660</td>
+<td>0.489013</td>
+<td>0.659188</td>
+<td>0.479022</td>
+<td>0.429474</td>
+<td>0.561566</td>
+<td>0.496131</td>
+<td>0.805757</td>
+<td>0.483604</td>
+<td>0.433727</td>
+<td>0.433152</td>
+<td>0.416932</td>
+<td>0.449736</td>
+<td>0.462231</td>
+<td>0.443608</td>
+<td>0.708832</td>
+<td>0.763721</td>
+<td>0.764763</td>
+<td>0.485598</td>
+<td>0.503095</td>
+<td>0.530672</td>
+<td>0.710085</td>
+<td>0.787471</td>
+<td>0.712322</td>
+<td>0.430602</td>
+<td>0.484071</td>
+<td>0.591707</td>
+<td>0.683422</td>
+<td>1.085441</td>
+<td>0.687179</td>
+<td>0.997576</td>
+<td>0.430411</td>
+<td>1.059941</td>
+<td>0.494356</td>
+<td>1.107019</td>
+<td>0.452383</td>
+<td>1.062108</td>
+<td>0.478486</td>
+<td>0.628227</td>
+<td>0.632510</td>
+<td>0.496833</td>
+<td>0.485099</td>
+<td>0.641354</td>
+<td>0.977783</td>
+<td>0.997615</td>
+<td>0.454183</td>
+<td>0.651985</td>
+<td>0.484124</td>
+<td>0.703195</td>
+<td>0.754501</td>
+<td>0.969054</td>
+<td>0.471635</td>
+<td>0.983395</td>
+<td>0.667375</td>
+<td>0.686471</td>
+<td>0.562171</td>
+<td>1.003086</td>
+<td>0.908852</td>
+<td>1.099186</td>
+<td>0.472847</td>
+<td>0.551448</td>
+<td>0.965854</td>
+<td>0.551427</td>
+<td>0.389488</td>
+<td>0.479736</td>
+<td>0.677951</td>
+<td>0.535160</td>
+<td>0.465742</td>
+<td>0.540969</td>
+<td>0.593693</td>
+<td>0.479491</td>
+<td>0.477445</td>
+<td>0.643805</td>
+<td>0.476090</td>
+<td>0.783216</td>
+<td>0.828584</td>
+<td>0.842642</td>
+<td>0.612835</td>
+<td>0.594419</td>
+<td>0.519095</td>
+<td>0.640301</td>
+<td>0.478714</td>
+<td>1.067336</td>
+<td>0.877327</td>
+<td>0.520289</td>
+<td>0.812326</td>
+<td>0.434395</td>
+<td>0.793134</td>
+<td>0.519982</td>
+<td>0.533642</td>
+<td>0.617768</td>
+<td>0.518730</td>
+<td>0.778830</td>
+<td>0.440954</td>
+<td>0.715338</td>
+<td>0.561552</td>
+<td>0.858392</td>
+<td>0.885809</td>
+<td>0.718596</td>
+<td>0.743134</td>
+<td>0.419252</td>
+<td>0.593913</td>
+<td>0.458923</td>
+<td>0.786887</td>
+<td>0.549468</td>
+<td>0.570512</td>
+<td>0.625223</td>
+<td>0.800727</td>
+<td>0.684599</td>
+<td>0.598463</td>
+<td>0.706277</td>
+<td>0.806708</td>
+<td>0.611161</td>
+<td>0.536747</td>
+<td>0.476564</td>
+<td>0.808211</td>
+<td>0.653623</td>
+<td>0.752564</td>
+<td>0.445362</td>
+<td>0.498571</td>
+<td>0.545071</td>
+<td>0.468959</td>
+<td>0.466987</td>
+<td>0.594233</td>
+<td>0.570851</td>
+<td>0.495831</td>
+<td>1.062328</td>
+<td>0.861305</td>
+<td>0.397891</td>
+<td>0.680770</td>
+<td>0.522779</td>
+<td>0.521160</td>
+<td>0.523939</td>
+<td>0.618326</td>
+<td>0.758417</td>
+<td>0.501656</td>
+<td>0.790116</td>
+<td>0.644889</td>
+<td>0.789020</td>
+<td>0.864180</td>
+<td>0.559432</td>
+<td>0.893217</td>
+<td>0.596566</td>
+<td>0.593280</td>
+<td>0.452906</td>
+<td>0.596993</td>
+<td>0.724131</td>
+<td>0.587130</td>
+<td>0.575268</td>
+<td>0.717949</td>
+<td>0.660003</td>
+<td>0.937635</td>
+<td>0.753979</td>
+<td>1.063094</td>
+<td>0.561325</td>
+<td>0.512628</td>
+<td>0.776320</td>
+<td>0.557266</td>
+<td>0.361150</td>
+<td>0.501309</td>
+<td>0.506616</td>
+<td>0.561292</td>
+<td>0.396574</td>
+<td>0.462597</td>
+<td>0.563144</td>
+<td>1.113735</td>
+<td>0.761194</td>
+<td>0.634490</td>
+<td>0.604118</td>
+<td>0.825904</td>
+<td>1.078620</td>
+<td>0.667097</td>
+<td>0.641209</td>
+<td>0.667727</td>
+<td>0.651435</td>
+<td>0.582473</td>
+<td>0.632732</td>
+<td>0.538970</td>
+<td>0.574713</td>
+<td>0.516516</td>
+<td>0.442698</td>
+<td>0.776519</td>
+<td>0.735740</td>
+<td>0.632073</td>
+<td>0.566066</td>
+<td>0.604318</td>
+<td>0.613703</td>
+<td>0.923376</td>
+<td>0.416667</td>
+<td>0.756757</td>
+<td>1.013410</td>
+<td>0.585187</td>
+<td>0.990265</td>
+<td>0.935789</td>
+<td>0.630208</td>
+<td>0.635298</td>
+<td>0.554461</td>
+<td>0.415584</td>
+<td>0.877714</td>
+<td>0.705630</td>
+<td>0.661356</td>
+<td>0.481978</td>
+<td>0.554368</td>
+<td>0.791138</td>
+<td>0.494744</td>
+<td>0.701177</td>
+<td>0.528133</td>
+<td>1.051285</td>
+<td>0.628697</td>
+<td>0.571657</td>
+<td>0.834106</td>
+<td>0.476906</td>
+<td>0.938003</td>
+<td>0.895868</td>
+<td>0.364141</td>
+<td>0.675979</td>
+<td>0.446154</td>
+<td>0.855139</td>
+<td>0.726442</td>
+<td>0.663890</td>
+<td>0.449550</td>
+<td>0.541228</td>
+<td>0.380416</td>
+<td>0.610619</td>
+<td>0.436065</td>
+<td>0.830000</td>
+<td>0.627205</td>
+<td>0.684211</td>
+<td>0.854771</td>
+<td>0.654206</td>
+<td>0.927406</td>
+<td>0.636756</td>
+<td>0.924571</td>
+<td>0.834153</td>
+<td>0.467541</td>
+<td>0.636319</td>
+<td>0.865169</td>
+<td>0.673754</td>
+<td>0.828313</td>
+<td>0.794802</td>
+<td>0.881021</td>
+<td>0.674970</td>
+<td>0.609470</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>0.773919</td>
+<td>0.810852</td>
+<td>0.802998</td>
+<td>0.845699</td>
+<td>0.837758</td>
+<td>0.800470</td>
+<td>0.798233</td>
+<td>0.782283</td>
+<td>0.793666</td>
+<td>0.824777</td>
+<td>0.756861</td>
+<td>1.407615</td>
+<td>0.815926</td>
+<td>0.823587</td>
+<td>0.806970</td>
+<td>0.799918</td>
+<td>0.821927</td>
+<td>0.808778</td>
+<td>0.827579</td>
+<td>0.810572</td>
+<td>0.827802</td>
+<td>0.851393</td>
+<td>0.781007</td>
+<td>0.843659</td>
+<td>0.794293</td>
+<td>0.839125</td>
+<td>0.780613</td>
+<td>0.884230</td>
+<td>0.843402</td>
+<td>1.233706</td>
+<td>0.868616</td>
+<td>0.764755</td>
+<td>0.811312</td>
+<td>0.835018</td>
+<td>0.787090</td>
+<td>1.279736</td>
+<td>0.857349</td>
+<td>1.440649</td>
+<td>0.814541</td>
+<td>0.750152</td>
+<td>0.845714</td>
+<td>0.867279</td>
+<td>0.841041</td>
+<td>0.844273</td>
+<td>0.884248</td>
+<td>0.799545</td>
+<td>0.799232</td>
+<td>0.820395</td>
+<td>1.248944</td>
+<td>0.851244</td>
+<td>0.830237</td>
+<td>1.408569</td>
+<td>0.840388</td>
+<td>1.341744</td>
+<td>0.795836</td>
+<td>0.862526</td>
+<td>0.895572</td>
+<td>0.759150</td>
+<td>0.782232</td>
+<td>0.869316</td>
+<td>0.806184</td>
+<td>1.171052</td>
+<td>1.139520</td>
+<td>1.250752</td>
+<td>0.810733</td>
+<td>0.858318</td>
+<td>0.825173</td>
+<td>1.408940</td>
+<td>1.509444</td>
+<td>1.470308</td>
+<td>0.876904</td>
+<td>0.759943</td>
+<td>1.296222</td>
+<td>1.223749</td>
+<td>0.953659</td>
+<td>1.485065</td>
+<td>0.978177</td>
+<td>0.771521</td>
+<td>1.017188</td>
+<td>1.466410</td>
+<td>0.979868</td>
+<td>0.801881</td>
+<td>0.904004</td>
+<td>0.746260</td>
+<td>1.487070</td>
+<td>1.311712</td>
+<td>0.816885</td>
+<td>0.903498</td>
+<td>1.329913</td>
+<td>1.041125</td>
+<td>0.983291</td>
+<td>1.461933</td>
+<td>1.236967</td>
+<td>0.764475</td>
+<td>1.282113</td>
+<td>1.370317</td>
+<td>0.999284</td>
+<td>0.788650</td>
+<td>0.993960</td>
+<td>1.446189</td>
+<td>1.242072</td>
+<td>1.417598</td>
+<td>1.011121</td>
+<td>1.215064</td>
+<td>0.903649</td>
+<td>0.880404</td>
+<td>1.477677</td>
+<td>1.068032</td>
+<td>1.443463</td>
+<td>1.600245</td>
+<td>0.766528</td>
+<td>1.327967</td>
+<td>1.428042</td>
+<td>0.778161</td>
+<td>1.385637</td>
+<td>1.329720</td>
+<td>0.823724</td>
+<td>1.425398</td>
+<td>1.373507</td>
+<td>1.432217</td>
+<td>1.380639</td>
+<td>1.448754</td>
+<td>1.141229</td>
+<td>1.437512</td>
+<td>1.397455</td>
+<td>1.429684</td>
+<td>1.265422</td>
+<td>1.486653</td>
+<td>0.903948</td>
+<td>1.103309</td>
+<td>1.367909</td>
+<td>1.161433</td>
+<td>1.479320</td>
+<td>1.376250</td>
+<td>1.430465</td>
+<td>1.449804</td>
+<td>1.247055</td>
+<td>1.407293</td>
+<td>1.150479</td>
+<td>1.491623</td>
+<td>1.224804</td>
+<td>1.358123</td>
+<td>1.282368</td>
+<td>0.923632</td>
+<td>1.161607</td>
+<td>1.215396</td>
+<td>1.003888</td>
+<td>1.435859</td>
+<td>1.431462</td>
+<td>1.351821</td>
+<td>0.952917</td>
+<td>1.378356</td>
+<td>1.404557</td>
+<td>1.510172</td>
+<td>1.219493</td>
+<td>1.404101</td>
+<td>1.224180</td>
+<td>1.461331</td>
+<td>1.316239</td>
+<td>1.436970</td>
+<td>0.909833</td>
+<td>1.258281</td>
+<td>1.550090</td>
+<td>1.385707</td>
+<td>1.473972</td>
+<td>1.460039</td>
+<td>1.401070</td>
+<td>1.452097</td>
+<td>1.559985</td>
+<td>1.251515</td>
+<td>1.276055</td>
+<td>1.411674</td>
+<td>0.993756</td>
+<td>1.275001</td>
+<td>1.584841</td>
+<td>1.463611</td>
+<td>1.411567</td>
+<td>1.421182</td>
+<td>1.469691</td>
+<td>1.273166</td>
+<td>1.577135</td>
+<td>1.514513</td>
+<td>1.308531</td>
+<td>1.513901</td>
+<td>1.158152</td>
+<td>1.616801</td>
+<td>0.927714</td>
+<td>1.134811</td>
+<td>1.481090</td>
+<td>1.216743</td>
+<td>0.824867</td>
+<td>1.498423</td>
+<td>1.152682</td>
+<td>1.507393</td>
+<td>1.397322</td>
+<td>1.626752</td>
+<td>1.223028</td>
+<td>1.102258</td>
+<td>1.522003</td>
+<td>0.922813</td>
+<td>1.245072</td>
+<td>1.397178</td>
+<td>1.523313</td>
+<td>1.389160</td>
+<td>0.767923</td>
+<td>1.451935</td>
+<td>1.363724</td>
+<td>1.431177</td>
+<td>0.776476</td>
+<td>1.413970</td>
+<td>1.817188</td>
+<td>0.940671</td>
+<td>1.204180</td>
+<td>1.314098</td>
+<td>1.410198</td>
+<td>0.962948</td>
+<td>0.951360</td>
+<td>1.334411</td>
+<td>1.450164</td>
+<td>1.268029</td>
+<td>1.116891</td>
+<td>1.465686</td>
+<td>1.465551</td>
+<td>1.354102</td>
+<td>1.545977</td>
+<td>1.381782</td>
+<td>0.767595</td>
+<td>1.451359</td>
+<td>1.168501</td>
+<td>1.479620</td>
+<td>1.376195</td>
+<td>1.443455</td>
+<td>1.426865</td>
+<td>1.071148</td>
+<td>1.500109</td>
+<td>1.367568</td>
+<td>1.117421</td>
+<td>1.236641</td>
+<td>0.929671</td>
+<td>1.024125</td>
+<td>1.145833</td>
+<td>1.235391</td>
+<td>1.377216</td>
+<td>1.331169</td>
+<td>1.198556</td>
+<td>1.083367</td>
+<td>1.335572</td>
+<td>1.347623</td>
+<td>1.253893</td>
+<td>0.956391</td>
+<td>1.095062</td>
+<td>1.179261</td>
+<td>1.397390</td>
+<td>1.031089</td>
+<td>1.376623</td>
+<td>1.531620</td>
+<td>1.541343</td>
+<td>1.262216</td>
+<td>1.012022</td>
+<td>1.063120</td>
+<td>1.419865</td>
+<td>1.174653</td>
+<td>1.431067</td>
+<td>1.481208</td>
+<td>1.171199</td>
+<td>1.153596</td>
+<td>1.558697</td>
+<td>1.329865</td>
+<td>1.117884</td>
+<td>1.451327</td>
+<td>1.348610</td>
+<td>0.940000</td>
+<td>1.221647</td>
+<td>1.456140</td>
+<td>1.049022</td>
+<td>1.149533</td>
+<td>0.992674</td>
+<td>1.199594</td>
+<td>1.022218</td>
+<td>1.053896</td>
+<td>1.333833</td>
+<td>1.212051</td>
+<td>1.124112</td>
+<td>1.168063</td>
+<td>1.342978</td>
+<td>1.249521</td>
+<td>1.081878</td>
+<td>1.133351</td>
+<td>1.770728</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1.848531</td>
+<td>1.890366</td>
+<td>1.922614</td>
+<td>1.789981</td>
+<td>1.821125</td>
+<td>1.910308</td>
+<td>1.847483</td>
+<td>1.870017</td>
+<td>1.901334</td>
+<td>1.857255</td>
+<td>1.864165</td>
+<td>0.737801</td>
+<td>1.928212</td>
+<td>1.805697</td>
+<td>1.855641</td>
+<td>1.903111</td>
+<td>1.923761</td>
+<td>1.918636</td>
+<td>1.791759</td>
+<td>1.854853</td>
+<td>1.903026</td>
+<td>1.941739</td>
+<td>1.853269</td>
+<td>1.870086</td>
+<td>1.910118</td>
+<td>1.905108</td>
+<td>1.880530</td>
+<td>1.927553</td>
+<td>1.891108</td>
+<td>0.752930</td>
+<td>1.893457</td>
+<td>1.895292</td>
+<td>1.861742</td>
+<td>1.916325</td>
+<td>1.893943</td>
+<td>0.755198</td>
+<td>1.953144</td>
+<td>0.864270</td>
+<td>1.856955</td>
+<td>1.921403</td>
+<td>1.852335</td>
+<td>1.986628</td>
+<td>1.925272</td>
+<td>1.927983</td>
+<td>1.933557</td>
+<td>1.832061</td>
+<td>1.850968</td>
+<td>1.826374</td>
+<td>0.789315</td>
+<td>1.817613</td>
+<td>1.852267</td>
+<td>0.691133</td>
+<td>1.961439</td>
+<td>0.775032</td>
+<td>1.952405</td>
+<td>1.837987</td>
+<td>1.932806</td>
+<td>1.843402</td>
+<td>1.830424</td>
+<td>1.905483</td>
+<td>1.880670</td>
+<td>0.839614</td>
+<td>0.853505</td>
+<td>0.908419</td>
+<td>1.829561</td>
+<td>1.922648</td>
+<td>1.884799</td>
+<td>0.949623</td>
+<td>0.987090</td>
+<td>1.233081</td>
+<td>1.899693</td>
+<td>1.857938</td>
+<td>0.763114</td>
+<td>0.808315</td>
+<td>0.859441</td>
+<td>1.007105</td>
+<td>0.750986</td>
+<td>1.847450</td>
+<td>0.860106</td>
+<td>0.836889</td>
+<td>0.853093</td>
+<td>1.856533</td>
+<td>0.845736</td>
+<td>1.800148</td>
+<td>0.921776</td>
+<td>0.809033</td>
+<td>1.891373</td>
+<td>1.989610</td>
+<td>0.810658</td>
+<td>0.967060</td>
+<td>0.828479</td>
+<td>0.769827</td>
+<td>0.841359</td>
+<td>1.933670</td>
+<td>0.897275</td>
+<td>0.916398</td>
+<td>0.834630</td>
+<td>1.888884</td>
+<td>0.839897</td>
+<td>0.933266</td>
+<td>0.663851</td>
+<td>0.845377</td>
+<td>0.951973</td>
+<td>0.766526</td>
+<td>0.823904</td>
+<td>1.783930</td>
+<td>0.730875</td>
+<td>0.859642</td>
+<td>0.856606</td>
+<td>0.765214</td>
+<td>1.955193</td>
+<td>0.859538</td>
+<td>0.755791</td>
+<td>1.850976</td>
+<td>0.775273</td>
+<td>0.831172</td>
+<td>1.920545</td>
+<td>0.844308</td>
+<td>0.861348</td>
+<td>0.884616</td>
+<td>0.964606</td>
+<td>1.102635</td>
+<td>0.841190</td>
+<td>0.927271</td>
+<td>0.757125</td>
+<td>0.742954</td>
+<td>0.746361</td>
+<td>0.805052</td>
+<td>0.893383</td>
+<td>0.930527</td>
+<td>0.703730</td>
+<td>0.848703</td>
+<td>0.805287</td>
+<td>0.960444</td>
+<td>0.793431</td>
+<td>0.804446</td>
+<td>0.698868</td>
+<td>0.840572</td>
+<td>0.930768</td>
+<td>0.793206</td>
+<td>0.856200</td>
+<td>0.885181</td>
+<td>1.133809</td>
+<td>1.267510</td>
+<td>0.827712</td>
+<td>0.873530</td>
+<td>1.535257</td>
+<td>0.790927</td>
+<td>0.804150</td>
+<td>0.929521</td>
+<td>1.643460</td>
+<td>0.670634</td>
+<td>0.817279</td>
+<td>1.556302</td>
+<td>0.818761</td>
+<td>0.664394</td>
+<td>0.917786</td>
+<td>1.368957</td>
+<td>0.825006</td>
+<td>0.780105</td>
+<td>1.921397</td>
+<td>0.877543</td>
+<td>1.072494</td>
+<td>0.942890</td>
+<td>0.710760</td>
+<td>0.865074</td>
+<td>0.754307</td>
+<td>0.762324</td>
+<td>0.800800</td>
+<td>0.662498</td>
+<td>0.735291</td>
+<td>0.791577</td>
+<td>0.751729</td>
+<td>1.198052</td>
+<td>0.770921</td>
+<td>0.941242</td>
+<td>0.808297</td>
+<td>0.840081</td>
+<td>0.757818</td>
+<td>0.681476</td>
+<td>1.050713</td>
+<td>0.836084</td>
+<td>1.065990</td>
+<td>1.087647</td>
+<td>0.886574</td>
+<td>1.373291</td>
+<td>1.983690</td>
+<td>0.899116</td>
+<td>0.884185</td>
+<td>0.773062</td>
+<td>1.790693</td>
+<td>0.790082</td>
+<td>0.906379</td>
+<td>0.861319</td>
+<td>0.693176</td>
+<td>0.984686</td>
+<td>0.903773</td>
+<td>0.927471</td>
+<td>1.290564</td>
+<td>0.813111</td>
+<td>0.708376</td>
+<td>0.741307</td>
+<td>1.427186</td>
+<td>0.677800</td>
+<td>1.684148</td>
+<td>0.692804</td>
+<td>0.548631</td>
+<td>0.899234</td>
+<td>1.703144</td>
+<td>0.789513</td>
+<td>1.141154</td>
+<td>0.869247</td>
+<td>0.972554</td>
+<td>0.724429</td>
+<td>0.737473</td>
+<td>0.896746</td>
+<td>0.923902</td>
+<td>0.882353</td>
+<td>1.084714</td>
+<td>0.755330</td>
+<td>0.780367</td>
+<td>0.806719</td>
+<td>0.869833</td>
+<td>0.826435</td>
+<td>0.787356</td>
+<td>0.661231</td>
+<td>1.734541</td>
+<td>0.813406</td>
+<td>0.908816</td>
+<td>0.889646</td>
+<td>0.628365</td>
+<td>0.851203</td>
+<td>0.759088</td>
+<td>0.784308</td>
+<td>0.818854</td>
+<td>0.962162</td>
+<td>1.002628</td>
+<td>1.098558</td>
+<td>0.957575</td>
+<td>1.059532</td>
+<td>0.796875</td>
+<td>0.727017</td>
+<td>0.593502</td>
+<td>0.707792</td>
+<td>0.652495</td>
+<td>0.705188</td>
+<td>1.044024</td>
+<td>0.784738</td>
+<td>0.631470</td>
+<td>1.103253</td>
+<td>1.211892</td>
+<td>0.752546</td>
+<td>0.851596</td>
+<td>0.939370</td>
+<td>1.068747</td>
+<td>0.902315</td>
+<td>1.240100</td>
+<td>0.716268</td>
+<td>0.767623</td>
+<td>0.763713</td>
+<td>0.938047</td>
+<td>0.932241</td>
+<td>0.755277</td>
+<td>1.282141</td>
+<td>1.214191</td>
+<td>0.745793</td>
+<td>1.003262</td>
+<td>0.879606</td>
+<td>1.187363</td>
+<td>0.806021</td>
+<td>0.780480</td>
+<td>1.431020</td>
+<td>1.074795</td>
+<td>0.929825</td>
+<td>1.005228</td>
+<td>0.785047</td>
+<td>0.904613</td>
+<td>0.791459</td>
+<td>0.917485</td>
+<td>1.007509</td>
+<td>0.647205</td>
+<td>0.976278</td>
+<td>0.974247</td>
+<td>0.817869</td>
+<td>0.793302</td>
+<td>0.958413</td>
+<td>0.842840</td>
+<td>1.145855</td>
+<td>1.044191</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>0.898633</td>
+<td>0.918456</td>
+<td>0.900451</td>
+<td>0.906152</td>
+<td>0.919631</td>
+<td>0.921916</td>
+<td>0.919017</td>
+<td>0.834957</td>
+<td>0.909599</td>
+<td>0.961959</td>
+<td>0.852441</td>
+<td>0.994066</td>
+<td>0.921390</td>
+<td>0.884340</td>
+<td>0.864689</td>
+<td>0.899673</td>
+<td>0.938279</td>
+<td>0.907444</td>
+<td>0.902848</td>
+<td>0.896574</td>
+<td>0.895685</td>
+<td>0.924379</td>
+<td>0.824070</td>
+<td>0.927758</td>
+<td>0.897508</td>
+<td>0.941755</td>
+<td>0.875667</td>
+<td>0.970375</td>
+<td>0.947429</td>
+<td>0.948062</td>
+<td>0.910869</td>
+<td>0.855087</td>
+<td>0.872481</td>
+<td>0.928065</td>
+<td>0.896055</td>
+<td>1.062033</td>
+<td>0.909745</td>
+<td>0.934439</td>
+<td>0.885125</td>
+<td>0.845672</td>
+<td>0.899283</td>
+<td>0.998095</td>
+<td>0.994158</td>
+<td>0.965068</td>
+<td>0.943259</td>
+<td>0.908920</td>
+<td>0.836869</td>
+<td>0.895278</td>
+<td>1.001468</td>
+<td>0.947987</td>
+<td>0.896974</td>
+<td>0.927375</td>
+<td>1.012052</td>
+<td>0.980842</td>
+<td>0.893532</td>
+<td>0.926696</td>
+<td>0.953606</td>
+<td>0.777971</td>
+<td>0.948138</td>
+<td>0.954323</td>
+<td>0.917086</td>
+<td>1.188306</td>
+<td>1.114223</td>
+<td>1.291491</td>
+<td>0.875482</td>
+<td>0.996842</td>
+<td>0.915059</td>
+<td>1.091296</td>
+<td>1.127459</td>
+<td>1.107755</td>
+<td>0.969074</td>
+<td>0.856420</td>
+<td>1.153599</td>
+<td>1.118845</td>
+<td>1.434191</td>
+<td>1.288700</td>
+<td>1.395687</td>
+<td>0.879446</td>
+<td>1.462802</td>
+<td>0.910280</td>
+<td>1.492072</td>
+<td>0.815676</td>
+<td>1.402860</td>
+<td>0.763214</td>
+<td>0.990473</td>
+<td>1.121459</td>
+<td>0.989935</td>
+<td>1.007003</td>
+<td>0.952110</td>
+<td>1.462447</td>
+<td>1.391800</td>
+<td>0.887257</td>
+<td>1.085204</td>
+<td>0.839968</td>
+<td>1.214833</td>
+<td>1.146189</td>
+<td>1.419935</td>
+<td>0.875001</td>
+<td>1.357069</td>
+<td>1.347440</td>
+<td>1.036033</td>
+<td>0.986225</td>
+<td>1.446834</td>
+<td>1.066182</td>
+<td>1.434104</td>
+<td>0.931122</td>
+<td>1.027277</td>
+<td>1.472227</td>
+<td>1.039787</td>
+<td>0.882190</td>
+<td>0.840750</td>
+<td>1.163078</td>
+<td>1.033099</td>
+<td>0.848991</td>
+<td>1.085798</td>
+<td>1.070560</td>
+<td>0.939702</td>
+<td>0.954956</td>
+<td>1.034213</td>
+<td>0.981697</td>
+<td>1.149312</td>
+<td>1.188918</td>
+<td>1.318348</td>
+<td>1.152136</td>
+<td>1.181592</td>
+<td>1.026871</td>
+<td>1.129970</td>
+<td>0.956753</td>
+<td>1.472904</td>
+<td>1.493600</td>
+<td>0.990604</td>
+<td>1.206800</td>
+<td>0.846042</td>
+<td>1.178970</td>
+<td>0.962665</td>
+<td>1.026152</td>
+<td>1.094932</td>
+<td>0.974685</td>
+<td>1.238881</td>
+<td>1.015776</td>
+<td>1.151643</td>
+<td>1.021091</td>
+<td>1.235426</td>
+<td>1.383948</td>
+<td>1.164062</td>
+<td>1.205799</td>
+<td>0.839435</td>
+<td>1.033933</td>
+<td>0.983232</td>
+<td>1.420339</td>
+<td>1.047778</td>
+<td>1.068920</td>
+<td>1.065142</td>
+<td>1.183925</td>
+<td>1.097256</td>
+<td>1.013030</td>
+<td>1.263407</td>
+<td>1.362532</td>
+<td>1.160756</td>
+<td>0.972407</td>
+<td>0.973490</td>
+<td>1.394656</td>
+<td>0.997026</td>
+<td>1.196470</td>
+<td>0.947723</td>
+<td>1.072740</td>
+<td>0.975695</td>
+<td>0.994758</td>
+<td>0.977873</td>
+<td>1.053546</td>
+<td>1.082760</td>
+<td>0.987500</td>
+<td>1.514199</td>
+<td>1.246528</td>
+<td>1.030490</td>
+<td>1.404869</td>
+<td>1.020518</td>
+<td>1.116682</td>
+<td>0.930317</td>
+<td>1.004779</td>
+<td>1.177285</td>
+<td>0.975086</td>
+<td>1.437595</td>
+<td>1.227578</td>
+<td>1.307826</td>
+<td>1.507001</td>
+<td>0.990216</td>
+<td>1.309954</td>
+<td>1.028471</td>
+<td>0.997608</td>
+<td>0.937556</td>
+<td>1.155169</td>
+<td>1.068020</td>
+<td>1.123814</td>
+<td>0.902624</td>
+<td>1.412474</td>
+<td>1.250313</td>
+<td>1.472385</td>
+<td>1.322757</td>
+<td>1.573667</td>
+<td>0.756718</td>
+<td>1.043401</td>
+<td>1.413644</td>
+<td>0.990655</td>
+<td>0.746977</td>
+<td>0.916411</td>
+<td>0.937291</td>
+<td>0.968972</td>
+<td>0.698312</td>
+<td>0.989395</td>
+<td>1.223173</td>
+<td>1.606496</td>
+<td>1.351921</td>
+<td>0.956578</td>
+<td>0.988398</td>
+<td>1.201320</td>
+<td>1.563327</td>
+<td>1.238965</td>
+<td>1.071665</td>
+<td>1.123895</td>
+<td>1.136010</td>
+<td>1.168077</td>
+<td>1.042121</td>
+<td>1.119906</td>
+<td>0.977011</td>
+<td>0.898055</td>
+<td>0.960106</td>
+<td>0.964761</td>
+<td>1.332033</td>
+<td>1.115265</td>
+<td>0.998402</td>
+<td>1.106987</td>
+<td>0.950321</td>
+<td>1.500715</td>
+<td>0.912958</td>
+<td>1.383784</td>
+<td>1.597286</td>
+<td>1.033086</td>
+<td>1.602749</td>
+<td>1.590718</td>
+<td>1.125000</td>
+<td>1.056553</td>
+<td>0.873156</td>
+<td>1.103896</td>
+<td>1.085424</td>
+<td>1.264280</td>
+<td>1.136989</td>
+<td>0.918146</td>
+<td>0.962921</td>
+<td>1.457464</td>
+<td>0.978828</td>
+<td>0.984779</td>
+<td>0.921620</td>
+<td>1.425239</td>
+<td>1.223837</td>
+<td>1.157423</td>
+<td>1.286629</td>
+<td>1.007190</td>
+<td>1.400037</td>
+<td>1.326334</td>
+<td>1.021044</td>
+<td>1.072328</td>
+<td>1.079010</td>
+<td>1.443106</td>
+<td>1.404593</td>
+<td>1.077908</td>
+<td>1.033538</td>
+<td>1.001923</td>
+<td>0.776248</td>
+<td>1.115992</td>
+<td>0.985376</td>
+<td>1.321429</td>
+<td>1.144610</td>
+<td>1.210526</td>
+<td>1.338910</td>
+<td>1.084112</td>
+<td>1.393812</td>
+<td>1.007389</td>
+<td>1.399006</td>
+<td>1.381191</td>
+<td>1.115634</td>
+<td>1.140532</td>
+<td>1.480898</td>
+<td>1.106637</td>
+<td>1.077164</td>
+<td>1.235841</td>
+<td>1.302675</td>
+<td>1.138706</td>
+<td>1.415637</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>0.979681</td>
+<td>1.037292</td>
+<td>0.985770</td>
+<td>1.009124</td>
+<td>0.979687</td>
+<td>1.037299</td>
+<td>0.989762</td>
+<td>0.957722</td>
+<td>0.942240</td>
+<td>1.036976</td>
+<td>1.003042</td>
+<td>1.670264</td>
+<td>1.016936</td>
+<td>0.961412</td>
+<td>0.993131</td>
+<td>0.977434</td>
+<td>0.997087</td>
+<td>0.971985</td>
+<td>1.004944</td>
+<td>0.973068</td>
+<td>0.993794</td>
+<td>1.048803</td>
+<td>0.887540</td>
+<td>1.054289</td>
+<td>0.950734</td>
+<td>1.065924</td>
+<td>1.055022</td>
+<td>1.015790</td>
+<td>1.017084</td>
+<td>1.426434</td>
+<td>1.066436</td>
+<td>0.997528</td>
+<td>0.978318</td>
+<td>1.014335</td>
+<td>1.039600</td>
+<td>1.427809</td>
+<td>1.029454</td>
+<td>1.829667</td>
+<td>1.019413</td>
+<td>0.984676</td>
+<td>1.034502</td>
+<td>1.076264</td>
+<td>1.091753</td>
+<td>1.038344</td>
+<td>1.044215</td>
+<td>0.967357</td>
+<td>0.999912</td>
+<td>1.021697</td>
+<td>1.469820</td>
+<td>1.096519</td>
+<td>0.984837</td>
+<td>1.540085</td>
+<td>1.027162</td>
+<td>1.520467</td>
+<td>1.052298</td>
+<td>0.996914</td>
+<td>1.072009</td>
+<td>0.903474</td>
+<td>1.026880</td>
+<td>1.062263</td>
+<td>1.044445</td>
+<td>1.536118</td>
+<td>1.499662</td>
+<td>1.599696</td>
+<td>1.009695</td>
+<td>1.068971</td>
+<td>1.063288</td>
+<td>1.678453</td>
+<td>1.747968</td>
+<td>2.290027</td>
+<td>1.056358</td>
+<td>1.049729</td>
+<td>1.510668</td>
+<td>1.565781</td>
+<td>1.116757</td>
+<td>1.737357</td>
+<td>1.146793</td>
+<td>0.959553</td>
+<td>1.093080</td>
+<td>1.795872</td>
+<td>1.142337</td>
+<td>1.028463</td>
+<td>1.114555</td>
+<td>0.941791</td>
+<td>1.733738</td>
+<td>1.512588</td>
+<td>1.093635</td>
+<td>1.087964</td>
+<td>1.511372</td>
+<td>1.171120</td>
+<td>1.151689</td>
+<td>1.696773</td>
+<td>1.573287</td>
+<td>1.043654</td>
+<td>1.580423</td>
+<td>1.626750</td>
+<td>1.209916</td>
+<td>1.056170</td>
+<td>1.180237</td>
+<td>1.680826</td>
+<td>1.479041</td>
+<td>1.758560</td>
+<td>1.195462</td>
+<td>1.449962</td>
+<td>1.102520</td>
+<td>1.080752</td>
+<td>1.722272</td>
+<td>1.230992</td>
+<td>1.547309</td>
+<td>1.761165</td>
+<td>1.101404</td>
+<td>1.680635</td>
+<td>1.608491</td>
+<td>1.015804</td>
+<td>1.620563</td>
+<td>1.605124</td>
+<td>1.010457</td>
+<td>1.654802</td>
+<td>1.680807</td>
+<td>1.760606</td>
+<td>1.773930</td>
+<td>2.024708</td>
+<td>1.364524</td>
+<td>1.517871</td>
+<td>1.560715</td>
+<td>1.584156</td>
+<td>1.485839</td>
+<td>1.769591</td>
+<td>1.174234</td>
+<td>1.474530</td>
+<td>1.570525</td>
+<td>1.333737</td>
+<td>1.825021</td>
+<td>1.713225</td>
+<td>1.614466</td>
+<td>1.720396</td>
+<td>1.548658</td>
+<td>1.700289</td>
+<td>1.450321</td>
+<td>1.785253</td>
+<td>1.561659</td>
+<td>1.673483</td>
+<td>1.839614</td>
+<td>1.260795</td>
+<td>1.505307</td>
+<td>1.524751</td>
+<td>1.228904</td>
+<td>1.771332</td>
+<td>1.694569</td>
+<td>1.506157</td>
+<td>1.201439</td>
+<td>1.508251</td>
+<td>1.679177</td>
+<td>2.379354</td>
+<td>1.539718</td>
+<td>1.516140</td>
+<td>1.599107</td>
+<td>2.092320</td>
+<td>1.401740</td>
+<td>1.715035</td>
+<td>0.971659</td>
+<td>1.315236</td>
+<td>1.842635</td>
+<td>1.752458</td>
+<td>1.703355</td>
+<td>1.795166</td>
+<td>1.451862</td>
+<td>1.772768</td>
+<td>1.670366</td>
+<td>1.475407</td>
+<td>1.572009</td>
+<td>1.716141</td>
+<td>1.227862</td>
+<td>1.836545</td>
+<td>1.642996</td>
+<td>1.683974</td>
+<td>1.646346</td>
+<td>1.702512</td>
+<td>1.719679</td>
+<td>1.438968</td>
+<td>1.859648</td>
+<td>1.714554</td>
+<td>1.387785</td>
+<td>1.934133</td>
+<td>1.321923</td>
+<td>2.270300</td>
+<td>1.094756</td>
+<td>1.189376</td>
+<td>1.642106</td>
+<td>1.483746</td>
+<td>1.102087</td>
+<td>1.874510</td>
+<td>1.532051</td>
+<td>1.767264</td>
+<td>1.595554</td>
+<td>1.911583</td>
+<td>1.621326</td>
+<td>1.272883</td>
+<td>2.229023</td>
+<td>1.232285</td>
+<td>1.769809</td>
+<td>1.654939</td>
+<td>2.249430</td>
+<td>1.541830</td>
+<td>0.962655</td>
+<td>1.620720</td>
+<td>1.459115</td>
+<td>1.583142</td>
+<td>0.959450</td>
+<td>1.569324</td>
+<td>2.255400</td>
+<td>1.029291</td>
+<td>1.538818</td>
+<td>1.458547</td>
+<td>1.568248</td>
+<td>1.398780</td>
+<td>1.105714</td>
+<td>1.469039</td>
+<td>1.702793</td>
+<td>1.599430</td>
+<td>1.426227</td>
+<td>1.660784</td>
+<td>1.846903</td>
+<td>1.651727</td>
+<td>1.591954</td>
+<td>1.457745</td>
+<td>1.006080</td>
+<td>1.708113</td>
+<td>1.510196</td>
+<td>1.698317</td>
+<td>1.593333</td>
+<td>1.712664</td>
+<td>1.490304</td>
+<td>1.164952</td>
+<td>1.641089</td>
+<td>1.643243</td>
+<td>1.300374</td>
+<td>1.411480</td>
+<td>1.254844</td>
+<td>1.235303</td>
+<td>1.437500</td>
+<td>1.632376</td>
+<td>1.609480</td>
+<td>1.564935</td>
+<td>1.489525</td>
+<td>1.531892</td>
+<td>1.604719</td>
+<td>1.608890</td>
+<td>1.361997</td>
+<td>1.318251</td>
+<td>1.244719</td>
+<td>1.555565</td>
+<td>1.617691</td>
+<td>1.088184</td>
+<td>1.719648</td>
+<td>1.530012</td>
+<td>1.878903</td>
+<td>1.716734</td>
+<td>1.414350</td>
+<td>1.432943</td>
+<td>1.665825</td>
+<td>1.323193</td>
+<td>1.592904</td>
+<td>1.638625</td>
+<td>1.644456</td>
+<td>1.577542</td>
+<td>1.569270</td>
+<td>1.853231</td>
+<td>1.132465</td>
+<td>1.761141</td>
+<td>1.603892</td>
+<td>1.240408</td>
+<td>1.600699</td>
+<td>1.701754</td>
+<td>1.192950</td>
+<td>1.654206</td>
+<td>1.110236</td>
+<td>1.848857</td>
+<td>1.436624</td>
+<td>1.245356</td>
+<td>1.612615</td>
+<td>1.430998</td>
+<td>1.373263</td>
+<td>1.498604</td>
+<td>2.069642</td>
+<td>1.551026</td>
+<td>1.282729</td>
+<td>1.294282</td>
+<td>1.993262</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">240006</td>
+<td>0.882514</td>
+<td>0.881739</td>
+<td>0.866122</td>
+<td>0.851429</td>
+<td>0.863242</td>
+<td>0.877368</td>
+<td>0.881726</td>
+<td>0.859224</td>
+<td>0.844864</td>
+<td>0.922684</td>
+<td>0.819909</td>
+<td>1.637953</td>
+<td>0.841325</td>
+<td>0.835512</td>
+<td>0.860690</td>
+<td>0.821997</td>
+<td>0.861193</td>
+<td>0.818827</td>
+<td>0.910115</td>
+<td>0.873580</td>
+<td>0.826166</td>
+<td>0.911124</td>
+<td>0.797994</td>
+<td>0.851654</td>
+<td>0.879298</td>
+<td>0.864030</td>
+<td>0.895026</td>
+<td>0.876472</td>
+<td>0.908662</td>
+<td>1.498124</td>
+<td>0.894499</td>
+<td>0.883827</td>
+<td>0.869334</td>
+<td>0.862918</td>
+<td>0.852357</td>
+<td>1.358321</td>
+<td>0.829846</td>
+<td>1.636816</td>
+<td>0.874041</td>
+<td>0.830096</td>
+<td>0.856339</td>
+<td>0.938660</td>
+<td>0.908782</td>
+<td>0.886570</td>
+<td>0.875995</td>
+<td>0.900883</td>
+<td>0.847067</td>
+<td>0.847213</td>
+<td>1.473379</td>
+<td>0.944666</td>
+<td>0.813478</td>
+<td>1.520431</td>
+<td>0.885760</td>
+<td>1.455038</td>
+<td>0.874133</td>
+<td>0.826366</td>
+<td>0.846734</td>
+<td>0.853763</td>
+<td>0.875237</td>
+<td>0.856314</td>
+<td>0.867620</td>
+<td>1.408113</td>
+<td>1.382422</td>
+<td>1.414246</td>
+<td>0.853139</td>
+<td>0.884794</td>
+<td>0.854526</td>
+<td>1.368174</td>
+<td>1.537573</td>
+<td>1.961023</td>
+<td>0.872305</td>
+<td>0.944396</td>
+<td>1.583386</td>
+<td>1.479412</td>
+<td>1.003845</td>
+<td>1.607899</td>
+<td>1.065489</td>
+<td>0.853279</td>
+<td>1.011857</td>
+<td>1.597697</td>
+<td>0.999328</td>
+<td>0.894718</td>
+<td>1.025032</td>
+<td>0.819413</td>
+<td>1.455897</td>
+<td>1.498252</td>
+<td>0.832970</td>
+<td>0.907073</td>
+<td>1.458432</td>
+<td>1.109515</td>
+<td>1.008945</td>
+<td>1.715022</td>
+<td>1.497707</td>
+<td>0.891169</td>
+<td>1.453660</td>
+<td>1.652171</td>
+<td>1.119270</td>
+<td>0.929585</td>
+<td>1.010609</td>
+<td>1.808254</td>
+<td>1.435795</td>
+<td>1.788780</td>
+<td>1.143711</td>
+<td>1.458919</td>
+<td>0.920992</td>
+<td>0.859235</td>
+<td>1.737770</td>
+<td>1.108196</td>
+<td>1.596653</td>
+<td>1.792995</td>
+<td>0.885873</td>
+<td>1.426437</td>
+<td>1.675854</td>
+<td>0.901682</td>
+<td>1.642642</td>
+<td>1.534644</td>
+<td>0.864519</td>
+<td>1.577855</td>
+<td>1.728341</td>
+<td>1.751745</td>
+<td>1.724046</td>
+<td>1.831812</td>
+<td>1.241766</td>
+<td>1.430452</td>
+<td>1.658598</td>
+<td>1.623221</td>
+<td>1.554095</td>
+<td>1.771754</td>
+<td>0.999160</td>
+<td>1.250664</td>
+<td>1.701573</td>
+<td>1.235473</td>
+<td>1.693382</td>
+<td>1.682133</td>
+<td>1.838187</td>
+<td>1.569264</td>
+<td>1.636150</td>
+<td>1.552911</td>
+<td>1.316066</td>
+<td>1.923032</td>
+<td>1.424498</td>
+<td>1.542080</td>
+<td>1.496473</td>
+<td>0.972892</td>
+<td>1.459213</td>
+<td>1.363589</td>
+<td>1.097165</td>
+<td>1.819318</td>
+<td>1.727271</td>
+<td>1.472801</td>
+<td>1.117044</td>
+<td>1.671521</td>
+<td>1.663152</td>
+<td>1.885542</td>
+<td>1.607499</td>
+<td>1.592901</td>
+<td>1.436773</td>
+<td>1.573713</td>
+<td>1.375446</td>
+<td>1.845352</td>
+<td>0.891710</td>
+<td>1.283212</td>
+<td>1.635789</td>
+<td>1.693225</td>
+<td>1.829864</td>
+<td>1.846291</td>
+<td>1.508399</td>
+<td>1.815947</td>
+<td>1.722717</td>
+<td>1.604480</td>
+<td>1.647244</td>
+<td>1.757073</td>
+<td>1.137959</td>
+<td>1.508037</td>
+<td>1.853602</td>
+<td>1.673989</td>
+<td>1.783718</td>
+<td>1.708236</td>
+<td>1.760450</td>
+<td>1.550858</td>
+<td>1.552457</td>
+<td>1.794827</td>
+<td>1.311353</td>
+<td>1.695951</td>
+<td>1.281522</td>
+<td>1.592893</td>
+<td>1.034846</td>
+<td>1.139718</td>
+<td>1.600153</td>
+<td>1.536477</td>
+<td>0.908830</td>
+<td>2.043132</td>
+<td>1.276401</td>
+<td>1.669721</td>
+<td>1.633135</td>
+<td>1.686576</td>
+<td>1.445940</td>
+<td>1.277957</td>
+<td>1.679395</td>
+<td>1.178446</td>
+<td>2.561447</td>
+<td>1.667286</td>
+<td>1.605670</td>
+<td>1.674496</td>
+<td>0.862996</td>
+<td>1.579149</td>
+<td>1.667288</td>
+<td>1.800370</td>
+<td>0.890966</td>
+<td>1.683240</td>
+<td>1.880645</td>
+<td>0.943791</td>
+<td>1.594652</td>
+<td>1.687451</td>
+<td>1.546666</td>
+<td>1.278167</td>
+<td>0.852312</td>
+<td>1.692407</td>
+<td>1.487904</td>
+<td>1.684165</td>
+<td>1.344836</td>
+<td>1.636179</td>
+<td>1.898261</td>
+<td>1.814260</td>
+<td>1.362069</td>
+<td>1.469026</td>
+<td>0.843943</td>
+<td>1.464909</td>
+<td>1.625302</td>
+<td>1.600096</td>
+<td>1.560158</td>
+<td>1.734262</td>
+<td>1.489928</td>
+<td>1.223297</td>
+<td>1.844704</td>
+<td>1.551351</td>
+<td>1.175607</td>
+<td>1.449423</td>
+<td>1.137241</td>
+<td>1.180211</td>
+<td>1.375000</td>
+<td>1.417096</td>
+<td>1.562356</td>
+<td>1.779221</td>
+<td>1.467698</td>
+<td>1.507956</td>
+<td>1.597829</td>
+<td>1.629164</td>
+<td>1.563790</td>
+<td>1.319004</td>
+<td>1.110871</td>
+<td>1.203746</td>
+<td>1.604575</td>
+<td>0.988855</td>
+<td>1.713615</td>
+<td>1.401224</td>
+<td>1.589925</td>
+<td>1.677522</td>
+<td>1.317225</td>
+<td>1.365515</td>
+<td>1.629293</td>
+<td>1.183910</td>
+<td>1.832379</td>
+<td>1.372054</td>
+<td>1.246408</td>
+<td>2.153689</td>
+<td>1.502882</td>
+<td>1.813484</td>
+<td>1.144819</td>
+<td>1.743916</td>
+<td>1.811072</td>
+<td>0.981020</td>
+<td>1.289812</td>
+<td>1.631579</td>
+<td>1.157670</td>
+<td>1.672897</td>
+<td>1.083925</td>
+<td>2.589836</td>
+<td>1.071800</td>
+<td>1.084955</td>
+<td>1.691908</td>
+<td>1.508539</td>
+<td>1.488214</td>
+<td>1.632302</td>
+<td>1.570919</td>
+<td>1.480985</td>
+<td>1.373830</td>
+<td>1.317106</td>
+<td>1.886301</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">240007</td>
+<td>0.899565</td>
+<td>0.898800</td>
+<td>0.938086</td>
+<td>0.990210</td>
+<td>0.908847</td>
+<td>0.857600</td>
+<td>0.924222</td>
+<td>0.919013</td>
+<td>0.887174</td>
+<td>0.889636</td>
+<td>0.944508</td>
+<td>2.115641</td>
+<td>0.912170</td>
+<td>0.913274</td>
+<td>0.959589</td>
+<td>0.889572</td>
+<td>0.908099</td>
+<td>0.899106</td>
+<td>1.001781</td>
+<td>0.920878</td>
+<td>0.952178</td>
+<td>0.880783</td>
+<td>0.975407</td>
+<td>0.892930</td>
+<td>0.921182</td>
+<td>0.868550</td>
+<td>0.948461</td>
+<td>0.892458</td>
+<td>0.855314</td>
+<td>2.557662</td>
+<td>0.861467</td>
+<td>0.933252</td>
+<td>0.893024</td>
+<td>0.868001</td>
+<td>0.957853</td>
+<td>2.447651</td>
+<td>0.877753</td>
+<td>1.757109</td>
+<td>0.911159</td>
+<td>0.912315</td>
+<td>0.886923</td>
+<td>0.848989</td>
+<td>0.818642</td>
+<td>0.861089</td>
+<td>0.858008</td>
+<td>0.900989</td>
+<td>0.902678</td>
+<td>0.925414</td>
+<td>2.485094</td>
+<td>0.928683</td>
+<td>0.951097</td>
+<td>1.830954</td>
+<td>0.820421</td>
+<td>2.499026</td>
+<td>0.864939</td>
+<td>0.959979</td>
+<td>0.873154</td>
+<td>0.905972</td>
+<td>0.922280</td>
+<td>0.926667</td>
+<td>0.882449</td>
+<td>2.314656</td>
+<td>2.063242</td>
+<td>1.478201</td>
+<td>0.918676</td>
+<td>0.829857</td>
+<td>0.971069</td>
+<td>1.412839</td>
+<td>1.613199</td>
+<td>1.724226</td>
+<td>0.919108</td>
+<td>0.886862</td>
+<td>2.163442</td>
+<td>2.290023</td>
+<td>1.131619</td>
+<td>1.538649</td>
+<td>1.168785</td>
+<td>0.919334</td>
+<td>1.138804</td>
+<td>1.761457</td>
+<td>1.120504</td>
+<td>0.880936</td>
+<td>1.092223</td>
+<td>0.853880</td>
+<td>1.507537</td>
+<td>1.446752</td>
+<td>0.827964</td>
+<td>0.858883</td>
+<td>2.406652</td>
+<td>1.144603</td>
+<td>1.193450</td>
+<td>1.864066</td>
+<td>2.256070</td>
+<td>0.822174</td>
+<td>1.848480</td>
+<td>1.872713</td>
+<td>1.232537</td>
+<td>0.885753</td>
+<td>1.179193</td>
+<td>1.606206</td>
+<td>2.192234</td>
+<td>1.872054</td>
+<td>1.192583</td>
+<td>2.038440</td>
+<td>1.079494</td>
+<td>0.948238</td>
+<td>2.092417</td>
+<td>1.283160</td>
+<td>1.807309</td>
+<td>1.940542</td>
+<td>0.881660</td>
+<td>1.538992</td>
+<td>1.852171</td>
+<td>0.910984</td>
+<td>1.747832</td>
+<td>1.756101</td>
+<td>0.884138</td>
+<td>1.661345</td>
+<td>2.014421</td>
+<td>1.763327</td>
+<td>1.790696</td>
+<td>1.509561</td>
+<td>1.290393</td>
+<td>1.508673</td>
+<td>1.791320</td>
+<td>1.907098</td>
+<td>1.844381</td>
+<td>1.866929</td>
+<td>1.113861</td>
+<td>1.311501</td>
+<td>1.913214</td>
+<td>1.248066</td>
+<td>1.740584</td>
+<td>1.678280</td>
+<td>2.082117</td>
+<td>1.813035</td>
+<td>2.087846</td>
+<td>1.749005</td>
+<td>1.912371</td>
+<td>1.925076</td>
+<td>1.799477</td>
+<td>1.718161</td>
+<td>1.383738</td>
+<td>1.059534</td>
+<td>2.205810</td>
+<td>1.801524</td>
+<td>1.214425</td>
+<td>2.064438</td>
+<td>1.993873</td>
+<td>1.737387</td>
+<td>1.250385</td>
+<td>2.071394</td>
+<td>2.314585</td>
+<td>1.589815</td>
+<td>2.264844</td>
+<td>1.863839</td>
+<td>2.126570</td>
+<td>1.461843</td>
+<td>1.465854</td>
+<td>1.896302</td>
+<td>0.945646</td>
+<td>1.427189</td>
+<td>1.549139</td>
+<td>1.753422</td>
+<td>2.073828</td>
+<td>1.739503</td>
+<td>1.793825</td>
+<td>1.842575</td>
+<td>1.792290</td>
+<td>2.088706</td>
+<td>2.402338</td>
+<td>1.900878</td>
+<td>1.249505</td>
+<td>1.405066</td>
+<td>1.946681</td>
+<td>1.634075</td>
+<td>1.956628</td>
+<td>1.925955</td>
+<td>1.947606</td>
+<td>2.004483</td>
+<td>1.561967</td>
+<td>1.718123</td>
+<td>1.519159</td>
+<td>1.612119</td>
+<td>1.668420</td>
+<td>1.437132</td>
+<td>0.819266</td>
+<td>1.389921</td>
+<td>1.917183</td>
+<td>2.517181</td>
+<td>0.877076</td>
+<td>1.624521</td>
+<td>2.064973</td>
+<td>1.638272</td>
+<td>1.845357</td>
+<td>1.520460</td>
+<td>1.575424</td>
+<td>1.525361</td>
+<td>1.477508</td>
+<td>1.150882</td>
+<td>1.607092</td>
+<td>2.140443</td>
+<td>1.522120</td>
+<td>2.033780</td>
+<td>0.877389</td>
+<td>1.989677</td>
+<td>1.858029</td>
+<td>2.029331</td>
+<td>0.880370</td>
+<td>1.929109</td>
+<td>1.782584</td>
+<td>1.052908</td>
+<td>1.634861</td>
+<td>2.038841</td>
+<td>1.904696</td>
+<td>1.840490</td>
+<td>1.241112</td>
+<td>1.752745</td>
+<td>1.829694</td>
+<td>1.906684</td>
+<td>1.572848</td>
+<td>2.125036</td>
+<td>1.609628</td>
+<td>1.749490</td>
+<td>1.747126</td>
+<td>1.720141</td>
+<td>0.923309</td>
+<td>2.405615</td>
+<td>1.923379</td>
+<td>2.032014</td>
+<td>1.900252</td>
+<td>1.552288</td>
+<td>1.715209</td>
+<td>1.416202</td>
+<td>2.073817</td>
+<td>1.918919</td>
+<td>1.273553</td>
+<td>1.652608</td>
+<td>1.197536</td>
+<td>1.450960</td>
+<td>2.203125</td>
+<td>2.432132</td>
+<td>2.196443</td>
+<td>1.935065</td>
+<td>2.084882</td>
+<td>2.071467</td>
+<td>1.625893</td>
+<td>1.997259</td>
+<td>1.841006</td>
+<td>1.636623</td>
+<td>1.380968</td>
+<td>1.813134</td>
+<td>1.686752</td>
+<td>1.131659</td>
+<td>2.119397</td>
+<td>1.633315</td>
+<td>1.658031</td>
+<td>2.192837</td>
+<td>1.539392</td>
+<td>1.589602</td>
+<td>1.820202</td>
+<td>1.918907</td>
+<td>1.870841</td>
+<td>1.341884</td>
+<td>1.293079</td>
+<td>1.469548</td>
+<td>1.507033</td>
+<td>2.043297</td>
+<td>1.320219</td>
+<td>2.027181</td>
+<td>1.878206</td>
+<td>1.020408</td>
+<td>1.785022</td>
+<td>2.052632</td>
+<td>1.432598</td>
+<td>2.233645</td>
+<td>1.021005</td>
+<td>1.784023</td>
+<td>1.398633</td>
+<td>1.168055</td>
+<td>2.070423</td>
+<td>2.055595</td>
+<td>1.544288</td>
+<td>2.228522</td>
+<td>1.886904</td>
+<td>1.282627</td>
+<td>1.448999</td>
+<td>1.822302</td>
+<td>1.775301</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">240008</td>
+<td>1.761436</td>
+<td>1.754477</td>
+<td>1.802808</td>
+<td>1.701868</td>
+<td>1.732300</td>
+<td>1.736366</td>
+<td>1.687320</td>
+<td>1.790562</td>
+<td>1.772197</td>
+<td>1.734206</td>
+<td>1.796535</td>
+<td>0.841755</td>
+<td>1.783546</td>
+<td>1.648447</td>
+<td>1.738355</td>
+<td>1.786635</td>
+<td>1.796421</td>
+<td>1.757940</td>
+<td>1.676599</td>
+<td>1.717184</td>
+<td>1.780737</td>
+<td>1.838944</td>
+<td>1.774249</td>
+<td>1.802027</td>
+<td>1.762776</td>
+<td>1.722768</td>
+<td>1.749614</td>
+<td>1.684313</td>
+<td>1.755204</td>
+<td>1.513234</td>
+<td>1.772619</td>
+<td>1.820446</td>
+<td>1.789902</td>
+<td>1.764457</td>
+<td>1.818083</td>
+<td>1.600851</td>
+<td>1.779035</td>
+<td>1.006238</td>
+<td>1.751304</td>
+<td>1.767950</td>
+<td>1.732450</td>
+<td>1.772213</td>
+<td>1.690270</td>
+<td>1.742771</td>
+<td>1.681329</td>
+<td>1.724522</td>
+<td>1.708198</td>
+<td>1.717991</td>
+<td>1.528135</td>
+<td>1.663112</td>
+<td>1.705351</td>
+<td>0.712465</td>
+<td>1.703095</td>
+<td>1.513183</td>
+<td>1.758921</td>
+<td>1.759874</td>
+<td>1.738259</td>
+<td>1.754068</td>
+<td>1.756719</td>
+<td>1.748353</td>
+<td>1.677307</td>
+<td>1.642219</td>
+<td>1.340972</td>
+<td>0.778121</td>
+<td>1.748622</td>
+<td>1.720521</td>
+<td>1.685846</td>
+<td>1.043956</td>
+<td>1.104994</td>
+<td>1.501124</td>
+<td>1.756403</td>
+<td>1.796457</td>
+<td>1.191301</td>
+<td>1.504738</td>
+<td>0.719859</td>
+<td>0.978404</td>
+<td>0.743096</td>
+<td>1.716582</td>
+<td>0.756475</td>
+<td>0.888754</td>
+<td>0.768820</td>
+<td>1.772245</td>
+<td>0.740347</td>
+<td>1.718950</td>
+<td>1.027943</td>
+<td>1.008583</td>
+<td>1.712020</td>
+<td>1.801990</td>
+<td>1.497716</td>
+<td>0.896316</td>
+<td>0.741594</td>
+<td>0.746011</td>
+<td>1.530302</td>
+<td>1.739714</td>
+<td>0.844932</td>
+<td>0.852841</td>
+<td>0.802413</td>
+<td>1.755863</td>
+<td>0.742671</td>
+<td>0.896443</td>
+<td>0.719526</td>
+<td>0.932892</td>
+<td>0.910826</td>
+<td>1.327242</td>
+<td>0.793350</td>
+<td>1.690622</td>
+<td>0.853358</td>
+<td>0.770266</td>
+<td>0.802967</td>
+<td>0.815949</td>
+<td>1.778380</td>
+<td>0.752633</td>
+<td>0.854779</td>
+<td>1.756057</td>
+<td>0.833296</td>
+<td>0.876774</td>
+<td>1.741767</td>
+<td>0.762806</td>
+<td>0.835365</td>
+<td>0.907072</td>
+<td>0.946747</td>
+<td>1.136681</td>
+<td>0.751674</td>
+<td>0.933691</td>
+<td>0.877550</td>
+<td>0.860504</td>
+<td>0.773790</td>
+<td>0.828877</td>
+<td>0.747466</td>
+<td>0.734818</td>
+<td>0.875558</td>
+<td>0.759315</td>
+<td>0.921365</td>
+<td>0.880886</td>
+<td>0.918519</td>
+<td>0.723764</td>
+<td>1.263551</td>
+<td>0.870100</td>
+<td>1.377685</td>
+<td>0.718586</td>
+<td>1.055394</td>
+<td>0.876805</td>
+<td>0.932243</td>
+<td>1.206375</td>
+<td>1.608182</td>
+<td>1.119307</td>
+<td>1.514756</td>
+<td>1.044212</td>
+<td>0.808791</td>
+<td>0.813094</td>
+<td>1.627021</td>
+<td>0.780936</td>
+<td>1.142345</td>
+<td>1.533449</td>
+<td>1.438140</td>
+<td>0.764499</td>
+<td>1.649397</td>
+<td>1.005669</td>
+<td>0.691310</td>
+<td>0.886220</td>
+<td>1.791513</td>
+<td>0.802789</td>
+<td>0.997147</td>
+<td>0.953605</td>
+<td>0.829484</td>
+<td>0.842576</td>
+<td>0.659107</td>
+<td>0.876845</td>
+<td>0.774840</td>
+<td>0.817105</td>
+<td>1.424771</td>
+<td>0.827307</td>
+<td>0.667401</td>
+<td>0.918146</td>
+<td>0.704209</td>
+<td>0.919963</td>
+<td>0.864460</td>
+<td>0.769032</td>
+<td>0.837853</td>
+<td>0.724763</td>
+<td>1.148316</td>
+<td>1.039095</td>
+<td>1.025740</td>
+<td>0.908515</td>
+<td>0.722149</td>
+<td>0.963192</td>
+<td>1.756971</td>
+<td>0.793660</td>
+<td>0.828542</td>
+<td>1.411243</td>
+<td>1.811145</td>
+<td>0.895864</td>
+<td>1.401060</td>
+<td>0.898528</td>
+<td>0.729295</td>
+<td>1.203627</td>
+<td>0.766012</td>
+<td>0.743271</td>
+<td>1.083265</td>
+<td>0.938064</td>
+<td>0.997603</td>
+<td>0.963800</td>
+<td>1.101196</td>
+<td>0.814952</td>
+<td>1.780395</td>
+<td>0.788779</td>
+<td>0.693248</td>
+<td>0.930369</td>
+<td>1.768541</td>
+<td>0.675143</td>
+<td>1.319142</td>
+<td>0.896231</td>
+<td>0.792650</td>
+<td>0.690538</td>
+<td>0.750091</td>
+<td>1.046423</td>
+<td>0.805889</td>
+<td>0.686892</td>
+<td>0.762670</td>
+<td>0.824794</td>
+<td>0.768807</td>
+<td>0.763486</td>
+<td>0.949098</td>
+<td>0.809504</td>
+<td>0.787356</td>
+<td>0.668407</td>
+<td>1.683954</td>
+<td>1.446328</td>
+<td>0.832033</td>
+<td>1.294247</td>
+<td>0.814512</td>
+<td>0.920946</td>
+<td>0.802829</td>
+<td>0.683145</td>
+<td>0.839251</td>
+<td>0.864865</td>
+<td>0.808036</td>
+<td>1.001669</td>
+<td>0.914962</td>
+<td>0.987678</td>
+<td>1.427083</td>
+<td>1.510536</td>
+<td>1.394984</td>
+<td>0.805195</td>
+<td>1.418607</td>
+<td>1.113253</td>
+<td>0.774983</td>
+<td>0.919145</td>
+<td>0.928860</td>
+<td>1.133812</td>
+<td>1.340525</td>
+<td>1.063347</td>
+<td>0.824922</td>
+<td>0.652731</td>
+<td>1.198324</td>
+<td>0.876884</td>
+<td>1.128751</td>
+<td>1.142283</td>
+<td>0.939273</td>
+<td>1.020786</td>
+<td>0.602189</td>
+<td>1.460017</td>
+<td>0.870364</td>
+<td>0.860035</td>
+<td>1.039107</td>
+<td>0.862940</td>
+<td>1.153533</td>
+<td>1.073469</td>
+<td>1.382792</td>
+<td>0.832570</td>
+<td>0.929086</td>
+<td>0.911020</td>
+<td>0.989959</td>
+<td>0.605263</td>
+<td>0.770535</td>
+<td>1.476636</td>
+<td>0.890627</td>
+<td>1.006226</td>
+<td>1.022787</td>
+<td>0.848546</td>
+<td>1.035470</td>
+<td>1.197738</td>
+<td>0.903704</td>
+<td>1.406465</td>
+<td>1.294219</td>
+<td>1.004925</td>
+<td>0.786701</td>
+<td>1.306900</td>
+<td>1.111016</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">240009</td>
+<td>0.872708</td>
+<td>0.821595</td>
+<td>0.820872</td>
+<td>0.851005</td>
+<td>0.873968</td>
+<td>0.854353</td>
+<td>0.963402</td>
+<td>0.907306</td>
+<td>0.808462</td>
+<td>0.917903</td>
+<td>0.858280</td>
+<td>1.435431</td>
+<td>0.832278</td>
+<td>0.929305</td>
+<td>0.855884</td>
+<td>0.796487</td>
+<td>0.819729</td>
+<td>0.815454</td>
+<td>0.866330</td>
+<td>0.843066</td>
+<td>0.807696</td>
+<td>0.911878</td>
+<td>0.754816</td>
+<td>0.903266</td>
+<td>0.888330</td>
+<td>0.835429</td>
+<td>0.859730</td>
+<td>0.834537</td>
+<td>0.889251</td>
+<td>1.534184</td>
+<td>0.898393</td>
+<td>0.813118</td>
+<td>0.843681</td>
+<td>0.793158</td>
+<td>0.808229</td>
+<td>1.475429</td>
+<td>0.819347</td>
+<td>1.690445</td>
+<td>0.901072</td>
+<td>0.883221</td>
+<td>0.871802</td>
+<td>0.817060</td>
+<td>0.833259</td>
+<td>0.827267</td>
+<td>0.764347</td>
+<td>0.831259</td>
+<td>0.801734</td>
+<td>0.858907</td>
+<td>1.499392</td>
+<td>0.941250</td>
+<td>0.727507</td>
+<td>1.677710</td>
+<td>0.761725</td>
+<td>1.547913</td>
+<td>0.852044</td>
+<td>0.750979</td>
+<td>0.900725</td>
+<td>0.910192</td>
+<td>0.869364</td>
+<td>0.887108</td>
+<td>0.929239</td>
+<td>1.388145</td>
+<td>1.395352</td>
+<td>1.534729</td>
+<td>0.799186</td>
+<td>0.789978</td>
+<td>0.924370</td>
+<td>1.430223</td>
+<td>1.382845</td>
+<td>1.664385</td>
+<td>0.743718</td>
+<td>0.914351</td>
+<td>1.547856</td>
+<td>1.498154</td>
+<td>1.083697</td>
+<td>1.531142</td>
+<td>1.187432</td>
+<td>0.737978</td>
+<td>1.077066</td>
+<td>1.576947</td>
+<td>1.084336</td>
+<td>0.890301</td>
+<td>1.103113</td>
+<td>0.721076</td>
+<td>1.565904</td>
+<td>1.565878</td>
+<td>0.811334</td>
+<td>0.935319</td>
+<td>1.579181</td>
+<td>1.111303</td>
+<td>1.182148</td>
+<td>1.566122</td>
+<td>1.530390</td>
+<td>0.896627</td>
+<td>1.319575</td>
+<td>1.401553</td>
+<td>1.114742</td>
+<td>0.757896</td>
+<td>1.227829</td>
+<td>1.599983</td>
+<td>1.278952</td>
+<td>1.437842</td>
+<td>1.154408</td>
+<td>1.479059</td>
+<td>1.075792</td>
+<td>0.861786</td>
+<td>1.492386</td>
+<td>1.149008</td>
+<td>1.459557</td>
+<td>1.660843</td>
+<td>0.828585</td>
+<td>1.638546</td>
+<td>1.482912</td>
+<td>0.869704</td>
+<td>1.447417</td>
+<td>1.401396</td>
+<td>0.803381</td>
+<td>1.388049</td>
+<td>1.366176</td>
+<td>1.529434</td>
+<td>1.374519</td>
+<td>1.686613</td>
+<td>1.289674</td>
+<td>1.526244</td>
+<td>1.308350</td>
+<td>1.426219</td>
+<td>1.316081</td>
+<td>1.522091</td>
+<td>1.071232</td>
+<td>1.281524</td>
+<td>1.456293</td>
+<td>1.254077</td>
+<td>1.672161</td>
+<td>1.357052</td>
+<td>1.436064</td>
+<td>1.504896</td>
+<td>1.492393</td>
+<td>1.660159</td>
+<td>1.336439</td>
+<td>1.611367</td>
+<td>1.485089</td>
+<td>1.421305</td>
+<td>1.404664</td>
+<td>0.979689</td>
+<td>1.388402</td>
+<td>1.358836</td>
+<td>0.987177</td>
+<td>1.441192</td>
+<td>1.510709</td>
+<td>1.146286</td>
+<td>1.095166</td>
+<td>1.414947</td>
+<td>1.522422</td>
+<td>1.636386</td>
+<td>1.441091</td>
+<td>1.668880</td>
+<td>1.411751</td>
+<td>1.496474</td>
+<td>1.370621</td>
+<td>1.518160</td>
+<td>0.670405</td>
+<td>1.226062</td>
+<td>1.669002</td>
+<td>1.365330</td>
+<td>1.474284</td>
+<td>1.487775</td>
+<td>1.514563</td>
+<td>1.540777</td>
+<td>1.487513</td>
+<td>1.278016</td>
+<td>1.455645</td>
+<td>1.465859</td>
+<td>1.095589</td>
+<td>1.448000</td>
+<td>1.599153</td>
+<td>1.600622</td>
+<td>1.397672</td>
+<td>1.457202</td>
+<td>1.459745</td>
+<td>1.324560</td>
+<td>1.396254</td>
+<td>1.559955</td>
+<td>1.133574</td>
+<td>1.698890</td>
+<td>1.117146</td>
+<td>1.574071</td>
+<td>0.912840</td>
+<td>1.186387</td>
+<td>1.339695</td>
+<td>1.476624</td>
+<td>0.810157</td>
+<td>1.757761</td>
+<td>1.415574</td>
+<td>1.578003</td>
+<td>1.513751</td>
+<td>1.547222</td>
+<td>1.386126</td>
+<td>1.089346</td>
+<td>1.586176</td>
+<td>1.062435</td>
+<td>1.599973</td>
+<td>1.535227</td>
+<td>1.520734</td>
+<td>1.416225</td>
+<td>0.842238</td>
+<td>1.447264</td>
+<td>1.671441</td>
+<td>1.469684</td>
+<td>0.911353</td>
+<td>1.507446</td>
+<td>1.763280</td>
+<td>0.939185</td>
+<td>1.403785</td>
+<td>1.336623</td>
+<td>1.644970</td>
+<td>1.355754</td>
+<td>0.922399</td>
+<td>1.307002</td>
+<td>1.333142</td>
+<td>1.204191</td>
+<td>1.297738</td>
+<td>1.391463</td>
+<td>1.749163</td>
+<td>1.403036</td>
+<td>1.321839</td>
+<td>1.548118</td>
+<td>0.853927</td>
+<td>1.583943</td>
+<td>1.308041</td>
+<td>1.560188</td>
+<td>1.673618</td>
+<td>1.691290</td>
+<td>1.574953</td>
+<td>1.246165</td>
+<td>1.338896</td>
+<td>1.167568</td>
+<td>1.121849</td>
+<td>1.255892</td>
+<td>0.937114</td>
+<td>1.024497</td>
+<td>1.369792</td>
+<td>1.409745</td>
+<td>1.534121</td>
+<td>1.337662</td>
+<td>1.450613</td>
+<td>1.426051</td>
+<td>1.285165</td>
+<td>1.474186</td>
+<td>1.390037</td>
+<td>1.056368</td>
+<td>1.093099</td>
+<td>2.013304</td>
+<td>1.417359</td>
+<td>0.981245</td>
+<td>1.518559</td>
+<td>1.650999</td>
+<td>1.505613</td>
+<td>1.474515</td>
+<td>1.362058</td>
+<td>1.215105</td>
+<td>1.584007</td>
+<td>1.233112</td>
+<td>1.339296</td>
+<td>1.438410</td>
+<td>1.338066</td>
+<td>1.397788</td>
+<td>1.295450</td>
+<td>1.561007</td>
+<td>1.026530</td>
+<td>1.318584</td>
+<td>1.278130</td>
+<td>0.960000</td>
+<td>1.315880</td>
+<td>1.377193</td>
+<td>1.312937</td>
+<td>1.485981</td>
+<td>1.031306</td>
+<td>1.594483</td>
+<td>1.138540</td>
+<td>1.293325</td>
+<td>1.412365</td>
+<td>1.376190</td>
+<td>1.035926</td>
+<td>1.362865</td>
+<td>1.568081</td>
+<td>1.434473</td>
+<td>1.391634</td>
+<td>1.166404</td>
+<td>1.678629</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">240010</td>
+<td>0.947517</td>
+<td>0.923138</td>
+<td>0.965087</td>
+<td>0.936273</td>
+<td>0.913254</td>
+<td>0.951836</td>
+<td>0.919912</td>
+<td>0.881376</td>
+<td>0.912938</td>
+<td>0.998540</td>
+<td>0.900552</td>
+<td>1.567286</td>
+<td>0.909977</td>
+<td>0.851522</td>
+<td>0.944927</td>
+<td>0.886615</td>
+<td>0.972018</td>
+<td>0.914854</td>
+<td>0.961011</td>
+<td>0.909320</td>
+<td>0.928004</td>
+<td>0.993329</td>
+<td>0.830474</td>
+<td>0.984855</td>
+<td>0.933694</td>
+<td>0.923721</td>
+<td>0.937711</td>
+<td>0.940062</td>
+<td>0.901375</td>
+<td>1.466387</td>
+<td>1.009040</td>
+<td>0.952631</td>
+<td>0.891265</td>
+<td>0.880269</td>
+<td>0.918649</td>
+<td>1.325976</td>
+<td>0.903379</td>
+<td>1.640356</td>
+<td>1.010406</td>
+<td>0.887597</td>
+<td>0.952145</td>
+<td>1.032943</td>
+<td>0.994912</td>
+<td>0.903688</td>
+<td>0.943107</td>
+<td>0.876618</td>
+<td>0.925086</td>
+<td>0.938717</td>
+<td>1.428633</td>
+<td>1.033547</td>
+<td>0.881604</td>
+<td>1.451784</td>
+<td>0.908627</td>
+<td>1.417169</td>
+<td>0.970350</td>
+<td>0.893393</td>
+<td>0.947005</td>
+<td>0.861732</td>
+<td>0.955572</td>
+<td>0.936277</td>
+<td>0.907833</td>
+<td>1.496032</td>
+<td>1.410041</td>
+<td>1.385007</td>
+<td>0.860428</td>
+<td>0.941713</td>
+<td>0.975544</td>
+<td>1.448936</td>
+<td>1.654419</td>
+<td>2.482423</td>
+<td>0.979598</td>
+<td>0.920453</td>
+<td>1.505681</td>
+<td>1.487641</td>
+<td>1.032943</td>
+<td>1.692694</td>
+<td>1.030782</td>
+<td>0.906170</td>
+<td>1.037184</td>
+<td>1.723920</td>
+<td>1.027639</td>
+<td>0.918982</td>
+<td>0.988220</td>
+<td>0.886414</td>
+<td>1.573909</td>
+<td>1.397711</td>
+<td>0.944376</td>
+<td>1.038056</td>
+<td>1.346897</td>
+<td>1.090047</td>
+<td>1.001522</td>
+<td>1.624713</td>
+<td>1.565290</td>
+<td>0.879842</td>
+<td>1.414865</td>
+<td>1.656565</td>
+<td>1.070464</td>
+<td>0.940512</td>
+<td>0.998528</td>
+<td>1.738200</td>
+<td>1.384511</td>
+<td>1.662632</td>
+<td>1.064067</td>
+<td>1.394116</td>
+<td>1.012096</td>
+<td>0.976953</td>
+<td>1.658188</td>
+<td>1.105936</td>
+<td>1.447251</td>
+<td>1.670843</td>
+<td>0.938633</td>
+<td>1.440260</td>
+<td>1.458099</td>
+<td>0.941369</td>
+<td>1.547769</td>
+<td>1.454675</td>
+<td>0.834932</td>
+<td>1.497932</td>
+<td>1.667692</td>
+<td>1.615803</td>
+<td>1.739062</td>
+<td>2.027761</td>
+<td>1.259204</td>
+<td>1.427129</td>
+<td>1.501341</td>
+<td>1.458672</td>
+<td>1.409429</td>
+<td>1.698101</td>
+<td>0.951082</td>
+<td>1.278217</td>
+<td>1.507162</td>
+<td>1.177652</td>
+<td>1.741780</td>
+<td>1.656509</td>
+<td>1.666783</td>
+<td>1.544928</td>
+<td>1.428601</td>
+<td>1.583933</td>
+<td>1.357806</td>
+<td>1.704108</td>
+<td>1.389057</td>
+<td>1.497803</td>
+<td>1.585720</td>
+<td>1.004775</td>
+<td>1.517895</td>
+<td>1.392184</td>
+<td>1.081369</td>
+<td>1.622855</td>
+<td>1.607348</td>
+<td>1.334363</td>
+<td>1.101808</td>
+<td>1.528985</td>
+<td>1.614866</td>
+<td>2.729542</td>
+<td>1.518088</td>
+<td>1.465932</td>
+<td>1.510994</td>
+<td>1.822310</td>
+<td>1.301673</td>
+<td>1.682753</td>
+<td>0.856228</td>
+<td>1.147524</td>
+<td>1.637186</td>
+<td>1.642332</td>
+<td>1.677308</td>
+<td>1.720799</td>
+<td>1.390439</td>
+<td>1.631075</td>
+<td>1.600640</td>
+<td>1.403905</td>
+<td>1.568592</td>
+<td>1.634135</td>
+<td>1.037261</td>
+<td>1.580225</td>
+<td>1.706535</td>
+<td>1.760585</td>
+<td>1.576435</td>
+<td>1.569992</td>
+<td>1.631476</td>
+<td>1.404271</td>
+<td>1.803747</td>
+<td>1.646953</td>
+<td>1.226442</td>
+<td>1.844928</td>
+<td>1.102144</td>
+<td>1.867514</td>
+<td>1.041813</td>
+<td>1.159370</td>
+<td>1.690492</td>
+<td>1.428138</td>
+<td>0.893998</td>
+<td>1.845432</td>
+<td>1.321877</td>
+<td>1.761221</td>
+<td>1.537544</td>
+<td>1.876346</td>
+<td>1.411357</td>
+<td>1.123983</td>
+<td>1.890799</td>
+<td>1.124644</td>
+<td>1.625501</td>
+<td>1.498383</td>
+<td>1.841438</td>
+<td>1.587869</td>
+<td>0.933180</td>
+<td>1.483027</td>
+<td>1.552888</td>
+<td>1.708644</td>
+<td>0.884513</td>
+<td>1.572953</td>
+<td>2.067949</td>
+<td>1.087068</td>
+<td>1.464542</td>
+<td>1.454404</td>
+<td>1.461048</td>
+<td>1.269376</td>
+<td>0.995968</td>
+<td>1.390639</td>
+<td>1.743729</td>
+<td>1.575836</td>
+<td>1.327086</td>
+<td>1.518627</td>
+<td>1.786177</td>
+<td>1.578360</td>
+<td>1.505747</td>
+<td>1.359594</td>
+<td>0.800771</td>
+<td>1.473471</td>
+<td>1.259755</td>
+<td>1.615213</td>
+<td>1.477139</td>
+<td>1.711387</td>
+<td>1.375833</td>
+<td>1.215075</td>
+<td>1.776942</td>
+<td>1.454054</td>
+<td>1.103856</td>
+<td>1.349752</td>
+<td>1.117370</td>
+<td>1.290650</td>
+<td>1.447917</td>
+<td>1.364958</td>
+<td>1.490938</td>
+<td>1.551948</td>
+<td>1.434429</td>
+<td>1.385829</td>
+<td>1.469205</td>
+<td>1.707278</td>
+<td>1.310161</td>
+<td>1.223029</td>
+<td>1.005408</td>
+<td>1.296172</td>
+<td>1.520220</td>
+<td>0.930681</td>
+<td>1.616213</td>
+<td>1.537470</td>
+<td>1.844448</td>
+<td>1.475148</td>
+<td>1.346072</td>
+<td>1.228121</td>
+<td>1.473906</td>
+<td>1.288669</td>
+<td>1.578056</td>
+<td>1.392242</td>
+<td>1.414647</td>
+<td>1.522347</td>
+<td>1.399979</td>
+<td>1.590337</td>
+<td>0.990828</td>
+<td>1.725901</td>
+<td>1.662134</td>
+<td>1.071020</td>
+<td>1.280792</td>
+<td>1.570175</td>
+<td>1.009758</td>
+<td>1.532710</td>
+<td>0.994199</td>
+<td>1.527254</td>
+<td>1.359514</td>
+<td>1.131327</td>
+<td>1.523976</td>
+<td>1.562632</td>
+<td>1.283616</td>
+<td>1.466280</td>
+<td>1.670089</td>
+<td>1.282079</td>
+<td>1.398346</td>
+<td>1.348891</td>
+<td>1.802585</td>
+</tr>
+</tbody>
+</table>
+
+<p>239979 rows × 289 columns</p>
+</div>
+</div>
+</div>
+<div id="82230903-cf88-46c4-9663-a1f9d267585d" class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_genes(site_df,score_df,kinase,s<span class="op">=</span><span class="va">None</span>,t<span class="op">=</span><span class="va">None</span>,y<span class="op">=</span><span class="va">None</span>,export<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> site_df[[<span class="st">'gene'</span>,<span class="st">'acceptor'</span>]].copy()</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'acceptor'</span>] <span class="op">=</span> df[<span class="st">'acceptor'</span>].<span class="bu">str</span>.upper() <span class="co"># convert to uppercase for query</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'gene'</span>] <span class="op">=</span> df.gene.<span class="bu">str</span>.split(<span class="st">'|'</span>)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    df[kinase] <span class="op">=</span> score_df[kinase]</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(df.shape)</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df.explode(<span class="st">'gene'</span>) <span class="co"># if there are duplicated sites, genes will be separated by "|"; after explode, it should increase</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(df.shape)</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>    L <span class="op">=</span> []</span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> s <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> df.query(<span class="ss">f'acceptor == "S" &amp; </span><span class="sc">{</span>kinase<span class="sc">}</span><span class="ss">&gt;</span><span class="sc">{</span>s<span class="sc">}</span><span class="ss">'</span>)[<span class="st">'gene'</span>].drop_duplicates()</span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>        L.append(s)</span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> t <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>        t <span class="op">=</span> df.query(<span class="ss">f'acceptor == "T" &amp; </span><span class="sc">{</span>kinase<span class="sc">}</span><span class="ss">&gt;</span><span class="sc">{</span>t<span class="sc">}</span><span class="ss">'</span>)[<span class="st">'gene'</span>].drop_duplicates()</span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>        L.append(t)</span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> y <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> df.query(<span class="ss">f'acceptor == "Y" &amp; </span><span class="sc">{</span>kinase<span class="sc">}</span><span class="ss">&gt;</span><span class="sc">{</span>y<span class="sc">}</span><span class="ss">'</span>)[<span class="st">'gene'</span>].drop_duplicates()</span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a>        L.append(y)</span>
+<span id="cb39-23"><a href="#cb39-23" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb39-24"><a href="#cb39-24" aria-hidden="true" tabindex="-1"></a>    sty <span class="op">=</span> pd.concat(L).drop_duplicates().reset_index()</span>
+<span id="cb39-25"><a href="#cb39-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb39-26"><a href="#cb39-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> export:</span>
+<span id="cb39-27"><a href="#cb39-27" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">'exporting csv file for st'</span>)</span>
+<span id="cb39-28"><a href="#cb39-28" aria-hidden="true" tabindex="-1"></a>        sty.to_csv(<span class="ss">f'</span><span class="sc">{</span>kinase<span class="sc">}</span><span class="ss">.csv'</span>)</span>
+<span id="cb39-29"><a href="#cb39-29" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb39-30"><a href="#cb39-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> sty</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Set the threshold for the peak</p>
+<div id="3ae6f426-5b3b-4458-ad51-5fd896f71d55" class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>genes <span class="op">=</span> get_genes(psp,cddm,<span class="st">'CDK1'</span>,s<span class="op">=</span><span class="fl">1.9</span>,t<span class="op">=</span><span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(239979, 3)
+(239979, 3)</code></pre>
+</div>
+</div>
+<div id="b25b5a6b-59d9-422b-a3a9-0b4844b3d073" class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>genes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">index</th>
+<th data-quarto-table-cell-role="th">gene</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>19</td>
+<td>YWHAB</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>112</td>
+<td>SFN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>163</td>
+<td>YWHAZ</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>189</td>
+<td>EIF4EBP1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>211</td>
+<td>EIF4EBP2</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9226</td>
+<td>238003</td>
+<td>ZNF770</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9227</td>
+<td>239092</td>
+<td>ZNFX1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9228</td>
+<td>239111</td>
+<td>ZNHIT2</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9229</td>
+<td>239661</td>
+<td>ZSCAN16</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9230</td>
+<td>239857</td>
+<td>ZW10</td>
+</tr>
+</tbody>
+</table>
+
+<p>9231 rows × 2 columns</p>
+</div>
+</div>
+</div>
+<p>You can use the gene list for downstream analysis such as pathway analysis.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/sky1ove\.github\.io\/katlas");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

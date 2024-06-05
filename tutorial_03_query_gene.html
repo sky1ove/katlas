@@ -1,0 +1,3650 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>katlas - Query phosphosites for a specific protein/gene</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="katlas - Query phosphosites for a specific protein/gene">
+<meta property="og:description" content="tools for predicting kinome specificities">
+<meta property="og:site_name" content="katlas">
+<meta name="twitter:title" content="katlas - Query phosphosites for a specific protein/gene">
+<meta name="twitter:description" content="tools for predicting kinome specificities">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">katlas</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tutorial_01_sinlge_input.html">Tutorials</a></li><li class="breadcrumb-item"><a href="./tutorial_03_query_gene.html">Query phosphosites for a specific protein/gene</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">KATLAS</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Tutorials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_01_sinlge_input.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring with single input sequence</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_02_high_throughput.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Phosphoproteomics scoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_03_query_gene.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Query phosphosites for a specific protein/gene</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_04a_enrichment_akti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinase enrichment analysis - AKTi</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_04b_enrichment_egfri.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinase enrichment analysis - EGFRi</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Core</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train ML</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dl.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train DL</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#query-a-protein-based-on-its-gene-name" id="toc-query-a-protein-based-on-its-gene-name" class="nav-link" data-scroll-target="#query-a-protein-based-on-its-gene-name">Query a protein based on its gene name</a></li>
+  <li><a href="#get-protein-sequence" id="toc-get-protein-sequence" class="nav-link" data-scroll-target="#get-protein-sequence">Get protein sequence</a></li>
+  <li><a href="#phosphorylate-the-sequence-based-on-the-site-info" id="toc-phosphorylate-the-sequence-based-on-the-site-info" class="nav-link" data-scroll-target="#phosphorylate-the-sequence-based-on-the-site-info">Phosphorylate the sequence based on the site info</a></li>
+  <li><a href="#extract-the-site-sequence" id="toc-extract-the-site-sequence" class="nav-link" data-scroll-target="#extract-the-site-sequence">Extract the site sequence</a></li>
+  <li><a href="#pspa-scoring" id="toc-pspa-scoring" class="nav-link" data-scroll-target="#pspa-scoring">PSPA Scoring</a></li>
+  <li><a href="#cddm-scoring" id="toc-cddm-scoring" class="nav-link" data-scroll-target="#cddm-scoring">CDDM scoring</a></li>
+  <li><a href="#rank-kinase-for-each-site" id="toc-rank-kinase-for-each-site" class="nav-link" data-scroll-target="#rank-kinase-for-each-site">Rank kinase for each site</a></li>
+  <li><a href="#rank-with-alphamissense" id="toc-rank-with-alphamissense" class="nav-link" data-scroll-target="#rank-with-alphamissense">Rank with AlphaMissense</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tutorial_01_sinlge_input.html">Tutorials</a></li><li class="breadcrumb-item"><a href="./tutorial_03_query_gene.html">Query phosphosites for a specific protein/gene</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Query phosphosites for a specific protein/gene</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p><a target="_blank" href="https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_02_query_gene.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> </a></p>
+<p>In this session, we will show you: 1. how to query all of the phosphorylation sites for a single protein; 2. transform the site sequence to phosphorylated status; 3. conduct substrate scoring on all of them; 4. optional: rank the site based on additional information</p>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<div id="a5d6b643-4cdd-41ab-8edc-a283d753d652" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install git<span class="op">+</span>https:<span class="op">//</span>github.com<span class="op">/</span>sky1ove<span class="op">/</span>katlas.git <span class="op">-</span>Uqq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="1234b9af-afc8-463c-bb06-e5e44ca56a3c" class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.core <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests, pandas <span class="im">as</span> pd, numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="query-a-protein-based-on-its-gene-name" class="level2">
+<h2 class="anchored" data-anchor-id="query-a-protein-based-on-its-gene-name">Query a protein based on its gene name</h2>
+<p>Download human phosphoproteome, which is a combination of ochoa et al.&nbsp;dataset and phosphositeplus dataset (low-throughput&gt;=1)</p>
+<div id="ba387dd8-2028-44da-8abe-e6b5d73c2a6e" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sites <span class="op">=</span> Data.get_combine_site_psp_ochoa()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="510c88c1-ae05-47fb-9463-f4667450fb0c" class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sites.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">site_seq</th>
+<th data-quarto-table-cell-role="th">gene_site</th>
+<th data-quarto-table-cell-role="th">gene</th>
+<th data-quarto-table-cell-role="th">source</th>
+<th data-quarto-table-cell-role="th">num_site</th>
+<th data-quarto-table-cell-role="th">acceptor</th>
+<th data-quarto-table-cell-role="th">-7</th>
+<th data-quarto-table-cell-role="th">-6</th>
+<th data-quarto-table-cell-role="th">-5</th>
+<th data-quarto-table-cell-role="th">-4</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">-2</th>
+<th data-quarto-table-cell-role="th">-1</th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+<th data-quarto-table-cell-role="th">5</th>
+<th data-quarto-table-cell-role="th">6</th>
+<th data-quarto-table-cell-role="th">7</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AAAAAAASGGAGSDN</td>
+<td>PBX1_S136</td>
+<td>PBX1</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>...</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>G</td>
+<td>G</td>
+<td>A</td>
+<td>G</td>
+<td>S</td>
+<td>D</td>
+<td>N</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>AAAAAAASGGGVSPD</td>
+<td>PBX2_S146</td>
+<td>PBX2</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>...</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>G</td>
+<td>G</td>
+<td>G</td>
+<td>V</td>
+<td>S</td>
+<td>P</td>
+<td>D</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>AAAAAAASGVTTGKP</td>
+<td>CLASR_S349</td>
+<td>CLASR</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>...</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>G</td>
+<td>V</td>
+<td>T</td>
+<td>T</td>
+<td>G</td>
+<td>K</td>
+<td>P</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>AAAAAAASQQGSAKN</td>
+<td>TBL1R_S119</td>
+<td>TBL1R</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>...</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>Q</td>
+<td>Q</td>
+<td>G</td>
+<td>S</td>
+<td>A</td>
+<td>K</td>
+<td>N</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>AAAAAAASSPVGVGQ</td>
+<td>SOX3_S249</td>
+<td>SOX3</td>
+<td>ochoa</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>...</td>
+<td>A</td>
+<td>A</td>
+<td>S</td>
+<td>S</td>
+<td>P</td>
+<td>V</td>
+<td>G</td>
+<td>V</td>
+<td>G</td>
+<td>Q</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 21 columns</p>
+</div>
+</div>
+</div>
+<p>Query a specific gene:</p>
+<div id="d3e9148d-d06c-432c-ae53-7a492ad38951" class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> query_gene(sites,<span class="st">'CTNNB1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="c5696e77-3278-4eba-94bd-6ec84167cd45" class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">site_seq</th>
+<th data-quarto-table-cell-role="th">gene_site</th>
+<th data-quarto-table-cell-role="th">gene</th>
+<th data-quarto-table-cell-role="th">source</th>
+<th data-quarto-table-cell-role="th">num_site</th>
+<th data-quarto-table-cell-role="th">acceptor</th>
+<th data-quarto-table-cell-role="th">-7</th>
+<th data-quarto-table-cell-role="th">-6</th>
+<th data-quarto-table-cell-role="th">-5</th>
+<th data-quarto-table-cell-role="th">-4</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">-2</th>
+<th data-quarto-table-cell-role="th">-1</th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+<th data-quarto-table-cell-role="th">5</th>
+<th data-quarto-table-cell-role="th">6</th>
+<th data-quarto-table-cell-role="th">7</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">64201</td>
+<td>PDRKAAVSHWQQQSY</td>
+<td>CTNNB1_S23</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>S</td>
+<td>P</td>
+<td>D</td>
+<td>R</td>
+<td>K</td>
+<td>...</td>
+<td>A</td>
+<td>V</td>
+<td>S</td>
+<td>H</td>
+<td>W</td>
+<td>Q</td>
+<td>Q</td>
+<td>Q</td>
+<td>S</td>
+<td>Y</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">111457</td>
+<td>VSHWQQQSYLDSGIH</td>
+<td>CTNNB1_S29|CTNB1_S29</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>S</td>
+<td>V</td>
+<td>S</td>
+<td>H</td>
+<td>W</td>
+<td>...</td>
+<td>Q</td>
+<td>Q</td>
+<td>S</td>
+<td>Y</td>
+<td>L</td>
+<td>D</td>
+<td>S</td>
+<td>G</td>
+<td>I</td>
+<td>H</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">91015</td>
+<td>SHWQQQSYLDSGIHS</td>
+<td>CTNNB1_Y30|CTNB1_Y30</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>Y</td>
+<td>S</td>
+<td>H</td>
+<td>W</td>
+<td>Q</td>
+<td>...</td>
+<td>Q</td>
+<td>S</td>
+<td>Y</td>
+<td>L</td>
+<td>D</td>
+<td>S</td>
+<td>G</td>
+<td>I</td>
+<td>H</td>
+<td>S</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">77044</td>
+<td>QQQSYLDSGIHSGAT</td>
+<td>CTNNB1_S33</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>S</td>
+<td>Q</td>
+<td>Q</td>
+<td>Q</td>
+<td>S</td>
+<td>...</td>
+<td>L</td>
+<td>D</td>
+<td>S</td>
+<td>G</td>
+<td>I</td>
+<td>H</td>
+<td>S</td>
+<td>G</td>
+<td>A</td>
+<td>T</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">114100</td>
+<td>YLDSGIHSGATTTAP</td>
+<td>CTNNB1_S37|CTNB1_S37</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>S</td>
+<td>Y</td>
+<td>L</td>
+<td>D</td>
+<td>S</td>
+<td>...</td>
+<td>I</td>
+<td>H</td>
+<td>S</td>
+<td>G</td>
+<td>A</td>
+<td>T</td>
+<td>T</td>
+<td>T</td>
+<td>A</td>
+<td>P</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29849</td>
+<td>GIHSGATTTAPSLSG</td>
+<td>CTNNB1_T41</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>T</td>
+<td>G</td>
+<td>I</td>
+<td>H</td>
+<td>S</td>
+<td>...</td>
+<td>A</td>
+<td>T</td>
+<td>T</td>
+<td>T</td>
+<td>A</td>
+<td>P</td>
+<td>S</td>
+<td>L</td>
+<td>S</td>
+<td>G</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">27548</td>
+<td>GATTTAPSLSGKGNP</td>
+<td>CTNNB1_S45|CTNB1_S45</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>S</td>
+<td>G</td>
+<td>A</td>
+<td>T</td>
+<td>T</td>
+<td>...</td>
+<td>A</td>
+<td>P</td>
+<td>S</td>
+<td>L</td>
+<td>S</td>
+<td>G</td>
+<td>K</td>
+<td>G</td>
+<td>N</td>
+<td>P</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17342</td>
+<td>EEEDVDTSQVLYEWE</td>
+<td>CTNNB1_S60</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>S</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>D</td>
+<td>...</td>
+<td>D</td>
+<td>T</td>
+<td>S</td>
+<td>Q</td>
+<td>V</td>
+<td>L</td>
+<td>Y</td>
+<td>E</td>
+<td>W</td>
+<td>E</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">107937</td>
+<td>VDTSQVLYEWEQGFS</td>
+<td>CTNNB1_Y64</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>Y</td>
+<td>V</td>
+<td>D</td>
+<td>T</td>
+<td>S</td>
+<td>...</td>
+<td>V</td>
+<td>L</td>
+<td>Y</td>
+<td>E</td>
+<td>W</td>
+<td>E</td>
+<td>Q</td>
+<td>G</td>
+<td>F</td>
+<td>S</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">112759</td>
+<td>WEQGFSQSFTQEQVA</td>
+<td>CTNNB1_S73</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>S</td>
+<td>W</td>
+<td>E</td>
+<td>Q</td>
+<td>G</td>
+<td>...</td>
+<td>S</td>
+<td>Q</td>
+<td>S</td>
+<td>F</td>
+<td>T</td>
+<td>Q</td>
+<td>E</td>
+<td>Q</td>
+<td>V</td>
+<td>A</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">107313</td>
+<td>VADIDGQYAMTRAQR</td>
+<td>CTNNB1_Y86</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>Y</td>
+<td>V</td>
+<td>A</td>
+<td>D</td>
+<td>I</td>
+<td>...</td>
+<td>G</td>
+<td>Q</td>
+<td>Y</td>
+<td>A</td>
+<td>M</td>
+<td>T</td>
+<td>R</td>
+<td>A</td>
+<td>Q</td>
+<td>R</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">78730</td>
+<td>RAAMFPETLDEGMQI</td>
+<td>CTNNB1_T102</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>T</td>
+<td>R</td>
+<td>A</td>
+<td>A</td>
+<td>M</td>
+<td>...</td>
+<td>P</td>
+<td>E</td>
+<td>T</td>
+<td>L</td>
+<td>D</td>
+<td>E</td>
+<td>G</td>
+<td>M</td>
+<td>Q</td>
+<td>I</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18737</td>
+<td>EGMQIPSTQFDAAHP</td>
+<td>CTNNB1_T112</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>T</td>
+<td>E</td>
+<td>G</td>
+<td>M</td>
+<td>Q</td>
+<td>...</td>
+<td>P</td>
+<td>S</td>
+<td>T</td>
+<td>Q</td>
+<td>F</td>
+<td>D</td>
+<td>A</td>
+<td>A</td>
+<td>H</td>
+<td>P</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">74575</td>
+<td>QFDAAHPTNVQRLAE</td>
+<td>CTNNB1_T120</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>T</td>
+<td>Q</td>
+<td>F</td>
+<td>D</td>
+<td>A</td>
+<td>...</td>
+<td>H</td>
+<td>P</td>
+<td>T</td>
+<td>N</td>
+<td>V</td>
+<td>Q</td>
+<td>R</td>
+<td>L</td>
+<td>A</td>
+<td>E</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8304</td>
+<td>AVVNLINYQDDAELA</td>
+<td>CTNNB1_Y142</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>Y</td>
+<td>A</td>
+<td>V</td>
+<td>V</td>
+<td>N</td>
+<td>...</td>
+<td>I</td>
+<td>N</td>
+<td>Y</td>
+<td>Q</td>
+<td>D</td>
+<td>D</td>
+<td>A</td>
+<td>E</td>
+<td>L</td>
+<td>A</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">75966</td>
+<td>QLSKKEASRHAIMRS</td>
+<td>CTNNB1_S184</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>S</td>
+<td>Q</td>
+<td>L</td>
+<td>S</td>
+<td>K</td>
+<td>...</td>
+<td>E</td>
+<td>A</td>
+<td>S</td>
+<td>R</td>
+<td>H</td>
+<td>A</td>
+<td>I</td>
+<td>M</td>
+<td>R</td>
+<td>S</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">96269</td>
+<td>SRHAIMRSPQMVSAI</td>
+<td>CTNNB1_S191|CTNB1_S191</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>S</td>
+<td>S</td>
+<td>R</td>
+<td>H</td>
+<td>A</td>
+<td>...</td>
+<td>M</td>
+<td>R</td>
+<td>S</td>
+<td>P</td>
+<td>Q</td>
+<td>M</td>
+<td>V</td>
+<td>S</td>
+<td>A</td>
+<td>I</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4207</td>
+<td>ALVKMLGSPVDSVLF</td>
+<td>CTNNB1_S246</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>S</td>
+<td>A</td>
+<td>L</td>
+<td>V</td>
+<td>K</td>
+<td>...</td>
+<td>L</td>
+<td>G</td>
+<td>S</td>
+<td>P</td>
+<td>V</td>
+<td>D</td>
+<td>S</td>
+<td>V</td>
+<td>L</td>
+<td>F</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">109213</td>
+<td>VKFLAITTDCLQILA</td>
+<td>CTNNB1_T298</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>T</td>
+<td>V</td>
+<td>K</td>
+<td>F</td>
+<td>L</td>
+<td>...</td>
+<td>I</td>
+<td>T</td>
+<td>T</td>
+<td>D</td>
+<td>C</td>
+<td>L</td>
+<td>Q</td>
+<td>I</td>
+<td>L</td>
+<td>A</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">49209</td>
+<td>LAYGNQESKLIILAS</td>
+<td>CTNNB1_S311</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>S</td>
+<td>L</td>
+<td>A</td>
+<td>Y</td>
+<td>G</td>
+<td>...</td>
+<td>Q</td>
+<td>E</td>
+<td>S</td>
+<td>K</td>
+<td>L</td>
+<td>I</td>
+<td>I</td>
+<td>L</td>
+<td>A</td>
+<td>S</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">56712</td>
+<td>LVNIMRTYTYEKLLW</td>
+<td>CTNNB1_Y331</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>Y</td>
+<td>L</td>
+<td>V</td>
+<td>N</td>
+<td>I</td>
+<td>...</td>
+<td>R</td>
+<td>T</td>
+<td>Y</td>
+<td>T</td>
+<td>Y</td>
+<td>E</td>
+<td>K</td>
+<td>L</td>
+<td>L</td>
+<td>W</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">110053</td>
+<td>VNIMRTYTYEKLLWT</td>
+<td>CTNNB1_T332</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>T</td>
+<td>V</td>
+<td>N</td>
+<td>I</td>
+<td>M</td>
+<td>...</td>
+<td>T</td>
+<td>Y</td>
+<td>T</td>
+<td>Y</td>
+<td>E</td>
+<td>K</td>
+<td>L</td>
+<td>L</td>
+<td>W</td>
+<td>T</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">60253</td>
+<td>NIMRTYTYEKLLWTT</td>
+<td>CTNNB1_Y333</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>Y</td>
+<td>N</td>
+<td>I</td>
+<td>M</td>
+<td>R</td>
+<td>...</td>
+<td>Y</td>
+<td>T</td>
+<td>Y</td>
+<td>E</td>
+<td>K</td>
+<td>L</td>
+<td>L</td>
+<td>W</td>
+<td>T</td>
+<td>T</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">48275</td>
+<td>KVLSVCSSNKPAIVE</td>
+<td>CTNNB1_S352</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>S</td>
+<td>K</td>
+<td>V</td>
+<td>L</td>
+<td>S</td>
+<td>...</td>
+<td>C</td>
+<td>S</td>
+<td>S</td>
+<td>N</td>
+<td>K</td>
+<td>P</td>
+<td>A</td>
+<td>I</td>
+<td>V</td>
+<td>E</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">73539</td>
+<td>QALGLHLTDPSQRLV</td>
+<td>CTNNB1_T371</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>T</td>
+<td>Q</td>
+<td>A</td>
+<td>L</td>
+<td>G</td>
+<td>...</td>
+<td>H</td>
+<td>L</td>
+<td>T</td>
+<td>D</td>
+<td>P</td>
+<td>S</td>
+<td>Q</td>
+<td>R</td>
+<td>L</td>
+<td>V</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">30738</td>
+<td>GLHLTDPSQRLVQNC</td>
+<td>CTNNB1_S374</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>S</td>
+<td>G</td>
+<td>L</td>
+<td>H</td>
+<td>L</td>
+<td>...</td>
+<td>D</td>
+<td>P</td>
+<td>S</td>
+<td>Q</td>
+<td>R</td>
+<td>L</td>
+<td>V</td>
+<td>Q</td>
+<td>N</td>
+<td>C</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">56763</td>
+<td>LVQNCLWTLRNLSDA</td>
+<td>CTNNB1_T384</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>T</td>
+<td>L</td>
+<td>V</td>
+<td>Q</td>
+<td>N</td>
+<td>...</td>
+<td>L</td>
+<td>W</td>
+<td>T</td>
+<td>L</td>
+<td>R</td>
+<td>N</td>
+<td>L</td>
+<td>S</td>
+<td>D</td>
+<td>A</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">82907</td>
+<td>RNLSDAATKQEGMEG</td>
+<td>CTNNB1_T393</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>T</td>
+<td>R</td>
+<td>N</td>
+<td>L</td>
+<td>S</td>
+<td>...</td>
+<td>A</td>
+<td>A</td>
+<td>T</td>
+<td>K</td>
+<td>Q</td>
+<td>E</td>
+<td>G</td>
+<td>M</td>
+<td>E</td>
+<td>G</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">37768</td>
+<td>ICALRHLTSRHQEAE</td>
+<td>CTNNB1_T472</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>T</td>
+<td>I</td>
+<td>C</td>
+<td>A</td>
+<td>L</td>
+<td>...</td>
+<td>H</td>
+<td>L</td>
+<td>T</td>
+<td>S</td>
+<td>R</td>
+<td>H</td>
+<td>Q</td>
+<td>E</td>
+<td>A</td>
+<td>E</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">76147</td>
+<td>QNAVRLHYGLPVVVK</td>
+<td>CTNNB1_Y489|CTNB1_Y489</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>Y</td>
+<td>Q</td>
+<td>N</td>
+<td>A</td>
+<td>V</td>
+<td>...</td>
+<td>L</td>
+<td>H</td>
+<td>Y</td>
+<td>G</td>
+<td>L</td>
+<td>P</td>
+<td>V</td>
+<td>V</td>
+<td>V</td>
+<td>K</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">36580</td>
+<td>HQDTQRRTSMGGTQQ</td>
+<td>CTNNB1_T551|CTNB1_T551</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>T</td>
+<td>H</td>
+<td>Q</td>
+<td>D</td>
+<td>T</td>
+<td>...</td>
+<td>R</td>
+<td>R</td>
+<td>T</td>
+<td>S</td>
+<td>M</td>
+<td>G</td>
+<td>G</td>
+<td>T</td>
+<td>Q</td>
+<td>Q</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">74062</td>
+<td>QDTQRRTSMGGTQQQ</td>
+<td>CTNNB1_S552|CTNB1_S552</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>S</td>
+<td>Q</td>
+<td>D</td>
+<td>T</td>
+<td>Q</td>
+<td>...</td>
+<td>R</td>
+<td>T</td>
+<td>S</td>
+<td>M</td>
+<td>G</td>
+<td>G</td>
+<td>T</td>
+<td>Q</td>
+<td>Q</td>
+<td>Q</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">84863</td>
+<td>RRTSMGGTQQQFVEG</td>
+<td>CTNNB1_T556|CTNB1_T556</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>T</td>
+<td>R</td>
+<td>R</td>
+<td>T</td>
+<td>S</td>
+<td>...</td>
+<td>G</td>
+<td>G</td>
+<td>T</td>
+<td>Q</td>
+<td>Q</td>
+<td>Q</td>
+<td>F</td>
+<td>V</td>
+<td>E</td>
+<td>G</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">50616</td>
+<td>LFVQLLYSPIENIQR</td>
+<td>CTNNB1_S605</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>S</td>
+<td>L</td>
+<td>F</td>
+<td>V</td>
+<td>Q</td>
+<td>...</td>
+<td>L</td>
+<td>Y</td>
+<td>S</td>
+<td>P</td>
+<td>I</td>
+<td>E</td>
+<td>N</td>
+<td>I</td>
+<td>Q</td>
+<td>R</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">67851</td>
+<td>PLTELLHSRNEGVAT</td>
+<td>CTNNB1_S646</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>S</td>
+<td>P</td>
+<td>L</td>
+<td>T</td>
+<td>E</td>
+<td>...</td>
+<td>L</td>
+<td>H</td>
+<td>S</td>
+<td>R</td>
+<td>N</td>
+<td>E</td>
+<td>G</td>
+<td>V</td>
+<td>A</td>
+<td>T</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">96484</td>
+<td>SRNEGVATYAAAVLF</td>
+<td>CTNNB1_T653|CTNB1_T653</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>T</td>
+<td>S</td>
+<td>R</td>
+<td>N</td>
+<td>E</td>
+<td>...</td>
+<td>V</td>
+<td>A</td>
+<td>T</td>
+<td>Y</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>V</td>
+<td>L</td>
+<td>F</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">82815</td>
+<td>RNEGVATYAAAVLFR</td>
+<td>CTNNB1_Y654|CTNB1_Y654</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>Y</td>
+<td>R</td>
+<td>N</td>
+<td>E</td>
+<td>G</td>
+<td>...</td>
+<td>A</td>
+<td>T</td>
+<td>Y</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>V</td>
+<td>L</td>
+<td>F</td>
+<td>R</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">88726</td>
+<td>SEDKPQDYKKRLSVE</td>
+<td>CTNNB1_Y670</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>Y</td>
+<td>S</td>
+<td>E</td>
+<td>D</td>
+<td>K</td>
+<td>...</td>
+<td>Q</td>
+<td>D</td>
+<td>Y</td>
+<td>K</td>
+<td>K</td>
+<td>R</td>
+<td>L</td>
+<td>S</td>
+<td>V</td>
+<td>E</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">74091</td>
+<td>QDYKKRLSVELTSSL</td>
+<td>CTNNB1_S675|CTNB1_S675</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>S</td>
+<td>Q</td>
+<td>D</td>
+<td>Y</td>
+<td>K</td>
+<td>...</td>
+<td>R</td>
+<td>L</td>
+<td>S</td>
+<td>V</td>
+<td>E</td>
+<td>L</td>
+<td>T</td>
+<td>S</td>
+<td>S</td>
+<td>L</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35054</td>
+<td>GYRQDDPSYRSFHSG</td>
+<td>CTNNB1_S715|CTNB1_S715</td>
+<td>CTNNB1|CTNB1</td>
+<td>phosphoplus|ochoa</td>
+<td>2</td>
+<td>S</td>
+<td>G</td>
+<td>Y</td>
+<td>R</td>
+<td>Q</td>
+<td>...</td>
+<td>D</td>
+<td>P</td>
+<td>S</td>
+<td>Y</td>
+<td>R</td>
+<td>S</td>
+<td>F</td>
+<td>H</td>
+<td>S</td>
+<td>G</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">73830</td>
+<td>QDDPSYRSFHSGGYG</td>
+<td>CTNNB1_S718</td>
+<td>CTNNB1</td>
+<td>phosphoplus</td>
+<td>1</td>
+<td>S</td>
+<td>Q</td>
+<td>D</td>
+<td>D</td>
+<td>P</td>
+<td>...</td>
+<td>Y</td>
+<td>R</td>
+<td>S</td>
+<td>F</td>
+<td>H</td>
+<td>S</td>
+<td>G</td>
+<td>G</td>
+<td>Y</td>
+<td>G</td>
+</tr>
+</tbody>
+</table>
+
+<p>41 rows × 21 columns</p>
+</div>
+</div>
+</div>
+<div id="00aa6f34-eff6-42b6-bcc8-f79681ace82f" class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df.site_seq.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>64201     PDRKAAVSHWQQQSY
+111457    VSHWQQQSYLDSGIH
+91015     SHWQQQSYLDSGIHS
+77044     QQQSYLDSGIHSGAT
+114100    YLDSGIHSGATTTAP
+Name: site_seq, dtype: object</code></pre>
+</div>
+</div>
+<p>Note that the sequence are all in capital</p>
+</section>
+<section id="get-protein-sequence" class="level2">
+<h2 class="anchored" data-anchor-id="get-protein-sequence">Get protein sequence</h2>
+<div id="cefkLGk9XwB0" class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_protein_sequence(uniprot_id):</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Fetches the protein sequence from a UniProt FASTA URL.</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">    :param url: The URL to the UniProt FASTA file.</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">    :return: A string containing the protein sequence or a message if not found.</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    url <span class="op">=</span> <span class="ss">f"https://rest.uniprot.org/uniprotkb/</span><span class="sc">{</span>uniprot_id<span class="sc">}</span><span class="ss">.fasta"</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> requests.get(url)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> response.status_code <span class="op">==</span> <span class="dv">200</span>:</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Remove the header line (starts with '&gt;') and join the sequence lines</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        sequence <span class="op">=</span> <span class="st">''</span>.join(line <span class="cf">for</span> line <span class="kw">in</span> response.text.split(<span class="st">'</span><span class="ch">\n</span><span class="st">'</span>) <span class="cf">if</span> <span class="kw">not</span> line.startswith(<span class="st">'&gt;'</span>))</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> sequence</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Protein sequence not found or error in fetching."</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To query the sequence of specific protein, get its uniprot ID first, then implement the function</p>
+<div id="KdCbti9nPXan" class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get protein sequence through uniprot id</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>uniprot_idx <span class="op">=</span> <span class="st">"P35222"</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>sequence <span class="op">=</span> get_protein_sequence(uniprot_idx)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>sequence</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'MATQADLMELDMAMEPDRKAAVSHWQQQSYLDSGIHSGATTTAPSLSGKGNPEEEDVDTSQVLYEWEQGFSQSFTQEQVADIDGQYAMTRAQRVRAAMFPETLDEGMQIPSTQFDAAHPTNVQRLAEPSQMLKHAVVNLINYQDDAELATRAIPELTKLLNDEDQVVVNKAAVMVHQLSKKEASRHAIMRSPQMVSAIVRTMQNTNDVETARCTAGTLHNLSHHREGLLAIFKSGGIPALVKMLGSPVDSVLFYAITTLHNLLLHQEGAKMAVRLAGGLQKMVALLNKTNVKFLAITTDCLQILAYGNQESKLIILASGGPQALVNIMRTYTYEKLLWTTSRVLKVLSVCSSNKPAIVEAGGMQALGLHLTDPSQRLVQNCLWTLRNLSDAATKQEGMEGLLGTLVQLLGSDDINVVTCAAGILSNLTCNNYKNKMMVCQVGGIEALVRTVLRAGDREDITEPAICALRHLTSRHQEAEMAQNAVRLHYGLPVVVKLLHPPSHWPLIKATVGLIRNLALCPANHAPLREQGAIPRLVQLLVRAHQDTQRRTSMGGTQQQFVEGVRMEEIVEGCTGALHILARDVHNRIVIRGLNTIPLFVQLLYSPIENIQRVAAGVLCELAQDKEAAEAIEAEGATAPLTELLHSRNEGVATYAAAVLFRMSEDKPQDYKKRLSVELTSSLFRTEPMAWNETADLGLDIGAQGEPLGYRQDDPSYRSFHSGGYGQDALGMDPMMEHEMGGHHPGADYPVDGLPDLGHAQDLMDGLPPGDSNQLAWFDTDL'</code></pre>
+</div>
+</div>
+<div id="8eLBrCxMPaT1" class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get site and position information</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'site'</span>] <span class="op">=</span> df.gene_site.<span class="bu">str</span>.split(<span class="st">'|'</span>).<span class="bu">str</span>[<span class="dv">0</span>].<span class="bu">str</span>.split(<span class="st">'_'</span>).<span class="bu">str</span>[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'position'</span>] <span class="op">=</span> df.site.<span class="bu">str</span>[<span class="dv">1</span>:].astype(<span class="bu">int</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="phosphorylate-the-sequence-based-on-the-site-info" class="level2">
+<h2 class="anchored" data-anchor-id="phosphorylate-the-sequence-based-on-the-site-info">Phosphorylate the sequence based on the site info</h2>
+<div id="R59NKmrRUKU9" class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> phosphorylate_seq(seq:<span class="bu">str</span>, <span class="co"># protein sequence</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                sites, <span class="co"># iterable item contains aa+position</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                ):</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Phosphorylate protein sequence based on site information"</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    seq_list <span class="op">=</span> <span class="bu">list</span>(seq)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    success<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    fail <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> s <span class="kw">in</span> sites:</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>        position <span class="op">=</span> <span class="bu">int</span>(s[<span class="dv">1</span>:])</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        aa <span class="op">=</span> s[<span class="dv">0</span>]</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> seq_list[position<span class="op">-</span><span class="dv">1</span>] <span class="op">==</span>aa:</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>            seq_list[position<span class="op">-</span><span class="dv">1</span>] <span class="op">=</span> seq_list[position<span class="op">-</span><span class="dv">1</span>].lower()</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>            success<span class="op">+=</span><span class="dv">1</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f'position </span><span class="sc">{</span>p<span class="sc">}</span><span class="ss"> in the sequence is </span><span class="sc">{</span>seq_list[p<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>            fail<span class="op">+=</span><span class="dv">1</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    seq2 <span class="op">=</span> <span class="st">''</span>.join(seq_list)</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'Successfully phosphorylated </span><span class="sc">{</span>success<span class="sc">}</span><span class="ss"> positions, with </span><span class="sc">{</span>fail<span class="sc">}</span><span class="ss"> failed.'</span>)</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> seq2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="rQyzeXZsY4N8" class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>seq <span class="op">=</span> phosphorylate_seq(sequence,df.site)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>seq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Successfully phosphorylated 41 positions, with 0 failed.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>'MATQADLMELDMAMEPDRKAAVsHWQQQsyLDsGIHsGATtTAPsLSGKGNPEEEDVDTsQVLyEWEQGFSQsFTQEQVADIDGQyAMTRAQRVRAAMFPEtLDEGMQIPStQFDAAHPtNVQRLAEPSQMLKHAVVNLINyQDDAELATRAIPELTKLLNDEDQVVVNKAAVMVHQLSKKEAsRHAIMRsPQMVSAIVRTMQNTNDVETARCTAGTLHNLSHHREGLLAIFKSGGIPALVKMLGsPVDSVLFYAITTLHNLLLHQEGAKMAVRLAGGLQKMVALLNKTNVKFLAITtDCLQILAYGNQEsKLIILASGGPQALVNIMRTytyEKLLWTTSRVLKVLSVCSsNKPAIVEAGGMQALGLHLtDPsQRLVQNCLWtLRNLSDAAtKQEGMEGLLGTLVQLLGSDDINVVTCAAGILSNLTCNNYKNKMMVCQVGGIEALVRTVLRAGDREDITEPAICALRHLtSRHQEAEMAQNAVRLHyGLPVVVKLLHPPSHWPLIKATVGLIRNLALCPANHAPLREQGAIPRLVQLLVRAHQDTQRRtsMGGtQQQFVEGVRMEEIVEGCTGALHILARDVHNRIVIRGLNTIPLFVQLLYsPIENIQRVAAGVLCELAQDKEAAEAIEAEGATAPLTELLHsRNEGVAtyAAAVLFRMSEDKPQDyKKRLsVELTSSLFRTEPMAWNETADLGLDIGAQGEPLGYRQDDPsYRsFHSGGYGQDALGMDPMMEHEMGGHHPGADYPVDGLPDLGHAQDLMDGLPPGDSNQLAWFDTDL'</code></pre>
+</div>
+</div>
+</section>
+<section id="extract-the-site-sequence" class="level2">
+<h2 class="anchored" data-anchor-id="extract-the-site-sequence">Extract the site sequence</h2>
+<div id="8erG1XJaQsYm" class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'seq'</span>] <span class="op">=</span> seq</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'site_seq2'</span>] <span class="op">=</span> extract_site_seq(df,<span class="st">'seq'</span>,<span class="st">'position'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|██████████| 41/41 [00:00&lt;00:00, 10386.33it/s]</code></pre>
+</div>
+</div>
+</section>
+<section id="pspa-scoring" class="level2">
+<h2 class="anchored" data-anchor-id="pspa-scoring">PSPA Scoring</h2>
+<p>If we have substrate sequence as capital form:</p>
+<div id="3874b377-5617-4091-b377-b6b2ecbc9270" class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pspa <span class="op">=</span> predict_kinase_df(df,<span class="st">'site_seq'</span>,<span class="op">**</span>param_PSPA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>input dataframe has a length 41
+Preprocessing
+Finish preprocessing
+Calculating position: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|██████████| 396/396 [00:05&lt;00:00, 78.03it/s] </code></pre>
+</div>
+</div>
+<p>If we have phosphorylated substrate sequence:</p>
+<div id="3b253276-e2b3-4fb0-9443-e1821578d0eb" class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>pspa <span class="op">=</span> predict_kinase_df(df,<span class="st">'site_seq2'</span>,<span class="op">**</span>param_PSPA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>input dataframe has a length 41
+Preprocessing
+Finish preprocessing
+Calculating position: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|██████████| 396/396 [00:00&lt;00:00, 2662.29it/s]</code></pre>
+</div>
+</div>
+</section>
+<section id="cddm-scoring" class="level2">
+<h2 class="anchored" data-anchor-id="cddm-scoring">CDDM scoring</h2>
+<p>If the site sequences are all in capital, we use param_CDDM_upper to calculate:</p>
+<div id="05903fbf-67d6-4c08-89e9-bf8067a65f9d" class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>cddm <span class="op">=</span> predict_kinase_df(df,<span class="st">'site_seq'</span>,<span class="op">**</span>param_CDDM_upper)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>input dataframe has a length 41
+Preprocessing
+Finish preprocessing
+Calculating position: [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|██████████| 289/289 [00:00&lt;00:00, 2627.94it/s]</code></pre>
+</div>
+</div>
+<p>With converted sequence, we can consider using param3 (ks for phosphorylated status)</p>
+<div id="lKkRmfATW6Zr" class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>cddm <span class="op">=</span> predict_kinase_df(df,<span class="st">'site_seq2'</span>,<span class="op">**</span>param_CDDM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>input dataframe has a length 41
+Preprocessing
+Finish preprocessing
+Calculating position: [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|██████████| 289/289 [00:00&lt;00:00, 1716.23it/s]</code></pre>
+</div>
+</div>
+</section>
+<section id="rank-kinase-for-each-site" class="level2">
+<h2 class="anchored" data-anchor-id="rank-kinase-for-each-site">Rank kinase for each site</h2>
+<div id="bd7932fc-5bb9-416a-a178-8c295fd2867a" class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_top(r, n):</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Get top n kinase from a row"</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.isinf(r).<span class="bu">any</span>(): <span class="co"># Check if 'inf' is in the row</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"unavailable due to Y site"</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>        top <span class="op">=</span> r.sort_values(ascending<span class="op">=</span><span class="va">False</span>)[:n].index</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">','</span>.join(top)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_top_df(df, n<span class="op">=</span><span class="dv">10</span>):</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Apply get_top in dataframe"</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df.<span class="bu">apply</span>(get_top, axis<span class="op">=</span><span class="dv">1</span>, args<span class="op">=</span>(n,))</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="522c3c00-0d09-42c4-9947-1f4a64495975" class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>pspa_rnk <span class="op">=</span> get_top_df(pspa)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>cddm_rnk <span class="op">=</span> get_top_df(cddm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="2287236c-fc8a-4b51-9a3f-0a4f76951857" class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>df.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Index([ 'site_seq', 'gene_site',      'gene',    'source',  'num_site',
+        'acceptor',          -7,          -6,          -5,          -4,
+                -3,          -2,          -1,           0,           1,
+                 2,           3,           4,           5,           6,
+                 7,      'site',  'position',       'seq', 'site_seq2'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<div id="761b8140-0a24-4123-b201-1bfb4df98310" class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>out <span class="op">=</span> df[[<span class="st">'gene_site'</span>,<span class="st">'site_seq2'</span>,<span class="st">'site'</span>,<span class="st">'position'</span>]].copy() <span class="co"># get site information</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="ac4b8bc5-5b2f-46d3-819e-3d7238dffc47" class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>out[<span class="st">'pspa'</span>] <span class="op">=</span> pspa_rnk</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>out[<span class="st">'cddm'</span>] <span class="op">=</span> cddm_rnk</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="91470328-7965-48eb-a613-50e545feadc2" class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>out</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">gene_site</th>
+<th data-quarto-table-cell-role="th">site_seq2</th>
+<th data-quarto-table-cell-role="th">site</th>
+<th data-quarto-table-cell-role="th">position</th>
+<th data-quarto-table-cell-role="th">pspa</th>
+<th data-quarto-table-cell-role="th">cddm</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">64201</td>
+<td>CTNNB1_S23</td>
+<td>PDRKAAVsHWQQQsy</td>
+<td>S23</td>
+<td>23</td>
+<td>SSTK,BRSK1,PRKD3,BRSK2,P70S6K,SNRK,MARK3,MAPKA...</td>
+<td>P90RSK,RSK4,MARK1,RSK2,AKT1,TSSK2,SGK1,P70S6K,...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">111457</td>
+<td>CTNNB1_S29|CTNB1_S29</td>
+<td>VsHWQQQsyLDsGIH</td>
+<td>S29</td>
+<td>29</td>
+<td>GSK3A,GSK3B,LATS2,MAPKAPK2,CAMK2A,CAMK2B,LATS1...</td>
+<td>PAK4,CAMK1D,NIM1,LATS2,PAK5,TBK1,TSSK1,GRK7,NU...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">91015</td>
+<td>CTNNB1_Y30|CTNB1_Y30</td>
+<td>sHWQQQsyLDsGIHs</td>
+<td>Y30</td>
+<td>30</td>
+<td>BMPR2_TYR,PTK2,SYK,ERBB4,PDHK1_TYR,EPHA3,PDHK4...</td>
+<td>ERBB4,FGFR4,TNK1,JAK3,CSK,KIT,EPHA5,EGFR,JAK2,...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">77044</td>
+<td>CTNNB1_S33</td>
+<td>QQQsyLDsGIHsGAT</td>
+<td>S33</td>
+<td>33</td>
+<td>CK1G2,CK1A,CK1G3,GSK3A,GSK3B,GRK3,CK1A2,CK1D,J...</td>
+<td>GSK3B,IKKB,IKKA,GSK3A,TBK1,PAK4,GRK1,IKKE,P90R...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">114100</td>
+<td>CTNNB1_S37|CTNB1_S37</td>
+<td>yLDsGIHsGATtTAP</td>
+<td>S37</td>
+<td>37</td>
+<td>GSK3A,GSK3B,CK1A,CK1G2,GRK7,IKKA,GRK4,GRK5,IKK...</td>
+<td>GSK3A,PAK6,PAK5,GSK3B,TBK1,PAK4,PRKX,IKKB,ULK3...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29849</td>
+<td>CTNNB1_T41</td>
+<td>GIHsGATtTAPsLSG</td>
+<td>T41</td>
+<td>41</td>
+<td>GSK3A,GSK3B,PRP4,PASK,CK1G2,CK1A,GRK7,CK1D,CK1...</td>
+<td>MPSK1,GSK3B,GSK3A,ASK1,PBK,MEK2,TNIK,MEKK2,LKB...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">27548</td>
+<td>CTNNB1_S45|CTNB1_S45</td>
+<td>GATtTAPsLSGKGNP</td>
+<td>S45</td>
+<td>45</td>
+<td>CK1A,CK1G1,CK1D,CK1E,CK1A2,CK1G2,CK1G3,IKKB,MT...</td>
+<td>TBK1,IKKE,PAK6,PKACA,ULK3,CK1A,CK1G2,MTOR,PKAC...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17342</td>
+<td>CTNNB1_S60</td>
+<td>EEEDVDTsQVLyEWE</td>
+<td>S60</td>
+<td>60</td>
+<td>ATM,ACVR2B,ACVR2A,GRK4,GRK7,CK1G2,PLK1,TLK2,PL...</td>
+<td>ATM,ATR,GRK7,GRK1,BUB1B,CK2A2,GRK5,DNAPK,CK2A1...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">107937</td>
+<td>CTNNB1_Y64</td>
+<td>VDTsQVLyEWEQGFS</td>
+<td>Y64</td>
+<td>64</td>
+<td>SYK,MERTK,EPHA5,SRMS,EPHA4,FER,EPHA3,PTK6,FES,TEK</td>
+<td>TEC,BLK,EPHA4,BTK,SRMS,SYK,FES,EPHA7,EPHA6,FYN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">112759</td>
+<td>CTNNB1_S73</td>
+<td>WEQGFSQsFTQEQVA</td>
+<td>S73</td>
+<td>73</td>
+<td>CAMK2G,ULK1,PLK1,PLK3,IKKA,CAMK2B,DSTYK,NEK2,I...</td>
+<td>BRSK2,IKKB,ULK3,TSSK1,NUAK1,PKACB,PRKX,NDR2,TB...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">107313</td>
+<td>CTNNB1_Y86</td>
+<td>VADIDGQyAMTRAQR</td>
+<td>Y86</td>
+<td>86</td>
+<td>ABL1,ABL2,MATK,BLK,FYN,FGR,MERTK,ZAP70,LCK,HCK</td>
+<td>JAK3,FGFR4,EGFR,TEK,KIT,FYN,BLK,LTK,TNK2,ABL1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">78730</td>
+<td>CTNNB1_T102</td>
+<td>RAAMFPEtLDEGMQI</td>
+<td>T102</td>
+<td>102</td>
+<td>DNAPK,CK2A1,CK2A2,CAMK2G,PLK2,PLK3,CAMK2A,TGFB...</td>
+<td>TNIK,CK2A2,HGK,CAMKK1,MEKK3,NEK4,MINK,GCK,KHS1...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18737</td>
+<td>CTNNB1_T112</td>
+<td>EGMQIPStQFDAAHP</td>
+<td>T112</td>
+<td>112</td>
+<td>ATR,DNAPK,SMG1,P38D,MPSK1,ATM,ICK,EEF2K,TLK2,A...</td>
+<td>ATR,ATM,DNAPK,EEF2K,CAMKK2,PBK,ICK,MPSK1,OSR1,...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">74575</td>
+<td>CTNNB1_T120</td>
+<td>QFDAAHPtNVQRLAE</td>
+<td>T120</td>
+<td>120</td>
+<td>MPSK1,TAK1,PINK1,VRK1,YANK2,GAK,GSK3A,PASK,ROC...</td>
+<td>PBK,LKB1,CAMKK1,OSR1,TNIK,EEF2K,ROCK2,NEK4,MIN...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8304</td>
+<td>CTNNB1_Y142</td>
+<td>AVVNLINyQDDAELA</td>
+<td>Y142</td>
+<td>142</td>
+<td>PDHK3_TYR,EPHA4,PDHK4_TYR,EPHA5,EPHA3,PDHK1_TY...</td>
+<td>EPHA4,ATR,EPHA6,EPHA7,EPHB1,EPHA3,EPHB2,EPHA8,...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">75966</td>
+<td>CTNNB1_S184</td>
+<td>QLSKKEAsRHAIMRs</td>
+<td>S184</td>
+<td>184</td>
+<td>SSTK,DCAMKL1,BRSK2,TSSK1,BRSK1,TLK1,TSSK2,AMPK...</td>
+<td>PAK4,TSSK1,BRSK2,MNK2,PAK6,PKN2,MARK2,NUAK1,DC...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">96269</td>
+<td>CTNNB1_S191|CTNB1_S191</td>
+<td>sRHAIMRsPQMVSAI</td>
+<td>S191</td>
+<td>191</td>
+<td>CDK17,CDK16,CDK14,CDK18,ERK1,ERK2,P38G,CDK9,CD...</td>
+<td>CDK4,ERK2,DYRK1A,CDK1,HIPK3,CDK2,CDK5,ERK1,DYR...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4207</td>
+<td>CTNNB1_S246</td>
+<td>ALVKMLGsPVDSVLF</td>
+<td>S246</td>
+<td>246</td>
+<td>JNK1,JNK2,P38D,JNK3,P38G,P38B,P38A,CDK8,NLK,CDK14</td>
+<td>CDK4,CDK1,CDK2,CDK5,ERK2,CDK3,JNK1,ERK1,DYRK4,...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">109213</td>
+<td>CTNNB1_T298</td>
+<td>VKFLAITtDCLQILA</td>
+<td>T298</td>
+<td>298</td>
+<td>MEK1,GSK3B,MOS,DAPK2,ALK4,ACVR2B,ACVR2A,MEK2,B...</td>
+<td>PBK,LKB1,TNIK,NEK4,MST2,MINK,CAMKK1,MST1,NEK1,HGK</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">49209</td>
+<td>CTNNB1_S311</td>
+<td>LAYGNQEsKLIILAS</td>
+<td>S311</td>
+<td>311</td>
+<td>IRE2,SKMLCK,TSSK1,SSTK,SMMLCK,TLK1,TSSK2,MELK,...</td>
+<td>TSSK1,NIM1,QIK,TSSK2,MARK2,MARK1,CAMK1D,MARK3,...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">56712</td>
+<td>CTNNB1_Y331</td>
+<td>LVNIMRTytyEKLLW</td>
+<td>Y331</td>
+<td>331</td>
+<td>PTK2,EPHA4,EPHA7,EPHA3,EPHA6,PTK2B,BMPR2_TYR,S...</td>
+<td>DDR2,FGFR4,EPHB1,LCK,RET,EPHA8,FES,EPHA4,EPHA5...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">110053</td>
+<td>CTNNB1_T332</td>
+<td>VNIMRTytyEKLLWT</td>
+<td>T332</td>
+<td>332</td>
+<td>ALPHAK3,YANK2,PASK,GRK7,SBK,YANK3,MAPKAPK2,NUA...</td>
+<td>AKT1,PBK,AMPKA1,LRRK2,CHK2,LKB1,TNIK,GCK,ROCK2...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">60253</td>
+<td>CTNNB1_Y333</td>
+<td>NIMRTytyEKLLWTT</td>
+<td>Y333</td>
+<td>333</td>
+<td>SYK,BLK,EPHA6,EPHA4,FRK,PTK2,ZAP70,ERBB4,EPHA8...</td>
+<td>EPHA1,EPHA7,EPHA2,BLK,TNK2,SRMS,EPHA4,LTK,EPHA...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">48275</td>
+<td>CTNNB1_S352</td>
+<td>KVLSVCSsNKPAIVE</td>
+<td>S352</td>
+<td>352</td>
+<td>BUB1,HIPK4,PRKD1,PRKD2,PRKD3,CDK18,KIS,PERK,ML...</td>
+<td>PRKD2,PRKD3,HIPK4,PRKD1,MAPKAPK3,TSSK2,CAMK4,M...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">73539</td>
+<td>CTNNB1_T371</td>
+<td>QALGLHLtDPsQRLV</td>
+<td>T371</td>
+<td>371</td>
+<td>SMG1,MEK1,MEK2,ACVR2B,CK2A1,GSK3B,MOS,DAPK2,BU...</td>
+<td>PBK,LKB1,NEK4,TNIK,CAMKK1,MEKK3,CAMKK2,MINK,GC...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">30738</td>
+<td>CTNNB1_S374</td>
+<td>GLHLtDPsQRLVQNC</td>
+<td>S374</td>
+<td>374</td>
+<td>CK1G3,CK1D,CK1A,CK1E,CK1A2,CK1G2,CK1G1,KIS,TGF...</td>
+<td>ATR,ATM,DNAPK,ERK7,NIM1,TSSK2,LATS1,PKCA,DSTYK...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">56763</td>
+<td>CTNNB1_T384</td>
+<td>LVQNCLWtLRNLSDA</td>
+<td>T384</td>
+<td>384</td>
+<td>ERK7,TAK1,NEK4,MST1,HPK1,NEK8,CAMKK1,IRAK1,NEK...</td>
+<td>CAMKK1,MINK,TNIK,CAMKK2,MST1,ERK7,NEK4,HGK,LKB...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">82907</td>
+<td>CTNNB1_T393</td>
+<td>RNLSDAAtKQEGMEG</td>
+<td>T393</td>
+<td>393</td>
+<td>GSK3A,CK1G3,TLK1,TSSK2,TLK2,GRK7,ALPHAK3,GSK3B...</td>
+<td>CK2A2,MEKK3,PBK,TNIK,CAMKK1,CAMKK2,MINK,MST1,M...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">37768</td>
+<td>CTNNB1_T472</td>
+<td>ICALRHLtSRHQEAE</td>
+<td>T472</td>
+<td>472</td>
+<td>PIM2,PKN1,ROCK1,MRCKB,PKCE,AKT3,LOK,AKT1,SGK1,...</td>
+<td>AKT1,ROCK1,ROCK2,SGK1,ERK7,MRCKB,PBK,AKT3,MST1...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">76147</td>
+<td>CTNNB1_Y489|CTNB1_Y489</td>
+<td>QNAVRLHyGLPVVVK</td>
+<td>Y489</td>
+<td>489</td>
+<td>ABL1,PTK2B,ABL2,PKMYT1_TYR,TNK2,FER,TNK1,PTK6,...</td>
+<td>CSK,PTK6,TNK1,TNK2,ABL1,PTK2B,LTK,TYRO3,LCK,PD...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">36580</td>
+<td>CTNNB1_T551|CTNB1_T551</td>
+<td>HQDTQRRtsMGGtQQ</td>
+<td>T551</td>
+<td>551</td>
+<td>DAPK1,DAPK3,AURA,AURB,DRAK1,DAPK2,AURC,PAK1,GR...</td>
+<td>LKB1,PBK,ROCK1,OSR1,AURB,TNIK,ROCK2,MINK,HASPI...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">74062</td>
+<td>CTNNB1_S552|CTNB1_S552</td>
+<td>QDTQRRtsMGGtQQQ</td>
+<td>S552</td>
+<td>552</td>
+<td>AURA,PRKX,CLK2,GSK3B,PKACB,MSK1,AURC,AKT2,AURB...</td>
+<td>PRKX,PKACA,PKACB,PKG2,AKT1,PKG1,AURB,AKT3,AURC...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">84863</td>
+<td>CTNNB1_T556|CTNB1_T556</td>
+<td>RRtsMGGtQQQFVEG</td>
+<td>T556</td>
+<td>556</td>
+<td>ATR,DNAPK,SMG1,CK1G3,ATM,TLK2,NEK5,CK1D,MEKK2,...</td>
+<td>ATR,ATM,DNAPK,OSR1,PBK,HASPIN,TNIK,GCK,HGK,MINK</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">50616</td>
+<td>CTNNB1_S605</td>
+<td>LFVQLLYsPIENIQR</td>
+<td>S605</td>
+<td>605</td>
+<td>JNK1,JNK3,JNK2,P38D,P38G,P38B,ERK5,ERK2,ERK1,D...</td>
+<td>CDK1,CDK4,CDK5,CDK2,CDK3,ERK2,ERK1,JNK1,P38G,JNK2</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">67851</td>
+<td>CTNNB1_S646</td>
+<td>PLTELLHsRNEGVAt</td>
+<td>S646</td>
+<td>646</td>
+<td>GRK6,PINK1,NEK9,PLK2,CAMKK1,NEK7,PLK3,GRK5,COT...</td>
+<td>CK2A2,CK2A1,IKKB,GRK1,GRK7,PAK4,IKKA,ULK3,P90R...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">96484</td>
+<td>CTNNB1_T653|CTNB1_T653</td>
+<td>sRNEGVAtyAAAVLF</td>
+<td>T653</td>
+<td>653</td>
+<td>GRK7,PRP4,TGFBR1,ALK4,JNK1,P38G,P38B,ACVR2B,BM...</td>
+<td>TNIK,PBK,OSR1,TAO2,MINK,MST1,KHS1,MST2,GCK,TAO1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">82815</td>
+<td>CTNNB1_Y654|CTNB1_Y654</td>
+<td>RNEGVAtyAAAVLFR</td>
+<td>Y654</td>
+<td>654</td>
+<td>PTK2,EPHA6,EPHB2,BLK,FYN,ZAP70,ABL2,ABL1,SYK,LCK</td>
+<td>EPHA7,EPHA4,TXK,CSK,LTK,BTK,EPHB3,LYN,EPHA1,BLK</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">88726</td>
+<td>CTNNB1_Y670</td>
+<td>SEDKPQDyKKRLsVE</td>
+<td>Y670</td>
+<td>670</td>
+<td>PDHK4_TYR,WEE1_TYR,TNNI3K_TYR,BMPR2_TYR,PDHK3_...</td>
+<td>FLT1,SYK,PTK2,KIT,CSF1R,EPHA4,EPHA6,JAK2,EPHA2...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">74091</td>
+<td>CTNNB1_S675|CTNB1_S675</td>
+<td>QDyKKRLsVELTSSL</td>
+<td>S675</td>
+<td>675</td>
+<td>MYLK4,AURA,PKACA,CLK4,SKMLCK,DAPK1,PKG2,DAPK3,...</td>
+<td>PAK4,PAK6,PAK5,PKACA,PKG2,PRKX,AURB,PAK1,PAK2,...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35054</td>
+<td>CTNNB1_S715|CTNB1_S715</td>
+<td>GYRQDDPsYRsFHSG</td>
+<td>S715</td>
+<td>715</td>
+<td>CK1G2,GRK7,GCN2,ERK7,LATS1,CK1G1,PLK3,YSK4,PLK...</td>
+<td>CK1G2,ERK7,CK1G3,AKT1,CK1G1,CK1A,RSK4,P90RSK,T...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">73830</td>
+<td>CTNNB1_S718</td>
+<td>QDDPsYRsFHSGGYG</td>
+<td>S718</td>
+<td>718</td>
+<td>CK1G3,CK1A,CK1G2,YANK2,CK1D,CK1G1,CK1A2,YANK3,...</td>
+<td>TBK1,CK1A,IKKA,IKKB,PAK5,PAK6,CK1G2,MNK2,ULK3,...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="rank-with-alphamissense" class="level2">
+<h2 class="anchored" data-anchor-id="rank-with-alphamissense">Rank with AlphaMissense</h2>
+<p>AlphaMissense is a deep learning model developed by DeepMind (paper <a href="https://www.science.org/doi/10.1126/science.adg7492">Accurate proteome-wide missense variant effect prediction with AlphaMissense</a>). It incorporates structural context by using an AlphaFold-derived system, and fine-tuning on weak labels from population frequency data, which avoids bias from human-curated annotations.</p>
+<p>According to the paper, the pathogenecity score is highly correlated with the functional significance of the position (e.g., the score is high in the region that interact with other protein). Therefore, the score can be also interpreted as a functional score in the protein: the higher the score, the more important the region is.</p>
+<p>Download the AlphaMissense aa substitution data, and convert to parquet for faster loading (uncomment the code)</p>
+<div id="09bfa64e-e1b2-4d2f-9a05-680272b6bbc8" class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>wget https:<span class="op">//</span>storage.googleapis.com<span class="op">/</span>dm_alphamissense<span class="op">/</span>AlphaMissense_aa_substitutions.tsv.gz</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co"># df = pd.read_csv('AlphaMissense_aa_substitutions.tsv.gz', compression='gzip',  header=3, sep='\t', quotechar='"')</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="co"># df.to_parquet('AlphaMissense_aa_substitutions.gzip.parquet', compression='gzip')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--2024-02-25 18:32:33--  https://storage.googleapis.com/dm_alphamissense/AlphaMissense_aa_substitutions.tsv.gz
+Resolving storage.googleapis.com (storage.googleapis.com)... 142.250.80.27, 142.250.65.219, 142.251.40.187, ...
+Connecting to storage.googleapis.com (storage.googleapis.com)|142.250.80.27|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 1207278510 (1.1G) [application/x-gzip]
+Saving to: ‘AlphaMissense_aa_substitutions.tsv.gz’
+
+AlphaMissense_aa_su 100%[===================&gt;]   1.12G  74.4MB/s    in 14s     
+
+2024-02-25 18:32:52 (84.2 MB/s) - ‘AlphaMissense_aa_substitutions.tsv.gz’ saved [1207278510/1207278510]
+</code></pre>
+</div>
+</div>
+<div id="5a0115ee-2013-444f-ba53-7c4a8aa68201" class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'AlphaMissense_aa_substitutions.tsv.gz'</span>, compression<span class="op">=</span><span class="st">'gzip'</span>,  header<span class="op">=</span><span class="dv">3</span>, sep<span class="op">=</span><span class="st">'</span><span class="ch">\t</span><span class="st">'</span>, quotechar<span class="op">=</span><span class="st">'"'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Load using parquet:</p>
+<div id="ef73b99c-d16c-445f-9b9f-2c993b9768f6" class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># %%time</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="co"># df = pd.read_parquet('AlphaMissense_aa_substitutions.gzip.parquet')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Load in datatable (datatable can read much faster than parquet, but it is 7x size bigger than the parquet file (i.e.&nbsp;7.9G vs.&nbsp;1.3G) :</p>
+<div id="3f79f694-f28f-4bc5-aaf3-79c62598df07" class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># !pip install datatable</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="co"># dt.Frame(df).to_jay("AlphaMissense_aa_substitutions.jay")</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="co"># DT = dt.fread("AlphaMissense_aa_substitutions.jay")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="0845fa67-6af8-4a15-819f-6709867d2fa6" class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> query_uniprot(df_or_dt, <span class="co"># dataframe or datatable</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>                  uniprot_id: <span class="bu">str</span>, <span class="co"># uniprot id</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>                 ):</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Query data by uniprot_id,extract relevant parts from the 'protein_variant' column,and pivot the data."</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check if input is pandas DataFrame</span></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">isinstance</span>(df_or_dt, pd.DataFrame):</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>        data <span class="op">=</span> df_or_dt.query(<span class="ss">f'uniprot_id == "</span><span class="sc">{</span>uniprot_id<span class="sc">}</span><span class="ss">"'</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check if input is datatable Frame</span></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> <span class="bu">isinstance</span>(df_or_dt, dt.Frame):</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>        data <span class="op">=</span> df_or_dt[f.uniprot_id <span class="op">==</span> uniprot_id, :].to_pandas()</span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Input must be a pandas DataFrame or a datatable Frame"</span>)</span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract parts from 'protein_variant' column</span></span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>    data[[<span class="st">'aa1'</span>, <span class="st">'position'</span>, <span class="st">'aa2'</span>]] <span class="op">=</span> data[<span class="st">'protein_variant'</span>].<span class="bu">str</span>.extract(<span class="vs">r'(\D)(\d+)(\D)'</span>)</span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>    data[<span class="st">'position_aa'</span>] <span class="op">=</span> data[<span class="st">'aa1'</span>] <span class="op">+</span> data[<span class="st">'position'</span>]</span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pivot the data</span></span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>    pivot_data <span class="op">=</span> data.pivot_table(index<span class="op">=</span><span class="st">'aa2'</span>, columns<span class="op">=</span><span class="st">'position_aa'</span>, values<span class="op">=</span><span class="st">'am_pathogenicity'</span>, aggfunc<span class="op">=</span><span class="st">'first'</span>)</span>
+<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-24"><a href="#cb43-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Ensure columns are sorted numerically by position</span></span>
+<span id="cb43-25"><a href="#cb43-25" aria-hidden="true" tabindex="-1"></a>    columns <span class="op">=</span> <span class="bu">sorted</span>(pivot_data.columns, key<span class="op">=</span><span class="kw">lambda</span> x: <span class="bu">int</span>(x[<span class="dv">1</span>:]) <span class="cf">if</span> x[<span class="dv">1</span>:].isdigit() <span class="cf">else</span> <span class="bu">float</span>(<span class="st">'inf'</span>))</span>
+<span id="cb43-26"><a href="#cb43-26" aria-hidden="true" tabindex="-1"></a>    pivot_data <span class="op">=</span> pivot_data[columns]</span>
+<span id="cb43-27"><a href="#cb43-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-28"><a href="#cb43-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> data, pivot_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="bf42ad91-b458-4693-bef6-1d029ba69c04" class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>uniprot_id <span class="op">=</span> <span class="st">"P35222"</span> <span class="co"># beta-catenin</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>data, pivot <span class="op">=</span> query_uniprot(df, uniprot_id) <span class="co"># Only human protein uniprot id is available</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="6724b1cb-7b1a-46da-92df-0d61ba55f3d9" class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This is a pivot table</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>pivot.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="2075147b-0929-40a9-b0f2-bf78aec9e03e" class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'position'</span>] <span class="op">=</span> data[<span class="st">'position'</span>].astype(<span class="bu">int</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="fb762fd1-0924-44b3-b94e-13d902633170" class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>data.groupby(<span class="st">'position'</span>).am_pathogenicity.mean().plot.line(figsize<span class="op">=</span>(<span class="dv">20</span>,<span class="dv">5</span>))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="a5a62429-1647-42c3-8c98-c5980237e965" class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>am <span class="op">=</span> data.groupby(<span class="st">'position'</span>).agg({<span class="st">'am_pathogenicity'</span>:<span class="st">'mean'</span>,<span class="st">'aa1'</span>:<span class="st">'first'</span>}).reset_index()</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>am</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cf5cd5f1-b415-4667-8121-6842fd627657" class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>am.to_csv(<span class="st">'raw/am.csv'</span>,index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="b38f0133-47db-45d0-b6ea-ee41855762d2" class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>am <span class="op">=</span> pd.read_csv(<span class="st">'raw/am.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="2f72264d-a4df-40f0-9614-d399945f8cf2" class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get the -7 to +7 mean of AM score surrounding each position</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>am[<span class="st">'am_pathogenicity_-7to+7'</span>] <span class="op">=</span> am[<span class="st">'am_pathogenicity'</span>].rolling(window<span class="op">=</span><span class="dv">15</span>, min_periods<span class="op">=</span><span class="dv">1</span>, center<span class="op">=</span><span class="va">True</span>).mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="d8fc8e6b-9471-4849-bd90-fbede36d9d1c" class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>am[<span class="st">'site'</span>] <span class="op">=</span>am[<span class="st">'aa1'</span>]<span class="op">+</span>am[<span class="st">'position'</span>].astype(<span class="bu">str</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Get AM score at the phosphorylation site</p>
+<div id="467b4507-c015-48de-85f8-0a4a6e7b57ac" class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>out2 <span class="op">=</span> out.merge(am)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'before merge:'</span>,<span class="bu">len</span>(out))</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'after merge:'</span>,<span class="bu">len</span>(out2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>before merge: 41
+after merge: 41</code></pre>
+</div>
+</div>
+<div id="6228ba04-9f5b-49cf-9c92-44c4cb3070fb" class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>out2.sort_values(<span class="st">'am_pathogenicity'</span>,ascending<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">gene_site</th>
+<th data-quarto-table-cell-role="th">site_seq2</th>
+<th data-quarto-table-cell-role="th">site</th>
+<th data-quarto-table-cell-role="th">position</th>
+<th data-quarto-table-cell-role="th">pspa</th>
+<th data-quarto-table-cell-role="th">cddm</th>
+<th data-quarto-table-cell-role="th">am_pathogenicity</th>
+<th data-quarto-table-cell-role="th">aa1</th>
+<th data-quarto-table-cell-role="th">am_pathogenicity_-7to+7</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">36</td>
+<td>CTNNB1_Y654|CTNB1_Y654</td>
+<td>RNEGVAtyAAAVLFR</td>
+<td>Y654</td>
+<td>654</td>
+<td>unavailable due to Y site</td>
+<td>EPHA7,EPHA4,TXK,CSK,LTK,BTK,EPHB3,LYN,EPHA1,BLK</td>
+<td>0.993016</td>
+<td>Y</td>
+<td>0.964376</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">28</td>
+<td>CTNNB1_T472</td>
+<td>ICALRHLtSRHQEAE</td>
+<td>T472</td>
+<td>472</td>
+<td>PIM2,PKN1,ROCK1,MRCKB,PKCE,AKT3,LOK,AKT1,SGK1,MST3</td>
+<td>AKT1,ROCK1,ROCK2,SGK1,ERK7,MRCKB,PBK,AKT3,MST1,SGK2</td>
+<td>0.988368</td>
+<td>T</td>
+<td>0.881822</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35</td>
+<td>CTNNB1_T653|CTNB1_T653</td>
+<td>sRNEGVAtyAAAVLF</td>
+<td>T653</td>
+<td>653</td>
+<td>GRK7,PRP4,TGFBR1,ALK4,JNK1,P38G,P38B,ACVR2B,BMPR1B,JNK3</td>
+<td>TNIK,PBK,OSR1,TAO2,MINK,MST1,KHS1,MST2,GCK,TAO1</td>
+<td>0.986426</td>
+<td>T</td>
+<td>0.962545</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">22</td>
+<td>CTNNB1_Y333</td>
+<td>NIMRTytyEKLLWTT</td>
+<td>Y333</td>
+<td>333</td>
+<td>unavailable due to Y site</td>
+<td>EPHA1,EPHA7,EPHA2,BLK,TNK2,SRMS,EPHA4,LTK,EPHA5,LYN</td>
+<td>0.982195</td>
+<td>Y</td>
+<td>0.827118</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>CTNNB1_Y142</td>
+<td>AVVNLINyQDDAELA</td>
+<td>Y142</td>
+<td>142</td>
+<td>unavailable due to Y site</td>
+<td>EPHA4,ATR,EPHA6,EPHA7,EPHB1,EPHA3,EPHB2,EPHA8,FGFR2,EPHA2</td>
+<td>0.980268</td>
+<td>Y</td>
+<td>0.954522</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">38</td>
+<td>CTNNB1_S675|CTNB1_S675</td>
+<td>QDyKKRLsVELTSSL</td>
+<td>S675</td>
+<td>675</td>
+<td>MYLK4,AURA,PKACA,CLK4,SKMLCK,DAPK1,PKG2,DAPK3,MSK1,PAK4</td>
+<td>PAK4,PAK6,PAK5,PKACA,PKG2,PRKX,AURB,PAK1,PAK2,PKACB</td>
+<td>0.980063</td>
+<td>S</td>
+<td>0.910690</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3</td>
+<td>CTNNB1_S33</td>
+<td>QQQsyLDsGIHsGAT</td>
+<td>S33</td>
+<td>33</td>
+<td>CK1G2,CK1A,CK1G3,GSK3A,GSK3B,GRK3,CK1A2,CK1D,JNK1,GRK2</td>
+<td>GSK3B,IKKB,IKKA,GSK3A,TBK1,PAK4,GRK1,IKKE,P90RSK,ERK5</td>
+<td>0.978753</td>
+<td>S</td>
+<td>0.740510</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">18</td>
+<td>CTNNB1_T298</td>
+<td>VKFLAITtDCLQILA</td>
+<td>T298</td>
+<td>298</td>
+<td>MEK1,GSK3B,MOS,DAPK2,ALK4,ACVR2B,ACVR2A,MEK2,BRAF,GRK2</td>
+<td>PBK,LKB1,TNIK,NEK4,MST2,MINK,CAMKK1,MST1,NEK1,HGK</td>
+<td>0.972658</td>
+<td>T</td>
+<td>0.962921</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">19</td>
+<td>CTNNB1_S311</td>
+<td>LAYGNQEsKLIILAS</td>
+<td>S311</td>
+<td>311</td>
+<td>IRE2,SKMLCK,TSSK1,SSTK,SMMLCK,TLK1,TSSK2,MELK,CAMK1G,RIPK3</td>
+<td>TSSK1,NIM1,QIK,TSSK2,MARK2,MARK1,CAMK1D,MARK3,PRKD1,BRSK2</td>
+<td>0.972500</td>
+<td>S</td>
+<td>0.968567</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>CTNNB1_S374</td>
+<td>GLHLtDPsQRLVQNC</td>
+<td>S374</td>
+<td>374</td>
+<td>CK1G3,CK1D,CK1A,CK1E,CK1A2,CK1G2,CK1G1,KIS,TGFBR2,ATM</td>
+<td>ATR,ATM,DNAPK,ERK7,NIM1,TSSK2,LATS1,PKCA,DSTYK,NUAK1</td>
+<td>0.960511</td>
+<td>S</td>
+<td>0.747484</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">34</td>
+<td>CTNNB1_S646</td>
+<td>PLTELLHsRNEGVAt</td>
+<td>S646</td>
+<td>646</td>
+<td>GRK6,PINK1,NEK9,PLK2,CAMKK1,NEK7,PLK3,GRK5,COT,CK2A2</td>
+<td>CK2A2,CK2A1,IKKB,GRK1,GRK7,PAK4,IKKA,ULK3,P90RSK,MAPKAPK3</td>
+<td>0.956311</td>
+<td>S</td>
+<td>0.959204</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">37</td>
+<td>CTNNB1_Y670</td>
+<td>SEDKPQDyKKRLsVE</td>
+<td>Y670</td>
+<td>670</td>
+<td>unavailable due to Y site</td>
+<td>FLT1,SYK,PTK2,KIT,CSF1R,EPHA4,EPHA6,JAK2,EPHA2,FGFR4</td>
+<td>0.954805</td>
+<td>Y</td>
+<td>0.923685</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>CTNNB1_S37|CTNB1_S37</td>
+<td>yLDsGIHsGATtTAP</td>
+<td>S37</td>
+<td>37</td>
+<td>GSK3A,GSK3B,CK1A,CK1G2,GRK7,IKKA,GRK4,GRK5,IKKB,CK1G3</td>
+<td>GSK3A,PAK6,PAK5,GSK3B,TBK1,PAK4,PRKX,IKKB,ULK3,PIM3</td>
+<td>0.954689</td>
+<td>S</td>
+<td>0.765669</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">26</td>
+<td>CTNNB1_T384</td>
+<td>LVQNCLWtLRNLSDA</td>
+<td>T384</td>
+<td>384</td>
+<td>ERK7,TAK1,NEK4,MST1,HPK1,NEK8,CAMKK1,IRAK1,NEK1,MST2</td>
+<td>CAMKK1,MINK,TNIK,CAMKK2,MST1,ERK7,NEK4,HGK,LKB1,MST2</td>
+<td>0.945400</td>
+<td>T</td>
+<td>0.935751</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">15</td>
+<td>CTNNB1_S184</td>
+<td>QLSKKEAsRHAIMRs</td>
+<td>S184</td>
+<td>184</td>
+<td>SSTK,DCAMKL1,BRSK2,TSSK1,BRSK1,TLK1,TSSK2,AMPKA2,NUAK2,AMPKA1</td>
+<td>PAK4,TSSK1,BRSK2,MNK2,PAK6,PKN2,MARK2,NUAK1,DCAMKL1,TSSK2</td>
+<td>0.927547</td>
+<td>S</td>
+<td>0.872343</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6</td>
+<td>CTNNB1_S45|CTNB1_S45</td>
+<td>GATtTAPsLSGKGNP</td>
+<td>S45</td>
+<td>45</td>
+<td>CK1A,CK1G1,CK1D,CK1E,CK1A2,CK1G2,CK1G3,IKKB,MTOR,IKKA</td>
+<td>TBK1,IKKE,PAK6,PKACA,ULK3,CK1A,CK1G2,MTOR,PKACB,PAK5</td>
+<td>0.915674</td>
+<td>S</td>
+<td>0.607427</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5</td>
+<td>CTNNB1_T41</td>
+<td>GIHsGATtTAPsLSG</td>
+<td>T41</td>
+<td>41</td>
+<td>GSK3A,GSK3B,PRP4,PASK,CK1G2,CK1A,GRK7,CK1D,CK1G3,CK1A2</td>
+<td>MPSK1,GSK3B,GSK3A,ASK1,PBK,MEK2,TNIK,MEKK2,LKB1,MST2</td>
+<td>0.903105</td>
+<td>T</td>
+<td>0.735984</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>CTNNB1_T102</td>
+<td>RAAMFPEtLDEGMQI</td>
+<td>T102</td>
+<td>102</td>
+<td>DNAPK,CK2A1,CK2A2,CAMK2G,PLK2,PLK3,CAMK2A,TGFBR1,GRK6,CAMK2B</td>
+<td>TNIK,CK2A2,HGK,CAMKK1,MEKK3,NEK4,MINK,GCK,KHS1,MST2</td>
+<td>0.894711</td>
+<td>T</td>
+<td>0.773253</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">13</td>
+<td>CTNNB1_T120</td>
+<td>QFDAAHPtNVQRLAE</td>
+<td>T120</td>
+<td>120</td>
+<td>MPSK1,TAK1,PINK1,VRK1,YANK2,GAK,GSK3A,PASK,ROCK2,PIM3</td>
+<td>PBK,LKB1,CAMKK1,OSR1,TNIK,EEF2K,ROCK2,NEK4,MINK,MST1</td>
+<td>0.878526</td>
+<td>T</td>
+<td>0.677279</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>CTNNB1_T393</td>
+<td>RNLSDAAtKQEGMEG</td>
+<td>T393</td>
+<td>393</td>
+<td>GSK3A,CK1G3,TLK1,TSSK2,TLK2,GRK7,ALPHAK3,GSK3B,JNK3,GRK6</td>
+<td>CK2A2,MEKK3,PBK,TNIK,CAMKK1,CAMKK2,MINK,MST1,MEK2,NEK4</td>
+<td>0.846858</td>
+<td>T</td>
+<td>0.809483</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">23</td>
+<td>CTNNB1_S352</td>
+<td>KVLSVCSsNKPAIVE</td>
+<td>S352</td>
+<td>352</td>
+<td>BUB1,HIPK4,PRKD1,PRKD2,PRKD3,CDK18,KIS,PERK,MLK2,CK1E</td>
+<td>PRKD2,PRKD3,HIPK4,PRKD1,MAPKAPK3,TSSK2,CAMK4,MAPKAPK5,CAMK1D,MAPKAPK2</td>
+<td>0.839116</td>
+<td>S</td>
+<td>0.915200</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">20</td>
+<td>CTNNB1_Y331</td>
+<td>LVNIMRTytyEKLLW</td>
+<td>Y331</td>
+<td>331</td>
+<td>unavailable due to Y site</td>
+<td>DDR2,FGFR4,EPHB1,LCK,RET,EPHA8,FES,EPHA4,EPHA5,FGFR2</td>
+<td>0.837516</td>
+<td>Y</td>
+<td>0.826654</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>CTNNB1_S191|CTNB1_S191</td>
+<td>sRHAIMRsPQMVSAI</td>
+<td>S191</td>
+<td>191</td>
+<td>CDK17,CDK16,CDK14,CDK18,ERK1,ERK2,P38G,CDK9,CDK7,CDK19</td>
+<td>CDK4,ERK2,DYRK1A,CDK1,HIPK3,CDK2,CDK5,ERK1,DYRK4,CDK9</td>
+<td>0.811158</td>
+<td>S</td>
+<td>0.787408</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>CTNNB1_Y30|CTNB1_Y30</td>
+<td>sHWQQQsyLDsGIHs</td>
+<td>Y30</td>
+<td>30</td>
+<td>unavailable due to Y site</td>
+<td>ERBB4,FGFR4,TNK1,JAK3,CSK,KIT,EPHA5,EGFR,JAK2,EPHA6</td>
+<td>0.780358</td>
+<td>Y</td>
+<td>0.725587</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">17</td>
+<td>CTNNB1_S246</td>
+<td>ALVKMLGsPVDSVLF</td>
+<td>S246</td>
+<td>246</td>
+<td>JNK1,JNK2,P38D,JNK3,P38G,P38B,P38A,CDK8,NLK,CDK14</td>
+<td>CDK4,CDK1,CDK2,CDK5,ERK2,CDK3,JNK1,ERK1,DYRK4,JNK2</td>
+<td>0.772711</td>
+<td>S</td>
+<td>0.868286</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">33</td>
+<td>CTNNB1_S605</td>
+<td>LFVQLLYsPIENIQR</td>
+<td>S605</td>
+<td>605</td>
+<td>JNK1,JNK3,JNK2,P38D,P38G,P38B,ERK5,ERK2,ERK1,DYRK4</td>
+<td>CDK1,CDK4,CDK5,CDK2,CDK3,ERK2,ERK1,JNK1,P38G,JNK2</td>
+<td>0.744484</td>
+<td>S</td>
+<td>0.871562</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">29</td>
+<td>CTNNB1_Y489|CTNB1_Y489</td>
+<td>QNAVRLHyGLPVVVK</td>
+<td>Y489</td>
+<td>489</td>
+<td>unavailable due to Y site</td>
+<td>CSK,PTK6,TNK1,TNK2,ABL1,PTK2B,LTK,TYRO3,LCK,PDGFRB</td>
+<td>0.690221</td>
+<td>Y</td>
+<td>0.762891</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">10</td>
+<td>CTNNB1_Y86</td>
+<td>VADIDGQyAMTRAQR</td>
+<td>Y86</td>
+<td>86</td>
+<td>unavailable due to Y site</td>
+<td>JAK3,FGFR4,EGFR,TEK,KIT,FYN,BLK,LTK,TNK2,ABL1</td>
+<td>0.688526</td>
+<td>Y</td>
+<td>0.663319</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>CTNNB1_T112</td>
+<td>EGMQIPStQFDAAHP</td>
+<td>T112</td>
+<td>112</td>
+<td>ATR,DNAPK,SMG1,P38D,MPSK1,ATM,ICK,EEF2K,TLK2,ALPHAK3</td>
+<td>ATR,ATM,DNAPK,EEF2K,CAMKK2,PBK,ICK,MPSK1,OSR1,CAMKK1</td>
+<td>0.663232</td>
+<td>T</td>
+<td>0.519340</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>CTNNB1_S29|CTNB1_S29</td>
+<td>VsHWQQQsyLDsGIH</td>
+<td>S29</td>
+<td>29</td>
+<td>GSK3A,GSK3B,LATS2,MAPKAPK2,CAMK2A,CAMK2B,LATS1,GRK7,GRK6,CK1G3</td>
+<td>PAK4,CAMK1D,NIM1,LATS2,PAK5,TBK1,TSSK1,GRK7,NUAK1,MAPKAPK3</td>
+<td>0.628389</td>
+<td>S</td>
+<td>0.721551</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">31</td>
+<td>CTNNB1_S552|CTNB1_S552</td>
+<td>QDTQRRtsMGGtQQQ</td>
+<td>S552</td>
+<td>552</td>
+<td>AURA,PRKX,CLK2,GSK3B,PKACB,MSK1,AURC,AKT2,AURB,PKACA</td>
+<td>PRKX,PKACA,PKACB,PKG2,AKT1,PKG1,AURB,AKT3,AURC,AKT2</td>
+<td>0.596179</td>
+<td>S</td>
+<td>0.585350</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">0</td>
+<td>CTNNB1_S23</td>
+<td>PDRKAAVsHWQQQsy</td>
+<td>S23</td>
+<td>23</td>
+<td>SSTK,BRSK1,PRKD3,BRSK2,P70S6K,SNRK,MARK3,MAPKAPK3,DCAMKL1,PRKD1</td>
+<td>P90RSK,RSK4,MARK1,RSK2,AKT1,TSSK2,SGK1,P70S6K,AKT3,MARK2</td>
+<td>0.434195</td>
+<td>S</td>
+<td>0.593858</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">21</td>
+<td>CTNNB1_T332</td>
+<td>VNIMRTytyEKLLWT</td>
+<td>T332</td>
+<td>332</td>
+<td>ALPHAK3,YANK2,PASK,GRK7,SBK,YANK3,MAPKAPK2,NUAK2,CAMK2B,CAMK1D</td>
+<td>AKT1,PBK,AMPKA1,LRRK2,CHK2,LKB1,TNIK,GCK,ROCK2,MINK</td>
+<td>0.408153</td>
+<td>T</td>
+<td>0.826906</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">30</td>
+<td>CTNNB1_T551|CTNB1_T551</td>
+<td>HQDTQRRtsMGGtQQ</td>
+<td>T551</td>
+<td>551</td>
+<td>DAPK1,DAPK3,AURA,AURB,DRAK1,DAPK2,AURC,PAK1,GRK2,HASPIN</td>
+<td>LKB1,PBK,ROCK1,OSR1,AURB,TNIK,ROCK2,MINK,HASPIN,CAMKK1</td>
+<td>0.402405</td>
+<td>T</td>
+<td>0.623633</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">40</td>
+<td>CTNNB1_S718</td>
+<td>QDDPsYRsFHSGGYG</td>
+<td>S718</td>
+<td>718</td>
+<td>CK1G3,CK1A,CK1G2,YANK2,CK1D,CK1G1,CK1A2,YANK3,GRK1,CK1E</td>
+<td>TBK1,CK1A,IKKA,IKKB,PAK5,PAK6,CK1G2,MNK2,ULK3,PAK4</td>
+<td>0.365442</td>
+<td>S</td>
+<td>0.326477</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>CTNNB1_S73</td>
+<td>WEQGFSQsFTQEQVA</td>
+<td>S73</td>
+<td>73</td>
+<td>CAMK2G,ULK1,PLK1,PLK3,IKKA,CAMK2B,DSTYK,NEK2,IKKB,NEK7</td>
+<td>BRSK2,IKKB,ULK3,TSSK1,NUAK1,PKACB,PRKX,NDR2,TBK1,PKN1</td>
+<td>0.347105</td>
+<td>S</td>
+<td>0.489721</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">32</td>
+<td>CTNNB1_T556|CTNB1_T556</td>
+<td>RRtsMGGtQQQFVEG</td>
+<td>T556</td>
+<td>556</td>
+<td>ATR,DNAPK,SMG1,CK1G3,ATM,TLK2,NEK5,CK1D,MEKK2,MEKK3</td>
+<td>ATR,ATM,DNAPK,OSR1,PBK,HASPIN,TNIK,GCK,HGK,MINK</td>
+<td>0.330547</td>
+<td>T</td>
+<td>0.595432</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">8</td>
+<td>CTNNB1_Y64</td>
+<td>VDTsQVLyEWEQGFS</td>
+<td>Y64</td>
+<td>64</td>
+<td>unavailable due to Y site</td>
+<td>TEC,BLK,EPHA4,BTK,SRMS,SYK,FES,EPHA7,EPHA6,FYN</td>
+<td>0.294942</td>
+<td>Y</td>
+<td>0.392226</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>CTNNB1_T371</td>
+<td>QALGLHLtDPsQRLV</td>
+<td>T371</td>
+<td>371</td>
+<td>SMG1,MEK1,MEK2,ACVR2B,CK2A1,GSK3B,MOS,DAPK2,BUB1,CDC7</td>
+<td>PBK,LKB1,NEK4,TNIK,CAMKK1,MEKK3,CAMKK2,MINK,GCK,NEK1</td>
+<td>0.286979</td>
+<td>T</td>
+<td>0.734737</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">39</td>
+<td>CTNNB1_S715|CTNB1_S715</td>
+<td>GYRQDDPsYRsFHSG</td>
+<td>S715</td>
+<td>715</td>
+<td>CK1G2,GRK7,GCN2,ERK7,LATS1,CK1G1,PLK3,YSK4,PLK2,CK1G3</td>
+<td>CK1G2,ERK7,CK1G3,AKT1,CK1G1,CK1A,RSK4,P90RSK,TBK1,SGK1</td>
+<td>0.276474</td>
+<td>S</td>
+<td>0.331333</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">7</td>
+<td>CTNNB1_S60</td>
+<td>EEEDVDTsQVLyEWE</td>
+<td>S60</td>
+<td>60</td>
+<td>ATM,ACVR2B,ACVR2A,GRK4,GRK7,CK1G2,PLK1,TLK2,PLK2,GRK3</td>
+<td>ATM,ATR,GRK7,GRK1,BUB1B,CK2A2,GRK5,DNAPK,CK2A1,CK1G2</td>
+<td>0.208932</td>
+<td>S</td>
+<td>0.364562</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="dde921b0-0abd-4f7f-ae91-728ce9fd5d31" class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>out2.sort_values(<span class="st">'am_pathogenicity_-7to+7'</span>,ascending<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">gene_site</th>
+<th data-quarto-table-cell-role="th">site_seq2</th>
+<th data-quarto-table-cell-role="th">site</th>
+<th data-quarto-table-cell-role="th">position</th>
+<th data-quarto-table-cell-role="th">pspa</th>
+<th data-quarto-table-cell-role="th">cddm</th>
+<th data-quarto-table-cell-role="th">am_pathogenicity</th>
+<th data-quarto-table-cell-role="th">aa1</th>
+<th data-quarto-table-cell-role="th">am_pathogenicity_-7to+7</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">19</td>
+<td>CTNNB1_S311</td>
+<td>LAYGNQEsKLIILAS</td>
+<td>S311</td>
+<td>311</td>
+<td>IRE2,SKMLCK,TSSK1,SSTK,SMMLCK,TLK1,TSSK2,MELK,CAMK1G,RIPK3</td>
+<td>TSSK1,NIM1,QIK,TSSK2,MARK2,MARK1,CAMK1D,MARK3,PRKD1,BRSK2</td>
+<td>0.972500</td>
+<td>S</td>
+<td>0.968567</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">36</td>
+<td>CTNNB1_Y654|CTNB1_Y654</td>
+<td>RNEGVAtyAAAVLFR</td>
+<td>Y654</td>
+<td>654</td>
+<td>unavailable due to Y site</td>
+<td>EPHA7,EPHA4,TXK,CSK,LTK,BTK,EPHB3,LYN,EPHA1,BLK</td>
+<td>0.993016</td>
+<td>Y</td>
+<td>0.964376</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>CTNNB1_T298</td>
+<td>VKFLAITtDCLQILA</td>
+<td>T298</td>
+<td>298</td>
+<td>MEK1,GSK3B,MOS,DAPK2,ALK4,ACVR2B,ACVR2A,MEK2,BRAF,GRK2</td>
+<td>PBK,LKB1,TNIK,NEK4,MST2,MINK,CAMKK1,MST1,NEK1,HGK</td>
+<td>0.972658</td>
+<td>T</td>
+<td>0.962921</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">35</td>
+<td>CTNNB1_T653|CTNB1_T653</td>
+<td>sRNEGVAtyAAAVLF</td>
+<td>T653</td>
+<td>653</td>
+<td>GRK7,PRP4,TGFBR1,ALK4,JNK1,P38G,P38B,ACVR2B,BMPR1B,JNK3</td>
+<td>TNIK,PBK,OSR1,TAO2,MINK,MST1,KHS1,MST2,GCK,TAO1</td>
+<td>0.986426</td>
+<td>T</td>
+<td>0.962545</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">34</td>
+<td>CTNNB1_S646</td>
+<td>PLTELLHsRNEGVAt</td>
+<td>S646</td>
+<td>646</td>
+<td>GRK6,PINK1,NEK9,PLK2,CAMKK1,NEK7,PLK3,GRK5,COT,CK2A2</td>
+<td>CK2A2,CK2A1,IKKB,GRK1,GRK7,PAK4,IKKA,ULK3,P90RSK,MAPKAPK3</td>
+<td>0.956311</td>
+<td>S</td>
+<td>0.959204</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">14</td>
+<td>CTNNB1_Y142</td>
+<td>AVVNLINyQDDAELA</td>
+<td>Y142</td>
+<td>142</td>
+<td>unavailable due to Y site</td>
+<td>EPHA4,ATR,EPHA6,EPHA7,EPHB1,EPHA3,EPHB2,EPHA8,FGFR2,EPHA2</td>
+<td>0.980268</td>
+<td>Y</td>
+<td>0.954522</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>CTNNB1_T384</td>
+<td>LVQNCLWtLRNLSDA</td>
+<td>T384</td>
+<td>384</td>
+<td>ERK7,TAK1,NEK4,MST1,HPK1,NEK8,CAMKK1,IRAK1,NEK1,MST2</td>
+<td>CAMKK1,MINK,TNIK,CAMKK2,MST1,ERK7,NEK4,HGK,LKB1,MST2</td>
+<td>0.945400</td>
+<td>T</td>
+<td>0.935751</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">37</td>
+<td>CTNNB1_Y670</td>
+<td>SEDKPQDyKKRLsVE</td>
+<td>Y670</td>
+<td>670</td>
+<td>unavailable due to Y site</td>
+<td>FLT1,SYK,PTK2,KIT,CSF1R,EPHA4,EPHA6,JAK2,EPHA2,FGFR4</td>
+<td>0.954805</td>
+<td>Y</td>
+<td>0.923685</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">23</td>
+<td>CTNNB1_S352</td>
+<td>KVLSVCSsNKPAIVE</td>
+<td>S352</td>
+<td>352</td>
+<td>BUB1,HIPK4,PRKD1,PRKD2,PRKD3,CDK18,KIS,PERK,MLK2,CK1E</td>
+<td>PRKD2,PRKD3,HIPK4,PRKD1,MAPKAPK3,TSSK2,CAMK4,MAPKAPK5,CAMK1D,MAPKAPK2</td>
+<td>0.839116</td>
+<td>S</td>
+<td>0.915200</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">38</td>
+<td>CTNNB1_S675|CTNB1_S675</td>
+<td>QDyKKRLsVELTSSL</td>
+<td>S675</td>
+<td>675</td>
+<td>MYLK4,AURA,PKACA,CLK4,SKMLCK,DAPK1,PKG2,DAPK3,MSK1,PAK4</td>
+<td>PAK4,PAK6,PAK5,PKACA,PKG2,PRKX,AURB,PAK1,PAK2,PKACB</td>
+<td>0.980063</td>
+<td>S</td>
+<td>0.910690</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>CTNNB1_T472</td>
+<td>ICALRHLtSRHQEAE</td>
+<td>T472</td>
+<td>472</td>
+<td>PIM2,PKN1,ROCK1,MRCKB,PKCE,AKT3,LOK,AKT1,SGK1,MST3</td>
+<td>AKT1,ROCK1,ROCK2,SGK1,ERK7,MRCKB,PBK,AKT3,MST1,SGK2</td>
+<td>0.988368</td>
+<td>T</td>
+<td>0.881822</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>CTNNB1_S184</td>
+<td>QLSKKEAsRHAIMRs</td>
+<td>S184</td>
+<td>184</td>
+<td>SSTK,DCAMKL1,BRSK2,TSSK1,BRSK1,TLK1,TSSK2,AMPKA2,NUAK2,AMPKA1</td>
+<td>PAK4,TSSK1,BRSK2,MNK2,PAK6,PKN2,MARK2,NUAK1,DCAMKL1,TSSK2</td>
+<td>0.927547</td>
+<td>S</td>
+<td>0.872343</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">33</td>
+<td>CTNNB1_S605</td>
+<td>LFVQLLYsPIENIQR</td>
+<td>S605</td>
+<td>605</td>
+<td>JNK1,JNK3,JNK2,P38D,P38G,P38B,ERK5,ERK2,ERK1,DYRK4</td>
+<td>CDK1,CDK4,CDK5,CDK2,CDK3,ERK2,ERK1,JNK1,P38G,JNK2</td>
+<td>0.744484</td>
+<td>S</td>
+<td>0.871562</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>CTNNB1_S246</td>
+<td>ALVKMLGsPVDSVLF</td>
+<td>S246</td>
+<td>246</td>
+<td>JNK1,JNK2,P38D,JNK3,P38G,P38B,P38A,CDK8,NLK,CDK14</td>
+<td>CDK4,CDK1,CDK2,CDK5,ERK2,CDK3,JNK1,ERK1,DYRK4,JNK2</td>
+<td>0.772711</td>
+<td>S</td>
+<td>0.868286</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>CTNNB1_Y333</td>
+<td>NIMRTytyEKLLWTT</td>
+<td>Y333</td>
+<td>333</td>
+<td>unavailable due to Y site</td>
+<td>EPHA1,EPHA7,EPHA2,BLK,TNK2,SRMS,EPHA4,LTK,EPHA5,LYN</td>
+<td>0.982195</td>
+<td>Y</td>
+<td>0.827118</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>CTNNB1_T332</td>
+<td>VNIMRTytyEKLLWT</td>
+<td>T332</td>
+<td>332</td>
+<td>ALPHAK3,YANK2,PASK,GRK7,SBK,YANK3,MAPKAPK2,NUAK2,CAMK2B,CAMK1D</td>
+<td>AKT1,PBK,AMPKA1,LRRK2,CHK2,LKB1,TNIK,GCK,ROCK2,MINK</td>
+<td>0.408153</td>
+<td>T</td>
+<td>0.826906</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>CTNNB1_Y331</td>
+<td>LVNIMRTytyEKLLW</td>
+<td>Y331</td>
+<td>331</td>
+<td>unavailable due to Y site</td>
+<td>DDR2,FGFR4,EPHB1,LCK,RET,EPHA8,FES,EPHA4,EPHA5,FGFR2</td>
+<td>0.837516</td>
+<td>Y</td>
+<td>0.826654</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>CTNNB1_T393</td>
+<td>RNLSDAAtKQEGMEG</td>
+<td>T393</td>
+<td>393</td>
+<td>GSK3A,CK1G3,TLK1,TSSK2,TLK2,GRK7,ALPHAK3,GSK3B,JNK3,GRK6</td>
+<td>CK2A2,MEKK3,PBK,TNIK,CAMKK1,CAMKK2,MINK,MST1,MEK2,NEK4</td>
+<td>0.846858</td>
+<td>T</td>
+<td>0.809483</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>CTNNB1_S191|CTNB1_S191</td>
+<td>sRHAIMRsPQMVSAI</td>
+<td>S191</td>
+<td>191</td>
+<td>CDK17,CDK16,CDK14,CDK18,ERK1,ERK2,P38G,CDK9,CDK7,CDK19</td>
+<td>CDK4,ERK2,DYRK1A,CDK1,HIPK3,CDK2,CDK5,ERK1,DYRK4,CDK9</td>
+<td>0.811158</td>
+<td>S</td>
+<td>0.787408</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>CTNNB1_T102</td>
+<td>RAAMFPEtLDEGMQI</td>
+<td>T102</td>
+<td>102</td>
+<td>DNAPK,CK2A1,CK2A2,CAMK2G,PLK2,PLK3,CAMK2A,TGFBR1,GRK6,CAMK2B</td>
+<td>TNIK,CK2A2,HGK,CAMKK1,MEKK3,NEK4,MINK,GCK,KHS1,MST2</td>
+<td>0.894711</td>
+<td>T</td>
+<td>0.773253</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>CTNNB1_S37|CTNB1_S37</td>
+<td>yLDsGIHsGATtTAP</td>
+<td>S37</td>
+<td>37</td>
+<td>GSK3A,GSK3B,CK1A,CK1G2,GRK7,IKKA,GRK4,GRK5,IKKB,CK1G3</td>
+<td>GSK3A,PAK6,PAK5,GSK3B,TBK1,PAK4,PRKX,IKKB,ULK3,PIM3</td>
+<td>0.954689</td>
+<td>S</td>
+<td>0.765669</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>CTNNB1_Y489|CTNB1_Y489</td>
+<td>QNAVRLHyGLPVVVK</td>
+<td>Y489</td>
+<td>489</td>
+<td>unavailable due to Y site</td>
+<td>CSK,PTK6,TNK1,TNK2,ABL1,PTK2B,LTK,TYRO3,LCK,PDGFRB</td>
+<td>0.690221</td>
+<td>Y</td>
+<td>0.762891</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">25</td>
+<td>CTNNB1_S374</td>
+<td>GLHLtDPsQRLVQNC</td>
+<td>S374</td>
+<td>374</td>
+<td>CK1G3,CK1D,CK1A,CK1E,CK1A2,CK1G2,CK1G1,KIS,TGFBR2,ATM</td>
+<td>ATR,ATM,DNAPK,ERK7,NIM1,TSSK2,LATS1,PKCA,DSTYK,NUAK1</td>
+<td>0.960511</td>
+<td>S</td>
+<td>0.747484</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>CTNNB1_S33</td>
+<td>QQQsyLDsGIHsGAT</td>
+<td>S33</td>
+<td>33</td>
+<td>CK1G2,CK1A,CK1G3,GSK3A,GSK3B,GRK3,CK1A2,CK1D,JNK1,GRK2</td>
+<td>GSK3B,IKKB,IKKA,GSK3A,TBK1,PAK4,GRK1,IKKE,P90RSK,ERK5</td>
+<td>0.978753</td>
+<td>S</td>
+<td>0.740510</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5</td>
+<td>CTNNB1_T41</td>
+<td>GIHsGATtTAPsLSG</td>
+<td>T41</td>
+<td>41</td>
+<td>GSK3A,GSK3B,PRP4,PASK,CK1G2,CK1A,GRK7,CK1D,CK1G3,CK1A2</td>
+<td>MPSK1,GSK3B,GSK3A,ASK1,PBK,MEK2,TNIK,MEKK2,LKB1,MST2</td>
+<td>0.903105</td>
+<td>T</td>
+<td>0.735984</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">24</td>
+<td>CTNNB1_T371</td>
+<td>QALGLHLtDPsQRLV</td>
+<td>T371</td>
+<td>371</td>
+<td>SMG1,MEK1,MEK2,ACVR2B,CK2A1,GSK3B,MOS,DAPK2,BUB1,CDC7</td>
+<td>PBK,LKB1,NEK4,TNIK,CAMKK1,MEKK3,CAMKK2,MINK,GCK,NEK1</td>
+<td>0.286979</td>
+<td>T</td>
+<td>0.734737</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>CTNNB1_Y30|CTNB1_Y30</td>
+<td>sHWQQQsyLDsGIHs</td>
+<td>Y30</td>
+<td>30</td>
+<td>unavailable due to Y site</td>
+<td>ERBB4,FGFR4,TNK1,JAK3,CSK,KIT,EPHA5,EGFR,JAK2,EPHA6</td>
+<td>0.780358</td>
+<td>Y</td>
+<td>0.725587</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>CTNNB1_S29|CTNB1_S29</td>
+<td>VsHWQQQsyLDsGIH</td>
+<td>S29</td>
+<td>29</td>
+<td>GSK3A,GSK3B,LATS2,MAPKAPK2,CAMK2A,CAMK2B,LATS1,GRK7,GRK6,CK1G3</td>
+<td>PAK4,CAMK1D,NIM1,LATS2,PAK5,TBK1,TSSK1,GRK7,NUAK1,MAPKAPK3</td>
+<td>0.628389</td>
+<td>S</td>
+<td>0.721551</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">13</td>
+<td>CTNNB1_T120</td>
+<td>QFDAAHPtNVQRLAE</td>
+<td>T120</td>
+<td>120</td>
+<td>MPSK1,TAK1,PINK1,VRK1,YANK2,GAK,GSK3A,PASK,ROCK2,PIM3</td>
+<td>PBK,LKB1,CAMKK1,OSR1,TNIK,EEF2K,ROCK2,NEK4,MINK,MST1</td>
+<td>0.878526</td>
+<td>T</td>
+<td>0.677279</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">10</td>
+<td>CTNNB1_Y86</td>
+<td>VADIDGQyAMTRAQR</td>
+<td>Y86</td>
+<td>86</td>
+<td>unavailable due to Y site</td>
+<td>JAK3,FGFR4,EGFR,TEK,KIT,FYN,BLK,LTK,TNK2,ABL1</td>
+<td>0.688526</td>
+<td>Y</td>
+<td>0.663319</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>CTNNB1_T551|CTNB1_T551</td>
+<td>HQDTQRRtsMGGtQQ</td>
+<td>T551</td>
+<td>551</td>
+<td>DAPK1,DAPK3,AURA,AURB,DRAK1,DAPK2,AURC,PAK1,GRK2,HASPIN</td>
+<td>LKB1,PBK,ROCK1,OSR1,AURB,TNIK,ROCK2,MINK,HASPIN,CAMKK1</td>
+<td>0.402405</td>
+<td>T</td>
+<td>0.623633</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6</td>
+<td>CTNNB1_S45|CTNB1_S45</td>
+<td>GATtTAPsLSGKGNP</td>
+<td>S45</td>
+<td>45</td>
+<td>CK1A,CK1G1,CK1D,CK1E,CK1A2,CK1G2,CK1G3,IKKB,MTOR,IKKA</td>
+<td>TBK1,IKKE,PAK6,PKACA,ULK3,CK1A,CK1G2,MTOR,PKACB,PAK5</td>
+<td>0.915674</td>
+<td>S</td>
+<td>0.607427</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">32</td>
+<td>CTNNB1_T556|CTNB1_T556</td>
+<td>RRtsMGGtQQQFVEG</td>
+<td>T556</td>
+<td>556</td>
+<td>ATR,DNAPK,SMG1,CK1G3,ATM,TLK2,NEK5,CK1D,MEKK2,MEKK3</td>
+<td>ATR,ATM,DNAPK,OSR1,PBK,HASPIN,TNIK,GCK,HGK,MINK</td>
+<td>0.330547</td>
+<td>T</td>
+<td>0.595432</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">0</td>
+<td>CTNNB1_S23</td>
+<td>PDRKAAVsHWQQQsy</td>
+<td>S23</td>
+<td>23</td>
+<td>SSTK,BRSK1,PRKD3,BRSK2,P70S6K,SNRK,MARK3,MAPKAPK3,DCAMKL1,PRKD1</td>
+<td>P90RSK,RSK4,MARK1,RSK2,AKT1,TSSK2,SGK1,P70S6K,AKT3,MARK2</td>
+<td>0.434195</td>
+<td>S</td>
+<td>0.593858</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">31</td>
+<td>CTNNB1_S552|CTNB1_S552</td>
+<td>QDTQRRtsMGGtQQQ</td>
+<td>S552</td>
+<td>552</td>
+<td>AURA,PRKX,CLK2,GSK3B,PKACB,MSK1,AURC,AKT2,AURB,PKACA</td>
+<td>PRKX,PKACA,PKACB,PKG2,AKT1,PKG1,AURB,AKT3,AURC,AKT2</td>
+<td>0.596179</td>
+<td>S</td>
+<td>0.585350</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">12</td>
+<td>CTNNB1_T112</td>
+<td>EGMQIPStQFDAAHP</td>
+<td>T112</td>
+<td>112</td>
+<td>ATR,DNAPK,SMG1,P38D,MPSK1,ATM,ICK,EEF2K,TLK2,ALPHAK3</td>
+<td>ATR,ATM,DNAPK,EEF2K,CAMKK2,PBK,ICK,MPSK1,OSR1,CAMKK1</td>
+<td>0.663232</td>
+<td>T</td>
+<td>0.519340</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9</td>
+<td>CTNNB1_S73</td>
+<td>WEQGFSQsFTQEQVA</td>
+<td>S73</td>
+<td>73</td>
+<td>CAMK2G,ULK1,PLK1,PLK3,IKKA,CAMK2B,DSTYK,NEK2,IKKB,NEK7</td>
+<td>BRSK2,IKKB,ULK3,TSSK1,NUAK1,PKACB,PRKX,NDR2,TBK1,PKN1</td>
+<td>0.347105</td>
+<td>S</td>
+<td>0.489721</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">8</td>
+<td>CTNNB1_Y64</td>
+<td>VDTsQVLyEWEQGFS</td>
+<td>Y64</td>
+<td>64</td>
+<td>unavailable due to Y site</td>
+<td>TEC,BLK,EPHA4,BTK,SRMS,SYK,FES,EPHA7,EPHA6,FYN</td>
+<td>0.294942</td>
+<td>Y</td>
+<td>0.392226</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">7</td>
+<td>CTNNB1_S60</td>
+<td>EEEDVDTsQVLyEWE</td>
+<td>S60</td>
+<td>60</td>
+<td>ATM,ACVR2B,ACVR2A,GRK4,GRK7,CK1G2,PLK1,TLK2,PLK2,GRK3</td>
+<td>ATM,ATR,GRK7,GRK1,BUB1B,CK2A2,GRK5,DNAPK,CK2A1,CK1G2</td>
+<td>0.208932</td>
+<td>S</td>
+<td>0.364562</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">39</td>
+<td>CTNNB1_S715|CTNB1_S715</td>
+<td>GYRQDDPsYRsFHSG</td>
+<td>S715</td>
+<td>715</td>
+<td>CK1G2,GRK7,GCN2,ERK7,LATS1,CK1G1,PLK3,YSK4,PLK2,CK1G3</td>
+<td>CK1G2,ERK7,CK1G3,AKT1,CK1G1,CK1A,RSK4,P90RSK,TBK1,SGK1</td>
+<td>0.276474</td>
+<td>S</td>
+<td>0.331333</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">40</td>
+<td>CTNNB1_S718</td>
+<td>QDDPsYRsFHSGGYG</td>
+<td>S718</td>
+<td>718</td>
+<td>CK1G3,CK1A,CK1G2,YANK2,CK1D,CK1G1,CK1A2,YANK3,GRK1,CK1E</td>
+<td>TBK1,CK1A,IKKA,IKKB,PAK5,PAK6,CK1G2,MNK2,ULK3,PAK4</td>
+<td>0.365442</td>
+<td>S</td>
+<td>0.326477</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/sky1ove\.github\.io\/katlas");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

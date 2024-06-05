@@ -1,0 +1,2730 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="A collection of deep learning tools via Fastai">
+
+<title>katlas - Train DL</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="katlas - Train DL">
+<meta property="og:description" content="A collection of deep learning tools via Fastai">
+<meta property="og:site_name" content="katlas">
+<meta name="twitter:title" content="katlas - Train DL">
+<meta name="twitter:description" content="A collection of deep learning tools via Fastai">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">katlas</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./core.html">Modules</a></li><li class="breadcrumb-item"><a href="./dl.html">Train DL</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">KATLAS</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Tutorials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_01_sinlge_input.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring with single input sequence</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_02_high_throughput.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Phosphoproteomics scoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_03_query_gene.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Query phosphosites for a specific protein/gene</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_04a_enrichment_akti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinase enrichment analysis - AKTi</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorial_04b_enrichment_egfri.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinase enrichment analysis - EGFRi</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Core</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train ML</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dl.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Train DL</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#utils" id="toc-utils" class="nav-link" data-scroll-target="#utils">Utils</a>
+  <ul class="collapse">
+  <li><a href="#seed_everything" id="toc-seed_everything" class="nav-link" data-scroll-target="#seed_everything">seed_everything</a></li>
+  </ul></li>
+  <li><a href="#load-data" id="toc-load-data" class="nav-link" data-scroll-target="#load-data">Load Data</a></li>
+  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset">Dataset</a>
+  <ul class="collapse">
+  <li><a href="#generaldataset" id="toc-generaldataset" class="nav-link" data-scroll-target="#generaldataset">GeneralDataset</a></li>
+  <li><a href="#get_sampler" id="toc-get_sampler" class="nav-link" data-scroll-target="#get_sampler">get_sampler</a></li>
+  </ul></li>
+  <li><a href="#models" id="toc-models" class="nav-link" data-scroll-target="#models">Models</a>
+  <ul class="collapse">
+  <li><a href="#mlp" id="toc-mlp" class="nav-link" data-scroll-target="#mlp">MLP</a></li>
+  <li><a href="#mlp_1" id="toc-mlp_1" class="nav-link" data-scroll-target="#mlp_1">MLP_1</a></li>
+  <li><a href="#cnn1d" id="toc-cnn1d" class="nav-link" data-scroll-target="#cnn1d">CNN1D</a></li>
+  <li><a href="#cnn1d_1" id="toc-cnn1d_1" class="nav-link" data-scroll-target="#cnn1d_1">CNN1D_1</a></li>
+  <li><a href="#init_weights" id="toc-init_weights" class="nav-link" data-scroll-target="#init_weights">init_weights</a></li>
+  <li><a href="#lin_wn" id="toc-lin_wn" class="nav-link" data-scroll-target="#lin_wn">lin_wn</a></li>
+  <li><a href="#conv_wn" id="toc-conv_wn" class="nav-link" data-scroll-target="#conv_wn">conv_wn</a></li>
+  <li><a href="#cnn1d_2" id="toc-cnn1d_2" class="nav-link" data-scroll-target="#cnn1d_2">CNN1D_2</a></li>
+  </ul></li>
+  <li><a href="#dl-trainer" id="toc-dl-trainer" class="nav-link" data-scroll-target="#dl-trainer">DL Trainer</a>
+  <ul class="collapse">
+  <li><a href="#train_dl" id="toc-train_dl" class="nav-link" data-scroll-target="#train_dl">train_dl</a></li>
+  </ul></li>
+  <li><a href="#dl-cv" id="toc-dl-cv" class="nav-link" data-scroll-target="#dl-cv">DL CV</a>
+  <ul class="collapse">
+  <li><a href="#train_dl_cv" id="toc-train_dl_cv" class="nav-link" data-scroll-target="#train_dl_cv">train_dl_cv</a></li>
+  </ul></li>
+  <li><a href="#dl-predict" id="toc-dl-predict" class="nav-link" data-scroll-target="#dl-predict">DL Predict</a>
+  <ul class="collapse">
+  <li><a href="#predict_dl" id="toc-predict_dl" class="nav-link" data-scroll-target="#predict_dl">predict_dl</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./core.html">Modules</a></li><li class="breadcrumb-item"><a href="./dl.html">Train DL</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Train DL</h1>
+</div>
+
+<div>
+  <div class="description">
+    A collection of deep learning tools via Fastai
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+</section>
+<section id="utils" class="level2">
+<h2 class="anchored" data-anchor-id="utils">Utils</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/dl.py#L24" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="seed_everything" class="level3">
+<h3 class="anchored" data-anchor-id="seed_everything">seed_everything</h3>
+<blockquote class="blockquote">
+<pre><code> seed_everything (seed=123)</code></pre>
+</blockquote>
+<div id="cell-5" class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>seed_everything()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-6" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>def_device</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'cpu'</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="load-data" class="level2">
+<h2 class="anchored" data-anchor-id="load-data">Load Data</h2>
+<div id="cell-8" class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># read training data</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_parquet(<span class="st">'train_data/combine_t5_kd.parquet'</span>).reset_index()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># read data contains info for split</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>info_df <span class="op">=</span> Data.get_kinase_info().query(<span class="st">'pseudo!="1"'</span>) <span class="co"># get non-pseudo kinase</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># merge info with training data</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>info <span class="op">=</span> df[[<span class="st">'kinase'</span>]].merge(info_df)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>info.head()</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># splits</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>splits <span class="op">=</span> get_splits(info,stratified<span class="op">=</span><span class="st">'group'</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>split0 <span class="op">=</span> splits[<span class="dv">0</span>]</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># column name of feature and target</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>feat_col <span class="op">=</span> df.columns[df.columns.<span class="bu">str</span>.startswith(<span class="st">'T5_'</span>)]</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>target_col <span class="op">=</span> df.columns[<span class="op">~</span>df.columns.isin(feat_col)][<span class="dv">1</span>:]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>StratifiedKFold(n_splits=5, random_state=123, shuffle=True)
+# kinase group in train set: 9
+# kinase group in test set: 9
+---------------------------
+# kinase in train set: 312
+---------------------------
+# kinase in test set: 78
+---------------------------
+test set: ['EPHA3' 'FES' 'FLT3' 'FYN' 'EPHB1' 'EPHB3' 'FER' 'EPHB4' 'FLT4' 'FGFR1' 'EPHA5' 'TEK' 'DDR2' 'ZAP70' 'LIMK1' 'ULK3' 'JAK1' 'WEE1' 'TESK1' 'MAP2K3' 'AMPKA2' 'ATM' 'CAMK1D' 'CAMK2D' 'CAMK4' 'CAMKK1'
+ 'CK1D' 'CK1E' 'DYRK2' 'DYRK4' 'HGK' 'IKKE' 'JNK2' 'JNK3' 'KHS1' 'MAPKAPK5' 'MEK2' 'MSK2' 'NDR1' 'NEK6' 'NEK9' 'NIM1' 'NLK' 'OSR1' 'P38A' 'P38B' 'P90RSK' 'PAK1' 'PERK' 'PKCH' 'PKCI' 'PKN1' 'ROCK2'
+ 'RSK2' 'SIK' 'STLK3' 'TAK1' 'TSSK1' 'ALPHAK3' 'BMPR2' 'CDK10' 'CDK13' 'CDK14' 'CDKL5' 'GCN2' 'GRK4' 'IRE1' 'KHS2' 'MASTL' 'MLK4' 'MNK1' 'MRCKA' 'PRPK' 'QSK' 'SMMLCK' 'SSTK' 'ULK2' 'VRK1']</code></pre>
+</div>
+</div>
+</section>
+<section id="dataset" class="level2">
+<h2 class="anchored" data-anchor-id="dataset">Dataset</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/dl.py#L37" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="generaldataset" class="level3">
+<h3 class="anchored" data-anchor-id="generaldataset">GeneralDataset</h3>
+<blockquote class="blockquote">
+<pre><code> GeneralDataset (df, feat_col, target_col=None)</code></pre>
+</blockquote>
+<p><em>A general dataset that can be applied to any dataframe</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>df</td>
+<td></td>
+<td></td>
+<td>a dataframe of values</td>
+</tr>
+<tr class="even">
+<td>feat_col</td>
+<td></td>
+<td></td>
+<td>feature columns</td>
+</tr>
+<tr class="odd">
+<td>target_col</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Will return test set for prediction if target col is None</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-11" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dataset</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> GeneralDataset(df,feat_col,target_col)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-12" class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(ds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>390</code></pre>
+</div>
+</div>
+<div id="cell-13" class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dl <span class="op">=</span> DataLoader(ds, batch_size<span class="op">=</span><span class="dv">64</span>, shuffle<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/dl.py#L64" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_sampler" class="level3">
+<h3 class="anchored" data-anchor-id="get_sampler">get_sampler</h3>
+<blockquote class="blockquote">
+<pre><code> get_sampler (info, col)</code></pre>
+</blockquote>
+<p><em>For imbalanced data, get higher weights for less-represented samples</em></p>
+<div id="cell-15" class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sampler <span class="op">=</span> get_sampler(info,<span class="st">'subfamily'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-16" class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dataloader</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>dl <span class="op">=</span> DataLoader(ds, batch_size<span class="op">=</span><span class="dv">64</span>, sampler<span class="op">=</span>sampler)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-17" class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>xb,yb <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(dl))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>xb.shape,yb.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([64, 1024]), torch.Size([64, 210]))</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="models" class="level2">
+<h2 class="anchored" data-anchor-id="models">Models</h2>
+<section id="mlp" class="level3">
+<h3 class="anchored" data-anchor-id="mlp">MLP</h3>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/dl.py#L84" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="mlp_1" class="level3">
+<h3 class="anchored" data-anchor-id="mlp_1">MLP_1</h3>
+<blockquote class="blockquote">
+<pre><code> MLP_1 (num_features, num_targets, hidden_units=[512, 218], dp=0.2)</code></pre>
+</blockquote>
+<div id="cell-21" class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>n_feature <span class="op">=</span> <span class="bu">len</span>(feat_col)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>n_target <span class="op">=</span> <span class="bu">len</span>(target_col)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-22" class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> MLP_1(n_feature, n_target)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-23" class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>model(xb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>tensor([[-0.1115, -0.3755, -0.3818,  ..., -0.1483, -0.0387, -0.1111],
+        [ 0.8555,  0.9352, -0.9642,  ..., -0.4723,  0.7757, -0.0121],
+        [ 0.3422,  0.3537, -0.1441,  ...,  0.5467, -0.4535,  0.2103],
+        ...,
+        [-0.4287,  0.6751,  0.1797,  ...,  0.0192,  0.0692, -0.0573],
+        [-0.0206, -0.1953,  0.7445,  ..., -0.2206, -0.1188,  0.4579],
+        [ 0.2342, -0.0243,  0.4630,  ...,  0.8393,  0.5747, -0.6881]], grad_fn=&lt;AddmmBackward0&gt;)</code></pre>
+</div>
+</div>
+</section>
+<section id="cnn1d" class="level3">
+<h3 class="anchored" data-anchor-id="cnn1d">CNN1D</h3>
+<p><strong><em>Version 1</em></strong></p>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/dl.py#L114" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cnn1d_1" class="level3">
+<h3 class="anchored" data-anchor-id="cnn1d_1">CNN1D_1</h3>
+<blockquote class="blockquote">
+<pre><code> CNN1D_1 (num_features, num_targets)</code></pre>
+</blockquote>
+<p><em>Same as <code>nn.Module</code>, but no need for subclasses to call <code>super().__init__</code></em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>num_features</td>
+<td>this does not matter, just for format</td>
+</tr>
+<tr class="even">
+<td>num_targets</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div id="cell-27" class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> CNN1D_1(n_feature, n_target)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-28" class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>model(xb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>tensor([[ 0.0193,  0.0690,  0.0138,  ..., -0.0428, -0.0026,  0.0840],
+        [ 0.0203,  0.0693,  0.0136,  ..., -0.0422, -0.0023,  0.0846],
+        [ 0.0198,  0.0703,  0.0148,  ..., -0.0424, -0.0029,  0.0839],
+        ...,
+        [ 0.0197,  0.0694,  0.0147,  ..., -0.0429, -0.0019,  0.0841],
+        [ 0.0193,  0.0687,  0.0146,  ..., -0.0429, -0.0017,  0.0843],
+        [ 0.0191,  0.0692,  0.0148,  ..., -0.0425, -0.0028,  0.0834]], grad_fn=&lt;AddmmBackward0&gt;)</code></pre>
+</div>
+</div>
+<p><strong><em>Version 2</em></strong></p>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/dl.py#L139" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="init_weights" class="level3">
+<h3 class="anchored" data-anchor-id="init_weights">init_weights</h3>
+<blockquote class="blockquote">
+<pre><code> init_weights (m, leaky=0.0)</code></pre>
+</blockquote>
+<p><em>Initiate any Conv layer with Kaiming norm.</em></p>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/dl.py#L144" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="lin_wn" class="level3">
+<h3 class="anchored" data-anchor-id="lin_wn">lin_wn</h3>
+<blockquote class="blockquote">
+<pre><code> lin_wn (ni, nf, dp=0.1, act=&lt;class 'torch.nn.modules.activation.SiLU'&gt;)</code></pre>
+</blockquote>
+<p><em>Weight norm of linear.</em></p>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/dl.py#L154" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="conv_wn" class="level3">
+<h3 class="anchored" data-anchor-id="conv_wn">conv_wn</h3>
+<blockquote class="blockquote">
+<pre><code> conv_wn (ni, nf, ks=3, stride=1, padding=1, dp=0.1, act=&lt;class
+          'torch.nn.modules.activation.ReLU'&gt;)</code></pre>
+</blockquote>
+<p><em>Weight norm of conv.</em></p>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/dl.py#L164" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cnn1d_2" class="level3">
+<h3 class="anchored" data-anchor-id="cnn1d_2">CNN1D_2</h3>
+<blockquote class="blockquote">
+<pre><code> CNN1D_2 (ni, nf, amp_scale=16)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<div id="cell-34" class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> CNN1D_2(n_feature,n_target).<span class="bu">apply</span>(init_weights)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-35" class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>model(xb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>tensor([[-0.5740,  0.0151, -0.0819,  ...,  0.2636,  0.3405, -0.1404],
+        [-0.6800,  0.5530, -0.0958,  ..., -0.3752, -0.6124,  0.7171],
+        [ 0.4427, -0.3204, -0.3243,  ..., -0.2290,  0.1070,  0.1504],
+        ...,
+        [-0.3660, -0.2667, -0.6036,  ..., -0.3130,  0.5462, -0.0055],
+        [ 0.4511,  0.6824,  0.8659,  ..., -0.0171,  0.2362, -0.3475],
+        [-0.0746, -0.1699,  0.6895,  ...,  1.1522, -0.3472,  0.6422]], grad_fn=&lt;AddmmBackward0&gt;)</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="dl-trainer" class="level2">
+<h2 class="anchored" data-anchor-id="dl-trainer">DL Trainer</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/dl.py#L214" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="train_dl" class="level3">
+<h3 class="anchored" data-anchor-id="train_dl">train_dl</h3>
+<blockquote class="blockquote">
+<pre><code> train_dl (df, feat_col, target_col, split, model_func, n_epoch=4, bs=32,
+           lr=0.01, loss=&lt;function mse&gt;, save=None, sampler=None,
+           lr_find=False)</code></pre>
+</blockquote>
+<p><em>A DL trainer.</em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>df</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>feat_col</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>target_col</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>split</td>
+<td></td>
+<td></td>
+<td>tuple of numpy array for split index</td>
+</tr>
+<tr class="odd">
+<td>model_func</td>
+<td></td>
+<td></td>
+<td>function to get pytorch model</td>
+</tr>
+<tr class="even">
+<td>n_epoch</td>
+<td>int</td>
+<td>4</td>
+<td>number of epochs</td>
+</tr>
+<tr class="odd">
+<td>bs</td>
+<td>int</td>
+<td>32</td>
+<td>batch size</td>
+</tr>
+<tr class="even">
+<td>lr</td>
+<td>float</td>
+<td>0.01</td>
+<td>will be useless if lr_find is True</td>
+</tr>
+<tr class="odd">
+<td>loss</td>
+<td>function</td>
+<td>mse</td>
+<td>loss function</td>
+</tr>
+<tr class="even">
+<td>save</td>
+<td>NoneType</td>
+<td>None</td>
+<td>models/{save}.pth</td>
+</tr>
+<tr class="odd">
+<td>sampler</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>lr_find</td>
+<td>bool</td>
+<td>False</td>
+<td>if true, will use lr from lr_find</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-38" class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_model():</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> CNN1D_2(n_feature, n_target)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-39" class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>target, pred <span class="op">=</span> train_dl(df, </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                        feat_col, </span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                        target_col,</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                        split0, </span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>                        get_model,</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>                        n_epoch<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>                        lr <span class="op">=</span> <span class="fl">1e-2</span>,</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>                        save <span class="op">=</span> <span class="st">'test'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>lr in training is 0.01</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">pearsonr</th>
+<th data-quarto-table-cell-role="th">spearmanr</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>2.194746</td>
+<td>2.176958</td>
+<td>-0.104578</td>
+<td>-0.053141</td>
+<td>00:04</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+</div>
+<div id="cell-40" class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>score_each(target,pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>overall MSE: 2.1770
+Average Pearson: 0.2149 </code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>(2.176958,
+ 0.21488270397776432,
+       Pearson
+ 3   -0.442855
+ 8   -0.490345
+ 10  -0.401885
+ 19  -0.428557
+ 24  -0.383956
+ ..        ...
+ 359 -0.127000
+ 361  0.005761
+ 366  0.095977
+ 367  0.335805
+ 373 -0.230842
+ 
+ [78 rows x 1 columns])</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="dl-cv" class="level2">
+<h2 class="anchored" data-anchor-id="dl-cv">DL CV</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/dl.py#L278" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="train_dl_cv" class="level3">
+<h3 class="anchored" data-anchor-id="train_dl_cv">train_dl_cv</h3>
+<blockquote class="blockquote">
+<pre><code> train_dl_cv (df, feat_col, target_col, splits, model_func, save:str=None,
+              n_epoch=4, bs=32, lr=0.01, loss=&lt;function mse&gt;,
+              sampler=None, lr_find=False)</code></pre>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>df</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>feat_col</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>target_col</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>splits</td>
+<td></td>
+<td></td>
+<td>list of tuples</td>
+</tr>
+<tr class="odd">
+<td>model_func</td>
+<td></td>
+<td></td>
+<td>functions like lambda x: return MLP_1(num_feat, num_target)</td>
+</tr>
+<tr class="even">
+<td>save</td>
+<td>NoneType</td>
+<td>None</td>
+<td>models/{save}.pth</td>
+</tr>
+<tr class="odd">
+<td>n_epoch</td>
+<td>int</td>
+<td>4</td>
+<td>number of epochs</td>
+</tr>
+<tr class="even">
+<td>bs</td>
+<td>int</td>
+<td>32</td>
+<td>batch size</td>
+</tr>
+<tr class="odd">
+<td>lr</td>
+<td>float</td>
+<td>0.01</td>
+<td>will be useless if lr_find is True</td>
+</tr>
+<tr class="even">
+<td>loss</td>
+<td>function</td>
+<td>mse</td>
+<td>loss function</td>
+</tr>
+<tr class="odd">
+<td>sampler</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>lr_find</td>
+<td>bool</td>
+<td>False</td>
+<td>if true, will use lr from lr_find</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-43" class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_model():</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> CNN1D_2(n_feature, n_target)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-44" class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>oof,metrics <span class="op">=</span> train_dl_cv(df,feat_col,target_col,splits,get_model,n_epoch<span class="op">=</span><span class="dv">1</span>,lr<span class="op">=</span><span class="fl">3e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold0------
+lr in training is 0.003
+overall MSE: 0.9979
+Average Pearson: 0.1634 
+------fold1------
+lr in training is 0.003
+overall MSE: 0.9925
+Average Pearson: 0.1617 
+------fold2------
+lr in training is 0.003
+overall MSE: 0.9872
+Average Pearson: 0.2364 
+------fold3------
+lr in training is 0.003
+overall MSE: 1.0018
+Average Pearson: 0.1415 
+------fold4------
+lr in training is 0.003
+overall MSE: 0.9925
+Average Pearson: 0.2014 </code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">pearsonr</th>
+<th data-quarto-table-cell-role="th">spearmanr</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>1.165076</td>
+<td>0.997911</td>
+<td>0.091948</td>
+<td>0.058285</td>
+<td>00:01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">pearsonr</th>
+<th data-quarto-table-cell-role="th">spearmanr</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>1.180757</td>
+<td>0.992539</td>
+<td>0.102852</td>
+<td>0.084205</td>
+<td>00:01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">pearsonr</th>
+<th data-quarto-table-cell-role="th">spearmanr</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>1.159264</td>
+<td>0.987170</td>
+<td>0.119972</td>
+<td>0.098912</td>
+<td>00:01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">pearsonr</th>
+<th data-quarto-table-cell-role="th">spearmanr</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>1.184666</td>
+<td>1.001829</td>
+<td>0.077155</td>
+<td>0.047876</td>
+<td>00:01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">pearsonr</th>
+<th data-quarto-table-cell-role="th">spearmanr</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>1.178444</td>
+<td>0.992547</td>
+<td>0.109969</td>
+<td>0.100576</td>
+<td>00:01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+</div>
+<div id="cell-45" class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>metrics</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">fold</th>
+<th data-quarto-table-cell-role="th">mse</th>
+<th data-quarto-table-cell-role="th">pearson_avg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>0</td>
+<td>0.997911</td>
+<td>0.163423</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>0.992539</td>
+<td>0.161654</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2</td>
+<td>0.987170</td>
+<td>0.236363</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>3</td>
+<td>1.001829</td>
+<td>0.141464</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>4</td>
+<td>0.992547</td>
+<td>0.201375</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-46" class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>metrics.pearson_avg.mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>0.18085578818910147</code></pre>
+</div>
+</div>
+<div id="cell-47" class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> df[target_col]</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>_,_,corr <span class="op">=</span> score_each(target,oof)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>overall MSE: 0.9944
+Average Pearson: 0.1809 </code></pre>
+</div>
+</div>
+<div id="cell-48" class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>corr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Pearson</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>-0.183429</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>-0.178564</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>-0.225202</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>-0.117838</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>-0.153463</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">385</td>
+<td>0.109792</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">386</td>
+<td>0.269238</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">387</td>
+<td>0.079601</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">388</td>
+<td>0.063310</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">389</td>
+<td>0.343237</td>
+</tr>
+</tbody>
+</table>
+
+<p>390 rows × 1 columns</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="dl-predict" class="level2">
+<h2 class="anchored" data-anchor-id="dl-predict">DL Predict</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/dl.py#L327" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="predict_dl" class="level3">
+<h3 class="anchored" data-anchor-id="predict_dl">predict_dl</h3>
+<blockquote class="blockquote">
+<pre><code> predict_dl (df, feat_col, target_col, model, model_pth)</code></pre>
+</blockquote>
+<p><em>Predict dataframe given a deep learning model</em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>df</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>feat_col</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>target_col</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>model</td>
+<td>model architecture</td>
+</tr>
+<tr class="odd">
+<td>model_pth</td>
+<td>only name, not with .pth</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-51" class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>test <span class="op">=</span> df.loc[split0[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-52" class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>pred <span class="op">=</span> predict_dl(test.head(<span class="dv">3</span>),</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>                  feat_col,</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>                  target_col, </span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>                  model,<span class="st">'test'</span>)</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">-5P</th>
+<th data-quarto-table-cell-role="th">-5G</th>
+<th data-quarto-table-cell-role="th">-5A</th>
+<th data-quarto-table-cell-role="th">-5C</th>
+<th data-quarto-table-cell-role="th">-5S</th>
+<th data-quarto-table-cell-role="th">-5T</th>
+<th data-quarto-table-cell-role="th">-5V</th>
+<th data-quarto-table-cell-role="th">-5I</th>
+<th data-quarto-table-cell-role="th">-5L</th>
+<th data-quarto-table-cell-role="th">-5M</th>
+<th data-quarto-table-cell-role="th">-5F</th>
+<th data-quarto-table-cell-role="th">-5Y</th>
+<th data-quarto-table-cell-role="th">-5W</th>
+<th data-quarto-table-cell-role="th">-5H</th>
+<th data-quarto-table-cell-role="th">-5K</th>
+<th data-quarto-table-cell-role="th">-5R</th>
+<th data-quarto-table-cell-role="th">-5Q</th>
+<th data-quarto-table-cell-role="th">-5N</th>
+<th data-quarto-table-cell-role="th">-5D</th>
+<th data-quarto-table-cell-role="th">-5E</th>
+<th data-quarto-table-cell-role="th">-5s</th>
+<th data-quarto-table-cell-role="th">-5t</th>
+<th data-quarto-table-cell-role="th">-5y</th>
+<th data-quarto-table-cell-role="th">-4P</th>
+<th data-quarto-table-cell-role="th">-4G</th>
+<th data-quarto-table-cell-role="th">-4A</th>
+<th data-quarto-table-cell-role="th">-4C</th>
+<th data-quarto-table-cell-role="th">-4S</th>
+<th data-quarto-table-cell-role="th">-4T</th>
+<th data-quarto-table-cell-role="th">-4V</th>
+<th data-quarto-table-cell-role="th">-4I</th>
+<th data-quarto-table-cell-role="th">-4L</th>
+<th data-quarto-table-cell-role="th">-4M</th>
+<th data-quarto-table-cell-role="th">-4F</th>
+<th data-quarto-table-cell-role="th">-4Y</th>
+<th data-quarto-table-cell-role="th">-4W</th>
+<th data-quarto-table-cell-role="th">-4H</th>
+<th data-quarto-table-cell-role="th">-4K</th>
+<th data-quarto-table-cell-role="th">-4R</th>
+<th data-quarto-table-cell-role="th">-4Q</th>
+<th data-quarto-table-cell-role="th">-4N</th>
+<th data-quarto-table-cell-role="th">-4D</th>
+<th data-quarto-table-cell-role="th">-4E</th>
+<th data-quarto-table-cell-role="th">-4s</th>
+<th data-quarto-table-cell-role="th">-4t</th>
+<th data-quarto-table-cell-role="th">-4y</th>
+<th data-quarto-table-cell-role="th">-3P</th>
+<th data-quarto-table-cell-role="th">-3G</th>
+<th data-quarto-table-cell-role="th">-3A</th>
+<th data-quarto-table-cell-role="th">-3C</th>
+<th data-quarto-table-cell-role="th">-3S</th>
+<th data-quarto-table-cell-role="th">-3T</th>
+<th data-quarto-table-cell-role="th">-3V</th>
+<th data-quarto-table-cell-role="th">-3I</th>
+<th data-quarto-table-cell-role="th">-3L</th>
+<th data-quarto-table-cell-role="th">-3M</th>
+<th data-quarto-table-cell-role="th">-3F</th>
+<th data-quarto-table-cell-role="th">-3Y</th>
+<th data-quarto-table-cell-role="th">-3W</th>
+<th data-quarto-table-cell-role="th">-3H</th>
+<th data-quarto-table-cell-role="th">-3K</th>
+<th data-quarto-table-cell-role="th">-3R</th>
+<th data-quarto-table-cell-role="th">-3Q</th>
+<th data-quarto-table-cell-role="th">-3N</th>
+<th data-quarto-table-cell-role="th">-3D</th>
+<th data-quarto-table-cell-role="th">-3E</th>
+<th data-quarto-table-cell-role="th">-3s</th>
+<th data-quarto-table-cell-role="th">-3t</th>
+<th data-quarto-table-cell-role="th">-3y</th>
+<th data-quarto-table-cell-role="th">-2P</th>
+<th data-quarto-table-cell-role="th">-2G</th>
+<th data-quarto-table-cell-role="th">-2A</th>
+<th data-quarto-table-cell-role="th">-2C</th>
+<th data-quarto-table-cell-role="th">-2S</th>
+<th data-quarto-table-cell-role="th">-2T</th>
+<th data-quarto-table-cell-role="th">-2V</th>
+<th data-quarto-table-cell-role="th">-2I</th>
+<th data-quarto-table-cell-role="th">-2L</th>
+<th data-quarto-table-cell-role="th">-2M</th>
+<th data-quarto-table-cell-role="th">-2F</th>
+<th data-quarto-table-cell-role="th">-2Y</th>
+<th data-quarto-table-cell-role="th">-2W</th>
+<th data-quarto-table-cell-role="th">-2H</th>
+<th data-quarto-table-cell-role="th">-2K</th>
+<th data-quarto-table-cell-role="th">-2R</th>
+<th data-quarto-table-cell-role="th">-2Q</th>
+<th data-quarto-table-cell-role="th">-2N</th>
+<th data-quarto-table-cell-role="th">-2D</th>
+<th data-quarto-table-cell-role="th">-2E</th>
+<th data-quarto-table-cell-role="th">-2s</th>
+<th data-quarto-table-cell-role="th">-2t</th>
+<th data-quarto-table-cell-role="th">-2y</th>
+<th data-quarto-table-cell-role="th">-1P</th>
+<th data-quarto-table-cell-role="th">-1G</th>
+<th data-quarto-table-cell-role="th">-1A</th>
+<th data-quarto-table-cell-role="th">-1C</th>
+<th data-quarto-table-cell-role="th">-1S</th>
+<th data-quarto-table-cell-role="th">-1T</th>
+<th data-quarto-table-cell-role="th">-1V</th>
+<th data-quarto-table-cell-role="th">-1I</th>
+<th data-quarto-table-cell-role="th">-1L</th>
+<th data-quarto-table-cell-role="th">-1M</th>
+<th data-quarto-table-cell-role="th">-1F</th>
+<th data-quarto-table-cell-role="th">-1Y</th>
+<th data-quarto-table-cell-role="th">-1W</th>
+<th data-quarto-table-cell-role="th">-1H</th>
+<th data-quarto-table-cell-role="th">-1K</th>
+<th data-quarto-table-cell-role="th">-1R</th>
+<th data-quarto-table-cell-role="th">-1Q</th>
+<th data-quarto-table-cell-role="th">-1N</th>
+<th data-quarto-table-cell-role="th">-1D</th>
+<th data-quarto-table-cell-role="th">-1E</th>
+<th data-quarto-table-cell-role="th">-1s</th>
+<th data-quarto-table-cell-role="th">-1t</th>
+<th data-quarto-table-cell-role="th">-1y</th>
+<th data-quarto-table-cell-role="th">1P</th>
+<th data-quarto-table-cell-role="th">1G</th>
+<th data-quarto-table-cell-role="th">1A</th>
+<th data-quarto-table-cell-role="th">1C</th>
+<th data-quarto-table-cell-role="th">1S</th>
+<th data-quarto-table-cell-role="th">1T</th>
+<th data-quarto-table-cell-role="th">1V</th>
+<th data-quarto-table-cell-role="th">1I</th>
+<th data-quarto-table-cell-role="th">1L</th>
+<th data-quarto-table-cell-role="th">1M</th>
+<th data-quarto-table-cell-role="th">1F</th>
+<th data-quarto-table-cell-role="th">1Y</th>
+<th data-quarto-table-cell-role="th">1W</th>
+<th data-quarto-table-cell-role="th">1H</th>
+<th data-quarto-table-cell-role="th">1K</th>
+<th data-quarto-table-cell-role="th">1R</th>
+<th data-quarto-table-cell-role="th">1Q</th>
+<th data-quarto-table-cell-role="th">1N</th>
+<th data-quarto-table-cell-role="th">1D</th>
+<th data-quarto-table-cell-role="th">1E</th>
+<th data-quarto-table-cell-role="th">1s</th>
+<th data-quarto-table-cell-role="th">1t</th>
+<th data-quarto-table-cell-role="th">1y</th>
+<th data-quarto-table-cell-role="th">2P</th>
+<th data-quarto-table-cell-role="th">2G</th>
+<th data-quarto-table-cell-role="th">2A</th>
+<th data-quarto-table-cell-role="th">2C</th>
+<th data-quarto-table-cell-role="th">2S</th>
+<th data-quarto-table-cell-role="th">2T</th>
+<th data-quarto-table-cell-role="th">2V</th>
+<th data-quarto-table-cell-role="th">2I</th>
+<th data-quarto-table-cell-role="th">2L</th>
+<th data-quarto-table-cell-role="th">2M</th>
+<th data-quarto-table-cell-role="th">2F</th>
+<th data-quarto-table-cell-role="th">2Y</th>
+<th data-quarto-table-cell-role="th">2W</th>
+<th data-quarto-table-cell-role="th">2H</th>
+<th data-quarto-table-cell-role="th">2K</th>
+<th data-quarto-table-cell-role="th">2R</th>
+<th data-quarto-table-cell-role="th">2Q</th>
+<th data-quarto-table-cell-role="th">2N</th>
+<th data-quarto-table-cell-role="th">2D</th>
+<th data-quarto-table-cell-role="th">2E</th>
+<th data-quarto-table-cell-role="th">2s</th>
+<th data-quarto-table-cell-role="th">2t</th>
+<th data-quarto-table-cell-role="th">2y</th>
+<th data-quarto-table-cell-role="th">3P</th>
+<th data-quarto-table-cell-role="th">3G</th>
+<th data-quarto-table-cell-role="th">3A</th>
+<th data-quarto-table-cell-role="th">3C</th>
+<th data-quarto-table-cell-role="th">3S</th>
+<th data-quarto-table-cell-role="th">3T</th>
+<th data-quarto-table-cell-role="th">3V</th>
+<th data-quarto-table-cell-role="th">3I</th>
+<th data-quarto-table-cell-role="th">3L</th>
+<th data-quarto-table-cell-role="th">3M</th>
+<th data-quarto-table-cell-role="th">3F</th>
+<th data-quarto-table-cell-role="th">3Y</th>
+<th data-quarto-table-cell-role="th">3W</th>
+<th data-quarto-table-cell-role="th">3H</th>
+<th data-quarto-table-cell-role="th">3K</th>
+<th data-quarto-table-cell-role="th">3R</th>
+<th data-quarto-table-cell-role="th">3Q</th>
+<th data-quarto-table-cell-role="th">3N</th>
+<th data-quarto-table-cell-role="th">3D</th>
+<th data-quarto-table-cell-role="th">3E</th>
+<th data-quarto-table-cell-role="th">3s</th>
+<th data-quarto-table-cell-role="th">3t</th>
+<th data-quarto-table-cell-role="th">3y</th>
+<th data-quarto-table-cell-role="th">4P</th>
+<th data-quarto-table-cell-role="th">4G</th>
+<th data-quarto-table-cell-role="th">4A</th>
+<th data-quarto-table-cell-role="th">4C</th>
+<th data-quarto-table-cell-role="th">4S</th>
+<th data-quarto-table-cell-role="th">4T</th>
+<th data-quarto-table-cell-role="th">4V</th>
+<th data-quarto-table-cell-role="th">4I</th>
+<th data-quarto-table-cell-role="th">4L</th>
+<th data-quarto-table-cell-role="th">4M</th>
+<th data-quarto-table-cell-role="th">4F</th>
+<th data-quarto-table-cell-role="th">4Y</th>
+<th data-quarto-table-cell-role="th">4W</th>
+<th data-quarto-table-cell-role="th">4H</th>
+<th data-quarto-table-cell-role="th">4K</th>
+<th data-quarto-table-cell-role="th">4R</th>
+<th data-quarto-table-cell-role="th">4Q</th>
+<th data-quarto-table-cell-role="th">4N</th>
+<th data-quarto-table-cell-role="th">4D</th>
+<th data-quarto-table-cell-role="th">4E</th>
+<th data-quarto-table-cell-role="th">4s</th>
+<th data-quarto-table-cell-role="th">4t</th>
+<th data-quarto-table-cell-role="th">4y</th>
+<th data-quarto-table-cell-role="th">0s</th>
+<th data-quarto-table-cell-role="th">0t</th>
+<th data-quarto-table-cell-role="th">0y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3</td>
+<td>-1.124083</td>
+<td>-1.333018</td>
+<td>0.370999</td>
+<td>-1.482608</td>
+<td>1.065671</td>
+<td>2.435333</td>
+<td>-1.181065</td>
+<td>0.243360</td>
+<td>0.541074</td>
+<td>0.526481</td>
+<td>0.789112</td>
+<td>-1.935882</td>
+<td>1.474911</td>
+<td>0.908850</td>
+<td>-2.656013</td>
+<td>0.462956</td>
+<td>-0.006826</td>
+<td>1.895988</td>
+<td>0.339413</td>
+<td>0.476922</td>
+<td>-0.983320</td>
+<td>1.270476</td>
+<td>1.475200</td>
+<td>-1.669044</td>
+<td>-1.078790</td>
+<td>-1.765836</td>
+<td>0.821250</td>
+<td>0.570236</td>
+<td>-0.302717</td>
+<td>1.042980</td>
+<td>-1.587289</td>
+<td>0.182884</td>
+<td>2.623421</td>
+<td>-2.359888</td>
+<td>-0.646681</td>
+<td>1.590253</td>
+<td>2.212846</td>
+<td>-2.315615</td>
+<td>-0.418003</td>
+<td>1.428890</td>
+<td>0.929068</td>
+<td>1.008114</td>
+<td>-0.425482</td>
+<td>-2.041824</td>
+<td>2.350778</td>
+<td>-0.230695</td>
+<td>0.340297</td>
+<td>0.432018</td>
+<td>0.793356</td>
+<td>1.710751</td>
+<td>-0.199124</td>
+<td>0.316310</td>
+<td>-2.101466</td>
+<td>-1.823912</td>
+<td>-1.321935</td>
+<td>-1.437125</td>
+<td>0.130883</td>
+<td>2.243388</td>
+<td>1.785522</td>
+<td>-1.228163</td>
+<td>-1.860953</td>
+<td>-2.221823</td>
+<td>-0.398452</td>
+<td>-1.200318</td>
+<td>1.220733</td>
+<td>-0.437580</td>
+<td>-1.395456</td>
+<td>-1.520077</td>
+<td>0.929825</td>
+<td>-0.452956</td>
+<td>-2.240156</td>
+<td>1.864775</td>
+<td>2.193667</td>
+<td>-0.092991</td>
+<td>-0.991873</td>
+<td>-0.043211</td>
+<td>-0.026852</td>
+<td>-1.612026</td>
+<td>0.882562</td>
+<td>-1.191970</td>
+<td>0.247461</td>
+<td>-1.808025</td>
+<td>0.248498</td>
+<td>-2.131180</td>
+<td>-2.775856</td>
+<td>-2.635972</td>
+<td>-0.260469</td>
+<td>1.875052</td>
+<td>-0.374094</td>
+<td>-1.802452</td>
+<td>1.710730</td>
+<td>0.500554</td>
+<td>-2.568784</td>
+<td>-1.137813</td>
+<td>1.847648</td>
+<td>-1.176928</td>
+<td>-0.784231</td>
+<td>-0.335855</td>
+<td>-0.998383</td>
+<td>-1.808661</td>
+<td>0.702443</td>
+<td>-0.933349</td>
+<td>-1.970836</td>
+<td>1.824810</td>
+<td>-0.550751</td>
+<td>-1.536322</td>
+<td>-0.277769</td>
+<td>-0.246322</td>
+<td>0.715673</td>
+<td>-0.243507</td>
+<td>-0.004827</td>
+<td>0.491623</td>
+<td>-0.027491</td>
+<td>-0.621791</td>
+<td>1.520924</td>
+<td>-1.725467</td>
+<td>-0.762519</td>
+<td>0.823468</td>
+<td>-0.832005</td>
+<td>-1.385254</td>
+<td>1.463969</td>
+<td>-1.065097</td>
+<td>-0.268777</td>
+<td>0.191179</td>
+<td>-0.256498</td>
+<td>1.285461</td>
+<td>1.410629</td>
+<td>-0.480923</td>
+<td>0.052641</td>
+<td>-1.333732</td>
+<td>-0.808122</td>
+<td>-0.641196</td>
+<td>0.846606</td>
+<td>0.054078</td>
+<td>-2.322969</td>
+<td>-1.790822</td>
+<td>0.040727</td>
+<td>0.311768</td>
+<td>2.213273</td>
+<td>1.011133</td>
+<td>1.735011</td>
+<td>2.706975</td>
+<td>2.267068</td>
+<td>1.176308</td>
+<td>-1.155246</td>
+<td>0.358741</td>
+<td>-0.040418</td>
+<td>0.549987</td>
+<td>1.847084</td>
+<td>-0.215823</td>
+<td>-0.858711</td>
+<td>-1.608082</td>
+<td>-1.274341</td>
+<td>-0.575624</td>
+<td>0.875942</td>
+<td>0.312031</td>
+<td>-0.394171</td>
+<td>-1.378174</td>
+<td>-1.457255</td>
+<td>0.548059</td>
+<td>-0.840706</td>
+<td>2.288101</td>
+<td>0.837432</td>
+<td>0.640592</td>
+<td>1.597600</td>
+<td>2.678149</td>
+<td>2.460815</td>
+<td>-3.140487</td>
+<td>2.607033</td>
+<td>0.160671</td>
+<td>1.281283</td>
+<td>0.391561</td>
+<td>0.285112</td>
+<td>0.313980</td>
+<td>1.758898</td>
+<td>-0.577085</td>
+<td>-1.576527</td>
+<td>-0.883964</td>
+<td>-0.221910</td>
+<td>-0.472430</td>
+<td>0.627727</td>
+<td>1.816311</td>
+<td>-1.552552</td>
+<td>-2.032012</td>
+<td>1.988275</td>
+<td>1.918780</td>
+<td>-1.275063</td>
+<td>-1.375782</td>
+<td>0.033672</td>
+<td>-1.072162</td>
+<td>-0.100851</td>
+<td>-0.315402</td>
+<td>-0.936294</td>
+<td>-0.149866</td>
+<td>1.335872</td>
+<td>1.107367</td>
+<td>0.755761</td>
+<td>0.614412</td>
+<td>-0.339984</td>
+<td>1.296790</td>
+<td>0.086605</td>
+<td>-0.325200</td>
+<td>0.626342</td>
+<td>0.139817</td>
+<td>-1.742222</td>
+<td>0.486119</td>
+<td>0.835788</td>
+<td>1.808517</td>
+<td>-0.691114</td>
+<td>1.019787</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">8</td>
+<td>-1.082794</td>
+<td>-1.315036</td>
+<td>0.377679</td>
+<td>-1.303769</td>
+<td>1.028240</td>
+<td>2.277051</td>
+<td>-1.140310</td>
+<td>0.201248</td>
+<td>0.481489</td>
+<td>0.407088</td>
+<td>0.760801</td>
+<td>-1.863295</td>
+<td>1.475667</td>
+<td>0.822474</td>
+<td>-2.524725</td>
+<td>0.393658</td>
+<td>-0.127901</td>
+<td>1.751877</td>
+<td>0.297822</td>
+<td>0.382287</td>
+<td>-0.939208</td>
+<td>1.297959</td>
+<td>1.379947</td>
+<td>-1.500982</td>
+<td>-1.073636</td>
+<td>-1.720251</td>
+<td>0.947168</td>
+<td>0.489036</td>
+<td>-0.398783</td>
+<td>1.048175</td>
+<td>-1.578853</td>
+<td>0.202615</td>
+<td>2.475548</td>
+<td>-2.330920</td>
+<td>-0.625377</td>
+<td>1.575310</td>
+<td>2.092734</td>
+<td>-2.183469</td>
+<td>-0.456739</td>
+<td>1.414051</td>
+<td>0.921833</td>
+<td>0.912542</td>
+<td>-0.522701</td>
+<td>-1.903706</td>
+<td>2.279727</td>
+<td>-0.167850</td>
+<td>0.331005</td>
+<td>0.305503</td>
+<td>0.690275</td>
+<td>1.713022</td>
+<td>-0.114235</td>
+<td>0.247336</td>
+<td>-1.971480</td>
+<td>-1.755766</td>
+<td>-1.216914</td>
+<td>-1.356737</td>
+<td>0.120693</td>
+<td>2.188673</td>
+<td>1.620649</td>
+<td>-1.219324</td>
+<td>-1.883983</td>
+<td>-2.129232</td>
+<td>-0.349166</td>
+<td>-1.165124</td>
+<td>1.202160</td>
+<td>-0.446142</td>
+<td>-1.265840</td>
+<td>-1.397379</td>
+<td>0.963779</td>
+<td>-0.340953</td>
+<td>-2.203007</td>
+<td>1.697120</td>
+<td>2.142285</td>
+<td>-0.070298</td>
+<td>-0.790852</td>
+<td>-0.047399</td>
+<td>-0.163245</td>
+<td>-1.561266</td>
+<td>0.780174</td>
+<td>-1.106945</td>
+<td>0.288282</td>
+<td>-1.763729</td>
+<td>0.198121</td>
+<td>-1.961371</td>
+<td>-2.751048</td>
+<td>-2.657668</td>
+<td>-0.304017</td>
+<td>1.781997</td>
+<td>-0.442557</td>
+<td>-1.629253</td>
+<td>1.846559</td>
+<td>0.596902</td>
+<td>-2.496807</td>
+<td>-1.063768</td>
+<td>1.810785</td>
+<td>-1.048127</td>
+<td>-0.712356</td>
+<td>-0.200570</td>
+<td>-0.918905</td>
+<td>-1.857498</td>
+<td>0.661085</td>
+<td>-0.874454</td>
+<td>-1.888536</td>
+<td>1.837306</td>
+<td>-0.410973</td>
+<td>-1.405960</td>
+<td>-0.243723</td>
+<td>-0.118655</td>
+<td>0.758936</td>
+<td>-0.238423</td>
+<td>0.035166</td>
+<td>0.525149</td>
+<td>0.007085</td>
+<td>-0.653448</td>
+<td>1.576913</td>
+<td>-1.723523</td>
+<td>-0.764785</td>
+<td>0.659238</td>
+<td>-0.681803</td>
+<td>-1.357008</td>
+<td>1.411377</td>
+<td>-1.068875</td>
+<td>-0.276262</td>
+<td>0.145424</td>
+<td>-0.154642</td>
+<td>1.320319</td>
+<td>1.450584</td>
+<td>-0.400749</td>
+<td>0.072105</td>
+<td>-1.270154</td>
+<td>-0.710633</td>
+<td>-0.639188</td>
+<td>0.825336</td>
+<td>0.027273</td>
+<td>-2.346619</td>
+<td>-1.877316</td>
+<td>-0.009294</td>
+<td>0.250529</td>
+<td>2.121087</td>
+<td>0.856824</td>
+<td>1.638516</td>
+<td>2.668117</td>
+<td>2.182310</td>
+<td>1.150948</td>
+<td>-1.064407</td>
+<td>0.255830</td>
+<td>-0.072337</td>
+<td>0.510535</td>
+<td>1.832212</td>
+<td>-0.094357</td>
+<td>-0.771008</td>
+<td>-1.546097</td>
+<td>-1.273632</td>
+<td>-0.578555</td>
+<td>0.783154</td>
+<td>0.274340</td>
+<td>-0.444182</td>
+<td>-1.413612</td>
+<td>-1.433344</td>
+<td>0.548449</td>
+<td>-0.811656</td>
+<td>2.192537</td>
+<td>0.838117</td>
+<td>0.546955</td>
+<td>1.536627</td>
+<td>2.484802</td>
+<td>2.363493</td>
+<td>-3.035698</td>
+<td>2.486802</td>
+<td>0.129263</td>
+<td>1.323699</td>
+<td>0.465493</td>
+<td>0.312922</td>
+<td>0.323904</td>
+<td>1.663263</td>
+<td>-0.602994</td>
+<td>-1.513537</td>
+<td>-0.794236</td>
+<td>-0.261255</td>
+<td>-0.463526</td>
+<td>0.499759</td>
+<td>1.750798</td>
+<td>-1.547009</td>
+<td>-1.931046</td>
+<td>1.905437</td>
+<td>1.763401</td>
+<td>-1.184554</td>
+<td>-1.306713</td>
+<td>0.010132</td>
+<td>-0.859298</td>
+<td>-0.293271</td>
+<td>-0.446997</td>
+<td>-0.878223</td>
+<td>-0.176436</td>
+<td>1.229133</td>
+<td>1.027897</td>
+<td>0.718036</td>
+<td>0.600043</td>
+<td>-0.344983</td>
+<td>1.210207</td>
+<td>0.189907</td>
+<td>-0.176607</td>
+<td>0.637552</td>
+<td>0.016095</td>
+<td>-1.645154</td>
+<td>0.400391</td>
+<td>0.861786</td>
+<td>1.831862</td>
+<td>-0.617930</td>
+<td>0.849381</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>-1.123702</td>
+<td>-1.333739</td>
+<td>0.366915</td>
+<td>-1.481333</td>
+<td>1.064120</td>
+<td>2.436097</td>
+<td>-1.182564</td>
+<td>0.240058</td>
+<td>0.532565</td>
+<td>0.530294</td>
+<td>0.786545</td>
+<td>-1.937065</td>
+<td>1.474733</td>
+<td>0.902049</td>
+<td>-2.661757</td>
+<td>0.461727</td>
+<td>-0.000827</td>
+<td>1.899083</td>
+<td>0.339538</td>
+<td>0.481326</td>
+<td>-0.989064</td>
+<td>1.271149</td>
+<td>1.472290</td>
+<td>-1.670950</td>
+<td>-1.078952</td>
+<td>-1.766250</td>
+<td>0.818193</td>
+<td>0.571061</td>
+<td>-0.305479</td>
+<td>1.043114</td>
+<td>-1.586039</td>
+<td>0.186335</td>
+<td>2.619740</td>
+<td>-2.360800</td>
+<td>-0.646138</td>
+<td>1.595065</td>
+<td>2.218405</td>
+<td>-2.316889</td>
+<td>-0.417599</td>
+<td>1.419278</td>
+<td>0.933096</td>
+<td>1.008337</td>
+<td>-0.425961</td>
+<td>-2.040859</td>
+<td>2.348625</td>
+<td>-0.230205</td>
+<td>0.342206</td>
+<td>0.438278</td>
+<td>0.790901</td>
+<td>1.707645</td>
+<td>-0.197786</td>
+<td>0.317424</td>
+<td>-2.102586</td>
+<td>-1.823015</td>
+<td>-1.326136</td>
+<td>-1.441910</td>
+<td>0.130691</td>
+<td>2.245629</td>
+<td>1.784710</td>
+<td>-1.232561</td>
+<td>-1.864752</td>
+<td>-2.223518</td>
+<td>-0.395831</td>
+<td>-1.202127</td>
+<td>1.219322</td>
+<td>-0.429746</td>
+<td>-1.399199</td>
+<td>-1.524138</td>
+<td>0.935269</td>
+<td>-0.459730</td>
+<td>-2.240560</td>
+<td>1.856851</td>
+<td>2.189566</td>
+<td>-0.092959</td>
+<td>-0.995058</td>
+<td>-0.048542</td>
+<td>-0.032541</td>
+<td>-1.609916</td>
+<td>0.883162</td>
+<td>-1.187196</td>
+<td>0.243556</td>
+<td>-1.807652</td>
+<td>0.244450</td>
+<td>-2.132658</td>
+<td>-2.778566</td>
+<td>-2.639370</td>
+<td>-0.264530</td>
+<td>1.877488</td>
+<td>-0.369802</td>
+<td>-1.802853</td>
+<td>1.705964</td>
+<td>0.503266</td>
+<td>-2.575821</td>
+<td>-1.141595</td>
+<td>1.846794</td>
+<td>-1.179568</td>
+<td>-0.783157</td>
+<td>-0.332587</td>
+<td>-1.004201</td>
+<td>-1.810084</td>
+<td>0.700647</td>
+<td>-0.936017</td>
+<td>-1.972526</td>
+<td>1.827652</td>
+<td>-0.550069</td>
+<td>-1.534301</td>
+<td>-0.285710</td>
+<td>-0.250438</td>
+<td>0.710358</td>
+<td>-0.247381</td>
+<td>-0.005479</td>
+<td>0.497706</td>
+<td>-0.025079</td>
+<td>-0.622655</td>
+<td>1.515863</td>
+<td>-1.725029</td>
+<td>-0.768893</td>
+<td>0.822101</td>
+<td>-0.829749</td>
+<td>-1.389199</td>
+<td>1.458424</td>
+<td>-1.061635</td>
+<td>-0.267768</td>
+<td>0.189667</td>
+<td>-0.251762</td>
+<td>1.280175</td>
+<td>1.409162</td>
+<td>-0.482356</td>
+<td>0.053705</td>
+<td>-1.336888</td>
+<td>-0.803956</td>
+<td>-0.637138</td>
+<td>0.844385</td>
+<td>0.056590</td>
+<td>-2.324191</td>
+<td>-1.794218</td>
+<td>0.045212</td>
+<td>0.311169</td>
+<td>2.211957</td>
+<td>1.013297</td>
+<td>1.733366</td>
+<td>2.711608</td>
+<td>2.267383</td>
+<td>1.180971</td>
+<td>-1.155435</td>
+<td>0.362334</td>
+<td>-0.041591</td>
+<td>0.555404</td>
+<td>1.850645</td>
+<td>-0.215913</td>
+<td>-0.854904</td>
+<td>-1.611007</td>
+<td>-1.278233</td>
+<td>-0.572426</td>
+<td>0.872702</td>
+<td>0.310544</td>
+<td>-0.392968</td>
+<td>-1.380815</td>
+<td>-1.458252</td>
+<td>0.546254</td>
+<td>-0.840335</td>
+<td>2.291621</td>
+<td>0.837838</td>
+<td>0.639362</td>
+<td>1.597017</td>
+<td>2.676531</td>
+<td>2.464077</td>
+<td>-3.141581</td>
+<td>2.609081</td>
+<td>0.159573</td>
+<td>1.282543</td>
+<td>0.395703</td>
+<td>0.290928</td>
+<td>0.314056</td>
+<td>1.763387</td>
+<td>-0.576015</td>
+<td>-1.577078</td>
+<td>-0.882917</td>
+<td>-0.221786</td>
+<td>-0.469884</td>
+<td>0.630226</td>
+<td>1.810092</td>
+<td>-1.554211</td>
+<td>-2.031102</td>
+<td>1.985721</td>
+<td>1.916608</td>
+<td>-1.274601</td>
+<td>-1.378692</td>
+<td>0.030345</td>
+<td>-1.073612</td>
+<td>-0.098157</td>
+<td>-0.311278</td>
+<td>-0.941815</td>
+<td>-0.152202</td>
+<td>1.338775</td>
+<td>1.102758</td>
+<td>0.755549</td>
+<td>0.615726</td>
+<td>-0.340387</td>
+<td>1.296974</td>
+<td>0.080942</td>
+<td>-0.324911</td>
+<td>0.624071</td>
+<td>0.138197</td>
+<td>-1.744510</td>
+<td>0.489025</td>
+<td>0.833121</td>
+<td>1.808313</td>
+<td>-0.695774</td>
+<td>1.022946</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-53" class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>_,_,corr <span class="op">=</span> score_each(test[target_col].head(<span class="dv">3</span>),pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>overall MSE: 3.1266
+Average Pearson: 0.1593 </code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/sky1ove\.github\.io\/katlas");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
