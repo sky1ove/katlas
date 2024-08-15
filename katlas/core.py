@@ -7,7 +7,7 @@ __all__ = ['param_PSPA_st', 'param_PSPA_y', 'param_PSPA', 'param_CDDM', 'param_C
            'query_gene', 'get_ttest', 'get_metaP', 'raw2norm', 'get_one_kinase']
 
 # %% ../nbs/00_core.ipynb 4
-import math, pandas as pd, numpy as np, seaborn as sns
+import math, pandas as pd, numpy as np
 from tqdm import tqdm
 from scipy.stats import chi2
 from typing import Callable
