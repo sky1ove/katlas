@@ -395,6 +395,7 @@ def predict_kinase(input_string: str, # site sequence
                    ref: pd.DataFrame, # reference dataframe for scoring
                    func: Callable, # function to calculate score
                    to_lower: bool=False, # convert capital STY to lower case
+                   to_upper: bool=False, # convert all letter to uppercase
                    verbose=True
                    ):
     "Predict kinase given a phosphorylation site sequence"
@@ -408,6 +409,10 @@ def predict_kinase(input_string: str, # site sequence
     # If to_lower is True, convert STY in the sequence to lower case
     if to_lower:
         input_string = STY2sty(input_string)
+        
+    # If to_upper is True, convert the sequence to all uppercase
+    if to_upper:
+        input_string = input_string.upper()
     
     results = [] # Initialize a list to store the scores for each kinase
     
@@ -446,10 +451,10 @@ param_PSPA = {'ref':Data.get_pspa_all_norm(), 'func':multiply().func}
 
 # Kinase-substrate dataset, CDDM
 param_CDDM = {'ref':Data.get_cddm(), 'func':sumup}
-param_CDDM_upper = {'ref':Data.get_cddm_upper(), 'func':sumup} # specific for all uppercase
+param_CDDM_upper = {'ref':Data.get_cddm_upper(), 'func':sumup, 'to_upper':True} # specific for all uppercase
 
 # %% ../nbs/00_core.ipynb 46
-def predict_kinase_df(df, seq_col, ref, func, to_lower=False):
+def predict_kinase_df(df, seq_col, ref, func, to_lower=False, to_upper=False):
     print('input dataframe has a length', df.shape[0])
     print('Preprocessing')
     
@@ -465,6 +470,9 @@ def predict_kinase_df(df, seq_col, ref, func, to_lower=False):
     # Optionally convert STY to lowercase in each sequence
     if to_lower:
         df[seq_col] = df[seq_col].apply(STY2sty)
+        
+    if to_upper:
+        df[seq_col] = df[seq_col].str.upper()
         
     # Adjust sequence lengths to match the reference matrix's expected inputs
     max_value = ref.columns.str[:-1].astype(int).max() # Get the highest position index from the reference columns
