@@ -375,35 +375,30 @@ def multiply_func(values, # list of values, possibilities of amino acids at cert
     return log_sum
 
 # %% ../nbs/00_core.ipynb 33
-class multiply:
+def multiply(values, kinase, num_dict=Data.get_num_dict()):
     "Multiply values, consider the dynamics of scale factor, which is PSPA random aa number."
-    def __init__(self):
-        self.num_dict = Data.get_num_dict()
-        
-    def func(self, values, kinase):
-        
-        # Check if any values are less than or equal to zero
-        if np.any(np.array(values) == 0):
-            return np.nan
-        
-        else:
-            # Retrieve the divide factor from the dictionary
-            self.divide = self.num_dict[kinase]
 
-            # Using the logarithmic property: log(a*b) = log(a) + log(b)
-            # Compute the sum of the logarithms of the values and the divide factor
-            log_sum = np.sum(np.log2(values)) + (len(values) - 1) * np.log2(self.divide)
+    # Check if any values are less than or equal to zero
+    if np.any(np.array(values) == 0):
+        return np.nan
+    else:
+        # Retrieve the divide factor from the dictionary
+        divide_factor = num_dict[kinase]
 
-            return log_sum
+        # Using the logarithmic property: log(a*b) = log(a) + log(b)
+        # Compute the sum of the logarithms of the values and the divide factor
+        log_sum = np.sum(np.log2(values)) + (len(values) - 1) * np.log2(divide_factor)
 
-# %% ../nbs/00_core.ipynb 37
+        return log_sum
+
+# %% ../nbs/00_core.ipynb 36
 def sumup(values, # list of values, possibilities of amino acids at certain positions
           kinase=None, 
          ):
     "Sum up the possibilities of the amino acids at each position in a phosphorylation site sequence"
     return sum(values)
 
-# %% ../nbs/00_core.ipynb 40
+# %% ../nbs/00_core.ipynb 39
 def predict_kinase(input_string: str, # site sequence
                    ref: pd.DataFrame, # reference dataframe for scoring
                    func: Callable, # function to calculate score
@@ -455,18 +450,18 @@ def predict_kinase(input_string: str, # site sequence
         
     return out.round(3)  # Return the scores rounded to three decimal places
 
-# %% ../nbs/00_core.ipynb 42
+# %% ../nbs/00_core.ipynb 41
 # PSPA
-param_PSPA_st = {'ref':Data.get_pspa_st_norm(), 'func':multiply().func} # Johnson et al. Nature official
-param_PSPA_y = {'ref':Data.get_pspa_tyr_norm(), 'func':multiply().func}
-param_PSPA = {'ref':Data.get_pspa_all_norm(), 'func':multiply().func}
+param_PSPA_st = {'ref':Data.get_pspa_st_norm(), 'func':multiply} # Johnson et al. Nature official
+param_PSPA_y = {'ref':Data.get_pspa_tyr_norm(), 'func':multiply}
+param_PSPA = {'ref':Data.get_pspa_all_norm(), 'func':multiply}
 
 
 # Kinase-substrate dataset, CDDM
 param_CDDM = {'ref':Data.get_cddm(), 'func':sumup}
 param_CDDM_upper = {'ref':Data.get_cddm_upper(), 'func':sumup, 'to_upper':True} # specific for all uppercase
 
-# %% ../nbs/00_core.ipynb 46
+# %% ../nbs/00_core.ipynb 45
 def predict_kinase_df(df, seq_col, ref, func, to_lower=False, to_upper=False):
     print('input dataframe has a length', df.shape[0])
     print('Preprocessing')
@@ -494,29 +489,60 @@ def predict_kinase_df(df, seq_col, ref, func, to_lower=False, to_upper=False):
     
     print('Finish preprocessing')
     
-    results = []
-    # Extract numerical part of reference DataFrame columns, sort them
-    num = list(set(ref.columns.str[:-1].astype(int)))
-    num.sort()
-    print(f'Calculating position: {num}')
-    # Transform reference DataFrame to a dictionary and clean up NaN values
-    ref_dict = ref.T.to_dict()
-    ref_dict = {
-        outer_k: {inner_k: val for inner_k, val in outer_v.items() if not pd.isna(val)}
-        for outer_k, outer_v in ref_dict.items()}
     
-    # Function to process each kinase with its dictionary, using parallel processing
-    def process_kinase(kinase, r_dict):
-        return [func(np.array([r_dict.get(key) for key in get_dict(input_string) if key in r_dict]), kinase) for input_string in df[seq_col]]
+    # wide form to long form
+    df['keys'] = df['site_seq'].apply(get_dict)
+    input_keys_df  = df[['keys']].explode('keys').reset_index()
+    input_keys_df.columns = ['input_index', 'key']
+    ref_T = ref.T
     
-    # Process all kinases in parallel, using tqdm for progress tracking
-    results = Parallel(n_jobs=-1)(delayed(process_kinase)(kinase, r_dict) for kinase, r_dict in tqdm(ref_dict.items()))
+    merged_df = input_keys_df.merge(ref_T, left_on='key', right_index=True, how='inner')
     
+    if func == sumup:
+        grouped_df = merged_df.drop(columns=['key']).groupby('input_index').sum()
+        out = grouped_df.reindex(df.index)
+         
+    elif func==multiply:
+        # Get the list of kinases and num_dict
+        kinases = ref_T.columns
+        num_dict = Data.get_num_dict()
+        
+        out = {}
+        for kinase in tqdm(kinases):
+            divide_factor = num_dict[kinase]
+            # Extract data for this kinase
+            kinase_df = merged_df[['input_index', kinase]].copy()
+            kinase_df = kinase_df.rename(columns={kinase: 'value'})
+
+            # Compute log_value
+            kinase_df['log_value'] = np.log2(kinase_df['value'],where=kinase_df['value']>0)
+
+            # Group by 'input_index' and compute sum and count
+            grouped = kinase_df.dropna().groupby('input_index')
+            sum_log_values = grouped['log_value'].sum()
+            len_values = grouped['log_value'].count()
+
+            # Compute log_sum using the formula
+            log_sum = sum_log_values + (len_values - 1) * np.log2(divide_factor)
+
+            # Find all 'input_index' where 'log_value' is NaN
+            nan_input_indices = kinase_df.loc[kinase_df['value']==0, 'input_index'].unique()
+            # Set log_sum at those indices to NaN
+            log_sum.loc[nan_input_indices] = np.nan
+
+            # Assign the computed values to the results DataFrame
+            out[kinase] = log_sum
+
+        out = pd.DataFrame(out).reindex(df.index)
+        
+    else:
+        grouped_df = merged_df.drop(columns=['key']).groupby('input_index').agg(func)
+        out = grouped_df.reindex(df.index)
+        
     # Return results as a DataFrame
-    return pd.DataFrame(results, index=ref.index, columns=df.index).T
+    return out
 
-
-# %% ../nbs/00_core.ipynb 55
+# %% ../nbs/00_core.ipynb 54
 def get_pct(site,ref,func,pct_ref):
     
     "Replicate the precentile results from The Kinase Library."
@@ -541,7 +567,7 @@ def get_pct(site,ref,func,pct_ref):
     final.columns=['log2(score)','percentile']
     return final
 
-# %% ../nbs/00_core.ipynb 61
+# %% ../nbs/00_core.ipynb 60
 def get_pct_df(score_df, # output from predict_kinase_df 
                pct_ref, # a reference df for percentile calculation
               ):
@@ -566,7 +592,7 @@ def get_pct_df(score_df, # output from predict_kinase_df
     
     return percentiles_df
 
-# %% ../nbs/00_core.ipynb 66
+# %% ../nbs/00_core.ipynb 65
 def get_unique_site(df:pd.DataFrame = None,# dataframe that contains phosphorylation sites
                     seq_col: str='site_seq', # column name of site sequence
                     id_col: str='gene_site' # column name of site id
@@ -582,7 +608,7 @@ def get_unique_site(df:pd.DataFrame = None,# dataframe that contains phosphoryla
     
     return unique
 
-# %% ../nbs/00_core.ipynb 69
+# %% ../nbs/00_core.ipynb 68
 def extract_site_seq(df: pd.DataFrame, # dataframe that contains protein sequence
                      seq_col: str, # column name of protein sequence
                      position_col: str # column name of position 0
@@ -608,7 +634,7 @@ def extract_site_seq(df: pd.DataFrame, # dataframe that contains protein sequenc
         
     return np.array(data)
 
-# %% ../nbs/00_core.ipynb 74
+# %% ../nbs/00_core.ipynb 73
 def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains phosphorylation sequence splitted by their position
              aa_order = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the full matrix 
              aa_order_paper = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the partial matrix
@@ -649,7 +675,7 @@ def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains
     
     return paper,full
 
-# %% ../nbs/00_core.ipynb 78
+# %% ../nbs/00_core.ipynb 77
 def query_gene(df,gene):
     
     "Query gene in the phosphoproteomics dataset"
@@ -663,7 +689,7 @@ def query_gene(df,gene):
     
     return df_gene
 
-# %% ../nbs/00_core.ipynb 82
+# %% ../nbs/00_core.ipynb 81
 def get_ttest(df, 
               columns1, # list of column names for group1
               columns2, # list of column names for group2
@@ -733,7 +759,7 @@ def get_ttest(df,
     
     return results
 
-# %% ../nbs/00_core.ipynb 83
+# %% ../nbs/00_core.ipynb 82
 def get_metaP(p_values):
     
     "Use Fisher's method to calculate a combined p value given a list of p values; this function also allows negative p values (negative correlation)"
@@ -745,7 +771,7 @@ def get_metaP(p_values):
 
     return score
 
-# %% ../nbs/00_core.ipynb 86
+# %% ../nbs/00_core.ipynb 85
 def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and single amino acid as columns
              PDHK: bool=False, # whether this kinase belongs to PDHK family 
             ):
@@ -768,7 +794,7 @@ def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and s
     
     return df2
 
-# %% ../nbs/00_core.ipynb 88
+# %% ../nbs/00_core.ipynb 87
 def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
                    kinase:str, # a specific kinase
                    normalize: bool=False, # normalize according to the paper; special for PDHK1/4
