@@ -7,9 +7,8 @@ website:
         contents:
         - tutorial_01_sinlge_input.ipynb
         - tutorial_02_high_throughput.ipynb
-        - tutorial_03_query_gene.ipynb
-        - tutorial_04a_enrichment_AKTi.ipynb
-        - tutorial_04b_enrichment_EGFRi.ipynb
+        - tutorial_03a_enrichment_AKTi.ipynb
+        - tutorial_03b_enrichment_EGFRi.ipynb
       
       - section: Modules
         contents:
