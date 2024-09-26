@@ -5,8 +5,8 @@
 # %% auto 0
 __all__ = ['param_PSPA_st', 'param_PSPA_y', 'param_PSPA', 'param_CDDM', 'param_CDDM_upper', 'Data', 'CPTAC', 'convert_string',
            'checker', 'STY2sty', 'cut_seq', 'get_dict', 'multiply_func', 'multiply', 'sumup', 'predict_kinase',
-           'predict_kinase_df', 'get_pct', 'get_pct_df', 'get_unique_site', 'extract_site_seq', 'get_freq',
-           'query_gene', 'get_ttest', 'get_metaP', 'raw2norm', 'get_one_kinase']
+           'predict_kinase_df', 'get_pct', 'get_pct_df', 'get_unique_site', 'extract_site_seq', 'get_freq', 'get_ttest',
+           'get_metaP', 'raw2norm', 'get_one_kinase']
 
 # %% ../nbs/00_core.ipynb 4
 import math, pandas as pd, numpy as np
@@ -550,7 +550,7 @@ def predict_kinase_df(df, seq_col, ref, func, to_lower=False, to_upper=False):
     # Return results as a DataFrame
     return out
 
-# %% ../nbs/00_core.ipynb 56
+# %% ../nbs/00_core.ipynb 53
 def get_pct(site,ref,func,pct_ref):
     
     "Replicate the precentile results from The Kinase Library."
@@ -575,7 +575,7 @@ def get_pct(site,ref,func,pct_ref):
     final.columns=['log2(score)','percentile']
     return final
 
-# %% ../nbs/00_core.ipynb 62
+# %% ../nbs/00_core.ipynb 59
 def get_pct_df(score_df, # output from predict_kinase_df 
                pct_ref, # a reference df for percentile calculation
               ):
@@ -600,7 +600,7 @@ def get_pct_df(score_df, # output from predict_kinase_df
     
     return percentiles_df
 
-# %% ../nbs/00_core.ipynb 67
+# %% ../nbs/00_core.ipynb 64
 def get_unique_site(df:pd.DataFrame = None,# dataframe that contains phosphorylation sites
                     seq_col: str='site_seq', # column name of site sequence
                     id_col: str='gene_site' # column name of site id
@@ -616,7 +616,7 @@ def get_unique_site(df:pd.DataFrame = None,# dataframe that contains phosphoryla
     
     return unique
 
-# %% ../nbs/00_core.ipynb 70
+# %% ../nbs/00_core.ipynb 67
 def extract_site_seq(df: pd.DataFrame, # dataframe that contains protein sequence
                      seq_col: str, # column name of protein sequence
                      position_col: str # column name of position 0
@@ -642,7 +642,7 @@ def extract_site_seq(df: pd.DataFrame, # dataframe that contains protein sequenc
         
     return np.array(data)
 
-# %% ../nbs/00_core.ipynb 75
+# %% ../nbs/00_core.ipynb 72
 def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains phosphorylation sequence splitted by their position
              aa_order = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the full matrix 
              aa_order_paper = [i for i in 'PGACSTVILMFYWHKRQNDEsty'], # amino acid to include in the partial matrix
@@ -683,21 +683,7 @@ def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains
     
     return paper,full
 
-# %% ../nbs/00_core.ipynb 79
-def query_gene(df,gene):
-    
-    "Query gene in the phosphoproteomics dataset"
-    
-    # query gene in the dataframe
-    df_gene = df[df.gene_site.str.contains(f'{gene}_')]
-    
-    # sort dataframe based on position
-    sort_position = df_gene.gene_site.str.split('_').str[-1].str[1:].astype(int).sort_values().index
-    df_gene = df_gene.loc[sort_position]
-    
-    return df_gene
-
-# %% ../nbs/00_core.ipynb 83
+# %% ../nbs/00_core.ipynb 76
 def get_ttest(df, 
               columns1, # list of column names for group1
               columns2, # list of column names for group2
@@ -767,7 +753,7 @@ def get_ttest(df,
     
     return results
 
-# %% ../nbs/00_core.ipynb 84
+# %% ../nbs/00_core.ipynb 77
 def get_metaP(p_values):
     
     "Use Fisher's method to calculate a combined p value given a list of p values; this function also allows negative p values (negative correlation)"
@@ -779,7 +765,7 @@ def get_metaP(p_values):
 
     return score
 
-# %% ../nbs/00_core.ipynb 87
+# %% ../nbs/00_core.ipynb 80
 def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and single amino acid as columns
              PDHK: bool=False, # whether this kinase belongs to PDHK family 
             ):
@@ -802,7 +788,7 @@ def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and s
     
     return df2
 
-# %% ../nbs/00_core.ipynb 89
+# %% ../nbs/00_core.ipynb 82
 def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
                    kinase:str, # a specific kinase
                    normalize: bool=False, # normalize according to the paper; special for PDHK1/4
