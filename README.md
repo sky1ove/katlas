@@ -53,7 +53,7 @@ helpful to your research.
 
 ## Install
 
-Install the latest version through git
+Install the latest version through pip
 
 ``` python
 !pip install python-katlas -Uq
