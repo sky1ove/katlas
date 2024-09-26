@@ -684,14 +684,11 @@ def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains
     return paper,full
 
 # %% ../nbs/00_core.ipynb 76
-from scipy.stats import ttest_ind, mannwhitneyu, wilcoxon
-
 def get_pvalue(df,
               columns1, # list of column names for group1
               columns2, # list of column names for group2
               test_method = 'mann_whitney', # 'student_t', 'mann_whitney', 'wilcoxon'
               FC_method = 'median', # or mean
-              alpha=0.05, # significance level in FDR_BH multipletests for p_adj
              ):
 
     "Performs statistical tests and calculates difference between the median or mean of two groups of columns."
@@ -734,7 +731,7 @@ def get_pvalue(df,
     valid_p_values = p_values[~np.isnan(p_values)]
 
     # Adjust for multiple testing on valid p-values only
-    reject, pvals_corrected, _, _ = multipletests(valid_p_values, alpha=alpha, method='fdr_bh')
+    reject, pvals_corrected, _, _ = multipletests(valid_p_values, alpha=0.05, method='fdr_bh')
 
     # Create a full list of corrected p-values including NaNs
     full_pvals_corrected = np.full_like(p_values, np.nan)
@@ -748,8 +745,7 @@ def get_pvalue(df,
     results = pd.DataFrame({
         'log2FC': FCs,
         'p_value': p_values,
-        'p_adj': full_pvals_corrected,
-        'p_adj_significant': full_reject
+        'p_adj': full_pvals_corrected
     })
 
     results['p_value'] = results['p_value'].astype(float)
