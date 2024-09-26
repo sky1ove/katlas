@@ -48,8 +48,7 @@ helpful to your research.
 
 - 3.  [Kinase enrichment analysis for AKT
       inhibitor](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_03a_enrichment_AKTi.ipynb)
-      / [Kinase enrichment analysis for EGFR
-      inhibitor](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_03b_enrichment_EGFRi.ipynb)
+
 
 ## Install
 
