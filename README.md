@@ -38,6 +38,13 @@ helpful to your research.
   phosphoproteome](https://www.nature.com/articles/s41587-019-0344-3),
   and [CPTAC](https://pdc.cancer.gov/pdc/cptac-pancancer) /
   [LinkedOmics](https://academic.oup.com/nar/article/46/D1/D956/4607804)
+  
+  
+## Web applications
+
+Users can now run the analysis directly on the web without needing to code. 
+
+Check out our latest web: [kinase-atlas.com](https://kinase-atlas.com/)
 
 ## Tutorials on Colab
 
@@ -45,7 +52,6 @@ helpful to your research.
       sequence](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_01_sinlge_input.ipynb)
 - 2.  [High throughput substrate scoring on phosphoproteomics
       dataset](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_02_high_throughput.ipynb)
-
 - 3.  [Kinase enrichment analysis for AKT
       inhibitor](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_03a_enrichment_AKTi.ipynb)
 
@@ -55,7 +61,7 @@ helpful to your research.
 Install the latest version through pip
 
 ``` python
-!pip install python-katlas -Uq
+pip install python-katlas -Uq
 ```
 
 ## Import
