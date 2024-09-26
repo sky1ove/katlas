@@ -5,8 +5,8 @@
 # %% auto 0
 __all__ = ['param_PSPA_st', 'param_PSPA_y', 'param_PSPA', 'param_CDDM', 'param_CDDM_upper', 'Data', 'CPTAC', 'convert_string',
            'checker', 'STY2sty', 'cut_seq', 'get_dict', 'multiply_func', 'multiply', 'sumup', 'predict_kinase',
-           'predict_kinase_df', 'get_pct', 'get_pct_df', 'get_unique_site', 'extract_site_seq', 'get_freq', 'get_ttest',
-           'get_metaP', 'raw2norm', 'get_one_kinase']
+           'predict_kinase_df', 'get_pct', 'get_pct_df', 'get_unique_site', 'extract_site_seq', 'get_freq',
+           'get_pvalue', 'get_metaP', 'raw2norm', 'get_one_kinase']
 
 # %% ../nbs/00_core.ipynb 4
 import math, pandas as pd, numpy as np
@@ -14,7 +14,7 @@ from tqdm import tqdm
 from scipy.stats import chi2
 from typing import Callable
 from functools import partial
-from scipy.stats import ttest_ind
+from scipy.stats import ttest_ind, mannwhitneyu, wilcoxon
 from statsmodels.stats.multitest import multipletests
 
 # %% ../nbs/00_core.ipynb 7
@@ -684,20 +684,18 @@ def get_freq(df_k: pd.DataFrame, # a dataframe for a single kinase that contains
     return paper,full
 
 # %% ../nbs/00_core.ipynb 76
-def get_ttest(df, 
+from scipy.stats import ttest_ind, mannwhitneyu, wilcoxon
+
+def get_pvalue(df,
               columns1, # list of column names for group1
               columns2, # list of column names for group2
+              test_method = 'mann_whitney', # 'student_t', 'mann_whitney', 'wilcoxon'
               FC_method = 'median', # or mean
-              alpha=0.05, # significance level in multipletests for p_adj
-              correction_method='fdr_bh', # method in multipletests for p_adj
+              alpha=0.05, # significance level in FDR_BH multipletests for p_adj
              ):
-    """
-    Performs t-tests and calculates log2 fold change between two groups of columns in a DataFrame.
-    NaN p-values are excluded from the multiple testing correction.
 
-    Returns:
-    DataFrame: Results including log2FC, p-values, adjusted p-values, significance, signed log10 P value, and signed log10 Padj
-    """
+    "Performs statistical tests and calculates difference between the median or mean of two groups of columns."
+
     group1 = df[columns1]
     group2 = df[columns2]
 
@@ -712,24 +710,36 @@ def get_ttest(df,
     # As phosphoproteomics data has already been log transformed, we can directly use subtraction
     FCs = m2 - m1
 
-    # Perform t-tests and handle NaN p-values    
-    t_results = [ttest_ind(group1.loc[idx], group2.loc[idx], nan_policy='omit') for idx in tqdm(df.index, desc="Computing t-tests")]
+    # Perform the chosen test and handle NaN p-values
+    if test_method == 'student_t': # data is normally distributed, non-paired
+        test_func = ttest_ind
+    elif test_method == 'mann_whitney': # not normally distributed, non-paired, mann_whitney considers the rank, ignore the differences
+        test_func = mannwhitneyu
+    elif test_method == 'wilcoxon': # not normally distributed, paired
+        test_func = wilcoxon
+
+    t_results = []
+    for idx in tqdm(df.index, desc=f"Computing {test_method} tests"):
+        try:
+            if test_method == 'wilcoxon': # as wilcoxon is paired, if lack a paired sample, just give nan, as default nanpolicy is propagate (gives nan if nan in input)
+                stat, pvalue = test_func(group1.loc[idx], group2.loc[idx])
+            else:
+                stat, pvalue = test_func(group1.loc[idx], group2.loc[idx], nan_policy='omit')
+        except ValueError:  # Handle cases with insufficient data
+            pvalue = np.nan
+        t_results.append(pvalue)
 
     # Exclude NaN p-values before multiple testing correction
-    p_values = [result.pvalue if result.pvalue is not np.nan else np.nan for result in t_results]
-    valid_p_values = np.array(p_values, dtype=float)  # Ensure the correct data type
+    p_values = np.array(t_results, dtype=float)  # Ensure the correct data type
+    valid_p_values = p_values[~np.isnan(p_values)]
 
-    # valid_p_values = np.array(p_values)
-    valid_p_values = valid_p_values[~np.isnan(valid_p_values)]
-    
     # Adjust for multiple testing on valid p-values only
-    reject, pvals_corrected, _, _ = multipletests(valid_p_values, alpha=alpha, method=correction_method)
-    
+    reject, pvals_corrected, _, _ = multipletests(valid_p_values, alpha=alpha, method='fdr_bh')
+
     # Create a full list of corrected p-values including NaNs
-    full_pvals_corrected = np.empty_like(p_values)
-    full_pvals_corrected[:] = np.nan
+    full_pvals_corrected = np.full_like(p_values, np.nan)
     np.place(full_pvals_corrected, ~np.isnan(p_values), pvals_corrected)
-    
+
     # Adjust the significance accordingly
     full_reject = np.zeros_like(p_values, dtype=bool)
     np.place(full_reject, ~np.isnan(p_values), reject)
@@ -739,18 +749,18 @@ def get_ttest(df,
         'log2FC': FCs,
         'p_value': p_values,
         'p_adj': full_pvals_corrected,
-        'significant': full_reject
+        'p_adj_significant': full_reject
     })
 
     results['p_value'] = results['p_value'].astype(float)
-    
+
     def get_signed_logP(r,p_col):
         log10 = -np.log10(r[p_col])
         return -log10 if r['log2FC']<0 else log10
-    
+
     results['signed_logP'] = results.apply(partial(get_signed_logP,p_col='p_value'),axis=1)
     results['signed_logPadj'] = results.apply(partial(get_signed_logP,p_col='p_adj'),axis=1)
-    
+
     return results
 
 # %% ../nbs/00_core.ipynb 77
