@@ -45,20 +45,18 @@ helpful to your research.
       sequence](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_01_sinlge_input.ipynb)
 - 2.  [High throughput substrate scoring on phosphoproteomics
       dataset](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_02_high_throughput.ipynb)
-- 3.  [Query a protein’s phosphorylation sites and predict their
-      upstream
-      kinases](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_03_query_gene.ipynb)
-- 4.  [Kinase enrichment analysis for AKT
-      inhibitor](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_04a_enrichment_AKTi.ipynb)
+
+- 3.  [Kinase enrichment analysis for AKT
+      inhibitor](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_03a_enrichment_AKTi.ipynb)
       / [Kinase enrichment analysis for EGFR
-      inhibitor](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_04b_enrichment_EGFRi.ipynb)
+      inhibitor](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_03b_enrichment_EGFRi.ipynb)
 
 ## Install
 
 Install the latest version through git
 
 ``` python
-!pip install git+https://github.com/sky1ove/katlas.git -Uqq
+!pip install python-katlas -Uq
 ```
 
 ## Import
