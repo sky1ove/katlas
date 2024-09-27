@@ -491,7 +491,7 @@ def predict_kinase_df(df, seq_col, ref, func, to_lower=False, to_upper=False):
     
     
     # wide form to long form
-    df['keys'] = df['site_seq'].apply(get_dict)
+    df['keys'] = df[seq_col].apply(get_dict)
     input_keys_df  = df[['keys']].explode('keys').reset_index()
     input_keys_df.columns = ['input_index', 'key']
     
