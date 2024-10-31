@@ -2,8 +2,8 @@ project:
   output-dir: _docs
 
 website:
-  title: "python-katlas"
-  site-url: "https://sky1ove.github.io/python-katlas"
+  title: "katlas"
+  site-url: "https://sky1ove.github.io/katlas"
   description: "tools for predicting kinome specificities"
   repo-branch: main
-  repo-url: "https://github.com/sky1ove/python-katlas"
+  repo-url: "https://github.com/sky1ove/katlas"
