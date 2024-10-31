@@ -6,7 +6,7 @@
 __all__ = ['def_device', 'seed_everything', 'GeneralDataset', 'get_sampler', 'MLP_1', 'CNN1D_1', 'init_weights', 'lin_wn',
            'conv_wn', 'CNN1D_2', 'train_dl', 'train_dl_cv', 'predict_dl']
 
-# %% ../nbs/04_DL.ipynb 5
+# %% ../nbs/04_DL.ipynb 4
 from fastbook import *
 import fastcore.all as fc,torch.nn.init as init
 from fastai.callback.training import GradientClip
@@ -22,7 +22,7 @@ from sklearn.model_selection import *
 from sklearn.metrics import mean_squared_error
 from scipy.stats import spearmanr,pearsonr
 
-# %% ../nbs/04_DL.ipynb 7
+# %% ../nbs/04_DL.ipynb 6
 def seed_everything(seed=123):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
@@ -32,10 +32,10 @@ def seed_everything(seed=123):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-# %% ../nbs/04_DL.ipynb 9
+# %% ../nbs/04_DL.ipynb 8
 def_device = 'mps' if torch.backends.mps.is_available() else 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# %% ../nbs/04_DL.ipynb 14
+# %% ../nbs/04_DL.ipynb 13
 class GeneralDataset:
     def __init__(self, 
                  df, # a dataframe of values
@@ -62,7 +62,7 @@ class GeneralDataset:
             y = torch.Tensor(self.y[index])
             return X, y
 
-# %% ../nbs/04_DL.ipynb 18
+# %% ../nbs/04_DL.ipynb 17
 def get_sampler(info,col):
     
     "For imbalanced data, get higher weights for less-represented samples"
@@ -82,7 +82,7 @@ def get_sampler(info,col):
     
     return sampler
 
-# %% ../nbs/04_DL.ipynb 24
+# %% ../nbs/04_DL.ipynb 23
 def MLP_1(num_features, 
           num_targets,
           hidden_units = [512, 218],
@@ -112,7 +112,7 @@ def MLP_1(num_features,
     
     return model
 
-# %% ../nbs/04_DL.ipynb 30
+# %% ../nbs/04_DL.ipynb 29
 class CNN1D_1(Module):
     
     def __init__(self, 
@@ -137,12 +137,12 @@ class CNN1D_1(Module):
         x = self.fc2(x)
         return x
 
-# %% ../nbs/04_DL.ipynb 34
+# %% ../nbs/04_DL.ipynb 33
 def init_weights(m, leaky=0.):
     "Initiate any Conv layer with Kaiming norm."
     if isinstance(m, (nn.Conv1d,nn.Conv2d,nn.Conv3d)): init.kaiming_normal_(m.weight, a=leaky)
 
-# %% ../nbs/04_DL.ipynb 35
+# %% ../nbs/04_DL.ipynb 34
 def lin_wn(ni,nf,dp=0.1,act=nn.SiLU):
     "Weight norm of linear."
     layers =  nn.Sequential(
@@ -152,7 +152,7 @@ def lin_wn(ni,nf,dp=0.1,act=nn.SiLU):
     if act: layers.append(act())
     return layers
 
-# %% ../nbs/04_DL.ipynb 36
+# %% ../nbs/04_DL.ipynb 35
 def conv_wn(ni, nf, ks=3, stride=1, padding=1, dp=0.1,act=nn.ReLU):
     "Weight norm of conv."
     layers =  nn.Sequential(
@@ -162,7 +162,7 @@ def conv_wn(ni, nf, ks=3, stride=1, padding=1, dp=0.1,act=nn.ReLU):
     if act: layers.append(act())
     return layers
 
-# %% ../nbs/04_DL.ipynb 37
+# %% ../nbs/04_DL.ipynb 36
 class CNN1D_2(nn.Module):
     
     def __init__(self, ni, nf, amp_scale = 16):
@@ -212,7 +212,7 @@ class CNN1D_2(nn.Module):
 
         return x
 
-# %% ../nbs/04_DL.ipynb 41
+# %% ../nbs/04_DL.ipynb 40
 def train_dl(df, 
             feat_col, 
             target_col,
@@ -275,7 +275,7 @@ def train_dl(df,
     
     return target, pred
 
-# %% ../nbs/04_DL.ipynb 46
+# %% ../nbs/04_DL.ipynb 45
 @fc.delegates(train_dl)
 def train_dl_cv(df, 
                 feat_col, 
@@ -325,7 +325,7 @@ def train_dl_cv(df,
     
     return oof, metrics
 
-# %% ../nbs/04_DL.ipynb 54
+# %% ../nbs/04_DL.ipynb 53
 def predict_dl(df, 
                feat_col, 
                target_col,
