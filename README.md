@@ -16,9 +16,7 @@ specificities and human phosphoproteomics.
 ***References***: Please cite the appropriate papers if KATLAS is
 helpful to your research.
 
-- KATLAS was described in the paper \[Decoding Human Kinome
-  Specificities through a Computational Data-Driven Approach
-  (manuscript)\]
+- KATLAS was described in the paper \[Computational Decoding of Human Kinome Substrate Specificities and Functions\]
 
 - The positional scanning peptide array (PSPA) data is from paper [An
   atlas of substrate specificities for the human serine/threonine
