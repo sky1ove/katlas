@@ -7,9 +7,8 @@
 
 <a target="_blank" href="https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/index.ipynb">
 <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a>
-<a href="https://pypi.org/project/python-katlas/">
-    <img src="https://img.shields.io/pypi/v/python-katlas?link=https%3A%2F%2Fpypi.org%2Fproject%2Fpython-katlas%2F" alt="PyPI"></a>
+</a> <a href="https://pypi.org/project/python-katlas/">
+<img src="https://img.shields.io/pypi/v/python-katlas?link=https%3A%2F%2Fpypi.org%2Fproject%2Fpython-katlas%2F" alt="PyPI"></a>
 
 KATLAS is a repository containing python tools to predict kinases given
 a substrate sequence. It also contains datasets of kinase substrate
@@ -18,7 +17,8 @@ specificities and human phosphoproteomics.
 ***References***: Please cite the appropriate papers if KATLAS is
 helpful to your research.
 
-- KATLAS was described in the paper \[Computational Decoding of Human Kinome Substrate Specificities and Functions\]
+- KATLAS was described in the paper \[Computational Decoding of Human
+  Kinome Substrate Specificities and Functions\]
 
 - The positional scanning peptide array (PSPA) data is from paper [An
   atlas of substrate specificities for the human serine/threonine
@@ -202,7 +202,6 @@ get_pct('AEEKEyHSEGG',**param_PSPA_y, pct_ref = y_pct)
     considering string: ['-5A', '-4E', '-3E', '-2K', '-1E', '0Y', '1H', '2S', '3E', '4G', '5G']
 
 
-
 |       | log2(score) | percentile |
 |-------|-------------|------------|
 | EGFR  | 3.181       | 96.787423  |
@@ -217,6 +216,7 @@ get_pct('AEEKEyHSEGG',**param_PSPA_y, pct_ref = y_pct)
 | TNK2  | -4.577      | 2.050581   |
 | DDR2  | -4.920      | 10.403281  |
 
+<p>93 rows × 2 columns</p>
 
 ## High-throughput substrate scoring on a dataframe
 
@@ -263,7 +263,6 @@ results
     100%|██████████| 289/289 [00:05<00:00, 56.64it/s]
 
 
-
 | kinase | SRC | EPHA3 | FES | NTRK3 | ALK | EPHA8 | ABL1 | FLT3 | EPHB2 | FYN | ... | MEK5 | PKN2 | MAP2K7 | MRCKB | HIPK3 | CDK8 | BUB1 | MEKK3 | MAP2K3 | GRK1 |
 |----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
 | 0 | 0.991760 | 1.093712 | 1.051750 | 1.067134 | 1.013682 | 1.097519 | 0.966379 | 0.982464 | 1.054986 | 1.055910 | ... | 1.314859 | 1.635470 | 1.652251 | 1.622672 | 1.362973 | 1.797155 | 1.305198 | 1.423618 | 1.504941 | 1.872020 |
@@ -272,6 +271,7 @@ results
 | 3 | 0.803826 | 0.836527 | 0.800759 | 0.894570 | 0.839905 | 0.781001 | 0.847847 | 0.807040 | 0.805877 | 0.801402 | ... | 1.110307 | 1.703637 | 1.795092 | 1.469653 | 1.549936 | 1.491344 | 1.446922 | 1.055452 | 1.534895 | 1.741090 |
 | 4 | 0.822793 | 0.796532 | 0.792343 | 0.839882 | 0.810122 | 0.781420 | 0.805251 | 0.795022 | 0.790380 | 0.864538 | ... | 1.062617 | 1.357689 | 1.485945 | 1.249266 | 1.456078 | 1.422782 | 1.376471 | 1.089629 | 1.121309 | 1.697524 |
 
+<p>5 rows × 289 columns</p>
 
 ## Phosphorylation sites
 
@@ -337,7 +337,7 @@ df.head(3)
 | 1 | AAAAAAASGGGVSPD | PBX2_S146 | PBX2 | ochoa | 1 | S | A | A | A | A | ... | A | A | S | G | G | G | V | S | P | D |
 | 2 | AAAAAAASGVTTGKP | CLASR_S349 | CLASR | ochoa | 1 | S | A | A | A | A | ... | A | A | S | G | V | T | T | G | K | P |
 
-
+<p>3 rows × 21 columns</p>
 
 ## Phosphorylation site sequence example
 
