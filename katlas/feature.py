@@ -14,7 +14,7 @@ from .core import Data
 # Rdkit
 from rdkit import Chem
 from rdkit.ML.Descriptors import MoleculeDescriptors
-from rdkit.Chem import Draw,Descriptors,AllChem
+from rdkit.Chem import Draw,Descriptors,AllChem,rdFingerprintGenerator
 
 # Models
 from fairscale.nn.data_parallel import FullyShardedDataParallel as FSDP
@@ -56,12 +56,15 @@ def get_morgan(df: pd.DataFrame, # a dataframe that contains smiles
               ):
     "Get 2048 morgan fingerprint (binary feature) from smiles in a dataframe"
     mols = [Chem.MolFromSmiles(smi) for smi in df[col]]
-    morgan_fps = [AllChem.GetMorganFingerprintAsBitVect(mol, radius=radius, nBits=2048) for mol in mols]
+
+    mfpgen = rdFingerprintGenerator.GetMorganGenerator(radius=radius,fpSize=2048)
+    morgan_fps = [mfpgen.GetFingerprint(mol) for mol in mols]
+    
     fp_df = pd.DataFrame(np.array(morgan_fps), index=df.index)
     fp_df.columns = "morgan_" + fp_df.columns.astype(str)
     return fp_df
 
-# %% ../nbs/01_feature.ipynb 15
+# %% ../nbs/01_feature.ipynb 16
 def get_esm(df:pd.DataFrame, # a dataframe that contains amino acid sequence
             col: str = 'sequence', # colname of amino acid sequence
             model_name: str = "esm2_t33_650M_UR50D", # Name of the ESM model to use for the embeddings.
@@ -128,7 +131,7 @@ def get_esm(df:pd.DataFrame, # a dataframe that contains amino acid sequence
 
         return df_feature
 
-# %% ../nbs/01_feature.ipynb 19
+# %% ../nbs/01_feature.ipynb 20
 def get_t5(df: pd.DataFrame, 
            col: str = 'sequence'
            ):
@@ -170,7 +173,7 @@ def get_t5(df: pd.DataFrame,
     
     return T5_feature
 
-# %% ../nbs/01_feature.ipynb 22
+# %% ../nbs/01_feature.ipynb 23
 def get_t5_bfd(df:pd.DataFrame, 
                col: str = 'sequence'
                ):
@@ -212,7 +215,7 @@ def get_t5_bfd(df:pd.DataFrame,
     
     return T5_feature
 
-# %% ../nbs/01_feature.ipynb 26
+# %% ../nbs/01_feature.ipynb 27
 def reduce_feature(df: pd.DataFrame, 
                    method: str='pca', # dimensionality reduction method, accept both capital and lower case
                    complexity: int=20, # None for PCA; perfplexity for TSNE, recommend: 30; n_neigbors for UMAP, recommend: 15
@@ -258,7 +261,7 @@ def reduce_feature(df: pd.DataFrame,
 
     return embedding_df
 
-# %% ../nbs/01_feature.ipynb 29
+# %% ../nbs/01_feature.ipynb 30
 def remove_hi_corr(df: pd.DataFrame, 
                    thr: float=0.98 # threshold
                    ):
@@ -278,7 +281,7 @@ def remove_hi_corr(df: pd.DataFrame,
     
     return df
 
-# %% ../nbs/01_feature.ipynb 33
+# %% ../nbs/01_feature.ipynb 34
 def preprocess(df: pd.DataFrame,
                thr: float=0.98):
     
