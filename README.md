@@ -5,7 +5,7 @@
 
 <img alt="Katlas logo" width="600" caption="Katlas logo" src="https://github.com/sky1ove/katlas/raw/main/dataset/images/logo.png" id="logo"/>
 
-<p><a target="_blank" href="https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/index.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+<p><a target="_blank" href="https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_01_sinlge_input.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 <a href="https://pypi.org/project/python-katlas/"><img src="https://img.shields.io/pypi/v/python-katlas?link=https%3A%2F%2Fpypi.org%2Fproject%2Fpython-katlas%2F" alt="PyPI"></a></p>
 
 KATLAS is a repository containing python tools to predict kinases given
