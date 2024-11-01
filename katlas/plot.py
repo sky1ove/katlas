@@ -266,7 +266,7 @@ def plot_cluster(df: pd.DataFrame, # a dataframe of values that is waited for di
     plt.xticks([])
     plt.yticks([])
     if name_list is not None:
-        texts = [plt.text(embedding_df[x_col][i], embedding_df[y_col][i], name_list[i],fontsize=8) for i in range(len(embedding_df))]
+        texts = [plt.text(embedding_df[x_col].iloc[i], embedding_df[y_col].iloc[i], name_list[i],fontsize=8) for i in range(len(embedding_df))]
         adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
 
 # %% ../nbs/02_plot.ipynb 37
@@ -403,7 +403,7 @@ def plot_bar(df,
     
     idx = df.groupby(group)[value].mean().sort_values(ascending=ascending).index
     
-    sns.barplot(data=df, x=group, y=value, order=idx, **kwargs)
+    sns.barplot(data=df, x=group, y=value, order=idx,hue=group, legend=False, **kwargs)
     
     if dots:
         marker = {'marker': 'o', 
@@ -459,8 +459,13 @@ def plot_group_bar(df,
     plt.figure(figsize=figsize)
     
     # Create the bar plot
-    sns.barplot(data=df_melted, x=group, y='Value', hue='Ranking', order=order, 
-                capsize=0.1,errwidth=1.5,errcolor='gray', # adjust the error bar settings
+    sns.barplot(data=df_melted, 
+                x=group, 
+                y='Value', 
+                hue='Ranking', 
+                order=order, 
+                capsize=0.1,
+                err_kws={'linewidth': 1.5,'color': 'gray'}, 
                 **kwargs)
     
     # Increase font size for the x-axis and y-axis tick labels
@@ -501,7 +506,7 @@ def plot_box(df,
     idx = df[[group,value]].groupby(group).median().sort_values(value,ascending=False).index
     
     
-    sns.boxplot(data=df, x=group, y=value, order=idx, **kwargs)
+    sns.boxplot(data=df, x=group, y=value, order=idx,hue=group, legend=False, **kwargs)
     
     if dots:
         sns.stripplot(x=group, y=value, data=df, order=idx, jitter=True, color='black', size=3)
