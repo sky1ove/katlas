@@ -107,7 +107,7 @@ class Data:
         return num.set_index("kinase")["num_random_aa"].to_dict()
 
     #--------------------------- CDDM ---------------------------
-    KS_DATASET_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_datasets.parquet"
+    KS_DATASET_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_datasets_20250407.parquet"
     CDDM_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_main.parquet"
     CDDM_UPPER_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_main_upper.parquet"
     CDDM_OTHERS_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_others.parquet"
