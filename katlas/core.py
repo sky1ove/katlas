@@ -175,7 +175,8 @@ class Data:
     OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/phosphosites/ochoa_site.parquet"
     COMBINE_PSP_OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/phosphosites/combine_site_psp_ochoa.parquet"
     P_COMBINE_PSP_OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/phosphosites/phosphorylated_combine_site.parquet"
-
+    P_COMBINE_PSP_OCHOA20_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/phosphosites/phosphorylated_combine_site20.parquet"
+    
     @staticmethod
     def get_cptac_ensembl_site() -> pd.DataFrame:
         """Return CPTAC dataset with unique EnsemblProteinID+site."""
@@ -218,6 +219,18 @@ class Data:
         """
         df = Data.fetch_data(Data.P_COMBINE_PSP_OCHOA_URL)
         return Data._convert_numeric_columns(df)
+
+
+    @staticmethod
+    def get_human_site() -> pd.DataFrame:
+        """
+        Return the combined phosphorylated dataset from Ochoa and PhosphoSitePlus,
+        with numeric column names converted.
+        """
+        df = Data.fetch_data(Data.P_COMBINE_PSP_OCHOA20_URL)
+        return Data._convert_numeric_columns(df)
+
+
 
 
 # %% ../nbs/00_core.ipynb 10
