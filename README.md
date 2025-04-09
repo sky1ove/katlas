@@ -7,7 +7,7 @@
 
 <p>
 
-<a target="_blank" href="https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_01_sinlge_input.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+<a target="_blank" href="https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/Tutorials/tutorial_01_sinlge_input.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 <a href="https://pypi.org/project/python-katlas/"><img src="https://img.shields.io/pypi/v/python-katlas?link=https%3A%2F%2Fpypi.org%2Fproject%2Fpython-katlas%2F" alt="PyPI"></a>
 </p>
 
@@ -58,11 +58,11 @@ Check out our latest web platform:
 ## Tutorials on Colab
 
 - 1.  [Substrate scoring on a single substrate
-      sequence](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_01_sinlge_input.ipynb)
+      sequence](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/Tutorials/tutorial_01_sinlge_input.ipynb)
 - 2.  [High throughput substrate scoring on phosphoproteomics
-      dataset](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_02_high_throughput.ipynb)
+      dataset](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/Tutorials/tutorial_02_high_throughput.ipynb)
 - 3.  [Kinase enrichment analysis for AKT
-      inhibitor](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/tutorial_03a_enrichment_AKTi.ipynb)
+      inhibitor](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/Tutorials/tutorial_03a_enrichment_AKTi.ipynb)
 
 ## Install
 
