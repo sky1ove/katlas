@@ -340,7 +340,7 @@ def predict_dl(df,
     
     
     learn = Learner(None, model.to(def_device), loss_func=1)
-    learn.load(model_pth)
+    learn.load(model_pth,weights_only=False)
     
     learn.model.eval()
     
