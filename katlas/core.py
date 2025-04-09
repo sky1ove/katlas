@@ -63,6 +63,7 @@ class Data:
 
     #--------------------------- Kinase and PSPA ---------------------------
     KINASE_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/kinase_info.csv"
+    UNIPROT_KINASE_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/uniprot_human_keyword_kinase.parquet"
     PSPA_TYR_NORM_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/PSPA/pspa_tyr_norm.parquet"
     PSPA_ST_NORM_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/PSPA/pspa_st_norm.parquet"
     PSPA_ALL_NORM_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/PSPA/pspa_all_norm.parquet"
@@ -74,6 +75,11 @@ class Data:
     def get_kinase_info() -> pd.DataFrame:
         """Return kinase information."""
         return Data.fetch_csv(Data.KINASE_INFO_URL)
+
+    @staticmethod
+    def get_kinase_uniprot() -> pd.DataFrame:
+        """Return uniprot information filtered with kinase keywords."""
+        return Data.fetch_data(Data.UNIPROT_KINASE_INFO_URL)
 
     @staticmethod
     def get_pspa_tyr_norm() -> pd.DataFrame:
@@ -114,12 +120,37 @@ class Data:
     CDDM_OTHERS_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_others_info.parquet"
 
     @staticmethod
-    def get_ks_dataset() -> pd.DataFrame:
+    def get_ks_dataset(add_kinase_info=True) -> pd.DataFrame:
         """Return kinase substrate dataset with numeric columns converted."""
         df = Data.fetch_data(Data.KS_DATASET_URL)
         df = Data._convert_numeric_columns(df)
         if 'substrate_phosphoseq' in df.columns:
             df['substrate_sequence'] = df['substrate_phosphoseq'].str.upper()
+
+        if add_kinase_info:
+            # Remove pseudokinase duplicates by UniProt ID, keep only one entry per kinase
+            info = Data.get_kinase_info().sort_values('kinase').drop_duplicates('uniprot')
+            
+            # Pre-extract UniProt ID without isoform for matching
+            df['uniprot_clean'] = df['kinase_uniprot'].str.split('-').str[0]
+            
+            info_indexed = info.set_index('uniprot')
+            group_map = info_indexed['group']
+            family_map = info_indexed['family']
+            pspa_small_map = info_indexed['pspa_category_small']
+            pspa_big_map = info_indexed['pspa_category_big']
+            
+            df['kinase_on_tree'] = df['uniprot_clean'].isin(info['uniprot']).astype(int)
+            
+            kinase_gene_map = Data.get_kinase_uniprot().set_index('Entry')['Gene Names']
+            df['kinase_genes'] = df['uniprot_clean'].map(kinase_gene_map)
+            
+            df['kinase_group'] = df['uniprot_clean'].map(group_map)
+            df['kinase_family'] = df['uniprot_clean'].map(family_map)
+            df['kinase_pspa_big'] = df['uniprot_clean'].map(pspa_big_map)
+            df['kinase_pspa_small'] = df['uniprot_clean'].map(pspa_small_map)
+            
+            df.drop(columns='uniprot_clean', inplace=True)
         return df
 
     @staticmethod
