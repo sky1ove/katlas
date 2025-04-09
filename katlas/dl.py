@@ -6,11 +6,11 @@
 __all__ = ['def_device', 'seed_everything', 'GeneralDataset', 'get_sampler', 'MLP_1', 'CNN1D_1', 'init_weights', 'lin_wn',
            'conv_wn', 'CNN1D_2', 'train_dl', 'train_dl_cv', 'predict_dl']
 
-# %% ../nbs/04_DL.ipynb 4
-from fastbook import *
+# %% ../nbs/04_DL.ipynb 3
+import pandas as pd, numpy as np
 import fastcore.all as fc,torch.nn.init as init
-from fastai.callback.training import GradientClip
 from torch.utils.data import WeightedRandomSampler
+from fastai.vision.all import *
 
 # katlas
 from .core import Data
@@ -22,7 +22,7 @@ from sklearn.model_selection import *
 from sklearn.metrics import mean_squared_error
 from scipy.stats import spearmanr,pearsonr
 
-# %% ../nbs/04_DL.ipynb 6
+# %% ../nbs/04_DL.ipynb 5
 def seed_everything(seed=123):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
@@ -32,10 +32,10 @@ def seed_everything(seed=123):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-# %% ../nbs/04_DL.ipynb 8
+# %% ../nbs/04_DL.ipynb 7
 def_device = 'mps' if torch.backends.mps.is_available() else 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# %% ../nbs/04_DL.ipynb 13
+# %% ../nbs/04_DL.ipynb 12
 class GeneralDataset:
     def __init__(self, 
                  df, # a dataframe of values
@@ -62,7 +62,7 @@ class GeneralDataset:
             y = torch.Tensor(self.y[index])
             return X, y
 
-# %% ../nbs/04_DL.ipynb 17
+# %% ../nbs/04_DL.ipynb 16
 def get_sampler(info,col):
     
     "For imbalanced data, get higher weights for less-represented samples"
@@ -82,7 +82,7 @@ def get_sampler(info,col):
     
     return sampler
 
-# %% ../nbs/04_DL.ipynb 23
+# %% ../nbs/04_DL.ipynb 22
 def MLP_1(num_features, 
           num_targets,
           hidden_units = [512, 218],

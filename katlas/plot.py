@@ -4,8 +4,8 @@
 
 # %% auto 0
 __all__ = ['set_sns', 'get_color_dict', 'plot_heatmap', 'change_center_name', 'scale_zero_position', 'get_logo_df', 'plot_logo',
-           'extract_motifs', 'plot_logo_heatmap', 'plot_logo_raw', 'get_logo', 'get_logo2', 'plot_rank', 'plot_hist',
-           'plot_2d', 'plot_cluster', 'plot_bokeh', 'plot_count', 'plot_bar', 'plot_group_bar', 'plot_box', 'plot_corr',
+           'extract_motifs', 'plot_logo_heatmap', 'plot_logo_raw', 'get_logo', 'plot_rank', 'plot_hist', 'plot_2d',
+           'plot_cluster', 'plot_bokeh', 'plot_count', 'plot_bar', 'plot_group_bar', 'plot_box', 'plot_corr',
            'get_similarity', 'plot_matrix', 'get_AUCDF', 'plot_confusion_matrix']
 
 # %% ../nbs/02_plot.ipynb 3
@@ -232,46 +232,6 @@ def get_logo(df: pd.DataFrame, # stacked Dataframe with kinase as index, substra
     plot_logo_raw(ratio2.T,title=kinase)
 
 # %% ../nbs/02_plot.ipynb 35
-def get_logo2(full: pd.DataFrame, # a dataframe that contains the full matrix of a kinase, with index as amino acid, and columns as positions
-              title: str = 'logo', # title of the graph
-              ):
-    
-    "Plot logo from a full freqency matrix of a kinase"
-    
-    # get S,T,Y ratio
-    S_ratio,T_ratio,Y_ratio = full[0][['s','t','y']]/full[0][['s','t','y']].sum()
-    
-    # drop position 0 
-    full = full.drop(columns=[0])
-    
-    # identify the minimum value other than 0
-    min_val = full[full > 0].min().min()
-    
-    # replace 0s with the identified minimum value
-    full = full.replace(0, min_val)
-    
-    norm_p = full.T
-
-    # calculate ratio, use substraction
-    ratio =norm_p.apply(lambda r: r-r.median(),axis=1)
-    
-    # calculate ratio based on previous method, divide values by median, followed by log2
-    # ratio =norm_p.apply(lambda r: r/r.median(),axis=1)
-    # ratio = np.log2(ratio)
-    
-    # get the max value for a position
-    m = ratio.apply(lambda row: row[row > 0].sum(), axis=1).max()
-    
-    # get the relative height of S,T,Y relative to the max value
-    new_row = pd.DataFrame({'S': S_ratio*m, 'T':T_ratio*m,'Y':Y_ratio*m}, index=[0]) 
-    
-    # prepare the matrix for logomaker
-    ratio2 = pd.concat([ratio, new_row], ignore_index=False).fillna(0)
-
-    # logo_func(ratio2,title)
-    plot_logo_raw(ratio2.T,title=title)
-
-# %% ../nbs/02_plot.ipynb 38
 @delegates(sns.scatterplot)
 def plot_rank(sorted_df: pd.DataFrame, # a sorted dataframe
               x: str, # column name for x axis
@@ -315,7 +275,7 @@ def plot_rank(sorted_df: pd.DataFrame, # a sorted dataframe
 
     plt.tight_layout()
 
-# %% ../nbs/02_plot.ipynb 42
+# %% ../nbs/02_plot.ipynb 39
 @delegates(sns.histplot)
 def plot_hist(df: pd.DataFrame, # a dataframe that contain values for plot
               x: str, # column name of values
@@ -332,7 +292,7 @@ def plot_hist(df: pd.DataFrame, # a dataframe that contain values for plot
     plt.figure(figsize=figsize)
     sns.histplot(data=df,x=x,**hist_params,**kwargs)
 
-# %% ../nbs/02_plot.ipynb 46
+# %% ../nbs/02_plot.ipynb 43
 @delegates(sns.scatterplot)
 def plot_2d(X: pd.DataFrame, # a dataframe that has first column to be x, and second column to be y
             **kwargs, # arguments for sns.scatterplot
@@ -341,7 +301,7 @@ def plot_2d(X: pd.DataFrame, # a dataframe that has first column to be x, and se
     plt.figure(figsize=(7,7))
     sns.scatterplot(data = X,x=X.columns[0],y=X.columns[1],alpha=0.7,**kwargs)
 
-# %% ../nbs/02_plot.ipynb 49
+# %% ../nbs/02_plot.ipynb 46
 def plot_cluster(
     df: pd.DataFrame,  # a dataframe of values that is waited for dimensionality reduction
     method: str = 'pca',  # dimensionality reduction method, choose from pca, umap, and tsne
@@ -378,7 +338,7 @@ def plot_cluster(
     
     plt.show()
 
-# %% ../nbs/02_plot.ipynb 53
+# %% ../nbs/02_plot.ipynb 50
 def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality reduction
                idx, # pd.Series or list that indicates identities for searching box
                hue:None, # pd.Series or list that indicates category for each sample
@@ -476,7 +436,7 @@ def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality 
     layout = column(autocomplete, p)
     show(layout)
 
-# %% ../nbs/02_plot.ipynb 56
+# %% ../nbs/02_plot.ipynb 53
 def plot_count(cnt, # from df['x'].value_counts()
                tick_spacing: float= None, # tick spacing for x axis
                palette: str='tab20'):
@@ -495,7 +455,7 @@ def plot_count(cnt, # from df['x'].value_counts()
     if tick_spacing is not None:
         ax.xaxis.set_major_locator(MultipleLocator(tick_spacing))
 
-# %% ../nbs/02_plot.ipynb 58
+# %% ../nbs/02_plot.ipynb 55
 @delegates(sns.barplot)
 def plot_bar(df, 
              value, # colname of value
@@ -550,7 +510,7 @@ def plot_bar(df,
     
     plt.gca().spines[['right', 'top']].set_visible(False)
 
-# %% ../nbs/02_plot.ipynb 61
+# %% ../nbs/02_plot.ipynb 58
 @delegates(sns.barplot)
 def plot_group_bar(df, 
                    value_cols,  # list of column names for values, the order depends on the first item
@@ -598,7 +558,7 @@ def plot_group_bar(df,
     plt.gca().spines[['right', 'top']].set_visible(False)
     plt.legend(fontsize=fontsize) # if change legend location, use loc='upper right'
 
-# %% ../nbs/02_plot.ipynb 64
+# %% ../nbs/02_plot.ipynb 61
 @delegates(sns.boxplot)
 def plot_box(df,
              value, # colname of value
@@ -640,7 +600,7 @@ def plot_box(df,
     # plt.gca().spines[['right', 'top']].set_visible(False)
     
 
-# %% ../nbs/02_plot.ipynb 67
+# %% ../nbs/02_plot.ipynb 64
 @delegates(sns.regplot)
 def plot_corr(x, # x axis values, or colname of x axis
               y, # y axis values, or colname of y axis
@@ -677,7 +637,7 @@ def plot_corr(x, # x axis values, or colname of x axis
             transform=plt.gca().transAxes, 
              ha='center', va='center')
 
-# %% ../nbs/02_plot.ipynb 71
+# %% ../nbs/02_plot.ipynb 68
 def get_similarity(df, metric='euclidean'):
     "Calculate distance matrix of a df; also return inverse df (similarity df)"
     dist_matrix = pairwise_distances(df, metric=metric)
@@ -687,7 +647,7 @@ def get_similarity(df, metric='euclidean'):
     sim_df = np.exp(-dist_df**2 / (2 * sigma**2))
     return dist_df, sim_df
 
-# %% ../nbs/02_plot.ipynb 72
+# %% ../nbs/02_plot.ipynb 69
 def plot_matrix(dist_matrix, inverse_color=False):
     "Plot distance/similarity matrix"
     
@@ -707,7 +667,7 @@ def plot_matrix(dist_matrix, inverse_color=False):
     plt.ylabel('')
     plt.yticks(rotation=0)
 
-# %% ../nbs/02_plot.ipynb 76
+# %% ../nbs/02_plot.ipynb 73
 def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
     
     "Plot CDF curve and get relative area under the curve"
@@ -772,7 +732,7 @@ def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
         
     return AUCDF
 
-# %% ../nbs/02_plot.ipynb 79
+# %% ../nbs/02_plot.ipynb 76
 def plot_confusion_matrix(target, # pd.Series 
                           pred, # pd.Series
                           class_names:list=['0','1'],
