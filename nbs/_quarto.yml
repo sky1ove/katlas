@@ -27,7 +27,7 @@ website:
       - section: Tutorials
         contents: tutorials/*
       - section: Modules
-        contents: *
+        contents: "*.ipynb"
       - section: Examples
         contents: examples/*
       - section: 2025 NC Paper
