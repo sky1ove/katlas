@@ -23,7 +23,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import OneHotEncoder
 from fastcore.meta import delegates
 
-# %% ../nbs/00_core.ipynb 6
+# %% ../nbs/00_core.ipynb 8
 class Data:
     """A class for fetching various datasets."""
     
@@ -61,69 +61,73 @@ class Data:
         df.columns = [int(col) if isinstance(col, str) and col.lstrip('-').isdigit() else col for col in df.columns]
         return df
 
+    BASE_URL = "https://github.com/sky1ove/katlas/raw/main/"
+    
     #--------------------------- Kinase and PSPA ---------------------------
-    KINASE_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/kinase_info.csv"
-    UNIPROT_KINASE_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/uniprot_human_keyword_kinase.parquet"
-    PSPA_TYR_NORM_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/PSPA/pspa_tyr_norm.parquet"
-    PSPA_ST_NORM_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/PSPA/pspa_st_norm.parquet"
-    PSPA_ALL_NORM_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/PSPA/pspa_all_norm.parquet"
-    PSPA_ST_PCT_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/PSPA/pspa_pct_st.parquet"
-    PSPA_TYR_PCT_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/PSPA/pspa_pct_tyr.parquet"
-    PSPA_NUM_RANDOM_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/PSPA/pspa_divide_num.csv"
-
     @staticmethod
     def get_kinase_info() -> pd.DataFrame:
-        """Return kinase information."""
-        return Data.fetch_csv(Data.KINASE_INFO_URL)
+        """
+        Get information of 523 human kinases on kinome tree. 
+        Group, family, and subfamily classifications are sourced from Coral; 
+        full protein sequences are retrieved using UniProt IDs; 
+        kinase domain sequences are obtained from KinaseDomain.com; 
+        and cellular localization data is extracted from published literature.
+        """
+        URL = f"{Data.BASE_URL}dataset/kinase_info.csv"
+        return Data.fetch_csv(URL)
 
     @staticmethod
     def get_kinase_uniprot() -> pd.DataFrame:
-        """Return uniprot information filtered with kinase keywords."""
-        return Data.fetch_data(Data.UNIPROT_KINASE_INFO_URL)
+        """
+        Get information of 672 uniprot human kinases, which were retrieved from UniProt by filtering all human protein entries using the keyword 'kinase'. 
+        It includes additional pseudokinases and lipid kinases.
+        """
+        URL = f"{Data.BASE_URL}dataset/uniprot_human_keyword_kinase.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_pspa_tyr_norm() -> pd.DataFrame:
-        """Return PSPA tyrosine kinase normalized data."""
-        return Data.fetch_data(Data.PSPA_TYR_NORM_URL)
+        """Get PSPA tyrosine kinase normalized data."""
+        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_tyr_norm.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_pspa_st_norm() -> pd.DataFrame:
-        """Return PSPA serine/threonine kinase normalized data."""
-        return Data.fetch_data(Data.PSPA_ST_NORM_URL)
+        """Get PSPA serine/threonine kinase normalized data."""
+        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_st_norm.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_pspa_all_norm() -> pd.DataFrame:
-        """Return PSPA combined normalized data for serine/threonine and tyrosine kinases."""
-        return Data.fetch_data(Data.PSPA_ALL_NORM_URL)
+        """Get PSPA combined normalized data for serine/threonine and tyrosine kinases."""
+        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_all_norm.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_pspa_st_pct() -> pd.DataFrame:
-        """Return PSPA scoring for serine/threonine kinases."""
-        return Data.fetch_data(Data.PSPA_ST_PCT_URL)
+        """Get PSPA scoring for serine/threonine kinases."""
+        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_pct_st.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_pspa_tyr_pct() -> pd.DataFrame:
-        """Return PSPA scoring for tyrosine kinases."""
-        return Data.fetch_data(Data.PSPA_TYR_PCT_URL)
+        """Get PSPA scoring for tyrosine kinases."""
+        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_pct_tyr.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_num_dict() -> dict:
-        """Return a dictionary mapping kinase to number of random amino acids."""
-        num = pd.read_csv(Data.PSPA_NUM_RANDOM_URL)
+        """Get a dictionary mapping kinase to number of random amino acids."""
+        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_divide_num.csv"
+        num = pd.read_csv(URL)
         return num.set_index("kinase")["num_random_aa"].to_dict()
 
     #--------------------------- CDDM ---------------------------
-    KS_DATASET_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_datasets_20250407.parquet"
-    KS_DATASET_UNIQUE_SEQ_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_datasets_seq_unique_20250407.parquet"
-    CDDM_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_main.parquet"
-    CDDM_UPPER_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_main_upper.parquet"
-    CDDM_OTHERS_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_others.parquet"
-    CDDM_OTHERS_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_others_info.parquet"
-
     @staticmethod
     def get_ks_dataset(add_kinase_info=True) -> pd.DataFrame:
-        """Return kinase substrate dataset with numeric columns converted."""
-        df = Data.fetch_data(Data.KS_DATASET_URL)
+        """Get kinase substrate dataset with numeric columns converted."""
+        URL = f"{Data.BASE_URL}dataset/CDDM/ks_datasets_20250407.parquet"
+        df = Data.fetch_data(URL)
         df = Data._convert_numeric_columns(df)
         if 'substrate_phosphoseq' in df.columns:
             df['substrate_sequence'] = df['substrate_phosphoseq'].str.upper()
@@ -156,124 +160,122 @@ class Data:
 
     @staticmethod
     def get_ks_unique() -> pd.DataFrame:
-        """Return kinase substrate dataset with unique site sequence (most phosphorylated version)."""
-        return Data.fetch_data(Data.KS_DATASET_UNIQUE_SEQ_URL)
+        """Get kinase substrate dataset with unique site sequence (most phosphorylated version)."""
+        URL = f"{Data.BASE_URL}dataset/CDDM/ks_datasets_seq_unique_20250407.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_cddm() -> pd.DataFrame:
-        """Return the primary CDDM dataset."""
-        return Data.fetch_data(Data.CDDM_URL)
+        """Get the primary CDDM dataset."""
+        URL = f"{Data.BASE_URL}dataset/CDDM/ks_main.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_cddm_upper() -> pd.DataFrame:
-        """Return the upper CDDM dataset."""
-        return Data.fetch_data(Data.CDDM_UPPER_URL)
+        """Get the upper CDDM dataset."""
+        URL = f"{Data.BASE_URL}dataset/CDDM/ks_main_upper.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_cddm_others() -> pd.DataFrame:
-        """Return CDDM data for other kinases with mutations."""
-        return Data.fetch_data(Data.CDDM_OTHERS_URL)
+        """Get CDDM data for other kinases with mutations."""
+        URL = f"{Data.BASE_URL}dataset/CDDM/ks_others.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_cddm_others_info() -> pd.DataFrame:
-        """Return additional information for CDDM 'others' dataset."""
-        return Data.fetch_data(Data.CDDM_OTHERS_INFO_URL)
-
-    # Combined PSPA and CDDM
-    COMBINE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/combine_main.parquet"
+        """Get additional information for CDDM 'others' dataset."""
+        URL = f"{Data.BASE_URL}dataset/CDDM/ks_others_info.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_combine() -> pd.DataFrame:
-        """Return the combined PSPA and CDDM dataset."""
-        return Data.fetch_data(Data.COMBINE_URL)
+        """Get the combined PSPA and CDDM dataset."""
+        URL = f"{Data.BASE_URL}dataset/combine_main.parquet"
+        return Data.fetch_data(URL)
 
     #--------------------------- Amino Acid ---------------------------
-    AA_INFO_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/amino_acids/aa_info.parquet"
-    AA_RDKIT_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/amino_acids/aa_rdkit.parquet"
-    AA_MORGAN_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/amino_acids/aa_morgan.parquet"
-
     @staticmethod
     def get_aa_info() -> pd.DataFrame:
-        """Return amino acid information."""
-        return Data.fetch_data(Data.AA_INFO_URL)
+        """Get amino acid information."""
+        URL = f"{Data.BASE_URL}dataset/amino_acids/aa_info.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_aa_rdkit() -> pd.DataFrame:
-        """Return RDKit representations of amino acids."""
-        return Data.fetch_data(Data.AA_RDKIT_URL)
+        """Get RDKit representations of amino acids."""
+        URL = f"{Data.BASE_URL}dataset/amino_acids/aa_rdkit.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_aa_morgan() -> pd.DataFrame:
-        """Return Morgan fingerprint representations of amino acids."""
-        return Data.fetch_data(Data.AA_MORGAN_URL)
+        """Get Morgan fingerprint representations of amino acids."""
+        URL = f"{Data.BASE_URL}dataset/amino_acids/aa_morgan.parquet"
+        return Data.fetch_data(URL)
 
     #--------------------------- Phosphoproteomics ---------------------------
-    CPTAC_KB_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/phosphosites/linkedOmicsKB_ref_pan.parquet"
-    CPTAC_UNIQUE_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/phosphosites/cptac_unique_site.parquet"
-    CPTAC_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/phosphosites/linkedOmics_ref_pan.parquet"
-    PSP_HUMAN_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/phosphosites/psp_human.parquet"
-    OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/phosphosites/ochoa_site.parquet"
-    COMBINE_PSP_OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/phosphosites/combine_site_psp_ochoa.parquet"
-    P_COMBINE_PSP_OCHOA_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/phosphosites/phosphorylated_combine_site.parquet"
-    P_COMBINE_PSP_OCHOA20_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/phosphosites/phosphorylated_combine_site20.parquet"
-    
     @staticmethod
     def get_cptac_ensembl_site() -> pd.DataFrame:
-        """Return CPTAC dataset with unique EnsemblProteinID+site."""
-        return Data.fetch_data(Data.CPTAC_KB_URL)
+        """Get CPTAC dataset with unique EnsemblProteinID+site."""
+        URL = f"{Data.BASE_URL}dataset/phosphosites/linkedOmicsKB_ref_pan.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_cptac_unique_site() -> pd.DataFrame:
-        """Return CPTAC dataset with unique site sequences."""
-        return Data.fetch_data(Data.CPTAC_UNIQUE_URL)
+        """Get CPTAC dataset with unique site sequences."""
+        URL = f"{Data.BASE_URL}dataset/phosphosites/cptac_unique_site.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_cptac_gene_site() -> pd.DataFrame:
-        """Return CPTAC dataset with unique Gene+site."""
-        return Data.fetch_data(Data.CPTAC_URL)
+        """Get CPTAC dataset with unique Gene+site."""
+        URL = f"{Data.BASE_URL}dataset/phosphosites/linkedOmics_ref_pan.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_psp_human_site() -> pd.DataFrame:
-        """Return PhosphoSitePlus human dataset (Gene+site)."""
-        return Data.fetch_data(Data.PSP_HUMAN_URL)
+        """Get PhosphoSitePlus human dataset (Gene+site)."""
+        URL = f"{Data.BASE_URL}dataset/phosphosites/psp_human.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_ochoa_site() -> pd.DataFrame:
-        """Return dataset from Ochoa et al."""
-        return Data.fetch_data(Data.OCHOA_URL)
+        """Get dataset from Ochoa et al."""
+        URL = f"{Data.BASE_URL}dataset/phosphosites/ochoa_site.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_combine_site_psp_ochoa() -> pd.DataFrame:
         """
-        Return the combined dataset from Ochoa and PhosphoSitePlus,
+        Get the combined dataset from Ochoa and PhosphoSitePlus,
         converting numeric column names where applicable.
         """
-        df = Data.fetch_data(Data.COMBINE_PSP_OCHOA_URL)
+        URL = f"{Data.BASE_URL}dataset/phosphosites/combine_site_psp_ochoa.parquet"
+        df = Data.fetch_data(URL)
         return Data._convert_numeric_columns(df)
 
     @staticmethod
     def get_combine_site_phosphorylated() -> pd.DataFrame:
         """
-        Return the combined phosphorylated dataset from Ochoa and PhosphoSitePlus,
+        Get the combined phosphorylated dataset from Ochoa and PhosphoSitePlus,
         with numeric column names converted.
         """
-        df = Data.fetch_data(Data.P_COMBINE_PSP_OCHOA_URL)
+        URL = f"{Data.BASE_URL}dataset/phosphosites/phosphorylated_combine_site.parquet"
+        df = Data.fetch_data(URL)
         return Data._convert_numeric_columns(df)
-
 
     @staticmethod
     def get_human_site() -> pd.DataFrame:
         """
-        Return the combined phosphorylated dataset from Ochoa and PhosphoSitePlus,
+        Get the combined phosphorylated dataset from Ochoa and PhosphoSitePlus (20-column version),
         with numeric column names converted.
         """
-        df = Data.fetch_data(Data.P_COMBINE_PSP_OCHOA20_URL)
+        URL = f"{Data.BASE_URL}dataset/phosphosites/phosphorylated_combine_site20.parquet"
+        df = Data.fetch_data(URL)
         return Data._convert_numeric_columns(df)
 
 
-
-
-# %% ../nbs/00_core.ipynb 11
+# %% ../nbs/00_core.ipynb 39
 class CPTAC:
     
     "A class for fetching CPTAC phosphoproteomics data."
@@ -333,7 +335,7 @@ class CPTAC:
         assert cancer_type in CPTAC.list_cancer(), "cancer type is not included, check available cancer types from CPTAC.list_cancer()"
         return CPTAC._fetch_data(cancer_type,is_Tumor, is_KB)
 
-# %% ../nbs/00_core.ipynb 18
+# %% ../nbs/00_core.ipynb 46
 def check_seq(seq):
     """Convert non-s/t/y characters to uppercase and replace disallowed characters with underscores."""
     acceptor = seq[len(seq) // 2]
@@ -342,13 +344,13 @@ def check_seq(seq):
     allowed_chars = set("PGACSTVILMFYWHKRQNDEsty")
     return "".join(char if char in {'s', 't', 'y'} else (char.upper() if char.upper() in allowed_chars else '_') for char in seq)
 
-# %% ../nbs/00_core.ipynb 21
+# %% ../nbs/00_core.ipynb 49
 def check_seq_df(df,col):
     "Convert non-s/t/y to upper case & replace with underscore if the character is not in the allowed set"
     assert len(df[col].str.len().value_counts())==1, 'inconsistent sequence length detected'
     return df[col].apply(check_seq)
 
-# %% ../nbs/00_core.ipynb 24
+# %% ../nbs/00_core.ipynb 52
 def validate_site(site_info,
                   seq):
     "Validate site position residue match with site residue."
@@ -357,14 +359,14 @@ def validate_site(site_info,
         return int(False)
     return int(seq[pos]==site_info[0])
 
-# %% ../nbs/00_core.ipynb 27
+# %% ../nbs/00_core.ipynb 55
 def validate_site_df(df, 
                      site_info_col,
                      protein_seq_col): 
     "Validate site position residue match with site residue in a dataframe."
     return df.apply(lambda r: validate_site(r[site_info_col],r[protein_seq_col]) , axis=1)
 
-# %% ../nbs/00_core.ipynb 30
+# %% ../nbs/00_core.ipynb 58
 def onehot_encode(sequences, transform_colname=True, n=20):
     encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
     encoded_array = encoder.fit_transform([list(seq) for seq in sequences])
@@ -374,7 +376,7 @@ def onehot_encode(sequences, transform_colname=True, n=20):
     encoded_df = pd.DataFrame(encoded_array, columns=colnames)
     return encoded_df
 
-# %% ../nbs/00_core.ipynb 36
+# %% ../nbs/00_core.ipynb 64
 def multiply_func(values, # list of values, possibilities of amino acids at certain positions
              factor=17, # scale factor
             ):
@@ -388,7 +390,7 @@ def multiply_func(values, # list of values, possibilities of amino acids at cert
 
     return log_sum
 
-# %% ../nbs/00_core.ipynb 40
+# %% ../nbs/00_core.ipynb 68
 def multiply(values, kinase, num_dict=Data.get_num_dict()):
     "Multiply values, consider the dynamics of scale factor, which is PSPA random aa number."
 
@@ -405,19 +407,19 @@ def multiply(values, kinase, num_dict=Data.get_num_dict()):
 
         return log_sum
 
-# %% ../nbs/00_core.ipynb 43
+# %% ../nbs/00_core.ipynb 71
 def sumup(values, # list of values, possibilities of amino acids at certain positions
           kinase=None, 
          ):
     "Sum up the possibilities of the amino acids at each position in a phosphorylation site sequence"
     return sum(values)
 
-# %% ../nbs/00_core.ipynb 46
+# %% ../nbs/00_core.ipynb 74
 def STY2sty(input_string: str):
     "Replace all 'STY' with 'sty' in a sequence"    
     return input_string.replace('S', 's').replace('T', 't').replace('Y', 'y')
 
-# %% ../nbs/00_core.ipynb 48
+# %% ../nbs/00_core.ipynb 76
 def get_dict(input_string:str, # phosphorylation site sequence
             ):
     
@@ -436,7 +438,7 @@ def get_dict(input_string:str, # phosphorylation site sequence
 
     return result
 
-# %% ../nbs/00_core.ipynb 51
+# %% ../nbs/00_core.ipynb 79
 def predict_kinase(input_string: str, # site sequence
                    ref: pd.DataFrame, # reference dataframe for scoring
                    func: Callable, # function to calculate score
@@ -479,7 +481,7 @@ def predict_kinase(input_string: str, # site sequence
         
     return out.round(3)
 
-# %% ../nbs/00_core.ipynb 54
+# %% ../nbs/00_core.ipynb 82
 def Params(name=None):
     params = {
         "PSPA_st": {'ref': Data.get_pspa_st_norm().astype('float32'), 'func': multiply},
@@ -498,7 +500,7 @@ def Params(name=None):
     
     raise ValueError(f"Unknown parameter set: {name}. Use Params() to list available options.")
 
-# %% ../nbs/00_core.ipynb 59
+# %% ../nbs/00_core.ipynb 87
 def cut_seq(input_string: str, # site sequence
             min_position: int, # minimum position relative to its center
             max_position: int, # maximum position relative to its center
@@ -516,7 +518,7 @@ def cut_seq(input_string: str, # site sequence
     # Extract and return the substring
     return input_string[start_index:end_index]
 
-# %% ../nbs/00_core.ipynb 62
+# %% ../nbs/00_core.ipynb 90
 def predict_kinase_df(df, seq_col, ref, func, to_lower=False, to_upper=False):
     
     print('input dataframe has a length', df.shape[0])
@@ -597,10 +599,10 @@ def predict_kinase_df(df, seq_col, ref, func, to_lower=False, to_upper=False):
         grouped_df = merged_df.drop(columns=['key']).groupby('input_index').agg(func)
         out = grouped_df.reindex(df.index)
         
-    # Return results as a DataFrame
+    # Get results as a DataFrame
     return out
 
-# %% ../nbs/00_core.ipynb 67
+# %% ../nbs/00_core.ipynb 95
 def get_pct(site,ref,func,pct_ref):
     
     "Replicate the precentile results from The Kinase Library."
@@ -625,7 +627,7 @@ def get_pct(site,ref,func,pct_ref):
     final.columns=['log2(score)','percentile']
     return final
 
-# %% ../nbs/00_core.ipynb 73
+# %% ../nbs/00_core.ipynb 101
 def get_pct_df(score_df, # output from predict_kinase_df 
                pct_ref, # a reference df for percentile calculation
               ):
@@ -650,7 +652,7 @@ def get_pct_df(score_df, # output from predict_kinase_df
     
     return percentiles_df
 
-# %% ../nbs/00_core.ipynb 77
+# %% ../nbs/00_core.ipynb 105
 def phosphorylate_seq(r,site_info_col='site', sub_seq_col='substrate_sequence'):
     "Phosphorylate whole sequence based on phosphosites"
     seq = list(r[sub_seq_col])
@@ -669,7 +671,7 @@ def phosphorylate_seq(r,site_info_col='site', sub_seq_col='substrate_sequence'):
 
     return ''.join(seq)
 
-# %% ../nbs/00_core.ipynb 82
+# %% ../nbs/00_core.ipynb 110
 def phosphorylate_seq_df(df,
                          id_col='substrate_uniprot', 
                          site_info_col='site',
@@ -680,7 +682,7 @@ def phosphorylate_seq_df(df,
     df_seq['substrate_phosphoseq'] = df_seq.apply(lambda r: phosphorylate_seq(r,site_info_col,sub_seq_col),axis=1)
     return df_seq
 
-# %% ../nbs/00_core.ipynb 85
+# %% ../nbs/00_core.ipynb 113
 def extract_site_seq(df: pd.DataFrame, # dataframe that contains protein sequence
                      seq_col: str, # column name of protein sequence
                      site_info_col: str, # column name of site information (e.g., S10)
@@ -707,7 +709,7 @@ def extract_site_seq(df: pd.DataFrame, # dataframe that contains protein sequenc
         
     return np.array(data)
 
-# %% ../nbs/00_core.ipynb 90
+# %% ../nbs/00_core.ipynb 118
 def get_prob(df: pd.DataFrame, col: str, aa_order=[i for i in 'PGACSTVILMFYWHKRQNDEsty']):
     """Get the probability matrix of PSSM from phosphorylation site sequences."""
     
@@ -732,7 +734,7 @@ def get_prob(df: pd.DataFrame, col: str, aa_order=[i for i in 'PGACSTVILMFYWHKRQ
     
     return pssm_df
 
-# %% ../nbs/00_core.ipynb 94
+# %% ../nbs/00_core.ipynb 122
 def pssm_to_seq(pssm_df, 
                 thr=0.4, # threshold of probability to show in sequence
                 contain_sty=True, # keep only s,t,y values (last three) in center 0 position
@@ -767,7 +769,7 @@ def pssm_to_seq(pssm_df,
 
     return ''.join(consensus)
 
-# %% ../nbs/00_core.ipynb 96
+# %% ../nbs/00_core.ipynb 124
 def recover_pssm(flat_pssm:pd.Series,aa_order=list('PGACSTVILMFYWHKRQNDEsty')):
     "Recover 2D pssm from flat pssm Series"
     df = flat_pssm.copy().reset_index()
@@ -777,7 +779,7 @@ def recover_pssm(flat_pssm:pd.Series,aa_order=list('PGACSTVILMFYWHKRQNDEsty')):
     df = df.pivot(index='aa',columns='Position',values='value').fillna(0)
     return df.reindex(index=aa_order).rename(index={'s': 'pS', 't': 'pT', 'y': 'pY'})
 
-# %% ../nbs/00_core.ipynb 100
+# %% ../nbs/00_core.ipynb 128
 def process_pssm(pssm_df):
     "Keep only s,t,y values in center 0 position; normalize per position"
     pssm_df=pssm_df.copy()
@@ -786,7 +788,7 @@ def process_pssm(pssm_df):
     pssm_df = pssm_df/pssm_df.sum()
     return pssm_df
 
-# %% ../nbs/00_core.ipynb 102
+# %% ../nbs/00_core.ipynb 130
 def pssm2dict(pssm_df):
     "Convert pssm dataframe to dict"
     pssm_df=pssm_df.copy()
@@ -794,7 +796,7 @@ def pssm2dict(pssm_df):
     pssm_df['position_residue']=pssm_df.iloc[:,0].astype(str)+pssm_df.iloc[:,1]
     return pssm_df.set_index('position_residue')['value'].round(5).to_dict()
 
-# %% ../nbs/00_core.ipynb 105
+# %% ../nbs/00_core.ipynb 133
 def js_divergence(p1, # pssm 
                   p2, # pssm
                   mean=True):
@@ -808,7 +810,7 @@ def js_divergence(p1, # pssm
          0.5 * np.sum(p2 * np.log(p2 / m + 1e-10), axis=0)
     return np.mean(js) if mean else js
 
-# %% ../nbs/00_core.ipynb 107
+# %% ../nbs/00_core.ipynb 135
 def js_divergence_flat(p1_flat, # pd.Series of flattened pssm
                        p2_flat, # pd.Series of flattened pssm
                        ):
@@ -819,7 +821,7 @@ def js_divergence_flat(p1_flat, # pd.Series of flattened pssm
     total_position = len(p1_flat.index.str.extract(r'(-?\d+)').drop_duplicates())
     return js/total_position
 
-# %% ../nbs/00_core.ipynb 111
+# %% ../nbs/00_core.ipynb 139
 def entropy(pssm_df,# a dataframe of pssm with index as aa and column as position
             return_min=False, # return min entropy as a single value or return all entropy as a series
             exclude_zero=False, # exclude the column of 0 (center position) in the entropy calculation
@@ -837,14 +839,14 @@ def entropy(pssm_df,# a dataframe of pssm with index as aa and column as positio
     per_position = -np.sum(pssm_df * np.log2(pssm_df + 1e-9), axis=0)
     return per_position.min() if return_min else per_position
 
-# %% ../nbs/00_core.ipynb 113
+# %% ../nbs/00_core.ipynb 141
 @delegates(entropy)
 def entropy_flat(flat_pssm:pd.Series,**kwargs): 
     "Calculate entropy per position of a flat PSSM surrounding 0"
     pssm_df = recover_pssm(flat_pssm)
     return entropy(pssm_df,**kwargs)
 
-# %% ../nbs/00_core.ipynb 114
+# %% ../nbs/00_core.ipynb 142
 def get_IC_standard(pssm_df):
     """Calculate the standard information content (bits) from frequency matrix, 
     using the same number of residues log2(len(pssm_df)) for all positions"""
@@ -856,7 +858,7 @@ def get_IC_standard(pssm_df):
     scaled_df = pssm_df.mul(IC_position)
     return scaled_df
 
-# %% ../nbs/00_core.ipynb 115
+# %% ../nbs/00_core.ipynb 143
 @delegates(entropy)
 def get_IC(pssm_df,**kwargs):
     """Calculate the information content (bits) from a frequency matrix,
@@ -872,7 +874,7 @@ def get_IC(pssm_df,**kwargs):
     IC_position = max_entropy_array - entropy_position
     return IC_position
 
-# %% ../nbs/00_core.ipynb 116
+# %% ../nbs/00_core.ipynb 144
 @delegates(get_IC)
 def get_IC_flat(flat_pssm:pd.Series,**kwargs):
     """Calculate the information content (bits) from a flattened pssm pd.Series,
@@ -881,7 +883,7 @@ def get_IC_flat(flat_pssm:pd.Series,**kwargs):
     pssm_df = recover_pssm(flat_pssm)
     return get_IC(pssm_df,**kwargs)
 
-# %% ../nbs/00_core.ipynb 117
+# %% ../nbs/00_core.ipynb 145
 def get_scaled_IC(pssm_df):
     """For plotting purpose, calculate the scaled information content (bits) from a frequency matrix,
     using log2(3) for the middle position and log2(len(pssm_df)) for others."""
@@ -890,7 +892,7 @@ def get_scaled_IC(pssm_df):
     
     return pssm_df.mul(IC_position, axis=1)
 
-# %% ../nbs/00_core.ipynb 119
+# %% ../nbs/00_core.ipynb 147
 def get_pvalue(df,
               columns1, # list of column names for group1
               columns2, # list of column names for group2
@@ -966,7 +968,7 @@ def get_pvalue(df,
 
     return results
 
-# %% ../nbs/00_core.ipynb 120
+# %% ../nbs/00_core.ipynb 148
 def get_metaP(p_values):
     
     "Use Fisher's method to calculate a combined p value given a list of p values; this function also allows negative p values (negative correlation)"
@@ -978,7 +980,7 @@ def get_metaP(p_values):
 
     return score
 
-# %% ../nbs/00_core.ipynb 123
+# %% ../nbs/00_core.ipynb 151
 def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and single amino acid as columns
              PDHK: bool=False, # whether this kinase belongs to PDHK family 
             ):
@@ -1001,7 +1003,7 @@ def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and s
     
     return df2
 
-# %% ../nbs/00_core.ipynb 125
+# %% ../nbs/00_core.ipynb 153
 def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
                    kinase:str, # a specific kinase
                    normalize: bool=False, # normalize according to the paper; special for PDHK1/4
