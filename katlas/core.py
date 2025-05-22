@@ -114,6 +114,7 @@ class Data:
 
     #--------------------------- CDDM ---------------------------
     KS_DATASET_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_datasets_20250407.parquet"
+    KS_DATASET_UNIQUE_SEQ_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_datasets_seq_unique_20250407.parquet"
     CDDM_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_main.parquet"
     CDDM_UPPER_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_main_upper.parquet"
     CDDM_OTHERS_URL = "https://github.com/sky1ove/katlas/raw/main/dataset/CDDM/ks_others.parquet"
@@ -152,6 +153,11 @@ class Data:
             
             df.drop(columns='uniprot_clean', inplace=True)
         return df
+
+    @staticmethod
+    def get_ks_unique() -> pd.DataFrame:
+        """Return kinase substrate dataset with unique site sequence (most phosphorylated version)."""
+        return Data.fetch_data(Data.KS_DATASET_UNIQUE_SEQ_URL)
 
     @staticmethod
     def get_cddm() -> pd.DataFrame:
@@ -359,10 +365,14 @@ def validate_site_df(df,
     return df.apply(lambda r: validate_site(r[site_info_col],r[protein_seq_col]) , axis=1)
 
 # %% ../nbs/00_core.ipynb 30
-def onehot_encode(sequences):
+def onehot_encode(sequences, transform_colname=True, n=20):
     encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
-    encoded = encoder.fit_transform([list(seq) for seq in sequences])
-    return encoded
+    encoded_array = encoder.fit_transform([list(seq) for seq in sequences])
+    colnames = [x[1:] for x in encoder.get_feature_names_out()]
+    if transform_colname:
+        colnames = [f"{int(item.split('_', 1)[0]) - 20}{item.split('_', 1)[1]}" for item in colnames]
+    encoded_df = pd.DataFrame(encoded_array, columns=colnames)
+    return encoded_df
 
 # %% ../nbs/00_core.ipynb 36
 def multiply_func(values, # list of values, possibilities of amino acids at certain positions
@@ -758,13 +768,14 @@ def pssm_to_seq(pssm_df,
     return ''.join(consensus)
 
 # %% ../nbs/00_core.ipynb 96
-def recover_pssm(flat_pssm:pd.Series):
+def recover_pssm(flat_pssm:pd.Series,aa_order=list('PGACSTVILMFYWHKRQNDEsty')):
     "Recover 2D pssm from flat pssm Series"
     df = flat_pssm.copy().reset_index()
     df.columns=['info','value']
     df['Position']=df['info'].str.extract(r'(-?\d+)').astype(int)
-    df['aa']=df['info'].str.extract(r'-?\d+\s*(.*)').replace({'s':'pS','t':'pT','y':'pY'})
-    return df.pivot(index='aa',columns='Position',values='value').fillna(0)
+    df['aa']=df['info'].str.extract(r'-?\d+\s*(.*)')
+    df = df.pivot(index='aa',columns='Position',values='value').fillna(0)
+    return df.reindex(index=aa_order).rename(index={'s': 'pS', 't': 'pT', 'y': 'pY'})
 
 # %% ../nbs/00_core.ipynb 100
 def process_pssm(pssm_df):

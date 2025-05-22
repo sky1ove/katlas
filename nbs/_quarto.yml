@@ -3,7 +3,9 @@ project:
 
 format:
   html:
-    theme: minty
+    theme:
+      - minty
+      - custom.scss
     css: styles.css
     toc: true
 
@@ -14,7 +16,21 @@ website:
   navbar:
     background: primary
     search: true
+    right:
+      - icon: github
+        href: https://github.com/sky1ove/kdock
   sidebar:
     style: floating
+    contents:
+      - text: "Get Started"
+        href: index.ipynb
+      - section: Tutorials
+        contents: tutorials/*
+      - section: Modules
+        contents: *
+      - section: Examples
+        contents: examples/*
+      - section: 2025 NC Paper
+        contents: paper/*
 
-metadata-files: [nbdev.yml, sidebar.yml]
+metadata-files: [nbdev.yml]
