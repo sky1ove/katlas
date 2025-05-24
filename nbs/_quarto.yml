@@ -28,8 +28,6 @@ website:
         contents: tutorials/*
       - section: Modules
         contents: "*.ipynb"
-      - section: Examples
-        contents: examples/*
       - section: 2025 NC Paper
         contents: paper/*
 
