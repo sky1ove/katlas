@@ -18,7 +18,7 @@ website:
     search: true
     right:
       - icon: github
-        href: https://github.com/sky1ove/kdock
+        href: https://github.com/sky1ove/katlas
   sidebar:
     style: floating
     contents:
@@ -28,7 +28,15 @@ website:
         contents: tutorials/*
       - section: Modules
         contents:
-           - "00_data.ipynb"
+            - 00_data.ipynb
+            - 01_preprocess.ipynb
+            - 02_pssm.ipynb
+            - 03_score.ipynb
+            - 04_feature.ipynb
+            - 05_plot.ipynb
+            - 06_ML.ipynb
+            - 07_DL.ipynb
+            - 08_analyze.ipynb
       - section: 2025 NC Paper
         contents: paper/*
 
