@@ -12,7 +12,7 @@ from tqdm import tqdm
 from .data import *
 from fastcore.meta import delegates
 
-# %% ../nbs/01_preprocess.ipynb 8
+# %% ../nbs/01_preprocess.ipynb 9
 def check_seq(seq):
     """Convert non-s/t/y characters to uppercase and replace disallowed characters with underscores."""
     acceptor = seq[len(seq) // 2]
@@ -21,13 +21,13 @@ def check_seq(seq):
     allowed_chars = set("PGACSTVILMFYWHKRQNDEsty")
     return "".join(char if char in {'s', 't', 'y'} else (char.upper() if char.upper() in allowed_chars else '_') for char in seq)
 
-# %% ../nbs/01_preprocess.ipynb 11
+# %% ../nbs/01_preprocess.ipynb 12
 def check_seq_df(df,col):
     "Convert non-s/t/y to upper case & replace with underscore if the character is not in the allowed set"
     assert len(df[col].str.len().value_counts())==1, 'inconsistent sequence length detected'
     return df[col].apply(check_seq)
 
-# %% ../nbs/01_preprocess.ipynb 14
+# %% ../nbs/01_preprocess.ipynb 15
 def validate_site(site_info,
                   seq):
     "Validate site position residue match with site residue."
@@ -36,14 +36,14 @@ def validate_site(site_info,
         return int(False)
     return int(seq[pos]==site_info[0])
 
-# %% ../nbs/01_preprocess.ipynb 17
+# %% ../nbs/01_preprocess.ipynb 18
 def validate_site_df(df, 
                      site_info_col,
                      protein_seq_col): 
     "Validate site position residue match with site residue in a dataframe."
     return df.apply(lambda r: validate_site(r[site_info_col],r[protein_seq_col]) , axis=1)
 
-# %% ../nbs/01_preprocess.ipynb 20
+# %% ../nbs/01_preprocess.ipynb 21
 def phosphorylate_seq(seq, # full protein sequence
                       *sites, # site info, e.g., S140
                       ):
@@ -64,7 +64,7 @@ def phosphorylate_seq(seq, # full protein sequence
 
     return ''.join(seq)
 
-# %% ../nbs/01_preprocess.ipynb 22
+# %% ../nbs/01_preprocess.ipynb 23
 def phosphorylate_seq_df(df,
                          id_col='substrate_uniprot', # column of sequence ID
                          seq_col='substrate_sequence', # column that contains protein sequence
@@ -76,7 +76,7 @@ def phosphorylate_seq_df(df,
     df_seq['phosphoseq'] = df_seq.apply(lambda r: phosphorylate_seq(r[seq_col],*r[site_col]),axis=1)
     return df_seq
 
-# %% ../nbs/01_preprocess.ipynb 26
+# %% ../nbs/01_preprocess.ipynb 27
 def extract_site_seq(df: pd.DataFrame, # dataframe that contains protein sequence
                      seq_col: str, # column name of protein sequence
                      site_col: str, # column name of site information (e.g., S10)

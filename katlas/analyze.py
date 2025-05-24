@@ -13,7 +13,7 @@ import math
 from scipy.stats import ttest_ind, mannwhitneyu, wilcoxon,chi2
 from statsmodels.stats.multitest import multipletests
 
-# %% ../nbs/08_analyze.ipynb 7
+# %% ../nbs/08_analyze.ipynb 8
 def get_pvalue(df,
               columns1, # list of column names for group1
               columns2, # list of column names for group2
@@ -89,7 +89,7 @@ def get_pvalue(df,
 
     return results
 
-# %% ../nbs/08_analyze.ipynb 8
+# %% ../nbs/08_analyze.ipynb 9
 def get_metaP(p_values):
     
     "Use Fisher's method to calculate a combined p value given a list of p values; this function also allows negative p values (negative correlation)"

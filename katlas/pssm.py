@@ -13,7 +13,7 @@ from .data import *
 from .preprocess import *
 from fastcore.meta import delegates
 
-# %% ../nbs/02_pssm.ipynb 7
+# %% ../nbs/02_pssm.ipynb 8
 def get_prob(df: pd.DataFrame, col: str, aa_order=[i for i in 'PGACSTVILMFYWHKRQNDEsty']):
     """Get the probability matrix of PSSM from phosphorylation site sequences."""
     
@@ -38,7 +38,7 @@ def get_prob(df: pd.DataFrame, col: str, aa_order=[i for i in 'PGACSTVILMFYWHKRQ
     
     return pssm_df
 
-# %% ../nbs/02_pssm.ipynb 11
+# %% ../nbs/02_pssm.ipynb 12
 def pssm_to_seq(pssm_df, 
                 thr=0.4, # threshold of probability to show in sequence
                 contain_sty=True, # keep only s,t,y values (last three) in center 0 position
@@ -73,7 +73,7 @@ def pssm_to_seq(pssm_df,
 
     return ''.join(consensus)
 
-# %% ../nbs/02_pssm.ipynb 13
+# %% ../nbs/02_pssm.ipynb 14
 def recover_pssm(flat_pssm:pd.Series,aa_order=list('PGACSTVILMFYWHKRQNDEsty')):
     "Recover 2D pssm from flat pssm Series"
     df = flat_pssm.copy().reset_index()
@@ -83,7 +83,7 @@ def recover_pssm(flat_pssm:pd.Series,aa_order=list('PGACSTVILMFYWHKRQNDEsty')):
     df = df.pivot(index='aa',columns='Position',values='value').fillna(0)
     return df.reindex(index=aa_order).rename(index={'s': 'pS', 't': 'pT', 'y': 'pY'})
 
-# %% ../nbs/02_pssm.ipynb 17
+# %% ../nbs/02_pssm.ipynb 18
 def process_pssm(pssm_df):
     "Keep only s,t,y values in center 0 position; normalize per position"
     pssm_df=pssm_df.copy()
@@ -92,7 +92,7 @@ def process_pssm(pssm_df):
     pssm_df = pssm_df/pssm_df.sum()
     return pssm_df
 
-# %% ../nbs/02_pssm.ipynb 19
+# %% ../nbs/02_pssm.ipynb 20
 def pssm2dict(pssm_df):
     "Convert pssm dataframe to dict"
     pssm_df=pssm_df.copy()
@@ -100,7 +100,7 @@ def pssm2dict(pssm_df):
     pssm_df['position_residue']=pssm_df.iloc[:,0].astype(str)+pssm_df.iloc[:,1]
     return pssm_df.set_index('position_residue')['value'].round(5).to_dict()
 
-# %% ../nbs/02_pssm.ipynb 22
+# %% ../nbs/02_pssm.ipynb 23
 def js_divergence(p1, # pssm 
                   p2, # pssm
                   mean=True):
@@ -114,7 +114,7 @@ def js_divergence(p1, # pssm
          0.5 * np.sum(p2 * np.log(p2 / m + 1e-10), axis=0)
     return np.mean(js) if mean else js
 
-# %% ../nbs/02_pssm.ipynb 24
+# %% ../nbs/02_pssm.ipynb 25
 def js_divergence_flat(p1_flat, # pd.Series of flattened pssm
                        p2_flat, # pd.Series of flattened pssm
                        ):
@@ -125,7 +125,7 @@ def js_divergence_flat(p1_flat, # pd.Series of flattened pssm
     total_position = len(p1_flat.index.str.extract(r'(-?\d+)').drop_duplicates())
     return js/total_position
 
-# %% ../nbs/02_pssm.ipynb 28
+# %% ../nbs/02_pssm.ipynb 29
 def entropy(pssm_df,# a dataframe of pssm with index as aa and column as position
             return_min=False, # return min entropy as a single value or return all entropy as a series
             exclude_zero=False, # exclude the column of 0 (center position) in the entropy calculation
@@ -143,14 +143,14 @@ def entropy(pssm_df,# a dataframe of pssm with index as aa and column as positio
     per_position = -np.sum(pssm_df * np.log2(pssm_df + 1e-9), axis=0)
     return per_position.min() if return_min else per_position
 
-# %% ../nbs/02_pssm.ipynb 30
+# %% ../nbs/02_pssm.ipynb 31
 @delegates(entropy)
 def entropy_flat(flat_pssm:pd.Series,**kwargs): 
     "Calculate entropy per position of a flat PSSM surrounding 0"
     pssm_df = recover_pssm(flat_pssm)
     return entropy(pssm_df,**kwargs)
 
-# %% ../nbs/02_pssm.ipynb 31
+# %% ../nbs/02_pssm.ipynb 32
 def get_IC_standard(pssm_df):
     """Calculate the standard information content (bits) from frequency matrix, 
     using the same number of residues log2(len(pssm_df)) for all positions"""
@@ -162,7 +162,7 @@ def get_IC_standard(pssm_df):
     scaled_df = pssm_df.mul(IC_position)
     return scaled_df
 
-# %% ../nbs/02_pssm.ipynb 32
+# %% ../nbs/02_pssm.ipynb 33
 @delegates(entropy)
 def get_IC(pssm_df,**kwargs):
     """Calculate the information content (bits) from a frequency matrix,
@@ -178,7 +178,7 @@ def get_IC(pssm_df,**kwargs):
     IC_position = max_entropy_array - entropy_position
     return IC_position
 
-# %% ../nbs/02_pssm.ipynb 33
+# %% ../nbs/02_pssm.ipynb 34
 @delegates(get_IC)
 def get_IC_flat(flat_pssm:pd.Series,**kwargs):
     """Calculate the information content (bits) from a flattened pssm pd.Series,
@@ -187,7 +187,7 @@ def get_IC_flat(flat_pssm:pd.Series,**kwargs):
     pssm_df = recover_pssm(flat_pssm)
     return get_IC(pssm_df,**kwargs)
 
-# %% ../nbs/02_pssm.ipynb 34
+# %% ../nbs/02_pssm.ipynb 35
 def get_scaled_IC(pssm_df):
     """For plotting purpose, calculate the scaled information content (bits) from a frequency matrix,
     using log2(3) for the middle position and log2(len(pssm_df)) for others."""
@@ -196,7 +196,7 @@ def get_scaled_IC(pssm_df):
     
     return pssm_df.mul(IC_position, axis=1)
 
-# %% ../nbs/02_pssm.ipynb 36
+# %% ../nbs/02_pssm.ipynb 37
 def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and single amino acid as columns
              PDHK: bool=False, # whether this kinase belongs to PDHK family 
             ):
@@ -219,7 +219,7 @@ def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and s
     
     return df2
 
-# %% ../nbs/02_pssm.ipynb 38
+# %% ../nbs/02_pssm.ipynb 39
 def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
                    kinase:str, # a specific kinase
                    normalize: bool=False, # normalize according to the paper; special for PDHK1/4

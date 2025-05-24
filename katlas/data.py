@@ -9,7 +9,7 @@ __all__ = ['Data', 'CPTAC']
 import pandas as pd
 from functools import lru_cache
 
-# %% ../nbs/00_data.ipynb 8
+# %% ../nbs/00_data.ipynb 9
 class Data:
     """A class for fetching various datasets."""
     
@@ -257,7 +257,7 @@ class Data:
         df = Data.fetch_data(URL)
         return Data._convert_numeric_columns(df)
 
-# %% ../nbs/00_data.ipynb 64
+# %% ../nbs/00_data.ipynb 65
 class CPTAC:
     
     "A class for fetching CPTAC phosphoproteomics data."
