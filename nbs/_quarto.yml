@@ -27,9 +27,8 @@ website:
       - section: Tutorials
         contents: tutorials/*
       - section: Modules
-        contents: 
-            - "*.ipynb"
-            - "!*/*.ipynb"
+        contents:
+           - "00_data.ipynb"
       - section: 2025 NC Paper
         contents: paper/*
 
