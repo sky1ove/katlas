@@ -67,6 +67,8 @@ Check out our latest web platform:
 ## Install
 
     pip install python-katlas -U
+    pip install git+https://github.com/sky1ove/katlas.git
+    pip install "git+https://github.com/sky1ove/katlas.git@main#egg=python-katlas[dev]"
 
 To use other modules besides the core, do
 `pip install 'python-katlas[dev]' -U`

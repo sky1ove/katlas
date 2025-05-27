@@ -10,7 +10,7 @@ __all__ = ['get_prob', 'pssm_to_seq', 'recover_pssm', 'process_pssm', 'pssm2dict
 # %% ../nbs/02_pssm.ipynb 3
 import numpy as np, pandas as pd
 from .data import *
-from .preprocess import *
+from .utils import *
 from fastcore.meta import delegates
 
 # %% ../nbs/02_pssm.ipynb 8

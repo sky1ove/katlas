@@ -9,7 +9,7 @@ __all__ = ['multiply_func', 'multiply', 'sumup', 'STY2sty', 'get_dict', 'predict
 # %% ../nbs/03_score.ipynb 3
 import numpy as np, pandas as pd
 from .data import *
-from .preprocess import *
+from .utils import *
 from typing import Callable
 from functools import partial
 

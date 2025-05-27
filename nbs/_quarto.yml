@@ -27,7 +27,16 @@ website:
       - section: Tutorials
         contents: tutorials/*
       - section: Modules
-        contents: ./*.ipynb
+        contents:
+            - 00_data.ipynb
+            - 01_preprocess.ipynb
+            - 02_pssm.ipynb
+            - 03_score.ipynb
+            - 04_feature.ipynb
+            - 05_plot.ipynb
+            - 06_ML.ipynb
+            - 07_DL.ipynb
+            - 08_analyze.ipynb
       - section: 2025 NC Paper
         contents: paper/*
 
