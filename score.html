@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Scoring functions to calculate kinase score based on substrate sequence">
+
+<title>Score – python-katlas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d85bc34392351b430103c96f4e95f4f1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Score – python-katlas">
+<meta property="og:description" content="Scoring functions to calculate kinase score based on substrate sequence">
+<meta property="og:image" content="https://sky1ove.github.io/katlas/03_score_files/figure-html/cell-7-1-64aea5d4-bb8f-41d2-b6fd-6b9b4ec82b97.png">
+<meta property="og:site_name" content="python-katlas">
+<meta property="og:image:height" content="300">
+<meta property="og:image:width" content="1674">
+<meta name="twitter:title" content="Score – python-katlas">
+<meta name="twitter:description" content="Scoring functions to calculate kinase score based on substrate sequence">
+<meta name="twitter:image" content="https://sky1ove.github.io/katlas/03_score_files/figure-html/cell-7-1-64aea5d4-bb8f-41d2-b6fd-6b9b4ec82b97.png">
+<meta name="twitter:image-height" content="300">
+<meta name="twitter:image-width" content="1674">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">python-katlas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/sky1ove/katlas"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data.html">Modules</a></li><li class="breadcrumb-item"><a href="./score.html">Score</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get Started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Tutorials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorials/sinlge_input.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring with single input sequence</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorials/high_throughput.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Phosphoproteomics scoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorials/enrichment_akti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinase enrichment analysis - AKTi</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorials/tutorial_01_checker_scoring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Checker and Scoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorials/tutorial_02_prepare_dataset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorials/tutorial_03_pspa_nomalization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PSPA raw data normalization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorials/tutorial_04_plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+ <span class="menu-text">01_preprocess.ipynb</span>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pssm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PSSM</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./score.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Score</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train ML</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dl.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train DL</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analyze.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analyze</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">2025 NC Paper</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paper/preprocess_ls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preprocess kinase-substrate datasets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paper/eda.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exploratory data analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paper/kmeans_motif.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kmeans motifs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paper/ks_motif.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Motif extraction</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paper/train_set.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prepare training set</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paper/train.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paper/go_path.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reactome pathway analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paper/reactome_path.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reactome pathway analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paper/new_kinase_domain.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get all kinase domain sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paper/raw_05_hierarchical_clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hierarchical clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paper/t5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ProT5 embeddings</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#algorithms" id="toc-algorithms" class="nav-link" data-scroll-target="#algorithms">Algorithms</a>
+  <ul class="collapse">
+  <li><a href="#multiply" id="toc-multiply" class="nav-link" data-scroll-target="#multiply">Multiply</a></li>
+  <li><a href="#multiply_func" id="toc-multiply_func" class="nav-link" data-scroll-target="#multiply_func">multiply_func</a></li>
+  <li><a href="#multiply-1" id="toc-multiply-1" class="nav-link" data-scroll-target="#multiply-1">multiply</a></li>
+  <li><a href="#sum" id="toc-sum" class="nav-link" data-scroll-target="#sum">Sum</a></li>
+  <li><a href="#sumup" id="toc-sumup" class="nav-link" data-scroll-target="#sumup">sumup</a></li>
+  </ul></li>
+  <li><a href="#utils" id="toc-utils" class="nav-link" data-scroll-target="#utils">Utils</a>
+  <ul class="collapse">
+  <li><a href="#sty2sty" id="toc-sty2sty" class="nav-link" data-scroll-target="#sty2sty">STY2sty</a></li>
+  <li><a href="#get_dict" id="toc-get_dict" class="nav-link" data-scroll-target="#get_dict">get_dict</a></li>
+  </ul></li>
+  <li><a href="#scoring-func" id="toc-scoring-func" class="nav-link" data-scroll-target="#scoring-func">Scoring func</a>
+  <ul class="collapse">
+  <li><a href="#predict_kinase" id="toc-predict_kinase" class="nav-link" data-scroll-target="#predict_kinase">predict_kinase</a></li>
+  </ul></li>
+  <li><a href="#params" id="toc-params" class="nav-link" data-scroll-target="#params">Params</a>
+  <ul class="collapse">
+  <li><a href="#params-1" id="toc-params-1" class="nav-link" data-scroll-target="#params-1">Params</a></li>
+  </ul></li>
+  <li><a href="#score-sequences-in-df" id="toc-score-sequences-in-df" class="nav-link" data-scroll-target="#score-sequences-in-df">Score sequences in df</a>
+  <ul class="collapse">
+  <li><a href="#cut_seq" id="toc-cut_seq" class="nav-link" data-scroll-target="#cut_seq">cut_seq</a></li>
+  <li><a href="#predict_kinase_df" id="toc-predict_kinase_df" class="nav-link" data-scroll-target="#predict_kinase_df">predict_kinase_df</a></li>
+  </ul></li>
+  <li><a href="#percentile-scoring" id="toc-percentile-scoring" class="nav-link" data-scroll-target="#percentile-scoring">Percentile scoring</a>
+  <ul class="collapse">
+  <li><a href="#get_pct" id="toc-get_pct" class="nav-link" data-scroll-target="#get_pct">get_pct</a></li>
+  <li><a href="#get_pct_df" id="toc-get_pct_df" class="nav-link" data-scroll-target="#get_pct_df">get_pct_df</a></li>
+  </ul></li>
+  <li><a href="#end" id="toc-end" class="nav-link" data-scroll-target="#end">End</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data.html">Modules</a></li><li class="breadcrumb-item"><a href="./score.html">Score</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Score</h1>
+</div>
+
+<div>
+  <div class="description">
+    Scoring functions to calculate kinase score based on substrate sequence
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.score <span class="im">import</span> <span class="op">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="algorithms" class="level2">
+<h2 class="anchored" data-anchor-id="algorithms">Algorithms</h2>
+<section id="multiply" class="level3">
+<h3 class="anchored" data-anchor-id="multiply">Multiply</h3>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/score.py#L17" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="multiply_func" class="level3">
+<h3 class="anchored" data-anchor-id="multiply_func">multiply_func</h3>
+<blockquote class="blockquote">
+<pre><code> multiply_func (values, factor=17)</code></pre>
+</blockquote>
+<p><em>Multiply the possibilities of the amino acids at each position in a phosphorylation site</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>values</td>
+<td></td>
+<td></td>
+<td>list of values, possibilities of amino acids at certain positions</td>
+</tr>
+<tr class="even">
+<td>factor</td>
+<td>int</td>
+<td>17</td>
+<td>scale factor</td>
+</tr>
+</tbody>
+</table>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="03_score_files/figure-html/cell-7-1-64aea5d4-bb8f-41d2-b6fd-6b9b4ec82b97.png" class="img-fluid figure-img"></p>
+<figcaption>image.png</figcaption>
+</figure>
+</div>
+<p>The function implement formula from <a href="https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-022-05575-3/MediaObjects/41586_2022_5575_MOESM1_ESM.pdf">Johnson et al.&nbsp;Nature: An atlas of substrate specificities for the human serine/threonine kinome, Supplementary Note2</a> (page 160)</p>
+<p>Multiply class, consider the dynamics of scale factor</p>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/score.py#L31" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="multiply-1" class="level3">
+<h3 class="anchored" data-anchor-id="multiply-1">multiply</h3>
+<blockquote class="blockquote">
+<pre><code> multiply (values, kinase, num_dict={'SYK': 18, 'PTK2': 18, 'ZAP70': 18,
+           'ERBB2': 18, 'CSK': 18, 'FGFR4': 18, 'EGFR': 18, 'ERBB4': 18,
+           'EPHA8': 18, 'EPHA7': 18, 'EPHA5': 18, 'EPHA2': 18, 'EPHB2':
+           18, 'EPHB1': 18, 'EPHB3': 18, 'EPHB4': 18, 'EPHA4': 18,
+           'EPHA3': 18, 'EPHA6': 18, 'FRK': 18, 'EPHA1': 18, 'TEC': 18,
+           'BTK': 18, 'ITK': 18, 'BMX': 18, 'TXK': 16, 'ABL2': 18, 'ABL1':
+           18, 'SRMS': 18, 'PTK2B': 18, 'FER': 18, 'MERTK': 18, 'AXL': 18,
+           'FES': 18, 'PTK6': 18, 'YES1': 18, 'FGR': 18, 'SRC': 18, 'FYN':
+           18, 'LCK': 18, 'BLK': 18, 'LYN': 18, 'HCK': 18, 'PDGFRB': 18,
+           'PDGFRA': 18, 'FLT3': 18, 'TYRO3': 18, 'ROS1': 18, 'TEK': 18,
+           'LTK': 18, 'ALK': 18, 'MUSK': 18, 'KIT': 18, 'CSF1R': 18,
+           'MET': 18, 'KDR': 18, 'RET': 18, 'MST1R': 16, 'JAK3': 16,
+           'FLT1': 16, 'MATK': 18, 'FGFR3': 18, 'FGFR2': 18, 'FGFR1': 18,
+           'FLT4': 18, 'INSR': 18, 'IGF1R': 18, 'INSRR': 16, 'NTRK3': 18,
+           'NTRK1': 18, 'NTRK2': 18, 'TNK1': 18, 'TNK2': 18, 'DDR2': 18,
+           'DDR1': 18, 'TYK2': 18, 'JAK2': 18, 'JAK1': 18, 'TNNI3K_TYR':
+           18, 'NEK10_TYR': 16, 'PINK1_TYR': 16, 'MAP2K7_TYR': 16,
+           'PKMYT1_TYR': 16, 'TESK1_TYR': 16, 'LIMK1_TYR': 16,
+           'LIMK2_TYR': 16, 'WEE1_TYR': 18, 'MAP2K6_TYR': 16,
+           'MAP2K4_TYR': 16, 'PDHK1_TYR': 16, 'BMPR2_TYR': 16,
+           'PDHK4_TYR': 16, 'PDHK3_TYR': 16, 'AAK1': 17, 'ACVR2A': 17,
+           'ACVR2B': 17, 'AKT1': 17, 'AKT2': 17, 'AKT3': 17, 'ALK2': 17,
+           'ALK4': 17, 'ALPHAK3': 17, 'AMPKA1': 17, 'AMPKA2': 17,
+           'ANKRD3': 17, 'ATM': 17, 'ATR': 17, 'AURA': 17, 'AURB': 17,
+           'AURC': 17, 'GRK2': 17, 'GRK3': 17, 'BCKDK': 17, 'BIKE': 17,
+           'BMPR1A': 17, 'BMPR1B': 17, 'BMPR2': 17, 'BRAF': 17, 'BRSK1':
+           17, 'BRSK2': 17, 'BUB1': 17, 'CAMK1A': 17, 'CAMK1B': 17,
+           'CAMK1D': 17, 'CAMK1G': 17, 'CAMK2A': 17, 'CAMK2B': 17,
+           'CAMK2D': 17, 'CAMK2G': 17, 'CAMK4': 17, 'CAMKK1': 17,
+           'CAMKK2': 17, 'CAMLCK': 17, 'CDK1': 17, 'CDC7': 17, 'CDK10':
+           17, 'CDK19': 17, 'CDK2': 17, 'CDK3': 17, 'CDK4': 17, 'CDK5':
+           17, 'CDK6': 17, 'CDK7': 17, 'CDK8': 17, 'CDK9': 17, 'CDKL1':
+           17, 'CDKL5': 17, 'CHAK1': 17, 'CHAK2': 17, 'CDK13': 17, 'CHK1':
+           17, 'CHK2': 17, 'CK1A': 17, 'CK1A2': 17, 'CK1D': 17, 'CK1E':
+           17, 'CK1G1': 17, 'CK1G2': 17, 'CK1G3': 17, 'CK2A1': 17,
+           'CK2A2': 17, 'CLK1': 17, 'CLK2': 17, 'CLK3': 17, 'CLK4': 17,
+           'COT': 17, 'CRIK': 17, 'CDK12': 17, 'DAPK1': 17, 'DAPK2': 17,
+           'DAPK3': 17, 'DCAMKL1': 17, 'DCAMKL2': 17, 'DLK': 17, 'DMPK1':
+           17, 'DNAPK': 17, 'DRAK1': 17, 'DYRK1A': 17, 'DYRK1B': 17,
+           'DYRK2': 17, 'DYRK3': 17, 'DYRK4': 17, 'ERK1': 17, 'ERK2': 17,
+           'ERK5': 17, 'ERK7': 17, 'MTOR': 17, 'GAK': 17, 'GCK': 17,
+           'GCN2': 17, 'GRK4': 17, 'GRK5': 17, 'GRK6': 17, 'GRK7': 17,
+           'GSK3A': 17, 'GSK3B': 17, 'HASPIN': 17, 'HGK': 17, 'HIPK1': 17,
+           'HIPK2': 17, 'HIPK3': 17, 'HIPK4': 17, 'HPK1': 17, 'HRI': 17,
+           'HUNK': 17, 'ICK': 17, 'IKKA': 17, 'IKKB': 17, 'IKKE': 17,
+           'IRAK1': 17, 'IRAK4': 17, 'IRE1': 17, 'IRE2': 17, 'JNK1': 17,
+           'JNK2': 17, 'JNK3': 17, 'KHS1': 17, 'KHS2': 17, 'KIS': 17,
+           'LATS1': 17, 'LATS2': 17, 'LKB1': 17, 'LOK': 17, 'LRRK2': 17,
+           'MAK': 17, 'MEK1': 17, 'MEK2': 17, 'MEK5': 17, 'MEKK1': 17,
+           'YSK4': 17, 'MEKK2': 17, 'MEKK3': 17, 'ASK1': 17, 'MEKK6': 17,
+           'MAP3K15': 17, 'MAPKAPK2': 17, 'MAPKAPK3': 17, 'MAPKAPK5': 17,
+           'MARK1': 17, 'MARK2': 17, 'MARK3': 17, 'MARK4': 17, 'MASTL':
+           17, 'MELK': 17, 'MINK': 17, 'MLK1': 17, 'MLK2': 17, 'MLK3': 17,
+           'MLK4': 17, 'MNK1': 17, 'MNK2': 17, 'MOK': 17, 'MOS': 17,
+           'MPSK1': 17, 'MRCKA': 17, 'MRCKB': 17, 'MSK1': 17, 'MSK2': 17,
+           'SRPK3': 17, 'MST1': 17, 'MST2': 17, 'MST3': 17, 'MST4': 17,
+           'MYO3A': 17, 'MYO3B': 17, 'NDR1': 17, 'NDR2': 17, 'NEK1': 17,
+           'NEK11': 17, 'NEK2': 17, 'NEK3': 17, 'NEK4': 17, 'NEK5': 17,
+           'NEK6': 17, 'NEK7': 17, 'NEK8': 17, 'NEK9': 17, 'NIK': 17,
+           'NIM1': 17, 'NLK': 17, 'NUAK1': 17, 'NUAK2': 17, 'OSR1': 17,
+           'P38A': 17, 'P38B': 17, 'P38D': 17, 'P38G': 17, 'P70S6K': 17,
+           'P70S6KB': 17, 'PAK1': 17, 'PAK2': 17, 'PAK3': 17, 'PAK4': 17,
+           'PAK5': 17, 'PAK6': 17, 'PASK': 17, 'PBK': 17, 'CDK16': 17,
+           'CDK17': 17, 'CDK18': 17, 'PDHK1': 16, 'PDHK4': 16, 'PDK1': 17,
+           'PERK': 17, 'CDK14': 17, 'PHKG1': 17, 'PHKG2': 17, 'PIM1': 17,
+           'PIM2': 17, 'PIM3': 17, 'PINK1': 17, 'PKACA': 17, 'PKACB': 17,
+           'PKACG': 17, 'PKCA': 17, 'PKCB': 17, 'PKCD': 17, 'PKCE': 17,
+           'PKCG': 17, 'PKCH': 17, 'PKCI': 17, 'PKCT': 17, 'PKCZ': 17,
+           'PRKD1': 17, 'PRKD2': 17, 'PRKD3': 17, 'PKG1': 17, 'PKG2': 17,
+           'PKN1': 17, 'PKN2': 17, 'PKN3': 17, 'PKR': 17, 'PLK1': 17,
+           'PLK2': 17, 'PLK3': 17, 'PLK4': 17, 'PRKX': 17, 'PRP4': 17,
+           'PRPK': 17, 'QIK': 17, 'QSK': 17, 'RAF1': 17, 'GRK1': 17,
+           'RIPK1': 17, 'RIPK2': 17, 'RIPK3': 17, 'ROCK1': 17, 'ROCK2':
+           17, 'P90RSK': 17, 'RSK2': 17, 'RSK3': 17, 'RSK4': 17, 'SBK':
+           17, 'MYLK4': 17, 'SGK1': 17, 'SGK3': 17, 'DSTYK': 17, 'SIK':
+           17, 'SKMLCK': 17, 'SLK': 17, 'SMG1': 17, 'SMMLCK': 17, 'SNRK':
+           17, 'SRPK1': 17, 'SRPK2': 17, 'SSTK': 17, 'STK33': 17, 'STLK3':
+           17, 'TAK1': 17, 'TAO1': 17, 'TAO2': 17, 'TAO3': 17, 'TBK1': 17,
+           'TGFBR1': 17, 'TGFBR2': 17, 'TLK1': 17, 'TLK2': 17, 'TNIK': 17,
+           'TSSK1': 17, 'TSSK2': 17, 'TTBK1': 17, 'TTBK2': 17, 'TTK': 17,
+           'ULK1': 17, 'ULK2': 17, 'VRK1': 17, 'VRK2': 17, 'WNK1': 17,
+           'WNK3': 17, 'WNK4': 17, 'YANK2': 17, 'YANK3': 17, 'YSK1': 17,
+           'ZAK': 17, 'EEF2K': 17, 'FAM20C': 17})</code></pre>
+</blockquote>
+<p><em>Multiply values, consider the dynamics of scale factor, which is PSPA random aa number.</em></p>
+<div id="cell-11" class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>multiply(values<span class="op">=</span>[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>],kinase<span class="op">=</span><span class="st">'PDHK1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>22.906890595608516</code></pre>
+</div>
+</div>
+</section>
+<section id="sum" class="level3">
+<h3 class="anchored" data-anchor-id="sum">Sum</h3>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/score.py#L48" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="sumup" class="level3">
+<h3 class="anchored" data-anchor-id="sumup">sumup</h3>
+<blockquote class="blockquote">
+<pre><code> sumup (values, kinase=None)</code></pre>
+</blockquote>
+<p><em>Sum up the possibilities of the amino acids at each position in a phosphorylation site sequence</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>values</td>
+<td></td>
+<td></td>
+<td>list of values, possibilities of amino acids at certain positions</td>
+</tr>
+<tr class="even">
+<td>kinase</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="03_score_files/figure-html/cell-14-1-e73376f0-fca3-4aea-8b53-ca0c506cf0ee.png" class="img-fluid figure-img"></p>
+<figcaption>image.png</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="utils" class="level2">
+<h2 class="anchored" data-anchor-id="utils">Utils</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/score.py#L55" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="sty2sty" class="level3">
+<h3 class="anchored" data-anchor-id="sty2sty">STY2sty</h3>
+<blockquote class="blockquote">
+<pre><code> STY2sty (input_string:str)</code></pre>
+</blockquote>
+<p><em>Replace all ‘STY’ with ‘sty’ in a sequence</em></p>
+<div id="cell-17" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>STY2sty(<span class="st">'AAkUuPSFSTtH'</span>) <span class="co"># convert all capital STY to sty in a string</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'AAkUuPsFsttH'</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/score.py#L60" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_dict" class="level3">
+<h3 class="anchored" data-anchor-id="get_dict">get_dict</h3>
+<blockquote class="blockquote">
+<pre><code> get_dict (input_string:str)</code></pre>
+</blockquote>
+<p><em>Get a dictionary of input string; no need for the star in the middle; make sure it is 15 or 10 length</em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>input_string</td>
+<td>str</td>
+<td>phosphorylation site sequence</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-19" class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>cols <span class="op">=</span> get_dict(<span class="st">"PSVEPPLsQETFSDL"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['-7P',
+ '-6S',
+ '-5V',
+ '-4E',
+ '-3P',
+ '-2P',
+ '-1L',
+ '0s',
+ '1Q',
+ '2E',
+ '3T',
+ '4F',
+ '5S',
+ '6D',
+ '7L']</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="scoring-func" class="level2">
+<h2 class="anchored" data-anchor-id="scoring-func">Scoring func</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/score.py#L79" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="predict_kinase" class="level3">
+<h3 class="anchored" data-anchor-id="predict_kinase">predict_kinase</h3>
+<blockquote class="blockquote">
+<pre><code> predict_kinase (input_string:str, ref:pandas.core.frame.DataFrame,
+                 func:Callable, to_lower:bool=False, to_upper:bool=False,
+                 verbose=True)</code></pre>
+</blockquote>
+<p><em>Predict kinase given a phosphorylation site sequence</em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>input_string</td>
+<td>str</td>
+<td></td>
+<td>site sequence</td>
+</tr>
+<tr class="even">
+<td>ref</td>
+<td>DataFrame</td>
+<td></td>
+<td>reference dataframe for scoring</td>
+</tr>
+<tr class="odd">
+<td>func</td>
+<td>Callable</td>
+<td></td>
+<td>function to calculate score</td>
+</tr>
+<tr class="even">
+<td>to_lower</td>
+<td>bool</td>
+<td>False</td>
+<td>convert capital STY to lower case</td>
+</tr>
+<tr class="odd">
+<td>to_upper</td>
+<td>bool</td>
+<td>False</td>
+<td>convert all letter to uppercase</td>
+</tr>
+<tr class="even">
+<td>verbose</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div id="cell-22" class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ref <span class="op">=</span> Data.get_pspa_st_norm().astype(<span class="st">'float32'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-23" class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>predict_kinase(<span class="st">"PSVEPPLsQETFSDL"</span>,ref,multiply)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>considering string: ['-5V', '-4E', '-3P', '-2P', '-1L', '0s', '1Q', '2E', '3T', '4F']</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>kinase
+ATM       5.037
+SMG1      4.385
+DNAPK     3.818
+ATR       3.507
+FAM20C    3.170
+          ...  
+PKN1     -7.275
+P70S6K   -7.295
+AKT3     -7.375
+PKCI     -7.742
+NEK3     -8.254
+Length: 303, dtype: float64</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="params" class="level2">
+<h2 class="anchored" data-anchor-id="params">Params</h2>
+<p>Here we provide different PSSM settings from either PSPA data or kinase-substrate dataset for kinase prediction:</p>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/score.py#L122" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="params-1" class="level3">
+<h3 class="anchored" data-anchor-id="params-1">Params</h3>
+<blockquote class="blockquote">
+<pre><code> Params (name=None)</code></pre>
+</blockquote>
+<div id="cell-27" class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>Params()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Available parameter sets:</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>['PSPA_st', 'PSPA_y', 'PSPA', 'CDDM', 'CDDM_upper']</code></pre>
+</div>
+</div>
+<div id="cell-28" class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> p <span class="kw">in</span> [<span class="st">'PSPA'</span>, <span class="st">'CDDM'</span>,<span class="st">'CDDM_upper'</span>]:</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(predict_kinase(<span class="st">"PSVEPPLsQETFSDL"</span>,<span class="op">**</span>Params(p)).head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>considering string: ['-5V', '-4E', '-3P', '-2P', '-1L', '0s', '1Q', '2E', '3T', '4F', '5S']
+kinase
+ATM       5.037
+SMG1      4.385
+DNAPK     3.818
+ATR       3.507
+FAM20C    3.170
+dtype: float64
+considering string: ['-7P', '-6S', '-5V', '-4E', '-3P', '-2P', '-1L', '0s', '1Q', '2E', '3T', '4F', '5S', '6D', '7L']
+kinase
+ATR      3.064
+ATM      2.909
+DNAPK    2.270
+CK2A1    1.873
+TSSK1    1.856
+dtype: float64
+considering string: ['-7P', '-6S', '-5V', '-4E', '-3P', '-2P', '-1L', '0S', '1Q', '2E', '3T', '4F', '5S', '6D', '7L']
+kinase
+ATR      3.229
+ATM      3.038
+DNAPK    2.479
+CK2A1    2.006
+CDK8     1.999
+dtype: float64</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="score-sequences-in-df" class="level2">
+<h2 class="anchored" data-anchor-id="score-sequences-in-df">Score sequences in df</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/score.py#L141" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="cut_seq" class="level3">
+<h3 class="anchored" data-anchor-id="cut_seq">cut_seq</h3>
+<blockquote class="blockquote">
+<pre><code> cut_seq (input_string:str, min_position:int, max_position:int)</code></pre>
+</blockquote>
+<p><em>Extract sequence based on a range relative to its center position</em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>input_string</td>
+<td>str</td>
+<td>site sequence</td>
+</tr>
+<tr class="even">
+<td>min_position</td>
+<td>int</td>
+<td>minimum position relative to its center</td>
+</tr>
+<tr class="odd">
+<td>max_position</td>
+<td>int</td>
+<td>maximum position relative to its center</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-31" class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>cut_seq(<span class="st">'AAkUuPSFSTtH'</span>,<span class="op">-</span><span class="dv">5</span>,<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'AkUuPSFSTt'</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/score.py#L159" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="predict_kinase_df" class="level3">
+<h3 class="anchored" data-anchor-id="predict_kinase_df">predict_kinase_df</h3>
+<blockquote class="blockquote">
+<pre><code> predict_kinase_df (df, seq_col, ref, func, to_lower=False,
+                    to_upper=False)</code></pre>
+</blockquote>
+<div id="cell-33" class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> Data.get_psp_human_site()</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>df_sty <span class="op">=</span> df[df[<span class="st">'site_seq'</span>].<span class="bu">str</span>[<span class="dv">7</span>].isin(<span class="bu">list</span>(<span class="st">'sty'</span>))]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-34" class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>out_cddm <span class="op">=</span> predict_kinase_df(df_sty.head(<span class="dv">500</span>),<span class="st">'site_seq'</span>, <span class="op">**</span>Params(<span class="st">'CDDM'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>input dataframe has a length 500
+Preprocessing
+Finish preprocessing
+Merging reference
+Finish merging
+CPU times: user 28 ms, sys: 12 ms, total: 40 ms
+Wall time: 39.9 ms</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="percentile-scoring" class="level2">
+<h2 class="anchored" data-anchor-id="percentile-scoring">Percentile scoring</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/score.py#L243" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="get_pct" class="level3">
+<h3 class="anchored" data-anchor-id="get_pct">get_pct</h3>
+<blockquote class="blockquote">
+<pre><code> get_pct (site, ref, func, pct_ref)</code></pre>
+</blockquote>
+<p><em>Replicate the precentile results from The Kinase Library.</em></p>
+<div id="cell-37" class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>st_pct <span class="op">=</span> Data.get_pspa_st_pct()</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>y_pct <span class="op">=</span> Data.get_pspa_tyr_pct()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-38" class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>out <span class="op">=</span> get_pct(<span class="st">'PSVEPPLyQETFSDL'</span>,<span class="op">**</span>Params(<span class="st">'PSPA_y'</span>), pct_ref<span class="op">=</span>y_pct)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>out.sort_values(<span class="st">'percentile'</span>,ascending<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>considering string: ['-5V', '-4E', '-3P', '-2P', '-1L', '0Y', '1Q', '2E', '3T', '4F', '5S']</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">log2(score)</th>
+<th data-quarto-table-cell-role="th">percentile</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ABL2</td>
+<td>3.137</td>
+<td>96.568694</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">BMX</td>
+<td>2.816</td>
+<td>96.117567</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">BTK</td>
+<td>1.956</td>
+<td>95.693780</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">CSK</td>
+<td>2.303</td>
+<td>95.174299</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">MERTK</td>
+<td>2.509</td>
+<td>93.588517</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">FLT1</td>
+<td>-1.919</td>
+<td>25.358852</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">PINK1_TYR</td>
+<td>-1.227</td>
+<td>21.927546</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">MUSK</td>
+<td>-3.031</td>
+<td>21.298701</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">TNNI3K_TYR</td>
+<td>-3.549</td>
+<td>11.004785</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">PKMYT1_TYR</td>
+<td>-1.739</td>
+<td>4.798360</td>
+</tr>
+</tbody>
+</table>
+
+<p>93 rows × 2 columns</p>
+</div>
+</div>
+</div>
+<div id="cell-39" class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>get_pct(<span class="st">'PSVEPPLsQETFSDL'</span>,<span class="op">**</span>Params(<span class="st">'PSPA_st'</span>), pct_ref<span class="op">=</span>st_pct)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>considering string: ['-5V', '-4E', '-3P', '-2P', '-1L', '0S', '1Q', '2E', '3T', '4F']</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">log2(score)</th>
+<th data-quarto-table-cell-role="th">percentile</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">ATM</td>
+<td>5.037</td>
+<td>99.822351</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">SMG1</td>
+<td>4.385</td>
+<td>99.831819</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">DNAPK</td>
+<td>3.818</td>
+<td>99.205315</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">ATR</td>
+<td>3.507</td>
+<td>99.680344</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">FAM20C</td>
+<td>3.170</td>
+<td>95.370556</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">PKN1</td>
+<td>-7.275</td>
+<td>14.070436</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">P70S6K</td>
+<td>-7.295</td>
+<td>4.089816</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">AKT3</td>
+<td>-7.375</td>
+<td>11.432995</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">PKCI</td>
+<td>-7.742</td>
+<td>8.129511</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">NEK3</td>
+<td>-8.254</td>
+<td>4.637240</td>
+</tr>
+</tbody>
+</table>
+
+<p>303 rows × 2 columns</p>
+</div>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/score.py#L268" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_pct_df" class="level3">
+<h3 class="anchored" data-anchor-id="get_pct_df">get_pct_df</h3>
+<blockquote class="blockquote">
+<pre><code> get_pct_df (score_df, pct_ref)</code></pre>
+</blockquote>
+<p><em>Replicate the precentile results from The Kinase Library.</em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>score_df</td>
+<td>output from predict_kinase_df</td>
+</tr>
+<tr class="even">
+<td>pct_ref</td>
+<td>a reference df for percentile calculation</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-41" class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># substrate score first</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="co"># score_df = predict_kinase_df(df_sty,'site_seq', **Params('PSPA_st'))</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co"># get percentile reference</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="co"># pct_ref = Data.get_pspa_st_pct()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-42" class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pct = get_pct_df(score_df,pct_ref)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="end" class="level2">
+<h2 class="anchored" data-anchor-id="end">End</h2>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/sky1ove\.github\.io\/katlas");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
