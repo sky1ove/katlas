@@ -134,7 +134,8 @@ def onehot_encode(sequences, transform_colname=True, n=20):
     colnames = [x[1:] for x in encoder.get_feature_names_out()]
     if transform_colname:
         colnames = [f"{int(item.split('_', 1)[0]) - 20}{item.split('_', 1)[1]}" for item in colnames]
-    encoded_df = pd.DataFrame(encoded_array, columns=colnames)
+    encoded_df = pd.DataFrame(encoded_array)
+    encoded_df.columns=colnames
     return encoded_df
 
 # %% ../nbs/04_feature.ipynb 31
