@@ -4,7 +4,7 @@
 
 # %% auto 0
 __all__ = ['remove_hi_corr', 'preprocess', 'standardize', 'get_rdkit', 'get_rdkit_3d', 'get_rdkit_all', 'get_rdkit_df',
-           'get_morgan', 'onehot_encode', 'get_esm', 'get_t5', 'get_t5_bfd', 'reduce_feature']
+           'get_morgan', 'onehot_encode', 'get_clusters_elbow', 'get_esm', 'get_t5', 'get_t5_bfd', 'reduce_feature']
 
 # %% ../nbs/04_feature.ipynb 3
 import pandas as pd, numpy as np
@@ -30,7 +30,10 @@ from sklearn.manifold import TSNE
 from sklearn.preprocessing import StandardScaler
 from umap.umap_ import UMAP
 
-from sklearn.preprocessing import StandardScaler
+# Elbow
+from sklearn.cluster import KMeans
+from matplotlib import pyplot as plt
+
 
 set_config(transform_output="pandas")
 
@@ -139,6 +142,22 @@ def onehot_encode(sequences, transform_colname=True, n=20):
     return encoded_df
 
 # %% ../nbs/04_feature.ipynb 31
+def get_clusters_elbow(encoded_data,max_cluster=400, interval=50):
+
+    wcss = []
+    for i in range(1, max_cluster,interval):
+        kmeans = KMeans(n_clusters=i, random_state=42)
+        kmeans.fit(encoded_data)
+        wcss.append(kmeans.inertia_)
+
+    # Plot the Elbow graph
+    plt.figure(figsize=(5, 3))
+    plt.plot(range(1, max_cluster,interval), wcss)
+    plt.title(f'Elbow Method (n={len(encoded_data)})')
+    plt.xlabel('# Clusters')
+    plt.ylabel('WCSS')
+
+# %% ../nbs/04_feature.ipynb 34
 def get_esm(df:pd.DataFrame, # a dataframe that contains amino acid sequence
             col: str = 'sequence', # colname of amino acid sequence
             model_name: str = "esm2_t33_650M_UR50D", # Name of the ESM model to use for the embeddings.
@@ -205,7 +224,7 @@ def get_esm(df:pd.DataFrame, # a dataframe that contains amino acid sequence
 
         return df_feature
 
-# %% ../nbs/04_feature.ipynb 35
+# %% ../nbs/04_feature.ipynb 38
 def get_t5(df: pd.DataFrame, 
            col: str = 'sequence'
            ):
@@ -247,7 +266,7 @@ def get_t5(df: pd.DataFrame,
     
     return T5_feature
 
-# %% ../nbs/04_feature.ipynb 38
+# %% ../nbs/04_feature.ipynb 41
 def get_t5_bfd(df:pd.DataFrame, 
                col: str = 'sequence'
                ):
@@ -289,7 +308,7 @@ def get_t5_bfd(df:pd.DataFrame,
     
     return T5_feature
 
-# %% ../nbs/04_feature.ipynb 42
+# %% ../nbs/04_feature.ipynb 45
 def reduce_feature(df: pd.DataFrame, 
                    method: str='pca', # dimensionality reduction method, accept both capital and lower case
                    complexity: int=20, # None for PCA; perfplexity for TSNE, recommend: 30; n_neigbors for UMAP, recommend: 15
