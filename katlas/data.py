@@ -90,6 +90,15 @@ class Data:
         return Data.fetch_data(URL)
 
     @staticmethod
+    def get_pspa_all_scale() -> pd.DataFrame:
+        """
+        Get PSPA (-5 to +4) scaled data from PSPA normalized data. 
+        Each position (including both pS/pT and pS=pT) are normalized to 1.
+        """
+        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_all_scale.parquet"
+        return Data.fetch_data(URL)
+
+    @staticmethod
     def get_pspa_st_pct() -> pd.DataFrame:
         """Get PSPA reference score to calculate percentile for serine/threonine kinases."""
         URL = f"{Data.BASE_URL}dataset/PSPA/pspa_pct_st.parquet"
@@ -257,7 +266,7 @@ class Data:
         df = Data.fetch_data(URL)
         return Data._convert_numeric_columns(df)
 
-# %% ../nbs/00_data.ipynb 65
+# %% ../nbs/00_data.ipynb 67
 class CPTAC:
     
     "A class for fetching CPTAC phosphoproteomics data."
