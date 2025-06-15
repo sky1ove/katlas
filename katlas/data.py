@@ -74,7 +74,7 @@ class Data:
     @staticmethod
     def get_kd_uniprot() -> pd.DataFrame:
         "Kinase domains extracted from UniProt database. "
-        URL = f"{Data.BASE_URL}dataset/uniprot_ks_align.parquet"
+        URL = f"{Data.BASE_URL}dataset/uniprot_kd_labeled.parquet"
         return Data.fetch_data(URL)
 
     @staticmethod
