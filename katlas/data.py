@@ -70,6 +70,12 @@ class Data:
         """
         URL = f"{Data.BASE_URL}dataset/uniprot_human_keyword_kinase.parquet"
         return Data.fetch_data(URL)
+        
+    @staticmethod
+    def get_kd_uniprot() -> pd.DataFrame:
+        "Kinase domains extracted from UniProt database. "
+        URL = f"{Data.BASE_URL}dataset/uniprot_ks_align.parquet"
+        return Data.fetch_data(URL)
 
     @staticmethod
     def get_pspa_tyr_norm() -> pd.DataFrame:
@@ -266,7 +272,7 @@ class Data:
         df = Data.fetch_data(URL)
         return Data._convert_numeric_columns(df)
 
-# %% ../nbs/00_data.ipynb 67
+# %% ../nbs/00_data.ipynb 69
 class CPTAC:
     
     "A class for fetching CPTAC phosphoproteomics data."
