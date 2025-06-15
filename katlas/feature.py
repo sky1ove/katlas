@@ -4,14 +4,14 @@
 
 # %% auto 0
 __all__ = ['remove_hi_corr', 'preprocess', 'standardize', 'get_rdkit', 'get_rdkit_3d', 'get_rdkit_all', 'get_rdkit_df',
-           'get_morgan', 'onehot_encode', 'get_clusters_elbow', 'get_esm', 'get_t5', 'get_t5_bfd', 'reduce_feature']
+           'get_morgan', 'onehot_encode', 'get_clusters_elbow', 'get_esm', 'get_t5', 'get_t5_bfd']
 
 # %% ../nbs/04_feature.ipynb 3
 import pandas as pd, numpy as np
 import torch,re,joblib,gc,esm
 from tqdm.notebook import tqdm; tqdm.pandas()
 from .data import Data
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder,StandardScaler
 
 # Rdkit
 from rdkit import Chem
@@ -23,18 +23,11 @@ from fairscale.nn.data_parallel import FullyShardedDataParallel as FSDP
 from fairscale.nn.wrap import enable_wrap, wrap
 from transformers import T5Tokenizer, T5EncoderModel, T5Model
 
-# Dimension Reduction
-from sklearn import set_config
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
-from sklearn.preprocessing import StandardScaler
-from umap.umap_ import UMAP
-
 # Elbow
 from sklearn.cluster import KMeans
 from matplotlib import pyplot as plt
 
-
+from sklearn import set_config
 set_config(transform_output="pandas")
 
 # %% ../nbs/04_feature.ipynb 5
@@ -307,49 +300,3 @@ def get_t5_bfd(df:pd.DataFrame,
     T5_feature.columns = 'T5bfd_' + T5_feature.columns.astype(str)
     
     return T5_feature
-
-# %% ../nbs/04_feature.ipynb 45
-def reduce_feature(df: pd.DataFrame, 
-                   method: str='pca', # dimensionality reduction method, accept both capital and lower case
-                   complexity: int=20, # None for PCA; perfplexity for TSNE, recommend: 30; n_neigbors for UMAP, recommend: 15
-                   n: int=2, # n_components
-                   load: str=None, # load a previous model, e.g. model.pkl
-                   save: str=None, # pkl file to be saved, e.g. pca_model.pkl
-                   seed: int=123, # seed for random_state
-                   **kwargs, # arguments from PCA, TSNE, or UMAP depends on which method to use
-                  ):
-    
-    "Reduce the dimensionality given a dataframe of values"
-    
-    method = method.lower()
-    assert method in ['pca','tsne','umap'], "Please choose a method among PCA, TSNE, and UMAP"
-    
-    if load is not None:
-        reducer = joblib.load(load)
-    else:
-        if method == 'pca':
-            reducer = PCA(n_components=n, random_state=seed,**kwargs)
-        elif method == 'tsne':
-            reducer = TSNE(n_components=n,
-                           random_state=seed, 
-                           perplexity = complexity, # default from official is 30 
-                          **kwargs)
-        elif method == 'umap':
-            reducer = UMAP(n_components=n, 
-                           random_state=seed, 
-                           n_neighbors=complexity, # default from official is 15, try 15-200
-                          **kwargs)
-        else:
-            raise ValueError('Invalid method specified')
-
-    proj = reducer.fit_transform(df)
-    embedding_df = pd.DataFrame(proj).set_index(df.index)
-    embedding_df.columns = [f"{method.upper()}{i}" for i in range(1, n + 1)]
-
-    if save is not None:
-        path = Path(save)
-        path.parent.mkdir(exist_ok=True)
-        
-        joblib.dump(reducer, save)
-
-    return embedding_df
