@@ -7,14 +7,12 @@ __all__ = ['Data', 'CPTAC']
 
 # %% ../nbs/00_data.ipynb 3
 import pandas as pd
-from functools import lru_cache
 
 # %% ../nbs/00_data.ipynb 9
 class Data:
     """A class for fetching various datasets."""
     
     @staticmethod
-    @lru_cache(maxsize=None)
     def fetch_data(url: str) -> pd.DataFrame:
         """
         Fetch data from the given URL and return a DataFrame.
@@ -26,7 +24,6 @@ class Data:
         return df
 
     @staticmethod
-    @lru_cache(maxsize=None)
     def fetch_csv(url: str) -> pd.DataFrame:
         """
         Fetch data from the given URL and return a DataFrame.
@@ -141,10 +138,11 @@ class Data:
             df['uniprot_clean'] = df['kinase_uniprot'].str.split('-').str[0]
             
             info_indexed = info.set_index('uniprot')
-            group_map = info_indexed['group']
+            group_map = info_indexed['modi_group']
             family_map = info_indexed['family']
             pspa_small_map = info_indexed['pspa_category_small']
             pspa_big_map = info_indexed['pspa_category_big']
+            ID_coral_map = info_indexed['ID_coral']
             
             df['kinase_on_tree'] = df['uniprot_clean'].isin(info['uniprot']).astype(int)
             
@@ -155,14 +153,18 @@ class Data:
             df['kinase_family'] = df['uniprot_clean'].map(family_map)
             df['kinase_pspa_big'] = df['uniprot_clean'].map(pspa_big_map)
             df['kinase_pspa_small'] = df['uniprot_clean'].map(pspa_small_map)
+            df['kinase_coral_ID'] = df['uniprot_clean'].map(ID_coral_map)
             
             df.drop(columns='uniprot_clean', inplace=True)
+            num_kin_info = Data.get_ks_unique()
+            num_kin_map = num_kin_info.set_index('sub_site')['num_kin']
+            df['num_kin'] = df['sub_site'].map(num_kin_map)
         return df
 
     @staticmethod
     def get_ks_unique() -> pd.DataFrame:
         """Get kinase substrate dataset with unique site sequence (most phosphorylated version)."""
-        URL = f"{Data.BASE_URL}dataset/CDDM/ks_datasets_seq_unique_20250407.parquet"
+        URL = f"{Data.BASE_URL}dataset/CDDM/unique_ks_sites.parquet"
         return Data.fetch_data(URL)
 
     @staticmethod

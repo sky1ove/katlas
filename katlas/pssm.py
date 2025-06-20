@@ -4,11 +4,12 @@
 
 # %% auto 0
 __all__ = ['get_prob', 'flatten_pssm', 'recover_pssm', 'clean_zero_normalize', 'get_cluster_pssms', 'entropy', 'entropy_flat',
-           'get_scaled_IC_standard', 'get_IC_per_position', 'get_IC_per_position_flat', 'get_scaled_IC', 'plot_heatmap',
-           'change_center_name', 'scale_zero_position', 'get_logo_df', 'plot_logo', 'plot_logos', 'plot_logo_heatmap',
-           'js_divergence', 'js_divergence_flat', 'compute_distance_matrix', 'compute_JS_matrix', 'compute_distance',
-           'compute_distance_matrix_parallel', 'compute_JS_matrix_parallel', 'pssm_to_seq', 'plot_dendrogram',
-           'raw2norm', 'get_one_kinase', 'plot_logo_raw', 'get_logo']
+           'get_scaled_IC_standard', 'get_IC_per_position', 'get_IC_per_position_flat', 'get_scaled_IC',
+           'plot_heatmap_simple', 'plot_heatmap', 'change_center_name', 'scale_zero_position', 'get_logo_df',
+           'plot_logo', 'plot_logos', 'plot_logo_heatmap', 'js_divergence', 'js_divergence_flat',
+           'compute_distance_matrix', 'compute_JS_matrix', 'compute_distance', 'compute_distance_matrix_parallel',
+           'compute_JS_matrix_parallel', 'pssm_to_seq', 'plot_dendrogram', 'raw2norm', 'get_one_kinase',
+           'plot_logo_raw', 'get_logo']
 
 # %% ../nbs/02_pssm.ipynb 3
 import numpy as np, pandas as pd
@@ -194,6 +195,24 @@ def get_scaled_IC(pssm_df):
     IC_position = get_IC_per_position(pssm_df)
     
     return pssm_df.mul(IC_position, axis=1)
+
+# %% ../nbs/02_pssm.ipynb 42
+@delegates(sns.heatmap)
+def plot_heatmap_simple(matrix, # a matrix of values
+                 title: str='heatmap', # title of the heatmap
+                 figsize: tuple=(6,7), # (width, height)
+                 cmap: str='binary', # color map, default is dark&white
+                 **kwargs, # arguments for sns.heatmap()
+                 ):
+    
+    "Plot heatmap based on a matrix of values"
+    
+    plt.figure(figsize=figsize)
+    sns.heatmap(matrix, square=True,cmap=cmap, annot=False,**kwargs)
+    plt.title(title)
+    plt.ylabel('')
+    plt.xlabel('')
+    plt.yticks(rotation=0)
 
 # %% ../nbs/02_pssm.ipynb 44
 def plot_heatmap(heatmap_df, ax=None, position_label=True, figsize=(5, 6), include_zero=True):
