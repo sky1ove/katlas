@@ -6,7 +6,7 @@
 __all__ = ['sty_color', 'group_color', 'pspa_category_color', 'set_sns', 'get_color_dict', 'get_plt_color', 'get_hue_big',
            'reduce_feature', 'plot_2d', 'plot_cluster', 'plot_bokeh', 'plot_rank', 'plot_hist', 'plot_count',
            'plot_bar', 'plot_group_bar', 'plot_stacked', 'plot_box', 'plot_corr', 'get_similarity', 'plot_matrix',
-           'get_AUCDF', 'plot_confusion_matrix', 'plot_pie', 'get_pct', 'plot_composition']
+           'get_AUCDF', 'plot_confusion_matrix', 'plot_pie', 'get_pct', 'plot_composition', 'plot_cnt']
 
 # %% ../nbs/05_plot.ipynb 3
 import joblib,logomaker
@@ -181,7 +181,7 @@ def plot_cluster(
     df: pd.DataFrame,  # a dataframe of values that is waited for dimensionality reduction
     method: str = 'pca',  # dimensionality reduction method, choose from pca, umap, and tsne
     hue: str = None,  # colname of color
-    complexity: int = 30,  # recommend 30 for tsne, 15 for umap, none for pca
+    complexity: int = 30,  # this argument does not affect pca but others; recommend 30 for tsne, 15 for umap
     palette: str = 'tab20',  # color scheme, could be tab10 if less categories
     legend: bool = False,  # whether or not add the legend on the side
     name_list=None,  # a list of names to annotate each dot in the plot
@@ -210,8 +210,6 @@ def plot_cluster(
             ) for i in range(len(embedding_df))
         ]
         adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
-    
-    plt.show()
 
 # %% ../nbs/05_plot.ipynb 31
 def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality reduction
@@ -752,20 +750,6 @@ def get_pct(df,bin_col, hue_col):
     return pct_df
 
 # %% ../nbs/05_plot.ipynb 76
-def get_plt_color(palette, # dict, list, or set name (tab10)
-                  columns, # columns in the df for plot
-                 ):
-    "Given a dict, list or set name, return the list of names; if dict, need to provide column names of the df."
-    if isinstance(palette, dict):
-        # Match colors to column order in pct_df
-        colors = [palette.get(col, '#cccccc') for col in columns]  # fallback color if missing
-    elif isinstance(palette, str):
-        colors = sns.color_palette(palette, n_colors=len(columns))
-    elif isinstance(palette, list):
-        colors = palette
-    return colors
-
-# %% ../nbs/05_plot.ipynb 78
 def plot_composition(df, bin_col, hue_col,palette='tab20',legend_title=None,rotate=45,xlabel=None,ylabel='Percentage',figsize=(5,3)):
     pct_df = get_pct(df,bin_col,hue_col)
 
@@ -778,3 +762,18 @@ def plot_composition(df, bin_col, hue_col,palette='tab20',legend_title=None,rota
     plt.xticks(rotation=rotate)
     if legend_title is None: legend_title = hue_col 
     plt.legend(title=legend_title, bbox_to_anchor=(1.05, 1), loc='upper left')
+
+# %% ../nbs/05_plot.ipynb 78
+def plot_cnt(cnt, xlabel=None,ylabel='Count',figsize=(6, 3)):
+    fig, ax = plt.subplots(figsize=figsize)
+    cnt.plot.bar(ax=ax)
+    # Add text on top of each bar
+    for idx, value in enumerate(cnt):
+        ax.text(idx, value + 0.5, f"{value:,}", ha='center', va='bottom', fontsize=10)
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.set_ylabel(ylabel)
+    ax.set_xlabel(xlabel)
+    plt.xticks(rotation=0)
+    plt.tight_layout()

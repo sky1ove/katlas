@@ -6,7 +6,7 @@
 __all__ = ['get_prob', 'flatten_pssm', 'recover_pssm', 'clean_zero_normalize', 'get_cluster_pssms', 'entropy', 'entropy_flat',
            'get_scaled_IC_standard', 'get_IC_per_position', 'get_IC_per_position_flat', 'get_scaled_IC',
            'plot_heatmap_simple', 'plot_heatmap', 'change_center_name', 'scale_zero_position', 'get_logo_df',
-           'plot_logo', 'plot_logos', 'plot_logo_heatmap', 'js_divergence', 'js_divergence_flat',
+           'plot_logo', 'plot_logos_idx', 'plot_logos', 'plot_logo_heatmap', 'js_divergence', 'js_divergence_flat',
            'compute_distance_matrix', 'compute_JS_matrix', 'compute_distance', 'compute_distance_matrix_parallel',
            'compute_JS_matrix_parallel', 'pssm_to_seq', 'plot_dendrogram', 'raw2norm', 'get_one_kinase',
            'plot_logo_raw', 'get_logo']
@@ -53,9 +53,13 @@ def get_prob(df: pd.DataFrame, col: str, aa_order=[i for i in 'PGACSTVILMFYWHKRQ
     return pssm_df
 
 # %% ../nbs/02_pssm.ipynb 13
-def flatten_pssm(pssm_df):
+def flatten_pssm(pssm_df,
+                 use_sty=False, # if True, use s,t,y instead of pS,pT,pY
+                ):
     "Flatten PSSM dataframe to dictionary"
+    # convert pS,pT,pY to s,t,y
     pssm_df=pssm_df.copy()
+    if use_sty: pssm_df.index=pssm_df.index.map(pSTY2sty)
     pssm = pssm_df.unstack().reset_index(name='value')
     # Combine position column and residue identity column as new column for keys
     pssm['position_residue']=pssm.iloc[:,0].astype(str)+pssm.iloc[:,1]
@@ -297,7 +301,7 @@ def plot_logo(prob_df,title='Motif', scale_zero=True,ax=None,figsize=(6,1)):
     ax.set_title(f'{title}')
 
 # %% ../nbs/02_pssm.ipynb 57
-def plot_logos(pssms_df,*idxs):
+def plot_logos_idx(pssms_df,*idxs):
     "Plot logos of a dataframe with flattened PSSMs with index ad IDs."
     for idx in idxs:
         pssm = recover_pssm(pssms_df.loc[idx])
@@ -305,7 +309,28 @@ def plot_logos(pssms_df,*idxs):
         plt.show()
         plt.close()
 
-# %% ../nbs/02_pssm.ipynb 59
+# %% ../nbs/02_pssm.ipynb 58
+def plot_logos(pssms_df, count_dict=None, path=None):
+    """
+    Plot all logos from a dataframe of flattened PSSMs as subplots in a single figure.
+    """
+    n = len(pssms_df)
+    hspace=0.7
+    # 14 is width, 1 is height for each logo
+    fig, axes = plt.subplots(nrows=n, figsize=(14, n * (1+hspace)),gridspec_kw={'hspace': hspace+0.1})
+
+    if n == 1:
+        axes = [axes]  # ensure axes is iterable
+
+    for ax, idx in zip(axes, pssms_df.index):
+        pssm = recover_pssm(pssms_df.loc[idx])
+        if count_dict is not None:
+            plot_logo(pssm, title=f'Motif {idx} (n={count_dict[idx]:,})',ax=ax)
+        else:
+            plot_logo(pssm, title=f'Motif {idx}',ax=ax)
+    show_save(path)
+
+# %% ../nbs/02_pssm.ipynb 60
 def plot_logo_heatmap(pssm_df, # column is position, index is aa
                        title='Motif',
                        figsize=(7,8),
@@ -323,7 +348,7 @@ def plot_logo_heatmap(pssm_df, # column is position, index is aa
     ax_heatmap = fig.add_subplot(gs[1, :])
     plot_heatmap(pssm_df,ax=ax_heatmap,position_label=False,include_zero=include_zero)
 
-# %% ../nbs/02_pssm.ipynb 63
+# %% ../nbs/02_pssm.ipynb 64
 def js_divergence(p1, # pssm 
                   p2, # pssm
                   mean=True):
@@ -337,7 +362,7 @@ def js_divergence(p1, # pssm
          0.5 * np.sum(p2 * np.log(p2 / m + 1e-10), axis=0)
     return np.mean(js) if mean else js
 
-# %% ../nbs/02_pssm.ipynb 65
+# %% ../nbs/02_pssm.ipynb 66
 def js_divergence_flat(p1_flat, # pd.Series of flattened pssm
                        p2_flat, # pd.Series of flattened pssm
                        ):
@@ -348,7 +373,7 @@ def js_divergence_flat(p1_flat, # pd.Series of flattened pssm
     total_position = len(p1_flat.index.str.extract(r'(-?\d+)').drop_duplicates())
     return js/total_position
 
-# %% ../nbs/02_pssm.ipynb 68
+# %% ../nbs/02_pssm.ipynb 69
 def compute_distance_matrix(df,func):
     "Compute 1D distance matrix for each row in a dataframe given a distance function "
     n = len(df)
@@ -359,17 +384,17 @@ def compute_distance_matrix(df,func):
             dist.append(d)
     return np.array(dist)
 
-# %% ../nbs/02_pssm.ipynb 69
+# %% ../nbs/02_pssm.ipynb 70
 def compute_JS_matrix(df): 
     "Compute 1D distance matrix using JS divergence."
     return compute_distance_matrix(df,js_divergence_flat)
 
-# %% ../nbs/02_pssm.ipynb 71
+# %% ../nbs/02_pssm.ipynb 72
 def compute_distance(pair, df, func):
     i, j = pair
     return func(df.iloc[i], df.iloc[j])
 
-# %% ../nbs/02_pssm.ipynb 72
+# %% ../nbs/02_pssm.ipynb 73
 def compute_distance_matrix_parallel(df, func, max_workers=4, chunksize=100):
     n = len(df)
     index_pairs = [(i, j) for i in range(n) for j in range(i + 1, n)]
@@ -379,13 +404,13 @@ def compute_distance_matrix_parallel(df, func, max_workers=4, chunksize=100):
     dist = process_map(bound_worker, index_pairs, max_workers=max_workers, chunksize=chunksize)
     return np.array(dist)
 
-# %% ../nbs/02_pssm.ipynb 73
+# %% ../nbs/02_pssm.ipynb 74
 @delegates(compute_distance_matrix_parallel)
 def compute_JS_matrix_parallel(df, func=js_divergence_flat, **kwargs): 
     "Compute 1D distance matrix using JS divergence."
     return compute_distance_matrix_parallel(df, func=func, **kwargs)
 
-# %% ../nbs/02_pssm.ipynb 76
+# %% ../nbs/02_pssm.ipynb 77
 def pssm_to_seq(pssm_df, 
                 thr=0.4, # threshold of probability to show in sequence
                 clean_center=True, # if true, zero out non-last three values in position 0 (keep only s,t,y values at center)
@@ -425,7 +450,7 @@ def pssm_to_seq(pssm_df,
 
     return ''.join(consensus)
 
-# %% ../nbs/02_pssm.ipynb 78
+# %% ../nbs/02_pssm.ipynb 79
 def plot_dendrogram(Z,output='dendrogram.pdf',color_thr=0.03,**kwargs):
     length=(len(Z)+1)//7
     
@@ -436,7 +461,7 @@ def plot_dendrogram(Z,output='dendrogram.pdf',color_thr=0.03,**kwargs):
     plt.savefig(output, bbox_inches='tight')
     plt.close()
 
-# %% ../nbs/02_pssm.ipynb 83
+# %% ../nbs/02_pssm.ipynb 84
 def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and single amino acid as columns
              PDHK: bool=False, # whether this kinase belongs to PDHK family 
             ):
@@ -459,7 +484,7 @@ def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and s
     
     return df2
 
-# %% ../nbs/02_pssm.ipynb 85
+# %% ../nbs/02_pssm.ipynb 86
 def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
                    kinase:str, # a specific kinase
                    normalize: bool=False, # normalize according to the paper; special for PDHK1/4
@@ -480,7 +505,7 @@ def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
         pp = raw2norm(pp, PDHK=True if kinase == 'PDHK1' or kinase == 'PDHK4' else False)
     return pp
 
-# %% ../nbs/02_pssm.ipynb 90
+# %% ../nbs/02_pssm.ipynb 91
 def plot_logo_raw(logo_df,ax=None,title='Motif',ytitle='Enrichment',figsize=(6,2)):
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
@@ -489,7 +514,7 @@ def plot_logo_raw(logo_df,ax=None,title='Motif',ytitle='Enrichment',figsize=(6,2
     logo.style_xticks(fmt='%d')
     ax.set_title(title)
 
-# %% ../nbs/02_pssm.ipynb 91
+# %% ../nbs/02_pssm.ipynb 92
 def get_logo(df: pd.DataFrame, # stacked Dataframe with kinase as index, substrates as columns
              kinase: str, # a specific kinase name in index
              ):

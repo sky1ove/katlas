@@ -156,15 +156,22 @@ class Data:
             df['kinase_coral_ID'] = df['uniprot_clean'].map(ID_coral_map)
             
             df.drop(columns='uniprot_clean', inplace=True)
-            num_kin_info = Data.get_ks_unique()
-            num_kin_map = num_kin_info.set_index('sub_site')['num_kin']
+            site_info = Data.get_ks_unique().set_index('sub_site')
+            num_kin_map = site_info['num_kin']
             df['num_kin'] = df['sub_site'].map(num_kin_map)
+
         return df
 
     @staticmethod
     def get_ks_unique() -> pd.DataFrame:
-        """Get kinase substrate dataset with unique site sequence (most phosphorylated version)."""
+        """Get kinase substrate dataset with unique sub site ID."""
         URL = f"{Data.BASE_URL}dataset/CDDM/unique_ks_sites.parquet"
+        return Data.fetch_data(URL)
+
+    @staticmethod
+    def get_ks_background() -> pd.DataFrame:
+        """Get kinase substrate dataset with unique sub site ID."""
+        URL = f"{Data.BASE_URL}dataset/CDDM/ks_background.parquet"
         return Data.fetch_data(URL)
 
     @staticmethod
@@ -274,7 +281,7 @@ class Data:
         df = Data.fetch_data(URL)
         return Data._convert_numeric_columns(df)
 
-# %% ../nbs/00_data.ipynb 69
+# %% ../nbs/00_data.ipynb 71
 class CPTAC:
     
     "A class for fetching CPTAC phosphoproteomics data."
