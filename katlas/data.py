@@ -7,15 +7,17 @@ __all__ = ['Data', 'CPTAC']
 
 # %% ../nbs/00_data.ipynb 3
 import pandas as pd
+from functools import lru_cache
 
 # %% ../nbs/00_data.ipynb 9
 class Data:
     """A class for fetching various datasets."""
-    
+
+    @lru_cache
     @staticmethod
     def fetch_data(url: str) -> pd.DataFrame:
         """
-        Fetch data from the given URL and return a DataFrame.
+        Fetch parquet from the given URL and return a DataFrame.
         Renames 'Unnamed: 0' column to 'kinase' if present.
         """
         df = pd.read_parquet(url)
@@ -23,10 +25,11 @@ class Data:
             df = df.rename(columns={"Unnamed: 0": "kinase"})
         return df
 
+    @lru_cache
     @staticmethod
     def fetch_csv(url: str) -> pd.DataFrame:
         """
-        Fetch data from the given URL and return a DataFrame.
+        Fetch csv from the given URL and return a DataFrame.
         Renames 'Unnamed: 0' column to 'kinase' if present.
         """
         df = pd.read_csv(url)
