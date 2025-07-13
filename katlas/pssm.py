@@ -29,6 +29,8 @@ import seaborn as sns
 
 from matplotlib.colors import TwoSlopeNorm
 
+# hierarchical clustering
+from scipy.cluster.hierarchy import linkage, fcluster,dendrogram
 
 # %% ../nbs/02_pssm.ipynb 8
 def get_prob(df: pd.DataFrame, col: str, aa_order=[i for i in 'PGACSTVILMFYWHKRQNDEsty']):
@@ -613,7 +615,7 @@ def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
     "Obtain a specific kinase data from stacked dataframe"
     
     p = pd.DataFrame(df.loc[kinase],columns = [kinase]).reset_index().rename(columns={'index':'substrate'})
-    p['position'] = p.substrate.str.extract('(-?\d+)')
+    p['position'] = p.substrate.str.extract(r'(-?\d+)')
     p['aa'] = p.substrate.str[-1]
     p.position = p.position.astype(int)
     pp = p.pivot(index='position', columns='aa', values=kinase)
