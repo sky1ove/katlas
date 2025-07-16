@@ -8,12 +8,12 @@ __all__ = ['Data', 'CPTAC']
 # %% ../nbs/00_data.ipynb 3
 import pandas as pd
 from functools import lru_cache
+from fastcore.all import patch_to
 
 # %% ../nbs/00_data.ipynb 9
 class Data:
     """A class for fetching various datasets."""
 
-    @lru_cache
     @staticmethod
     def fetch_data(url: str) -> pd.DataFrame:
         """
@@ -25,7 +25,6 @@ class Data:
             df = df.rename(columns={"Unnamed: 0": "kinase"})
         return df
 
-    @lru_cache
     @staticmethod
     def fetch_csv(url: str) -> pd.DataFrame:
         """
@@ -48,243 +47,270 @@ class Data:
         return df
 
     BASE_URL = "https://github.com/sky1ove/katlas/raw/main/"
-    
-    #--------------------------- Kinase and PSPA ---------------------------
-    @staticmethod
-    def get_kinase_info() -> pd.DataFrame:
-        """
-        Get information of 523 human kinases on kinome tree. 
-        Group, family, and subfamily classifications are sourced from Coral; 
-        full protein sequences are retrieved using UniProt IDs; 
-        kinase domain sequences are obtained from KinaseDomain.com; 
-        and cellular localization data is extracted from published literature.
-        """
-        URL = f"{Data.BASE_URL}dataset/kinase_info.csv"
-        return Data.fetch_csv(URL)
 
-    @staticmethod
-    def get_kinase_uniprot() -> pd.DataFrame:
-        """
-        Get information of 672 uniprot human kinases, which were retrieved from UniProt by filtering all human protein entries using the keyword 'kinase'. 
-        It includes additional pseudokinases and lipid kinases.
-        """
-        URL = f"{Data.BASE_URL}dataset/uniprot_human_keyword_kinase.parquet"
-        return Data.fetch_data(URL)
+# %% ../nbs/00_data.ipynb 11
+@patch_to(Data)
+def get_kinase_info() -> pd.DataFrame:
+    """
+    Get information of 523 human kinases on kinome tree. 
+    Group, family, and subfamily classifications are sourced from Coral; 
+    full protein sequences are retrieved using UniProt IDs; 
+    kinase domain sequences are obtained from KinaseDomain.com; 
+    and cellular localization data is extracted from published literature.
+    """
+    URL = f"{Data.BASE_URL}dataset/kinase_info.csv"
+    return Data.fetch_csv(URL)
+
+# %% ../nbs/00_data.ipynb 13
+@patch_to(Data)
+def get_kinase_uniprot() -> pd.DataFrame:
+    """
+    Get information of 672 uniprot human kinases, which were retrieved from UniProt by filtering all human protein entries using the keyword 'kinase'. 
+    It includes additional pseudokinases and lipid kinases.
+    """
+    URL = f"{Data.BASE_URL}dataset/uniprot_human_keyword_kinase.parquet"
+    return Data.fetch_data(URL)
+
+# %% ../nbs/00_data.ipynb 15
+@patch_to(Data)
+def get_kd_uniprot() -> pd.DataFrame:
+    "Kinase domains extracted from UniProt database. "
+    URL = f"{Data.BASE_URL}dataset/uniprot_kd_labeled.parquet"
+    return Data.fetch_data(URL)
+
+# %% ../nbs/00_data.ipynb 18
+@patch_to(Data)
+def get_pspa_tyr_norm() -> pd.DataFrame:
+    """Get PSPA normalized data of tyrosine kinase."""
+    URL = f"{Data.BASE_URL}dataset/PSPA/pspa_tyr_norm.parquet"
+    return Data.fetch_data(URL)
+
+# %% ../nbs/00_data.ipynb 20
+@patch_to(Data)
+def get_pspa_st_norm() -> pd.DataFrame:
+    """Get PSPA normalized data of serine/threonine kinase."""
+    URL = f"{Data.BASE_URL}dataset/PSPA/pspa_st_norm.parquet"
+    return Data.fetch_data(URL)
+
+# %% ../nbs/00_data.ipynb 22
+@patch_to(Data)
+def get_pspa_all_norm() -> pd.DataFrame:
+    """Get PSPA normalized data of serine/threonine and tyrosine kinases."""
+    URL = f"{Data.BASE_URL}dataset/PSPA/pspa_all_norm.parquet"
+    return Data.fetch_data(URL)
+
+# %% ../nbs/00_data.ipynb 24
+@patch_to(Data)
+def get_pspa_all_scale() -> pd.DataFrame:
+    """
+    Get PSPA (-5 to +4) scaled data from PSPA normalized data. 
+    Each position (including both pS/pT and pS=pT) are normalized to 1.
+    """
+    URL = f"{Data.BASE_URL}dataset/PSPA/pspa_all_scale.parquet"
+    return Data.fetch_data(URL)
+
+# %% ../nbs/00_data.ipynb 26
+@patch_to(Data)
+def get_pspa_st_pct() -> pd.DataFrame:
+    """Get PSPA reference score to calculate percentile for serine/threonine kinases."""
+    URL = f"{Data.BASE_URL}dataset/PSPA/pspa_pct_st.parquet"
+    return Data.fetch_data(URL)
+
+# %% ../nbs/00_data.ipynb 28
+@patch_to(Data)
+def get_pspa_tyr_pct() -> pd.DataFrame:
+    """Get PSPA reference score to calculate percentile for tyrosine kinases."""
+    URL = f"{Data.BASE_URL}dataset/PSPA/pspa_pct_tyr.parquet"
+    return Data.fetch_data(URL)
+
+# %% ../nbs/00_data.ipynb 30
+@lru_cache
+@patch_to(Data)
+def get_num_dict() -> dict:
+    """Get a dictionary mapping kinase to number of random amino acids in PSPA."""
+    URL = f"{Data.BASE_URL}dataset/PSPA/pspa_divide_num.csv"
+    num = pd.read_csv(URL)
+    return num.set_index("kinase")["num_random_aa"].to_dict()
+
+# %% ../nbs/00_data.ipynb 33
+@patch_to(Data)
+def get_ks_unique() -> pd.DataFrame:
+    """Get kinase substrate dataset with unique sub site ID."""
+    URL = f"{Data.BASE_URL}dataset/CDDM/unique_ks_sites.parquet"
+    return Data.fetch_data(URL)
+
+# %% ../nbs/00_data.ipynb 35
+@patch_to(Data)
+def get_ks_dataset(add_kinase_info=True) -> pd.DataFrame:
+    """Get kinase substrate dataset collected from public resources, with the option of adding kinase info."""
+    URL = f"{Data.BASE_URL}dataset/CDDM/ks_datasets_20250407.parquet"
+    df = Data.fetch_data(URL)
+    df = Data._convert_numeric_columns(df)
+    if 'substrate_phosphoseq' in df.columns:
+        df['substrate_sequence'] = df['substrate_phosphoseq'].str.upper()
+
+    if add_kinase_info:
+        # Remove pseudokinase duplicates by UniProt ID, keep only one entry per kinase
+        info = Data.get_kinase_info().sort_values('kinase').drop_duplicates('uniprot')
         
-    @staticmethod
-    def get_kd_uniprot() -> pd.DataFrame:
-        "Kinase domains extracted from UniProt database. "
-        URL = f"{Data.BASE_URL}dataset/uniprot_kd_labeled.parquet"
-        return Data.fetch_data(URL)
+        # Pre-extract UniProt ID without isoform for matching
+        df['uniprot_clean'] = df['kinase_uniprot'].str.split('-').str[0]
+        
+        info_indexed = info.set_index('uniprot')
+        group_map = info_indexed['modi_group']
+        family_map = info_indexed['family']
+        pspa_small_map = info_indexed['pspa_category_small']
+        pspa_big_map = info_indexed['pspa_category_big']
+        ID_coral_map = info_indexed['ID_coral']
+        
+        df['kinase_on_tree'] = df['uniprot_clean'].isin(info['uniprot']).astype(int)
+        
+        kinase_gene_map = Data.get_kinase_uniprot().set_index('Entry')['Gene Names']
+        df['kinase_genes'] = df['uniprot_clean'].map(kinase_gene_map)
+        
+        df['kinase_group'] = df['uniprot_clean'].map(group_map)
+        df['kinase_family'] = df['uniprot_clean'].map(family_map)
+        df['kinase_pspa_big'] = df['uniprot_clean'].map(pspa_big_map)
+        df['kinase_pspa_small'] = df['uniprot_clean'].map(pspa_small_map)
+        df['kinase_coral_ID'] = df['uniprot_clean'].map(ID_coral_map)
+        
+        df.drop(columns='uniprot_clean', inplace=True)
+        site_info = Data.get_ks_unique().set_index('sub_site')
+        num_kin_map = site_info['num_kin']
+        df['num_kin'] = df['sub_site'].map(num_kin_map)
 
-    @staticmethod
-    def get_pspa_tyr_norm() -> pd.DataFrame:
-        """Get PSPA normalized data of tyrosine kinase."""
-        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_tyr_norm.parquet"
-        return Data.fetch_data(URL)
+    return df
 
-    @staticmethod
-    def get_pspa_st_norm() -> pd.DataFrame:
-        """Get PSPA normalized data of serine/threonine kinase."""
-        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_st_norm.parquet"
-        return Data.fetch_data(URL)
+# %% ../nbs/00_data.ipynb 37
+@lru_cache
+@patch_to(Data)
+def get_ks_background() -> pd.DataFrame:
+    """Get kinase substrate dataset with unique sub site ID."""
+    URL = f"{Data.BASE_URL}dataset/CDDM/ks_background.parquet"
+    return Data.fetch_data(URL)
 
-    @staticmethod
-    def get_pspa_all_norm() -> pd.DataFrame:
-        """Get PSPA normalized data of serine/threonine and tyrosine kinases."""
-        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_all_norm.parquet"
-        return Data.fetch_data(URL)
+# %% ../nbs/00_data.ipynb 39
+@patch_to(Data)
+def get_cddm() -> pd.DataFrame:
+    """Get the primary CDDM dataset."""
+    URL = f"{Data.BASE_URL}dataset/CDDM/ks_main.parquet"
+    return Data.fetch_data(URL)
 
-    @staticmethod
-    def get_pspa_all_scale() -> pd.DataFrame:
-        """
-        Get PSPA (-5 to +4) scaled data from PSPA normalized data. 
-        Each position (including both pS/pT and pS=pT) are normalized to 1.
-        """
-        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_all_scale.parquet"
-        return Data.fetch_data(URL)
+# %% ../nbs/00_data.ipynb 41
+@patch_to(Data)
+def get_cddm_upper() -> pd.DataFrame:
+    """Get the CDDM dataset for all uppercase."""
+    URL = f"{Data.BASE_URL}dataset/CDDM/ks_main_upper.parquet"
+    return Data.fetch_data(URL)
 
-    @staticmethod
-    def get_pspa_st_pct() -> pd.DataFrame:
-        """Get PSPA reference score to calculate percentile for serine/threonine kinases."""
-        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_pct_st.parquet"
-        return Data.fetch_data(URL)
+# %% ../nbs/00_data.ipynb 43
+@patch_to(Data)
+def get_cddm_others() -> pd.DataFrame:
+    """Get CDDM data for other kinases with mutations."""
+    URL = f"{Data.BASE_URL}dataset/CDDM/ks_others.parquet"
+    return Data.fetch_data(URL)
 
-    @staticmethod
-    def get_pspa_tyr_pct() -> pd.DataFrame:
-        """Get PSPA reference score to calculate percentile for tyrosine kinases."""
-        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_pct_tyr.parquet"
-        return Data.fetch_data(URL)
+# %% ../nbs/00_data.ipynb 45
+@patch_to(Data)
+def get_cddm_others_info() -> pd.DataFrame:
+    """Get additional information for CDDM 'others' dataset."""
+    URL = f"{Data.BASE_URL}dataset/CDDM/ks_others_info.parquet"
+    return Data.fetch_data(URL)
 
-    @staticmethod
-    def get_num_dict() -> dict:
-        """Get a dictionary mapping kinase to number of random amino acids in PSPA."""
-        URL = f"{Data.BASE_URL}dataset/PSPA/pspa_divide_num.csv"
-        num = pd.read_csv(URL)
-        return num.set_index("kinase")["num_random_aa"].to_dict()
+# %% ../nbs/00_data.ipynb 47
+@patch_to(Data)
+def get_combine() -> pd.DataFrame:
+    """Get the combined PSPA and CDDM dataset."""
+    URL = f"{Data.BASE_URL}dataset/combine_main.parquet"
+    return Data.fetch_data(URL)
 
-    #--------------------------- CDDM ---------------------------
-    @staticmethod
-    def get_ks_dataset(add_kinase_info=True) -> pd.DataFrame:
-        """Get kinase substrate dataset collected from public resources, with the option of adding kinase info."""
-        URL = f"{Data.BASE_URL}dataset/CDDM/ks_datasets_20250407.parquet"
-        df = Data.fetch_data(URL)
-        df = Data._convert_numeric_columns(df)
-        if 'substrate_phosphoseq' in df.columns:
-            df['substrate_sequence'] = df['substrate_phosphoseq'].str.upper()
+# %% ../nbs/00_data.ipynb 50
+@patch_to(Data)
+def get_aa_info() -> pd.DataFrame:
+    """Get amino acid information."""
+    URL = f"{Data.BASE_URL}dataset/amino_acids/aa_info.parquet"
+    return Data.fetch_data(URL)
 
-        if add_kinase_info:
-            # Remove pseudokinase duplicates by UniProt ID, keep only one entry per kinase
-            info = Data.get_kinase_info().sort_values('kinase').drop_duplicates('uniprot')
-            
-            # Pre-extract UniProt ID without isoform for matching
-            df['uniprot_clean'] = df['kinase_uniprot'].str.split('-').str[0]
-            
-            info_indexed = info.set_index('uniprot')
-            group_map = info_indexed['modi_group']
-            family_map = info_indexed['family']
-            pspa_small_map = info_indexed['pspa_category_small']
-            pspa_big_map = info_indexed['pspa_category_big']
-            ID_coral_map = info_indexed['ID_coral']
-            
-            df['kinase_on_tree'] = df['uniprot_clean'].isin(info['uniprot']).astype(int)
-            
-            kinase_gene_map = Data.get_kinase_uniprot().set_index('Entry')['Gene Names']
-            df['kinase_genes'] = df['uniprot_clean'].map(kinase_gene_map)
-            
-            df['kinase_group'] = df['uniprot_clean'].map(group_map)
-            df['kinase_family'] = df['uniprot_clean'].map(family_map)
-            df['kinase_pspa_big'] = df['uniprot_clean'].map(pspa_big_map)
-            df['kinase_pspa_small'] = df['uniprot_clean'].map(pspa_small_map)
-            df['kinase_coral_ID'] = df['uniprot_clean'].map(ID_coral_map)
-            
-            df.drop(columns='uniprot_clean', inplace=True)
-            site_info = Data.get_ks_unique().set_index('sub_site')
-            num_kin_map = site_info['num_kin']
-            df['num_kin'] = df['sub_site'].map(num_kin_map)
+# %% ../nbs/00_data.ipynb 52
+@patch_to(Data)
+def get_aa_rdkit() -> pd.DataFrame:
+    """Get RDKit representations of amino acids."""
+    URL = f"{Data.BASE_URL}dataset/amino_acids/aa_rdkit.parquet"
+    return Data.fetch_data(URL)
 
-        return df
+# %% ../nbs/00_data.ipynb 54
+@patch_to(Data)
+def get_aa_morgan() -> pd.DataFrame:
+    """Get Morgan fingerprint representations of amino acids."""
+    URL = f"{Data.BASE_URL}dataset/amino_acids/aa_morgan.parquet"
+    return Data.fetch_data(URL)
 
-    @staticmethod
-    def get_ks_unique() -> pd.DataFrame:
-        """Get kinase substrate dataset with unique sub site ID."""
-        URL = f"{Data.BASE_URL}dataset/CDDM/unique_ks_sites.parquet"
-        return Data.fetch_data(URL)
+# %% ../nbs/00_data.ipynb 57
+@patch_to(Data)
+def get_cptac_ensembl_site() -> pd.DataFrame:
+    """Get CPTAC dataset with unique EnsemblProteinID+site."""
+    URL = f"{Data.BASE_URL}dataset/phosphosites/linkedOmicsKB_ref_pan.parquet"
+    return Data.fetch_data(URL)
 
-    @staticmethod
-    def get_ks_background() -> pd.DataFrame:
-        """Get kinase substrate dataset with unique sub site ID."""
-        URL = f"{Data.BASE_URL}dataset/CDDM/ks_background.parquet"
-        return Data.fetch_data(URL)
+# %% ../nbs/00_data.ipynb 59
+@patch_to(Data)
+def get_cptac_unique_site() -> pd.DataFrame:
+    """Get CPTAC dataset with unique site sequences."""
+    URL = f"{Data.BASE_URL}dataset/phosphosites/cptac_unique_site.parquet"
+    return Data.fetch_data(URL)
 
-    @staticmethod
-    def get_cddm() -> pd.DataFrame:
-        """Get the primary CDDM dataset."""
-        URL = f"{Data.BASE_URL}dataset/CDDM/ks_main.parquet"
-        return Data.fetch_data(URL)
+# %% ../nbs/00_data.ipynb 61
+@patch_to(Data)
+def get_cptac_gene_site() -> pd.DataFrame:
+    """Get CPTAC dataset with unique Gene+site."""
+    URL = f"{Data.BASE_URL}dataset/phosphosites/linkedOmics_ref_pan.parquet"
+    return Data.fetch_data(URL)
 
-    @staticmethod
-    def get_cddm_upper() -> pd.DataFrame:
-        """Get the CDDM dataset for all uppercase."""
-        URL = f"{Data.BASE_URL}dataset/CDDM/ks_main_upper.parquet"
-        return Data.fetch_data(URL)
+# %% ../nbs/00_data.ipynb 63
+@patch_to(Data)
+def get_psp_human_site() -> pd.DataFrame:
+    """Get PhosphoSitePlus human dataset (Gene+site)."""
+    URL = f"{Data.BASE_URL}dataset/phosphosites/psp_human.parquet"
+    return Data.fetch_data(URL)
 
-    @staticmethod
-    def get_cddm_others() -> pd.DataFrame:
-        """Get CDDM data for other kinases with mutations."""
-        URL = f"{Data.BASE_URL}dataset/CDDM/ks_others.parquet"
-        return Data.fetch_data(URL)
+# %% ../nbs/00_data.ipynb 65
+@patch_to(Data)
+def get_ochoa_site() -> pd.DataFrame:
+    """Get phosphoproteomics dataset from Ochoa et al."""
+    URL = f"{Data.BASE_URL}dataset/phosphosites/ochoa_site.parquet"
+    return Data.fetch_data(URL)
 
-    @staticmethod
-    def get_cddm_others_info() -> pd.DataFrame:
-        """Get additional information for CDDM 'others' dataset."""
-        URL = f"{Data.BASE_URL}dataset/CDDM/ks_others_info.parquet"
-        return Data.fetch_data(URL)
+# %% ../nbs/00_data.ipynb 67
+@patch_to(Data)
+def get_combine_site_psp_ochoa() -> pd.DataFrame:
+    """
+    Get the combined dataset from Ochoa and PhosphoSitePlus.
+    """
+    URL = f"{Data.BASE_URL}dataset/phosphosites/combine_site_psp_ochoa.parquet"
+    df = Data.fetch_data(URL)
+    return Data._convert_numeric_columns(df)
 
-    @staticmethod
-    def get_combine() -> pd.DataFrame:
-        """Get the combined PSPA and CDDM dataset."""
-        URL = f"{Data.BASE_URL}dataset/combine_main.parquet"
-        return Data.fetch_data(URL)
-
-    #--------------------------- Amino Acid ---------------------------
-    @staticmethod
-    def get_aa_info() -> pd.DataFrame:
-        """Get amino acid information."""
-        URL = f"{Data.BASE_URL}dataset/amino_acids/aa_info.parquet"
-        return Data.fetch_data(URL)
-
-    @staticmethod
-    def get_aa_rdkit() -> pd.DataFrame:
-        """Get RDKit representations of amino acids."""
-        URL = f"{Data.BASE_URL}dataset/amino_acids/aa_rdkit.parquet"
-        return Data.fetch_data(URL)
-
-    @staticmethod
-    def get_aa_morgan() -> pd.DataFrame:
-        """Get Morgan fingerprint representations of amino acids."""
-        URL = f"{Data.BASE_URL}dataset/amino_acids/aa_morgan.parquet"
-        return Data.fetch_data(URL)
-
-    #--------------------------- Phosphoproteomics ---------------------------
-    @staticmethod
-    def get_cptac_ensembl_site() -> pd.DataFrame:
-        """Get CPTAC dataset with unique EnsemblProteinID+site."""
-        URL = f"{Data.BASE_URL}dataset/phosphosites/linkedOmicsKB_ref_pan.parquet"
-        return Data.fetch_data(URL)
-
-    @staticmethod
-    def get_cptac_unique_site() -> pd.DataFrame:
-        """Get CPTAC dataset with unique site sequences."""
-        URL = f"{Data.BASE_URL}dataset/phosphosites/cptac_unique_site.parquet"
-        return Data.fetch_data(URL)
-
-    @staticmethod
-    def get_cptac_gene_site() -> pd.DataFrame:
-        """Get CPTAC dataset with unique Gene+site."""
-        URL = f"{Data.BASE_URL}dataset/phosphosites/linkedOmics_ref_pan.parquet"
-        return Data.fetch_data(URL)
-
-    @staticmethod
-    def get_psp_human_site() -> pd.DataFrame:
-        """Get PhosphoSitePlus human dataset (Gene+site)."""
-        URL = f"{Data.BASE_URL}dataset/phosphosites/psp_human.parquet"
-        return Data.fetch_data(URL)
-
-    @staticmethod
-    def get_ochoa_site() -> pd.DataFrame:
-        """Get phosphoproteomics dataset from Ochoa et al."""
-        URL = f"{Data.BASE_URL}dataset/phosphosites/ochoa_site.parquet"
-        return Data.fetch_data(URL)
-
-    @staticmethod
-    def get_combine_site_psp_ochoa() -> pd.DataFrame:
-        """
-        Get the combined dataset from Ochoa and PhosphoSitePlus.
-        """
-        URL = f"{Data.BASE_URL}dataset/phosphosites/combine_site_psp_ochoa.parquet"
-        df = Data.fetch_data(URL)
-        return Data._convert_numeric_columns(df)
-
-    @staticmethod
-    def get_combine_site_phosphorylated() -> pd.DataFrame:
-        """
-        Get the combined phosphorylated dataset from Ochoa and PhosphoSitePlus.
-        """
-        URL = f"{Data.BASE_URL}dataset/phosphosites/phosphorylated_combine_site.parquet"
-        df = Data.fetch_data(URL)
-        return Data._convert_numeric_columns(df)
-
-    @staticmethod
-    def get_human_site() -> pd.DataFrame:
-        """
-        Get the combined phosphorylated dataset from Ochoa and PhosphoSitePlus (20-length version).
-        """
-        URL = f"{Data.BASE_URL}dataset/phosphosites/phosphorylated_combine_site20.parquet"
-        df = Data.fetch_data(URL)
-        return Data._convert_numeric_columns(df)
+# %% ../nbs/00_data.ipynb 69
+@patch_to(Data)
+def get_combine_site_phosphorylated() -> pd.DataFrame:
+    """
+    Get the combined phosphorylated dataset from Ochoa and PhosphoSitePlus.
+    """
+    URL = f"{Data.BASE_URL}dataset/phosphosites/phosphorylated_combine_site.parquet"
+    df = Data.fetch_data(URL)
+    return Data._convert_numeric_columns(df)
 
 # %% ../nbs/00_data.ipynb 71
+@patch_to(Data)
+def get_human_site() -> pd.DataFrame:
+    """
+    Get the combined phosphorylated dataset from Ochoa and PhosphoSitePlus (20-length version).
+    """
+    URL = f"{Data.BASE_URL}dataset/phosphosites/phosphorylated_combine_site20.parquet"
+    df = Data.fetch_data(URL)
+    return Data._convert_numeric_columns(df)
+
+# %% ../nbs/00_data.ipynb 74
 class CPTAC:
     
     "A class for fetching CPTAC phosphoproteomics data."
@@ -329,17 +355,19 @@ class CPTAC:
 
             return info
     
-    
-    @staticmethod
-    def list_cancer():
-        "List available CPTAC cancer type"
-        return ['HNSCC','GBM','COAD','CCRCC','LSCC','BRCA','UCEC','LUAD','PDAC','OV']
 
-    @staticmethod
-    def get_id(cancer_type: str,
-               is_Tumor: bool=True, # tumor tissue or normal
-               is_KB: bool=False, # whether it is for LinkedOmicsKB or LinkedOmics
-              ):
-        "Get CPTAC phosphorylation sites information given a cancer type"
-        assert cancer_type in CPTAC.list_cancer(), "cancer type is not included, check available cancer types from CPTAC.list_cancer()"
-        return CPTAC._fetch_data(cancer_type,is_Tumor, is_KB)
+# %% ../nbs/00_data.ipynb 75
+@patch_to(CPTAC)
+def list_cancer():
+    "List available CPTAC cancer type"
+    return ['HNSCC','GBM','COAD','CCRCC','LSCC','BRCA','UCEC','LUAD','PDAC','OV']
+
+# %% ../nbs/00_data.ipynb 77
+@patch_to(CPTAC)
+def get_id(cancer_type: str,
+           is_Tumor: bool=True, # tumor tissue or normal
+           is_KB: bool=False, # whether it is for LinkedOmicsKB or LinkedOmics
+          ):
+    "Get CPTAC phosphorylation sites information given a cancer type"
+    assert cancer_type in CPTAC.list_cancer(), "cancer type is not included, check available cancer types from CPTAC.list_cancer()"
+    return CPTAC._fetch_data(cancer_type,is_Tumor, is_KB)
