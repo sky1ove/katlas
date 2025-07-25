@@ -198,41 +198,19 @@ sheet.
 ``` python
 # Percentile reference sheet
 y_pct = Data.get_pspa_tyr_pct()
-
-get_pct('AEEKEyHSEGG',**Params("PSPA_y"), pct_ref = y_pct)
 ```
 
-    considering string: ['-5A', '-4E', '-3E', '-2K', '-1E', '0Y', '1H', '2S', '3E', '4G', '5G']
+``` python
+get_pct('AEEKEyHSEGG',pct_ref = y_pct,**Params("PSPA_y"))
+```
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-&#10;    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-&#10;    .dataframe thead th {
-        text-align: right;
-    }
-</style>
+    TypeError: get_pct() got an unexpected keyword argument 'pct_ref'
+    [31m---------------------------------------------------------------------------[39m
+    [31mTypeError[39m                                 Traceback (most recent call last)
+    [36mCell[39m[36m [39m[32mIn[9][39m[32m, line 1[39m
+    [32m----> [39m[32m1[39m [43mget_pct[49m[43m([49m[33;43m'[39;49m[33;43mAEEKEyHSEGG[39;49m[33;43m'[39;49m[43m,[49m[43mpct_ref[49m[43m [49m[43m=[49m[43m [49m[43my_pct[49m[43m,[49m[43m*[49m[43m*[49m[43mParams[49m[43m([49m[33;43m"[39;49m[33;43mPSPA_y[39;49m[33;43m"[39;49m[43m)[49m[43m)[49m
 
-|       | log2(score) | percentile |
-|-------|-------------|------------|
-| EGFR  | 3.181       | 96.787423  |
-| FGFR4 | 2.390       | 94.012303  |
-| CSK   | 2.308       | 95.201640  |
-| ZAP70 | 2.068       | 88.380041  |
-| SYK   | 1.998       | 85.522898  |
-| ...   | ...         | ...        |
-| EPHA1 | -3.501      | 12.139440  |
-| FES   | -3.699      | 21.216678  |
-| TNK1  | -4.269      | 5.481887   |
-| TNK2  | -4.577      | 2.050581   |
-| DDR2  | -4.920      | 10.403281  |
-
-<p>93 rows × 2 columns</p>
-</div>
+    [31mTypeError[39m: get_pct() got an unexpected keyword argument 'pct_ref'
 
 ## High-throughput substrate scoring on a dataframe
 
@@ -250,29 +228,6 @@ df = Data.get_ochoa_site().head()
 df.iloc[:,-2:]
 ```
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-&#10;    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-&#10;    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-
-|     | site_seq        | gene_site      |
-|-----|-----------------|----------------|
-| 0   | VDDEKGDSNDDYDSA | A0A075B6Q4_S24 |
-| 1   | YDSAGLLSDEDCMSV | A0A075B6Q4_S35 |
-| 2   | IADHLFWSEETKSRF | A0A075B6Q4_S57 |
-| 3   | KSRFTEYSMTSSVMR | A0A075B6Q4_S68 |
-| 4   | FTEYSMTSSVMRRNE | A0A075B6Q4_S71 |
-
-</div>
-
 ### Set the column name and param to calculate
 
 Here we choose param_CDDM_upper, as the sequences in the demo df are all
@@ -282,36 +237,6 @@ in capital. You can also choose other params.
 results = predict_kinase_df(df,'site_seq',**Params("CDDM_upper"))
 results
 ```
-
-    input dataframe has a length 5
-    Preprocessing
-    Finish preprocessing
-    Merging reference
-    Finish merging
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-&#10;    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-&#10;    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-
-|  | SRC | EPHA3 | FES | NTRK3 | ALK | EPHA8 | ABL1 | FLT3 | EPHB2 | FYN | ... | MEK5 | PKN2 | MAP2K7 | MRCKB | HIPK3 | CDK8 | BUB1 | MEKK3 | MAP2K3 | GRK1 |
-|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
-| 0 | 0.991760 | 1.093712 | 1.051750 | 1.067134 | 1.013682 | 1.097520 | 0.966379 | 0.982464 | 1.054986 | 1.055910 | ... | 1.314859 | 1.635470 | 1.652251 | 1.622672 | 1.362972 | 1.797155 | 1.305198 | 1.423618 | 1.504941 | 1.872020 |
-| 1 | 0.910262 | 0.953743 | 0.942327 | 0.950601 | 0.872693 | 0.932586 | 0.846898 | 0.826662 | 0.915020 | 0.942713 | ... | 1.175454 | 1.402006 | 1.430392 | 1.215826 | 1.569373 | 1.716455 | 1.270999 | 1.195081 | 1.223082 | 1.793290 |
-| 2 | 0.849866 | 0.899910 | 0.848895 | 0.879652 | 0.874959 | 0.899414 | 0.839200 | 0.836523 | 0.858040 | 0.867269 | ... | 1.408003 | 1.813738 | 1.454786 | 1.084522 | 1.352556 | 1.524663 | 1.377839 | 1.173830 | 1.305691 | 1.811849 |
-| 3 | 0.803826 | 0.836527 | 0.800759 | 0.894570 | 0.839905 | 0.781001 | 0.847847 | 0.807039 | 0.805877 | 0.801401 | ... | 1.110307 | 1.703637 | 1.795092 | 1.469653 | 1.549935 | 1.491344 | 1.446922 | 1.055452 | 1.534895 | 1.741090 |
-| 4 | 0.822793 | 0.796532 | 0.792343 | 0.839882 | 0.810122 | 0.781420 | 0.805251 | 0.795022 | 0.790380 | 0.864538 | ... | 1.062617 | 1.357689 | 1.485945 | 1.249266 | 1.456078 | 1.422782 | 1.376471 | 1.089629 | 1.121309 | 1.697524 |
-
-<p>5 rows × 289 columns</p>
-</div>
 
 ## Phosphorylation sites
 
@@ -325,54 +250,12 @@ df = Data.get_cptac_ensembl_site()
 df.head(3)
 ```
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-&#10;    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-&#10;    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-
-|  | gene | site | site_seq | protein | gene_name | gene_site | protein_site |
-|----|----|----|----|----|----|----|----|
-| 0 | ENSG00000003056.8 | S267 | DDQLGEESEERDDHL | ENSP00000000412.3 | M6PR | M6PR_S267 | ENSP00000000412_S267 |
-| 1 | ENSG00000003056.8 | S267 | DDQLGEESEERDDHL | ENSP00000440488.2 | M6PR | M6PR_S267 | ENSP00000440488_S267 |
-| 2 | ENSG00000048028.11 | S1053 | PPTIRPNSPYDLCSR | ENSP00000003302.4 | USP28 | USP28_S1053 | ENSP00000003302_S1053 |
-
-</div>
-
 ### [Ochoa et al. human phosphoproteome](https://www.nature.com/articles/s41587-019-0344-3)
 
 ``` python
 df = Data.get_ochoa_site()
 df.head(3)
 ```
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-&#10;    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-&#10;    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-
-|  | uniprot | position | residue | is_disopred | disopred_score | log10_hotspot_pval_min | isHotspot | uniprot_position | functional_score | current_uniprot | name | gene | Sequence | is_valid | site_seq | gene_site |
-|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
-| 0 | A0A075B6Q4 | 24 | S | True | 0.91 | 6.839384 | True | A0A075B6Q4_24 | 0.149257 | A0A075B6Q4 | A0A075B6Q4_HUMAN | None | MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT... | True | VDDEKGDSNDDYDSA | A0A075B6Q4_S24 |
-| 1 | A0A075B6Q4 | 35 | S | True | 0.87 | 9.192622 | False | A0A075B6Q4_35 | 0.136966 | A0A075B6Q4 | A0A075B6Q4_HUMAN | None | MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT... | True | YDSAGLLSDEDCMSV | A0A075B6Q4_S35 |
-| 2 | A0A075B6Q4 | 57 | S | False | 0.28 | 0.818834 | False | A0A075B6Q4_57 | 0.125364 | A0A075B6Q4 | A0A075B6Q4_HUMAN | None | MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT... | True | IADHLFWSEETKSRF | A0A075B6Q4_S57 |
-
-</div>
 
 ### PhosphoSitePlus human phosphorylation site
 
@@ -381,54 +264,12 @@ df = Data.get_psp_human_site()
 df.head(3)
 ```
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-&#10;    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-&#10;    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-
-|  | gene | protein | uniprot | site | gene_site | SITE_GRP_ID | species | site_seq | LT_LIT | MS_LIT | MS_CST | CST_CAT# | Ambiguous_Site |
-|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
-| 0 | YWHAB | 14-3-3 beta | P31946 | T2 | YWHAB_T2 | 15718712 | human | \_\_\_\_\_\_MtMDksELV | NaN | 3.0 | 1.0 | None | 0 |
-| 1 | YWHAB | 14-3-3 beta | P31946 | S6 | YWHAB_S6 | 15718709 | human | \_\_MtMDksELVQkAk | NaN | 8.0 | NaN | None | 0 |
-| 2 | YWHAB | 14-3-3 beta | P31946 | Y21 | YWHAB_Y21 | 3426383 | human | LAEQAERyDDMAAAM | NaN | NaN | 4.0 | None | 0 |
-
-</div>
-
 ### Unique sites of combined Ochoa & PhosphoSitePlus
 
 ``` python
 df = Data.get_combine_site_psp_ochoa()
 df.head(3)
 ```
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-&#10;    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-&#10;    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-
-|  | uniprot | gene | site | site_seq | source | AM_pathogenicity | CDDM_upper | CDDM_max_score |
-|----|----|----|----|----|----|----|----|----|
-| 0 | A0A024R4G9 | C19orf48 | S20 | ITGSRLLSMVPGPAR | psp | NaN | PRKX,AKT1,PKG1,P90RSK,HIPK4,AKT3,HIPK1,PKACB,H... | 2.407041 |
-| 1 | A0A075B6Q4 | None | S24 | VDDEKGDSNDDYDSA | ochoa | NaN | CK2A2,CK2A1,GRK7,GRK5,CK1G1,CK1A,IKKA,CK1G2,CA... | 2.295654 |
-| 2 | A0A075B6Q4 | None | S35 | YDSAGLLSDEDCMSV | ochoa | NaN | CK2A2,CK2A1,IKKA,ATM,IKKB,CAMK1D,MARK2,GRK7,IK... | 2.488683 |
-
-</div>
 
 ## Phosphorylation site sequence example
 

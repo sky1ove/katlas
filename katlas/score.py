@@ -91,14 +91,14 @@ def multiply(values, kinase, num_dict=Data.get_num_dict()):
 
         return log_sum
 
-# %% ../nbs/03_score.ipynb 28
+# %% ../nbs/03_score.ipynb 25
 def get_pos_range(pssms_dict):
     "Get min and max position given a pssms_dict."
     one_pssm = next(iter(pssms_dict.values()))
     values = set([int(k[:-1]) for k in one_pssm.keys()])
     return min(values),max(values)
 
-# %% ../nbs/03_score.ipynb 30
+# %% ../nbs/03_score.ipynb 27
 def cut_seq_on_pssms(site_seq,pssms_dict):
     "Based on one pssm from pssms_dict, cut site seq if it is out of bound."
     
@@ -106,14 +106,14 @@ def cut_seq_on_pssms(site_seq,pssms_dict):
     print(f'Let sequence be within the position range of reference PSSMs: {min_pos} to +{max_pos}.')
     return cut_seq(site_seq,min_pos,max_pos)
 
-# %% ../nbs/03_score.ipynb 32
+# %% ../nbs/03_score.ipynb 29
 def cut_seq_on_pssms_df(df,seq_col,pssms_dict):
     "Based on one pssm from pssms_dict, cut sequences in a df if it is out of bound."
     min_pos,max_pos= get_pos_range(pssms_dict)
     print(f'Let sequence be within the position range of reference PSSMs: {min_pos} to +{max_pos}.')
     return df[seq_col].apply(partial(cut_seq, min_position=min_pos, max_position=max_pos))
 
-# %% ../nbs/03_score.ipynb 35
+# %% ../nbs/03_score.ipynb 32
 def calculate_log_odds(cut_seq, # site sequence to be scored
                         pssms_dict,# key as kinase and value as flattened pssm
                        site_type=None,
@@ -138,7 +138,7 @@ def calculate_log_odds(cut_seq, # site sequence to be scored
     
     return pd.Series(out).sort_values(ascending=False) if sort else pd.Series(out)
 
-# %% ../nbs/03_score.ipynb 37
+# %% ../nbs/03_score.ipynb 34
 def get_kinase_log_odds(site_seq, # site sequence to be scored
                         pssms_dict,# key as kinase and value as flattened pssm
                         **kwargs
@@ -148,13 +148,13 @@ def get_kinase_log_odds(site_seq, # site sequence to be scored
     cut_seq = cut_seq_on_pssms(seq,pssms_dict)
     return calculate_log_odds(cut_seq,pssms_dict=pssms_dict,**kwargs)
 
-# %% ../nbs/03_score.ipynb 40
+# %% ../nbs/03_score.ipynb 37
 def check_seqs(seqs:pd.Series):
     "Convert non-s/t/y to upper case & replace with underscore if the character is not in the allowed set"
     assert len(seqs.str.len().value_counts())==1, 'inconsistent sequence length detected'
     return seqs.apply(check_seq)
 
-# %% ../nbs/03_score.ipynb 41
+# %% ../nbs/03_score.ipynb 38
 def get_kinase_log_odds_df(df, seq_col, # site sequence to be scored
                         pssms_dict,# key as kinase and value as flattened pssm
                            parallel=True, # use parallel processing if True
@@ -173,14 +173,14 @@ def get_kinase_log_odds_df(df, seq_col, # site sequence to be scored
     else:
         return pd.DataFrame([calculate_log_odds(seq,pssms_dict,sort=sort,**kwargs) for seq in tqdm(checked_cut_seqs)])
 
-# %% ../nbs/03_score.ipynb 44
+# %% ../nbs/03_score.ipynb 41
 def sumup(values, # list of values, possibilities of amino acids at certain positions
           kinase=None, 
          ):
     "Sum up the possibilities of the amino acids at each position in a phosphorylation site sequence"
     return sum(values)
 
-# %% ../nbs/03_score.ipynb 47
+# %% ../nbs/03_score.ipynb 44
 def predict_kinase(input_string: str, # site sequence
                    ref: pd.DataFrame, # reference dataframe for scoring
                    func: Callable, # function to calculate score
@@ -227,7 +227,7 @@ def predict_kinase(input_string: str, # site sequence
         
     return out.round(3).dropna()
 
-# %% ../nbs/03_score.ipynb 54
+# %% ../nbs/03_score.ipynb 51
 def Params(name=None):
     params = {
         "PSPA_st": {'ref': Data.get_pspa_st_norm().astype('float32'), 'func': multiply},
@@ -246,7 +246,7 @@ def Params(name=None):
     
     raise ValueError(f"Unknown parameter set: {name}. Use Params() to list available options.")
 
-# %% ../nbs/03_score.ipynb 59
+# %% ../nbs/03_score.ipynb 56
 def predict_kinase_df(df, seq_col, ref, func, to_lower=False, to_upper=False):
     
     print('input dataframe has a length', df.shape[0])
@@ -331,7 +331,7 @@ def predict_kinase_df(df, seq_col, ref, func, to_lower=False, to_upper=False):
     # Get results as a DataFrame
     return out
 
-# %% ../nbs/03_score.ipynb 63
+# %% ../nbs/03_score.ipynb 60
 def get_pct(site,ref,func,pct_ref):
     
     "Replicate the precentile results from The Kinase Library."
@@ -356,7 +356,7 @@ def get_pct(site,ref,func,pct_ref):
     final.columns=['log2(score)','percentile']
     return final
 
-# %% ../nbs/03_score.ipynb 67
+# %% ../nbs/03_score.ipynb 64
 def get_pct_df(score_df, # output from predict_kinase_df 
                pct_ref, # a reference df for percentile calculation
               ):
