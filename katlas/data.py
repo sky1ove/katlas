@@ -112,24 +112,24 @@ def get_pspa_all_scale() -> pd.DataFrame:
     return Data.fetch_parquet(URL)
 
 # %% ../nbs/00_data.ipynb 26
-@lru_cache
 @patch_to(Data)
+@lru_cache
 def get_pspa_st_pct() -> pd.DataFrame:
     """Get PSPA reference score to calculate percentile for serine/threonine kinases."""
     URL = f"{Data.BASE_URL}dataset/PSPA/pspa_pct_st.parquet"
     return Data.fetch_parquet(URL)
 
 # %% ../nbs/00_data.ipynb 28
-@lru_cache
 @patch_to(Data)
+@lru_cache
 def get_pspa_tyr_pct() -> pd.DataFrame:
     """Get PSPA reference score to calculate percentile for tyrosine kinases."""
     URL = f"{Data.BASE_URL}dataset/PSPA/pspa_pct_tyr.parquet"
     return Data.fetch_parquet(URL)
 
 # %% ../nbs/00_data.ipynb 30
-@lru_cache
 @patch_to(Data)
+@lru_cache
 def get_num_dict() -> dict:
     """Get a dictionary mapping kinase to number of random amino acids in PSPA."""
     URL = f"{Data.BASE_URL}dataset/PSPA/pspa_divide_num.csv"
@@ -186,8 +186,8 @@ def get_ks_dataset(add_kinase_info=True) -> pd.DataFrame:
     return df
 
 # %% ../nbs/00_data.ipynb 37
-@lru_cache
 @patch_to(Data)
+@lru_cache
 def get_ks_background() -> pd.DataFrame:
     """Get kinase substrate dataset with unique sub site ID."""
     URL = f"{Data.BASE_URL}dataset/CDDM/ks_background.parquet"
@@ -313,14 +313,25 @@ def get_human_site() -> pd.DataFrame:
 
 # %% ../nbs/00_data.ipynb 74
 @patch_to(Data)
+@lru_cache
 def get_reactome_pathway() -> pd.DataFrame:
     """
-    Get the combined phosphorylated dataset from Ochoa and PhosphoSitePlus (20-length version).
+    Get all level reactome pathways with Uniprot ID as identifier.
     """
     URL = f"{Data.BASE_URL}dataset/reactome_all_levels.parquet"
     return Data.fetch_parquet(URL)
 
-# %% ../nbs/00_data.ipynb 78
+# %% ../nbs/00_data.ipynb 77
+@patch_to(Data)
+@lru_cache
+def get_reactome_pathway_lo() -> pd.DataFrame:
+    """
+    Get all level reactome pathways with Uniprot ID as identifier.
+    """
+    URL = f"{Data.BASE_URL}dataset/reactome_lowest_level.parquet"
+    return Data.fetch_parquet(URL)
+
+# %% ../nbs/00_data.ipynb 80
 class CPTAC:
     
     "A class for fetching CPTAC phosphoproteomics data."
@@ -366,13 +377,13 @@ class CPTAC:
             return info
     
 
-# %% ../nbs/00_data.ipynb 79
+# %% ../nbs/00_data.ipynb 81
 @patch_to(CPTAC)
 def list_cancer():
     "List available CPTAC cancer type"
     return ['HNSCC','GBM','COAD','CCRCC','LSCC','BRCA','UCEC','LUAD','PDAC','OV']
 
-# %% ../nbs/00_data.ipynb 81
+# %% ../nbs/00_data.ipynb 83
 @patch_to(CPTAC)
 def get_id(cancer_type: str,
            is_Tumor: bool=True, # tumor tissue or normal
