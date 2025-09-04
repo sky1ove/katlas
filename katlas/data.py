@@ -163,17 +163,21 @@ def get_ks_dataset(add_kinase_info=True) -> pd.DataFrame:
         info_indexed = info.set_index('uniprot')
         group_map = info_indexed['modi_group']
         family_map = info_indexed['family']
+        subfamily_map = info_indexed['subfamily']
         pspa_small_map = info_indexed['pspa_category_small']
         pspa_big_map = info_indexed['pspa_category_big']
         ID_coral_map = info_indexed['ID_coral']
+        protein_map = info_indexed['kinase']
         
         df['kinase_on_tree'] = df['uniprot_clean'].isin(info['uniprot']).astype(int)
         
         kinase_gene_map = Data.get_kinase_uniprot().set_index('Entry')['Gene Names']
         df['kinase_genes'] = df['uniprot_clean'].map(kinase_gene_map)
+        df['kinase_protein'] = df['uniprot_clean'].map(protein_map)
         
         df['kinase_group'] = df['uniprot_clean'].map(group_map)
         df['kinase_family'] = df['uniprot_clean'].map(family_map)
+        df['kinase_subfamily'] = df['uniprot_clean'].map(subfamily_map)
         df['kinase_pspa_big'] = df['uniprot_clean'].map(pspa_big_map)
         df['kinase_pspa_small'] = df['uniprot_clean'].map(pspa_small_map)
         df['kinase_coral_ID'] = df['uniprot_clean'].map(ID_coral_map)
@@ -304,6 +308,7 @@ def get_combine_site_phosphorylated() -> pd.DataFrame:
 
 # %% ../nbs/00_data.ipynb 71
 @patch_to(Data)
+@lru_cache
 def get_human_site() -> pd.DataFrame:
     """
     Get the combined phosphorylated dataset from Ochoa and PhosphoSitePlus (20-length version).

@@ -10,12 +10,13 @@ from Bio import SeqIO, AlignIO
 
 import subprocess
 from pathlib import Path
+import pandas as pd
 
 # %% ../nbs/07_alignment.ipynb 5
 def get_fasta(df,seq_col='kd_seq',id_col='kd_ID',path='out.fasta'):
     "Generate fasta file from sequences."
     records = [
-        SeqRecord(Seq(row[seq_col]), id=row[id_col], description="")
+        SeqRecord(Seq(str(row[seq_col])), id=str(row[id_col]), description="")
         for _, row in df.iterrows()
     ]
     SeqIO.write(records, path, "fasta")
@@ -39,11 +40,11 @@ def run_clustalo(input_fasta,  # .fasta fname
 
 # %% ../nbs/07_alignment.ipynb 11
 def aln2df(fname):
-    'Read .aln file from clustalo output into a dataframe'
     alignment = AlignIO.read(fname, "clustal")
     alignment_array = [list(str(record.seq)) for record in alignment]
-    df = pd.DataFrame(alignment_array)
-    df.columns = df.columns+1 # use amino acid index starting from 1
+    ids = [record.id for record in alignment]
+    df = pd.DataFrame(alignment_array, index=ids)
+    df.columns = df.columns+1
     return df
 
 # %% ../nbs/07_alignment.ipynb 13

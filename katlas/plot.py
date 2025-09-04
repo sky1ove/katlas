@@ -25,7 +25,7 @@ from numpy import trapz
 
 # Katlas
 from .feature import *
-from .core import *
+from .data import *
 
 # Bokeh
 from bokeh.io import output_notebook, show
@@ -76,7 +76,7 @@ def save_show(path=None, # image path, e.g., img.svg, if not None, will save, el
     else: plt.show()
     plt.close()
 
-# %% ../nbs/05_plot.ipynb 9
+# %% ../nbs/05_plot.ipynb 10
 def get_color_dict(categories, # list of names to assign color
                    palette: str='tab20', # choose from sns.color_palette
                    ):
@@ -89,7 +89,7 @@ def get_color_dict(categories, # list of names to assign color
 # %% ../nbs/05_plot.ipynb 11
 sty_color=get_color_dict(['S','T','Y'])
 
-# %% ../nbs/05_plot.ipynb 13
+# %% ../nbs/05_plot.ipynb 14
 group_color=get_color_dict(
             ['CMGC','AGC', # blue
              'TK','TKL', # orange
@@ -100,13 +100,13 @@ group_color=get_color_dict(
             ]
 )
 
-# %% ../nbs/05_plot.ipynb 15
+# %% ../nbs/05_plot.ipynb 16
 pspa_category_color = get_color_dict(['Basophilic', 'Pro-directed', 'Acidophilic', 'Map3k', 'Map4k',
        'Alpha/mlk', 'Fgf and vegf receptors', 'Assorted', 'Ripk/wnk', 'Pkc',
        'Ephrin receptors', 'Eif2ak/tlk', 'Nek/ask', 'Pdgf receptors', 'Src',
        'Jak', 'Ulk/ttbk', 'Cmgc', 'Tec', 'Tam receptors'])
 
-# %% ../nbs/05_plot.ipynb 17
+# %% ../nbs/05_plot.ipynb 18
 def get_plt_color(palette, # dict, list, or set name (tab10)
                   columns, # columns in the df for plot
                  ):
@@ -120,7 +120,7 @@ def get_plt_color(palette, # dict, list, or set name (tab10)
         colors = palette
     return colors
 
-# %% ../nbs/05_plot.ipynb 19
+# %% ../nbs/05_plot.ipynb 20
 def get_hue_big(df,
                 hue_col, # column of hue
                 cnt_thr=10, # higher or equal to this threshold will be considered
@@ -130,7 +130,7 @@ def get_hue_big(df,
     names = cnt[cnt>=cnt_thr].index
     return df[hue_col][df[hue_col].isin(names)]
 
-# %% ../nbs/05_plot.ipynb 23
+# %% ../nbs/05_plot.ipynb 25
 def reduce_feature(df: pd.DataFrame, 
                    method: str='pca', # dimensionality reduction method, accept both capital and lower case
                    complexity: int=20, # None for PCA; perfplexity for TSNE, recommend: 30; n_neigbors for UMAP, recommend: 15
@@ -176,31 +176,47 @@ def reduce_feature(df: pd.DataFrame,
 
     return embedding_df
 
-# %% ../nbs/05_plot.ipynb 27
-@delegates(sns.scatterplot)
-def plot_2d(X: pd.DataFrame, # a dataframe that has first column to be x, and second column to be y
-            hue_title=None, # legend box title
-            hue_order=None,
-            figsize=(7,7),
-            **kwargs, # arguments for sns.scatterplot
-            ):
-    """
-    Make 2D plot from a dataframe that has first column to be x, and second column to be y.
-    Legend box on the right.
-    """
-    fig, ax = plt.subplots(figsize=figsize)
-    hue_data = kwargs.get('hue')
-    if hue_data is not None and hue_order is not None: 
-        # Filter hue_order to only include present labels
-        hue_order = [k for k in hue_order if k in pd.Series(hue_data).unique()]
-    sns.scatterplot(data=X, 
-                    x=X.columns[0], y=X.columns[1], 
-                    hue_order=hue_order,
-                    alpha=0.7, ax=ax, **kwargs)
-    # have legend box on the right
-    if hue_data is not None: ax.legend(title=hue_title, loc='center left', bbox_to_anchor=(1.02, 0.5))
-
 # %% ../nbs/05_plot.ipynb 30
+def plot_2d(
+    embedding_df: pd.DataFrame,  # a dataframe of values that is waited for dimensionality reduction
+    hue: str = None,  # colname of color
+    complexity: int = 30,  # this argument does not affect pca but others; recommend 30 for tsne, 15 for umap
+    palette: str = 'tab20',  # color scheme, could be tab10 if less categories
+    legend: bool = False,  # whether or not add the legend on the side
+    name_list=None,  # a list of names to annotate each dot in the plot
+    seed: int = 123,  # seed for dimensionality reduction
+    s: int = 20,  # size of the dot
+    legend_title: str = None,  # new argument to override legend title
+    **kwargs  # arguments for dimensional reduction method to be used
+):
+    """
+    Given a dataframe of values, plot it in 2D. 
+    The method could be 'pca', 'tsne', or 'umap'.
+    """
+    x_col, y_col = embedding_df.columns 
+    
+    g = sns.relplot(
+        data=embedding_df, x=x_col, y=y_col, hue=hue, palette=palette, s=s, alpha=0.8, legend=legend
+    )
+    plt.xticks([])
+    plt.yticks([])
+
+    # Override legend title if specified
+    if legend and legend_title is not None:
+        if g._legend is not None:
+            g._legend.set_title(legend_title)
+
+    # Add text annotations
+    if name_list is not None:
+        ax = g.ax
+        texts = [
+            ax.text(
+                embedding_df[x_col].iloc[i], embedding_df[y_col].iloc[i], str(name_list[i]), fontsize=8
+            ) for i in range(len(embedding_df))
+        ]
+        adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
+
+# %% ../nbs/05_plot.ipynb 33
 def plot_cluster(
     df: pd.DataFrame,  # a dataframe of values that is waited for dimensionality reduction
     method: str = 'pca',  # dimensionality reduction method, choose from pca, umap, and tsne
@@ -211,6 +227,7 @@ def plot_cluster(
     name_list=None,  # a list of names to annotate each dot in the plot
     seed: int = 123,  # seed for dimensionality reduction
     s: int = 50,  # size of the dot
+    legend_title: str = None,  # new argument to override legend title
     **kwargs  # arguments for dimensional reduction method to be used
 ):
     """
@@ -221,21 +238,28 @@ def plot_cluster(
     embedding_df = reduce_feature(df, method=method, seed=seed, complexity=complexity, **kwargs)
     x_col, y_col = embedding_df.columns 
     
-    sns.relplot(
+    g = sns.relplot(
         data=embedding_df, x=x_col, y=y_col, hue=hue, palette=palette, s=s, alpha=0.8, legend=legend
     )
     plt.xticks([])
     plt.yticks([])
-    
+
+    # Override legend title if specified
+    if legend and legend_title is not None:
+        if g._legend is not None:
+            g._legend.set_title(legend_title)
+
+    # Add text annotations
     if name_list is not None:
+        ax = g.ax
         texts = [
-            plt.text(
+            ax.text(
                 embedding_df[x_col].iloc[i], embedding_df[y_col].iloc[i], str(name_list[i]), fontsize=8
             ) for i in range(len(embedding_df))
         ]
         adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
 
-# %% ../nbs/05_plot.ipynb 34
+# %% ../nbs/05_plot.ipynb 37
 def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality reduction
                idx, # pd.Series or list that indicates identities for searching box
                hue:None, # pd.Series or list that indicates category for each sample
@@ -333,7 +357,7 @@ def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality 
     layout = column(autocomplete, p)
     show(layout)
 
-# %% ../nbs/05_plot.ipynb 37
+# %% ../nbs/05_plot.ipynb 40
 @delegates(sns.scatterplot)
 def plot_rank(sorted_df: pd.DataFrame, # a sorted dataframe
               x: str, # column name for x axis
@@ -374,10 +398,10 @@ def plot_rank(sorted_df: pd.DataFrame, # a sorted dataframe
     if len(texts)>0:
         # Use adjustText to adjust text positions
         adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
-
+    plt.ylabel(y.capitalize())
     plt.tight_layout()
 
-# %% ../nbs/05_plot.ipynb 41
+# %% ../nbs/05_plot.ipynb 44
 @delegates(sns.histplot)
 def plot_hist(df: pd.DataFrame, # a dataframe that contain values for plot
               x: str, # column name of values
@@ -394,7 +418,7 @@ def plot_hist(df: pd.DataFrame, # a dataframe that contain values for plot
     plt.figure(figsize=figsize)
     sns.histplot(data=df,x=x,**hist_params,**kwargs)
 
-# %% ../nbs/05_plot.ipynb 45
+# %% ../nbs/05_plot.ipynb 48
 def plot_count(cnt, # from df['x'].value_counts()
                tick_spacing: float= None, # tick spacing for x axis
                palette: str='tab20'):
@@ -413,7 +437,7 @@ def plot_count(cnt, # from df['x'].value_counts()
     if tick_spacing is not None:
         ax.xaxis.set_major_locator(MultipleLocator(tick_spacing))
 
-# %% ../nbs/05_plot.ipynb 47
+# %% ../nbs/05_plot.ipynb 50
 @delegates(sns.barplot)
 def plot_bar(df, 
              value, # colname of value
@@ -457,7 +481,7 @@ def plot_bar(df,
     
     # Modify x and y label and increase font size
     plt.xlabel('', fontsize=fontsize)
-    plt.ylabel(value, fontsize=fontsize)
+    plt.ylabel(value.capitalize(), fontsize=fontsize)
     
     # Rotate X labels
     plt.xticks(rotation=rotation)
@@ -468,7 +492,7 @@ def plot_bar(df,
     
     plt.gca().spines[['right', 'top']].set_visible(False)
 
-# %% ../nbs/05_plot.ipynb 50
+# %% ../nbs/05_plot.ipynb 53
 @delegates(sns.barplot)
 def plot_group_bar(df, 
                    value_cols,  # list of column names for values, the order depends on the first item
@@ -496,6 +520,7 @@ def plot_group_bar(df,
                 order=order, 
                 capsize=0.1,
                 err_kws={'linewidth': 1.5,'color': 'gray'}, 
+                alpha=1.0,
                 **kwargs)
     
     # Increase font size for the x-axis and y-axis tick labels
@@ -514,9 +539,15 @@ def plot_group_bar(df,
         plt.title(title, fontsize=fontsize)
     
     plt.gca().spines[['right', 'top']].set_visible(False)
-    plt.legend(fontsize=fontsize) # if change legend location, use loc='upper right'
+    # plt.legend(fontsize=fontsize) # if change legend location, use loc='upper right'
+    plt.legend(
+        fontsize=fontsize,
+        loc="upper left",
+        bbox_to_anchor=(1.02, 1),
+        borderaxespad=0
+    )
 
-# %% ../nbs/05_plot.ipynb 53
+# %% ../nbs/05_plot.ipynb 56
 def plot_stacked(df, column, hue, figsize=(5, 4),xlabel=None, ylabel=None, add_value=True, **kwargs):
     plt.figure(figsize=figsize)
     
@@ -531,8 +562,8 @@ def plot_stacked(df, column, hue, figsize=(5, 4),xlabel=None, ylabel=None, add_v
         **kwargs
     )
 
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
+    plt.xlabel(xlabel.capitalize())
+    plt.ylabel(ylabel.capitalize())
     plt.xticks(rotation=0)
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'{int(x):,}'))
 
@@ -544,7 +575,7 @@ def plot_stacked(df, column, hue, figsize=(5, 4),xlabel=None, ylabel=None, add_v
 
     plt.tight_layout()
 
-# %% ../nbs/05_plot.ipynb 55
+# %% ../nbs/05_plot.ipynb 58
 @delegates(sns.boxplot)
 def plot_box(df,
              value, # colname of value
@@ -575,7 +606,7 @@ def plot_box(df,
     plt.tick_params(axis='y', labelsize=fontsize)  # Increase y-axis label size
 
     plt.xlabel('', fontsize=fontsize)
-    plt.ylabel(value, fontsize=fontsize)
+    plt.ylabel(value.capitalize(), fontsize=fontsize)
 
     plt.xticks(rotation=rotation)
     
@@ -586,7 +617,7 @@ def plot_box(df,
     # plt.gca().spines[['right', 'top']].set_visible(False)
     
 
-# %% ../nbs/05_plot.ipynb 58
+# %% ../nbs/05_plot.ipynb 61
 @delegates(sns.regplot)
 def plot_corr(x, # x axis values, or colname of x axis
               y, # y axis values, or colname of y axis
@@ -609,11 +640,9 @@ def plot_corr(x, # x axis values, or colname of x axis
                 line_kws={'color': 'gray'}, **kwargs
            )
     
-    if xlabel is not None:
-        plt.xlabel(xlabel)
+    if xlabel is not None: plt.xlabel(xlabel.capitalize())
         
-    if ylabel is not None:
-        plt.ylabel(ylabel)
+    if ylabel is not None: plt.ylabel(ylabel.capitalize())
     
     # correlation_text = f'Spearman: {correlation:.2f}' if method == 'spearman' else f'Pearson: {correlation:.2f}'
 
@@ -623,7 +652,7 @@ def plot_corr(x, # x axis values, or colname of x axis
             transform=plt.gca().transAxes, 
              ha='center', va='center')
 
-# %% ../nbs/05_plot.ipynb 62
+# %% ../nbs/05_plot.ipynb 65
 def get_similarity(df, metric='euclidean'):
     "Calculate distance matrix of a df; also return inverse df (similarity df)"
     dist_matrix = pairwise_distances(df, metric=metric)
@@ -633,7 +662,7 @@ def get_similarity(df, metric='euclidean'):
     sim_df = np.exp(-dist_df**2 / (2 * sigma**2))
     return dist_df, sim_df
 
-# %% ../nbs/05_plot.ipynb 63
+# %% ../nbs/05_plot.ipynb 66
 def plot_matrix(dist_matrix, inverse_color=False):
     "Plot distance/similarity matrix"
     
@@ -653,7 +682,7 @@ def plot_matrix(dist_matrix, inverse_color=False):
     plt.ylabel('')
     plt.yticks(rotation=0)
 
-# %% ../nbs/05_plot.ipynb 67
+# %% ../nbs/05_plot.ipynb 70
 def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
     
     "Plot CDF curve and get relative area under the curve"
@@ -668,10 +697,11 @@ def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
     if reverse:
         y_values = 1 - y_values + y_values.min()  # Adjust for reverse while keeping the distribution's integrity
     # calculate the area under the curve using the trapezoidal rule
-    area_under_curve = trapz(y_values, x_values)
+    area_under_curve = np.trapezoid(y_values, x_values)
     
     # calculate total area
-    total_area = (x_values[-1] - x_values[0]) * (y_values[-1] - y_values[0])
+    # total_area = (x_values[-1] - x_values[0]) * (y_values[-1] - y_values[0])
+    total_area = (x_values[-1] - x_values[0]) * 1
     
 
     AUCDF = area_under_curve / total_area
@@ -713,12 +743,12 @@ def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
         ax2.set_ylim(0, 1)  # Probabilities range from 0 to 1
 
         # Show the plot
-        plt.title(f'{len(x_values)} kinase-substrate pairs',fontsize=fontsize)
+        plt.title(f'{len(x_values):,} kinase-substrate pairs',fontsize=fontsize)
         plt.show()
         
     return AUCDF
 
-# %% ../nbs/05_plot.ipynb 70
+# %% ../nbs/05_plot.ipynb 73
 def plot_confusion_matrix(target, # pd.Series 
                           pred, # pd.Series
                           class_names:list=['0','1'],
@@ -745,7 +775,7 @@ def plot_confusion_matrix(target, # pd.Series
     plt.xticks(np.arange(len(class_names)) + 0.5, class_names)
     plt.yticks(np.arange(len(class_names)) + 0.5, class_names, rotation=0)
 
-# %% ../nbs/05_plot.ipynb 74
+# %% ../nbs/05_plot.ipynb 77
 def plot_pie(value_counts, # value counts
              hue_order=None, # list of strings
              labeldistance=0.8,
@@ -766,14 +796,14 @@ def plot_pie(value_counts, # value counts
     plt.ylabel('')
     plt.title(f'n={value_counts.sum():,}')
 
-# %% ../nbs/05_plot.ipynb 78
+# %% ../nbs/05_plot.ipynb 81
 def get_pct(df,bin_col, hue_col):
     "Get percentage for hue in each bin; with hue adding up to 1 in each bin."
     count_df = df.groupby([bin_col, hue_col], observed=False).size().unstack(fill_value=0)
     pct_df = count_df.div(count_df.sum(axis=1), axis=0) * 100
     return pct_df
 
-# %% ../nbs/05_plot.ipynb 79
+# %% ../nbs/05_plot.ipynb 82
 def plot_composition(df, bin_col, hue_col,palette='tab20',legend_title=None,rotate=45,xlabel=None,ylabel='Percentage',figsize=(5,3)):
     pct_df = get_pct(df,bin_col,hue_col)
 
@@ -787,7 +817,7 @@ def plot_composition(df, bin_col, hue_col,palette='tab20',legend_title=None,rota
     if legend_title is None: legend_title = hue_col 
     plt.legend(title=legend_title, bbox_to_anchor=(1.05, 1), loc='upper left')
 
-# %% ../nbs/05_plot.ipynb 81
+# %% ../nbs/05_plot.ipynb 84
 def plot_cnt(cnt, xlabel=None,ylabel='Count',figsize=(6, 3)):
     fig, ax = plt.subplots(figsize=figsize)
     cnt.plot.bar(ax=ax)

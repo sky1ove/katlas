@@ -4,7 +4,8 @@
 
 # %% auto 0
 __all__ = ['remove_hi_corr', 'preprocess', 'standardize', 'get_rdkit', 'get_rdkit_3d', 'get_rdkit_all', 'get_rdkit_df',
-           'get_morgan', 'onehot_encode', 'get_clusters_elbow', 'get_esm', 'get_t5', 'get_t5_bfd']
+           'get_morgan', 'onehot_encode', 'onehot_encode_df', 'kmeans', 'filter_range_columns', 'get_clusters_elbow',
+           'get_esm', 'get_t5', 'get_t5_bfd']
 
 # %% ../nbs/04_feature.ipynb 3
 import pandas as pd, numpy as np
@@ -134,7 +135,24 @@ def onehot_encode(sequences, transform_colname=True, n=20):
     encoded_df.columns=colnames
     return encoded_df
 
-# %% ../nbs/04_feature.ipynb 31
+# %% ../nbs/04_feature.ipynb 28
+def onehot_encode_df(df,seq_col='site_seq', **kwargs):
+    return onehot_encode(df[seq_col],**kwargs)
+
+# %% ../nbs/04_feature.ipynb 33
+def kmeans(onehot,n=2,seed=42):
+    "Take onehot encoded and regurn the cluster number."
+    kmeans = KMeans(n_clusters=n, random_state=seed,n_init='auto')
+    return kmeans.fit_predict(onehot)
+
+# %% ../nbs/04_feature.ipynb 36
+def filter_range_columns(df, # df need to have column names of position + aa
+                         low=-10,high=10):
+    positions = df.columns.str[:-1].astype(int)
+    mask = (positions >= low) & (positions <= high)
+    return df.loc[:,mask]
+
+# %% ../nbs/04_feature.ipynb 42
 def get_clusters_elbow(encoded_data,max_cluster=400, interval=50):
 
     wcss = []
@@ -150,7 +168,7 @@ def get_clusters_elbow(encoded_data,max_cluster=400, interval=50):
     plt.xlabel('# Clusters')
     plt.ylabel('WCSS')
 
-# %% ../nbs/04_feature.ipynb 34
+# %% ../nbs/04_feature.ipynb 45
 def get_esm(df:pd.DataFrame, # a dataframe that contains amino acid sequence
             col: str = 'sequence', # colname of amino acid sequence
             model_name: str = "esm2_t33_650M_UR50D", # Name of the ESM model to use for the embeddings.
@@ -217,7 +235,7 @@ def get_esm(df:pd.DataFrame, # a dataframe that contains amino acid sequence
 
         return df_feature
 
-# %% ../nbs/04_feature.ipynb 38
+# %% ../nbs/04_feature.ipynb 49
 def get_t5(df: pd.DataFrame, 
            col: str = 'sequence'
            ):
@@ -259,7 +277,7 @@ def get_t5(df: pd.DataFrame,
     
     return T5_feature
 
-# %% ../nbs/04_feature.ipynb 41
+# %% ../nbs/04_feature.ipynb 52
 def get_t5_bfd(df:pd.DataFrame, 
                col: str = 'sequence'
                ):

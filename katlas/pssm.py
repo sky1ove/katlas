@@ -4,11 +4,11 @@
 
 # %% auto 0
 __all__ = ['EPSILON', 'get_prob', 'pSTY2sty', 'flatten_pssm', 'recover_pssm', 'clean_zero_normalize', 'get_pssm_LO',
-           'get_cluster_pssms', 'entropy', 'entropy_flat', 'get_pssm_IC_standard', 'get_IC_per_position',
-           'get_IC_per_position_flat', 'get_pssm_IC', 'plot_heatmap_simple', 'plot_heatmap', 'change_center_name',
+           'get_pssm_LO_flat', 'get_cluster_pssms', 'get_entropy', 'get_entropy_flat', 'get_IC', 'get_IC_flat',
+           'get_specificity', 'get_specificity_flat', 'plot_heatmap_simple', 'plot_heatmap', 'change_center_name',
            'get_pos_min_max', 'scale_zero_position', 'scale_pos_neg_values', 'convert_logo_df', 'plot_logo_raw',
-           'plot_logo', 'plot_logo_LO', 'plot_logos_idx', 'plot_logos', 'plot_logo_heatmap', 'plot_logo_heatmap_LO',
-           'raw2norm', 'get_one_kinase', 'get_logo']
+           'get_logo_IC', 'plot_logo', 'plot_logo_LO', 'plot_logos_idx', 'plot_logos', 'plot_logo_heatmap',
+           'plot_logo_heatmap_LO', 'raw2norm', 'get_one_kinase', 'get_logo']
 
 # %% ../nbs/02_pssm.ipynb 3
 import numpy as np, pandas as pd
@@ -30,10 +30,10 @@ from matplotlib.colors import TwoSlopeNorm
 # hierarchical clustering
 from scipy.cluster.hierarchy import linkage, fcluster,dendrogram
 
-# %% ../nbs/02_pssm.ipynb 7
+# %% ../nbs/02_pssm.ipynb 6
 EPSILON = 1e-8
 
-# %% ../nbs/02_pssm.ipynb 9
+# %% ../nbs/02_pssm.ipynb 8
 def get_prob(df: pd.DataFrame, col: str, aa_order=[i for i in 'PGACSTVILMFYWHKRQNDEsty']):
     "Get the probability matrix of PSSM from phosphorylation site sequences."
     
@@ -58,14 +58,15 @@ def get_prob(df: pd.DataFrame, col: str, aa_order=[i for i in 'PGACSTVILMFYWHKRQ
     
     return pssm_df
 
-# %% ../nbs/02_pssm.ipynb 15
+# %% ../nbs/02_pssm.ipynb 14
 def pSTY2sty(string):
     "Convert pS/pT/pY to s/t/y in a string."
     return string.replace('pS', 's').replace('pT', 't').replace('pY', 'y')
 
-# %% ../nbs/02_pssm.ipynb 18
+# %% ../nbs/02_pssm.ipynb 17
 def flatten_pssm(pssm_df,
                  use_sty=False, # if True, use s,t,y instead of pS,pT,pY
+                 column_wise=True, # if True, column major flatten; else row wise flatten (for pytorch training)
                 ):
     "Flatten PSSM dataframe to dictionary"
     
@@ -75,16 +76,23 @@ def flatten_pssm(pssm_df,
     if use_sty: pssm_df.index=pssm_df.index.map(pSTY2sty)
 
     # Flatten a pssm_df
-    pssm = pssm_df.unstack().reset_index(name='value')
+    # Column wise
+    if column_wise: 
+        pssm = pssm_df.unstack().reset_index(name='value')
+        # Combine position column and residue identity column as new column for keys
+        pssm['position_residue']=pssm.iloc[:,0].astype(str)+pssm.iloc[:,1]
+    # Row wise
+    else: 
+        pssm = pssm_df.T.unstack().reset_index(name='value')
+        pssm['position_residue']=pssm.iloc[:,1].astype(str)+pssm.iloc[:,0].astype(str)
     
-    # Combine position column and residue identity column as new column for keys
-    pssm['position_residue']=pssm.iloc[:,0].astype(str)+pssm.iloc[:,1]
+    
 
-    # Set index to be position+residue and round to 5
-    return pssm.set_index('position_residue')['value'].round(5).to_dict()
+    # Set index to be position+residue
+    return pssm.set_index('position_residue')['value'].to_dict()
 
-# %% ../nbs/02_pssm.ipynb 20
-def recover_pssm(flat_pssm:pd.Series,aa_order=list('PGACSTVILMFYWHKRQNDEsty')):
+# %% ../nbs/02_pssm.ipynb 19
+def recover_pssm(flat_pssm:pd.Series):
     "Recover 2D PSSM from flattened PSSM Series."
     df = flat_pssm.copy().reset_index()
     df.columns=['info','value']
@@ -92,9 +100,9 @@ def recover_pssm(flat_pssm:pd.Series,aa_order=list('PGACSTVILMFYWHKRQNDEsty')):
     df['aa']=df['info'].str.extract(r'-?\d+\s*(.*)')
     df = df.pivot(index='aa',columns='Position',values='value').fillna(0)
     # for cases where pS, pT, pY is already used
-    if 'pS' in df.index: return df
+    if 'pS' in df.index: return df.reindex(index=list('PGACSTVILMFYWHKRQNDE')+['pS','pT','pY'])
     # for cases where s, t, y needs to converted to pS, pT, pY
-    else: return df.reindex(index=aa_order).rename(index={'s': 'pS', 't': 'pT', 'y': 'pY'})
+    else: return df.reindex(index=list('PGACSTVILMFYWHKRQNDEsty')).rename(index={'s': 'pS', 't': 'pT', 'y': 'pY'})
 
 # %% ../nbs/02_pssm.ipynb 27
 def clean_zero_normalize(pssm_df):
@@ -111,7 +119,7 @@ def get_pssm_LO(pssm_df,
                ):
     "Get log odds PSSM: log2 (freq pssm/background pssm)."
     bg_pssms = Data.get_ks_background()
-    flat_bg = bg_pssms.loc[f'ks_{site_type.upper()}']
+    flat_bg = bg_pssms.loc[f'ks_{site_type}']
     pssm_bg = recover_pssm(flat_bg)
     pssm_odds = ((pssm_df+EPSILON)/(pssm_bg+EPSILON)).dropna(axis=0,how='all').dropna(axis=1, how='all')
     # return pssm_odds
@@ -119,13 +127,21 @@ def get_pssm_LO(pssm_df,
     assert pssm_odds.shape == pssm_df.shape
     return np.log2(pssm_odds).replace([np.inf, -np.inf], 0).fillna(0)
 
-# %% ../nbs/02_pssm.ipynb 39
+# %% ../nbs/02_pssm.ipynb 38
+def get_pssm_LO_flat(flat_pssm,
+                    site_type, # S, T, Y, ST, or STY
+                    ):
+    pssm_df = recover_pssm(flat_pssm)
+    return get_pssm_LO(pssm_df,site_type)
+
+# %% ../nbs/02_pssm.ipynb 42
 def get_cluster_pssms(df, 
                     cluster_col, 
                     seq_col='site_seq', 
                     id_col = 'sub_site',
                     count_thr=10, # if less than the count threshold, not include in the return
                     valid_thr=None, # percentage of not-nan values in pssm
+                    IC_thr = None,
                       plot=False):
     "Extract motifs from clusters in a dataframe"
     pssms = []
@@ -159,9 +175,9 @@ def get_cluster_pssms(df,
     pssm_df = pd.DataFrame(pssms, index=ids)
     return pssm_df
 
-# %% ../nbs/02_pssm.ipynb 41
-def entropy(pssm_df,# a dataframe of pssm with index as aa and column as position
-            return_min=False, # return min entropy as a single value or return all entropy as a series
+# %% ../nbs/02_pssm.ipynb 46
+def get_entropy(pssm_df,# a dataframe of pssm with index as aa and column as position
+            return_min=False, # return min entropy as a single value or return all entropy as a pd.series
             exclude_zero=False, # exclude the column of 0 (center position) in the entropy calculation
             clean_zero=True, # if true, zero out non-last three values in position 0 (keep only s,t,y values at center)
             ): 
@@ -172,69 +188,71 @@ def entropy(pssm_df,# a dataframe of pssm with index as aa and column as positio
         if clean_zero:                       
             pssm_df.loc[pssm_df.index[:-3], 0] = 0
         if exclude_zero:
-            pssm_df = pssm_df.drop(columns=[0])
+            # remove columns starts with zero and columns with interger name 0
+            cols_to_drop = [col for col in pssm_df.columns 
+                            if col == 0 or (isinstance(col, str) and col.startswith('0'))]
+            if cols_to_drop: pssm_df = pssm_df.drop(columns=cols_to_drop)
+
     pssm_df = pssm_df/pssm_df.sum()
     per_position = -np.sum(pssm_df * np.log2(pssm_df + EPSILON), axis=0)
-    return per_position.min() if return_min else per_position
-
-# %% ../nbs/02_pssm.ipynb 45
-@delegates(entropy)
-def entropy_flat(flat_pssm:pd.Series,**kwargs): 
-    "Calculate entropy per position of a flat PSSM surrounding 0"
-    pssm_df = recover_pssm(flat_pssm)
-    return entropy(pssm_df,**kwargs)
-
-# %% ../nbs/02_pssm.ipynb 47
-def get_pssm_IC_standard(pssm_df):
-    """Calculate the standard information content (bits) from frequency matrix, 
-    using the same number of residues log2(len(pssm_df)) for all positions"""
-    
-    entropy_position=entropy(pssm_df)
-    
-    # information_content = max_entropy - entropy --> log2(N) - entropy
-    IC_position = np.log2((len(pssm_df))) - entropy_position
-    scaled_df = pssm_df.mul(IC_position)
-    return scaled_df
+    per_position[pssm_df.sum() == 0] = 0
+    return float(per_position.min()) if return_min else per_position
 
 # %% ../nbs/02_pssm.ipynb 50
-@delegates(entropy)
-def get_IC_per_position(pssm_df,**kwargs):
+@delegates(get_entropy)
+def get_entropy_flat(flat_pssm:pd.Series,**kwargs): 
+    "Calculate entropy per position of a flat PSSM surrounding 0"
+    pssm_df = recover_pssm(flat_pssm)
+    return get_entropy(pssm_df,**kwargs)
+
+# %% ../nbs/02_pssm.ipynb 55
+@delegates(get_entropy)
+def get_IC(pssm_df,**kwargs):
     """
     Calculate the information content (bits) from a frequency matrix,
     using log2(3) for the middle position and log2(len(pssm_df)) for others.
     The higher the more information it contains.
     """
     
-    entropy_position = entropy(pssm_df,**kwargs)
+    entropy_position = get_entropy(pssm_df,**kwargs)
     
-    max_entropy_array = pd.Series(np.log2(len(pssm_df)), index=pssm_df.columns)
-    
-    max_entropy_array[0] = np.log2(3)
+    max_entropy_array = pd.Series(np.log2(len(pssm_df)), index=entropy_position.index)
+
+    # set exclude_zero to False
+    exclude_zero = kwargs.get('exclude_zero', False)
+    if exclude_zero is False: max_entropy_array[0] = np.log2(3)
 
     # information_content = max_entropy - entropy --> log2(N) - entropy
     IC_position = max_entropy_array - entropy_position
+
+    # if entropy is zero, set to zero as there's no value
+    IC_position[entropy_position == 0] = 0
     return IC_position
 
-# %% ../nbs/02_pssm.ipynb 53
-@delegates(get_IC_per_position)
-def get_IC_per_position_flat(flat_pssm:pd.Series,**kwargs):
+# %% ../nbs/02_pssm.ipynb 62
+@delegates(get_IC)
+def get_IC_flat(flat_pssm:pd.Series,**kwargs):
     """Calculate the information content (bits) from a flattened pssm pd.Series,
     using log2(3) for the middle position and log2(len(pssm_df)) for others."""
     
     pssm_df = recover_pssm(flat_pssm)
-    return get_IC_per_position(pssm_df,**kwargs)
+    return get_IC(pssm_df,**kwargs)
 
-# %% ../nbs/02_pssm.ipynb 55
-def get_pssm_IC(pssm_df):
-    """
-    For plotting purpose, calculate the scaled information content (bits) from a frequency matrix,
-    using log2(3) for the middle position and log2(len(pssm_df)) for others.
-    """
-    IC_position = get_IC_per_position(pssm_df)
-    
-    return pssm_df.mul(IC_position, axis=1) # total_IC = pssm_df.sum().sum().round(2)
+# %% ../nbs/02_pssm.ipynb 66
+def get_specificity(pssm_df):
+    "Get specificity score of a pssm, excluding zero position."
+    ICs = get_IC(pssm_df, exclude_zero=True)
+    # only consider IC with values
+    ICs= ICs[ICs > 0]
+    return float(2*ICs.max()+ICs.var())
 
-# %% ../nbs/02_pssm.ipynb 59
+# %% ../nbs/02_pssm.ipynb 69
+def get_specificity_flat(flat_pssm):
+    "Get specificity score of a pssm, excluding zero position."
+    ICs = get_IC_flat(flat_pssm, exclude_zero=True)
+    return float(2*ICs.max()+ICs.var())
+
+# %% ../nbs/02_pssm.ipynb 73
 @delegates(sns.heatmap)
 def plot_heatmap_simple(matrix, # a matrix of values
                  title: str='heatmap', # title of the heatmap
@@ -252,7 +270,7 @@ def plot_heatmap_simple(matrix, # a matrix of values
     plt.xlabel('')
     plt.yticks(rotation=0)
 
-# %% ../nbs/02_pssm.ipynb 61
+# %% ../nbs/02_pssm.ipynb 75
 def plot_heatmap(heatmap_df, ax=None, position_label=True, figsize=(5, 6), include_zero=True,scale_pos_neg=False, colorbar_title='Prob.'):
     """Plots a heatmap with specific formatting."""
     if ax is None:
@@ -308,7 +326,7 @@ def plot_heatmap(heatmap_df, ax=None, position_label=True, figsize=(5, 6), inclu
 
     return ax
 
-# %% ../nbs/02_pssm.ipynb 66
+# %% ../nbs/02_pssm.ipynb 80
 def change_center_name(df):
     "Transfer the middle pS,pT,pY to S,T,Y for plot."
     df=df.copy()
@@ -319,7 +337,7 @@ def change_center_name(df):
     df.loc[['pS', 'pT', 'pY'], 0] = 0
     return df
 
-# %% ../nbs/02_pssm.ipynb 69
+# %% ../nbs/02_pssm.ipynb 83
 def get_pos_min_max(pssm_df):
     """
     Get min and max value of sum of positive and negative values across each position.
@@ -331,7 +349,7 @@ def get_pos_min_max(pssm_df):
     max_sum_neg = pssm_neighbor[pssm_neighbor<0].sum().min()
     return max_sum_neg,max_sum_pos
 
-# %% ../nbs/02_pssm.ipynb 70
+# %% ../nbs/02_pssm.ipynb 84
 def scale_zero_position(pssm_df):
     """
     Scale position 0 so that:
@@ -354,7 +372,7 @@ def scale_zero_position(pssm_df):
     return pssm_df
     
 
-# %% ../nbs/02_pssm.ipynb 72
+# %% ../nbs/02_pssm.ipynb 86
 def scale_pos_neg_values(pssm_df):
     """
     Globally scale all positive values by max positive column sum,
@@ -371,7 +389,7 @@ def scale_pos_neg_values(pssm_df):
 
     return pos_part + neg_part
 
-# %% ../nbs/02_pssm.ipynb 73
+# %% ../nbs/02_pssm.ipynb 87
 def convert_logo_df(pssm_df,scale_zero=True,scale_pos_neg=False):
     "Change center name from pS,pT,pY to S, T, Y in a pssm and scaled zero position to the max of neigbors."
     pssm_df = change_center_name(pssm_df)
@@ -379,7 +397,7 @@ def convert_logo_df(pssm_df,scale_zero=True,scale_pos_neg=False):
     if scale_pos_neg: pssm_df = scale_pos_neg_values(pssm_df)
     return pssm_df
 
-# %% ../nbs/02_pssm.ipynb 74
+# %% ../nbs/02_pssm.ipynb 88
 def plot_logo_raw(pssm_df,ax=None,title='Motif',ytitle='Bits',figsize=(10,2)):
     "Plot logo motif using Logomaker."
     if ax is None:
@@ -389,14 +407,24 @@ def plot_logo_raw(pssm_df,ax=None,title='Motif',ytitle='Bits',figsize=(10,2)):
     logo.style_xticks(fmt='%d')
     ax.set_title(title)
 
-# %% ../nbs/02_pssm.ipynb 75
+# %% ../nbs/02_pssm.ipynb 90
+def get_logo_IC(pssm_df):
+    """
+    For plotting purpose, calculate the scaled information content (bits) from a frequency matrix,
+    using log2(3) for the middle position and log2(len(pssm_df)) for others.
+    """
+    IC_position = get_IC(pssm_df)
+    
+    return pssm_df.mul(IC_position, axis=1) # total_IC = pssm_df.sum().sum().round(2)
+
+# %% ../nbs/02_pssm.ipynb 93
 def plot_logo(pssm_df,title='Motif', scale_zero=True,ax=None,figsize=(10,1)):
     "Plot logo of information content given a frequency PSSM."
-    pssm_df = get_pssm_IC(pssm_df)
+    pssm_df = get_logo_IC(pssm_df)
     pssm_df= convert_logo_df(pssm_df,scale_zero=scale_zero)
     plot_logo_raw(pssm_df,ax=ax,title=title,ytitle='IC (bits)',figsize=figsize)
 
-# %% ../nbs/02_pssm.ipynb 80
+# %% ../nbs/02_pssm.ipynb 98
 def plot_logo_LO(pssm_LO,title='Motif', acceptor=None, scale_zero=True,scale_pos_neg=True,ax=None,figsize=(10,1)):
     "Plot logo of log-odds given a frequency PSSM."
     if acceptor is not None: 
@@ -410,7 +438,7 @@ def plot_logo_LO(pssm_LO,title='Motif', acceptor=None, scale_zero=True,scale_pos
     ytitle = "Scaled Log-Odds" if scale_pos_neg else "Log-Odds (bits)"
     plot_logo_raw(pssm_LO,ax=ax,title=title,ytitle=ytitle,figsize=figsize)
 
-# %% ../nbs/02_pssm.ipynb 87
+# %% ../nbs/02_pssm.ipynb 105
 def plot_logos_idx(pssms_df,*idxs):
     "Plot logos of a dataframe with flattened PSSMs with index ad IDs."
     for idx in idxs:
@@ -419,7 +447,7 @@ def plot_logos_idx(pssms_df,*idxs):
         plt.show()
         plt.close()
 
-# %% ../nbs/02_pssm.ipynb 88
+# %% ../nbs/02_pssm.ipynb 106
 def plot_logos(pssms_df, 
                count_dict=None, # used to display n in motif title
                path=None,
@@ -442,7 +470,7 @@ def plot_logos(pssms_df,
         else:
             plot_logo(pssm, title=f'{prefix} {idx}',ax=ax)
 
-# %% ../nbs/02_pssm.ipynb 91
+# %% ../nbs/02_pssm.ipynb 109
 def plot_logo_heatmap(pssm_df, # column is position, index is aa
                        title='Motif',
                        figsize=(17,10),
@@ -460,7 +488,7 @@ def plot_logo_heatmap(pssm_df, # column is position, index is aa
     ax_heatmap = fig.add_subplot(gs[1, :])
     plot_heatmap(pssm_df,ax=ax_heatmap,position_label=False,include_zero=include_zero)
 
-# %% ../nbs/02_pssm.ipynb 93
+# %% ../nbs/02_pssm.ipynb 111
 def plot_logo_heatmap_LO(pssm_LO, # pssm of log-odds
                              title='Motif',
                          acceptor=None,
@@ -480,7 +508,7 @@ def plot_logo_heatmap_LO(pssm_LO, # pssm of log-odds
     ax_heatmap = fig.add_subplot(gs[1, :])
     plot_heatmap(pssm_LO,ax=ax_heatmap,position_label=False,include_zero=include_zero,scale_pos_neg=scale_pos_neg,colorbar_title='bits')
 
-# %% ../nbs/02_pssm.ipynb 98
+# %% ../nbs/02_pssm.ipynb 116
 def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and single amino acid as columns
              PDHK: bool=False, # whether this kinase belongs to PDHK family 
             ):
@@ -503,7 +531,7 @@ def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and s
     
     return df2
 
-# %% ../nbs/02_pssm.ipynb 100
+# %% ../nbs/02_pssm.ipynb 118
 def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
                    kinase:str, # a specific kinase
                    normalize: bool=False, # normalize according to the paper; special for PDHK1/4
@@ -524,7 +552,7 @@ def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
         pp = raw2norm(pp, PDHK=True if kinase == 'PDHK1' or kinase == 'PDHK4' else False)
     return pp
 
-# %% ../nbs/02_pssm.ipynb 105
+# %% ../nbs/02_pssm.ipynb 123
 def get_logo(df: pd.DataFrame, # stacked Dataframe with kinase as index, substrates as columns
              kinase: str, # a specific kinase name in index
              ):

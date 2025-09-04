@@ -13,7 +13,6 @@ from .data import *
 from fastcore.meta import delegates
 from pathlib import Path
 
-
 # %% ../nbs/01_utils.ipynb 7
 def get_path(dir_path,fname):
     "Ensure the directory exists and return the full file path."
