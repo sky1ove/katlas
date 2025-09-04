@@ -1,0 +1,5458 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.34">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>DL training – python-katlas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-c8ad9e5dbd60b7b70b38521ab19b7da4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8b4df6d66d7ae9c68dc69a488c45eae1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="DL training – python-katlas">
+<meta property="og:image" content="https://sky1ove.github.io/katlas/paper/kinase_domain/kd_07a_pspa_training_model_comparison_files/figure-html/cell-48-output-2.png">
+<meta property="og:site_name" content="python-katlas">
+<meta property="og:image:height" content="1782">
+<meta property="og:image:width" content="3595">
+<meta name="twitter:title" content="DL training – python-katlas">
+<meta name="twitter:image" content="https://sky1ove.github.io/katlas/paper/kinase_domain/kd_07a_pspa_training_model_comparison_files/figure-html/cell-48-output-2.png">
+<meta name="twitter:image-height" content="1782">
+<meta name="twitter:image-width" content="3595">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">python-katlas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/sky1ove/katlas"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">DL training</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get Started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preprocess</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../pssm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PSSM</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../hierarchical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hierarchical clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+ <span class="menu-text">03_score.ipynb</span>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../pathway.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pathway analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Alignment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../statistics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analyze</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../ml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train ML</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+ <span class="menu-text">11_DL.ipynb</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">2025 NC Paper</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/preprocess_dataset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preprocess kinase-substrate datasets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/eda_fig1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exploratory data analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/site_promiscuity_fig1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Site promiscuity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/modi_group.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modi group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/scale_pspa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PSPA scaled data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Background frequencies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/reactome_path-copy1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reactome pathway analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/ml_embedding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinase embeddings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/kmeans_motif.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kmeans motifs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/plot_cddm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot heatmap and logo of CDDM</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/reactome_path.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reactome pathway analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/train_set.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prepare training set</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/mutual_information.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mutual information</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/entropy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Entropy</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/color.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Color</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/pssms_split_test.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get kinase-specific PSSMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/pssms_split_test_psp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get kinase-specific PSSMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/pssms_split_test_psp_01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get kinase-specific PSSMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/pssms_split_test_psp-copy1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get kinase-specific PSSMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/scoring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring evaluation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/scoring_compare_all.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring evaluation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/scoring_compare_psp_02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring evaluation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/scoring-copy1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring evaluation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/specificity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Specificity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/sty_composition.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">STY composition</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/Untitled.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Untitled</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../paper/Untitled1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Untitled1</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#split" id="toc-split" class="nav-link" data-scroll-target="#split">Split</a></li>
+  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset">Dataset</a></li>
+  <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a></li>
+  <li><a href="#loss" id="toc-loss" class="nav-link" data-scroll-target="#loss">Loss</a></li>
+  <li><a href="#metrics" id="toc-metrics" class="nav-link" data-scroll-target="#metrics">Metrics</a></li>
+  <li><a href="#cv-train" id="toc-cv-train" class="nav-link" data-scroll-target="#cv-train">CV train</a></li>
+  <li><a href="#ml" id="toc-ml" class="nav-link" data-scroll-target="#ml">ML</a></li>
+  <li><a href="#score" id="toc-score" class="nav-link" data-scroll-target="#score">Score</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">DL training</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<div id="a0725fd0-3315-4517-8282-9348ab47d247" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os, random</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.data <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.train <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastai.vision.<span class="bu">all</span> <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.dnn <span class="im">import</span> <span class="op">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cf93dc91-7e32-4b82-862e-bdb6cbebb831" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>seed_everything()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="7e79e142-f843-4c7c-8281-b3ccb763b1ea" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>def_device</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>'cuda'</code></pre>
+</div>
+</div>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<div id="701b2457-cb59-4714-9061-078974218e51" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df<span class="op">=</span>pd.read_parquet(<span class="st">'train/pspa_t5.parquet'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="63ad71cf-01ed-4606-b867-7114564eb7b5" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>info<span class="op">=</span>Data.get_kinase_info()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>info <span class="op">=</span> info[info.pseudo<span class="op">==</span><span class="st">'0'</span>]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>info <span class="op">=</span> info[info.kd_ID.notna()]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>subfamily_map <span class="op">=</span> info[[<span class="st">'kd_ID'</span>,<span class="st">'subfamily'</span>]].drop_duplicates().set_index(<span class="st">'kd_ID'</span>)[<span class="st">'subfamily'</span>]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>family_map <span class="op">=</span> info[[<span class="st">'kd_ID'</span>,<span class="st">'family'</span>]].drop_duplicates().set_index(<span class="st">'kd_ID'</span>)[<span class="st">'family'</span>]</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>group_map <span class="op">=</span> info[[<span class="st">'kd_ID'</span>,<span class="st">'group'</span>]].drop_duplicates().set_index(<span class="st">'kd_ID'</span>)[<span class="st">'group'</span>]</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>pspa_info <span class="op">=</span> pd.DataFrame(df.index.tolist(),columns<span class="op">=</span>[<span class="st">'kinase'</span>])</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>pspa_info[<span class="st">'subfamily'</span>] <span class="op">=</span> pspa_info.kinase.<span class="bu">map</span>(subfamily_map)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>pspa_info[<span class="st">'family'</span>] <span class="op">=</span> pspa_info.kinase.<span class="bu">map</span>(family_map)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>pspa_info[<span class="st">'group'</span>] <span class="op">=</span> pspa_info.kinase.<span class="bu">map</span>(group_map)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="330147ea-e541-4a5a-96e8-b630b7767d0a" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df<span class="op">=</span>df.reset_index()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="33d7d304-5f56-42f6-a096-37ce1aec8e01" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>Index(['index', '-5P', '-4P', '-3P', '-2P', '-1P', '0P', '1P', '2P', '3P',
+       ...
+       'T5_1014', 'T5_1015', 'T5_1016', 'T5_1017', 'T5_1018', 'T5_1019',
+       'T5_1020', 'T5_1021', 'T5_1022', 'T5_1023'],
+      dtype='object', length=1255)</code></pre>
+</div>
+</div>
+<div id="882d424f-1af7-4780-8af0-1336603685de" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># column name of feature and target</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>feat_col <span class="op">=</span> df.columns[df.columns.<span class="bu">str</span>.startswith(<span class="st">'T5_'</span>)]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>target_col <span class="op">=</span> df.columns[<span class="op">~</span>df.columns.isin(feat_col)][<span class="dv">1</span>:]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="f891e546-80c0-47cc-b882-3818a6a0818d" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>feat_col</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>Index(['T5_0', 'T5_1', 'T5_2', 'T5_3', 'T5_4', 'T5_5', 'T5_6', 'T5_7', 'T5_8',
+       'T5_9',
+       ...
+       'T5_1014', 'T5_1015', 'T5_1016', 'T5_1017', 'T5_1018', 'T5_1019',
+       'T5_1020', 'T5_1021', 'T5_1022', 'T5_1023'],
+      dtype='object', length=1024)</code></pre>
+</div>
+</div>
+</section>
+<section id="split" class="level2">
+<h2 class="anchored" data-anchor-id="split">Split</h2>
+<div id="2682da19-cb3a-48ae-ab98-b5fbdc87b024" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pspa_info.subfamily.value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>subfamily
+Eph      12
+Src      11
+NEK      10
+CK1       7
+STE11     7
+         ..
+ZAK       1
+Sev       1
+Ret       1
+Musk      1
+Tie       1
+Name: count, Length: 149, dtype: int64</code></pre>
+</div>
+</div>
+<div id="0d5ca49c-e581-4515-8e4a-6a7ed8a65f4e" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>pspa_info.family.value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>family
+STE20    27
+CAMKL    20
+CDK      17
+MAPK     12
+Eph      12
+         ..
+STK33     1
+Sev       1
+Ret       1
+Musk      1
+Tie       1
+Name: count, Length: 92, dtype: int64</code></pre>
+</div>
+</div>
+<div id="0aa14d51-2623-45b1-8c25-d059fd9f93f2" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>pspa_info.group.value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>group
+TK          78
+CAMK        57
+CMGC        52
+AGC         52
+Other       49
+STE         39
+TKL         25
+CK1         11
+Atypical     5
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+<div id="865d0b45-1019-4590-b773-8f85484c5291" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>splits <span class="op">=</span> get_splits(pspa_info, group<span class="op">=</span><span class="st">'group'</span>,nfold<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>split0 <span class="op">=</span> splits[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>GroupKFold(n_splits=9, random_state=None, shuffle=False)
+# group in train set: 8
+# group in test set: 1</code></pre>
+</div>
+</div>
+</section>
+<section id="dataset" class="level2">
+<h2 class="anchored" data-anchor-id="dataset">Dataset</h2>
+<div id="bf151735-36f5-409f-a3ba-a05067ebcf32" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dataset</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> GeneralDataset(df,feat_col,target_col)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="dcc92b9d-bd8e-4b48-b693-cfe6777f81fc" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(ds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>368</code></pre>
+</div>
+</div>
+<div id="2e8ab264-59a0-42b0-aa7e-70c5c3b5166d" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>dl <span class="op">=</span> DataLoader(ds, batch_size<span class="op">=</span><span class="dv">64</span>, shuffle<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="32f548b0-0771-4eae-a850-d407559917f0" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>xb,yb <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(dl))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>xb.shape,yb.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>(torch.Size([64, 1024]), torch.Size([64, 23, 10]))</code></pre>
+</div>
+</div>
+</section>
+<section id="model" class="level2">
+<h2 class="anchored" data-anchor-id="model">Model</h2>
+<div id="61d51f40-d98d-4c3a-9721-f7a4084a2cdf" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>n_feature <span class="op">=</span> <span class="bu">len</span>(feat_col)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>n_target <span class="op">=</span> <span class="bu">len</span>(target_col)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="1e4917ae-79be-4bfc-8f9e-02598b164cbb" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_mlp(): <span class="cf">return</span> PSSM_model(n_feature,n_target,model<span class="op">=</span><span class="st">'MLP'</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_cnn(): <span class="cf">return</span> PSSM_model(n_feature,n_target,model<span class="op">=</span><span class="st">'CNN'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="18bf4378-55b6-489f-8f50-40f38ee9d864" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> get_mlp()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="6df6e66a-51ce-4e2c-a1e5-9e4af12bf271" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>logits<span class="op">=</span> model(xb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="e9c53f7d-f568-431c-8410-f28c544c97d3" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>logits.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>torch.Size([64, 23, 10])</code></pre>
+</div>
+</div>
+</section>
+<section id="loss" class="level2">
+<h2 class="anchored" data-anchor-id="loss">Loss</h2>
+<div id="cf2130dd-853f-49e3-a5e9-89ad20ebba16" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>CE(logits,yb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>tensor(3.2301, grad_fn=&lt;MeanBackward0&gt;)</code></pre>
+</div>
+</div>
+</section>
+<section id="metrics" class="level2">
+<h2 class="anchored" data-anchor-id="metrics">Metrics</h2>
+<div id="010ad9b4-2a38-42c1-b382-72997019c4d8" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>KLD(logits,yb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>tensor(0.4888, grad_fn=&lt;MeanBackward0&gt;)</code></pre>
+</div>
+</div>
+<div id="6f6f0885-3f25-48e4-ae07-8b2a93caa44e" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>JSD(logits,yb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>tensor(0.1021, grad_fn=&lt;MeanBackward0&gt;)</code></pre>
+</div>
+</div>
+</section>
+<section id="cv-train" class="level2">
+<h2 class="anchored" data-anchor-id="cv-train">CV train</h2>
+<blockquote class="blockquote">
+<p>cross-validation</p>
+</blockquote>
+<div id="f5564200-844a-46e5-aa91-1fd85d3c5d11" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;jupyter&quot;,&quot;value&quot;:{&quot;outputs_hidden&quot;:true}}" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>oof_cnn <span class="op">=</span> train_dl_cv(df,feat_col,target_col,</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>                  splits <span class="op">=</span> splits,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>                  model_func <span class="op">=</span> get_cnn,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>                  n_epoch<span class="op">=</span><span class="dv">20</span>,lr<span class="op">=</span><span class="fl">3e-3</span>,save<span class="op">=</span><span class="st">'cnn'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold0------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.269060</td>
+<td>3.143546</td>
+<td>0.404984</td>
+<td>0.081563</td>
+<td>00:01</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.223692</td>
+<td>3.146275</td>
+<td>0.407714</td>
+<td>0.083457</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.187206</td>
+<td>3.183710</td>
+<td>0.445149</td>
+<td>0.089945</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>3.168466</td>
+<td>3.213510</td>
+<td>0.474949</td>
+<td>0.095037</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>3.151428</td>
+<td>3.250360</td>
+<td>0.511799</td>
+<td>0.095850</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>3.129077</td>
+<td>3.295904</td>
+<td>0.557343</td>
+<td>0.096764</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>3.092045</td>
+<td>3.379737</td>
+<td>0.641176</td>
+<td>0.100406</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>3.050153</td>
+<td>3.463077</td>
+<td>0.724516</td>
+<td>0.097180</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>3.009927</td>
+<td>3.508782</td>
+<td>0.770221</td>
+<td>0.096228</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.974360</td>
+<td>3.530976</td>
+<td>0.792415</td>
+<td>0.096346</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.945237</td>
+<td>3.551771</td>
+<td>0.813210</td>
+<td>0.095378</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.921331</td>
+<td>3.561046</td>
+<td>0.822485</td>
+<td>0.096489</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.900862</td>
+<td>3.570856</td>
+<td>0.832295</td>
+<td>0.096034</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.883971</td>
+<td>3.571728</td>
+<td>0.833167</td>
+<td>0.096050</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.868740</td>
+<td>3.580438</td>
+<td>0.841878</td>
+<td>0.096799</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.855896</td>
+<td>3.576415</td>
+<td>0.837854</td>
+<td>0.095309</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.845092</td>
+<td>3.576349</td>
+<td>0.837788</td>
+<td>0.095002</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.835977</td>
+<td>3.578164</td>
+<td>0.839603</td>
+<td>0.094778</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.828240</td>
+<td>3.578447</td>
+<td>0.839886</td>
+<td>0.094619</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.822063</td>
+<td>3.577247</td>
+<td>0.838686</td>
+<td>0.094587</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold1------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.208323</td>
+<td>3.117840</td>
+<td>0.358446</td>
+<td>0.079426</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.091189</td>
+<td>2.972385</td>
+<td>0.212993</td>
+<td>0.053489</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.023240</td>
+<td>2.914478</td>
+<td>0.155085</td>
+<td>0.036497</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.980670</td>
+<td>2.882222</td>
+<td>0.122829</td>
+<td>0.028849</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.956968</td>
+<td>2.892510</td>
+<td>0.133117</td>
+<td>0.031521</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.936406</td>
+<td>2.883834</td>
+<td>0.124441</td>
+<td>0.029801</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.916521</td>
+<td>2.872803</td>
+<td>0.113411</td>
+<td>0.026771</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.898817</td>
+<td>2.867244</td>
+<td>0.107851</td>
+<td>0.025469</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.883082</td>
+<td>2.871394</td>
+<td>0.112001</td>
+<td>0.026386</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.869339</td>
+<td>2.879647</td>
+<td>0.120254</td>
+<td>0.028064</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.856960</td>
+<td>2.873616</td>
+<td>0.114223</td>
+<td>0.026624</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.846230</td>
+<td>2.867760</td>
+<td>0.108367</td>
+<td>0.025240</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.836640</td>
+<td>2.872809</td>
+<td>0.113416</td>
+<td>0.026313</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.828191</td>
+<td>2.868176</td>
+<td>0.108783</td>
+<td>0.025520</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.820981</td>
+<td>2.872831</td>
+<td>0.113438</td>
+<td>0.026307</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.814202</td>
+<td>2.866284</td>
+<td>0.106891</td>
+<td>0.024997</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.808656</td>
+<td>2.866797</td>
+<td>0.107404</td>
+<td>0.025086</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.803644</td>
+<td>2.865773</td>
+<td>0.106380</td>
+<td>0.024865</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.799526</td>
+<td>2.866066</td>
+<td>0.106673</td>
+<td>0.024947</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.796277</td>
+<td>2.867284</td>
+<td>0.107891</td>
+<td>0.025157</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold2------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.207325</td>
+<td>3.115193</td>
+<td>0.398589</td>
+<td>0.086719</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.097927</td>
+<td>2.949623</td>
+<td>0.233019</td>
+<td>0.056236</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.025309</td>
+<td>2.879674</td>
+<td>0.163071</td>
+<td>0.036285</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.985648</td>
+<td>2.917087</td>
+<td>0.200483</td>
+<td>0.043315</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.962924</td>
+<td>2.954751</td>
+<td>0.238148</td>
+<td>0.049796</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.945866</td>
+<td>2.895562</td>
+<td>0.178958</td>
+<td>0.039789</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.924970</td>
+<td>2.849533</td>
+<td>0.132929</td>
+<td>0.030185</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.905612</td>
+<td>2.830260</td>
+<td>0.113657</td>
+<td>0.025817</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.889499</td>
+<td>2.844801</td>
+<td>0.128197</td>
+<td>0.029688</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.875663</td>
+<td>2.833028</td>
+<td>0.116424</td>
+<td>0.026825</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.863242</td>
+<td>2.841709</td>
+<td>0.125106</td>
+<td>0.029388</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.852891</td>
+<td>2.840508</td>
+<td>0.123904</td>
+<td>0.028580</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.843964</td>
+<td>2.835951</td>
+<td>0.119348</td>
+<td>0.027543</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.836050</td>
+<td>2.836290</td>
+<td>0.119687</td>
+<td>0.027420</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.828768</td>
+<td>2.840454</td>
+<td>0.123851</td>
+<td>0.028561</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.822232</td>
+<td>2.843849</td>
+<td>0.127245</td>
+<td>0.029315</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.816713</td>
+<td>2.839590</td>
+<td>0.122987</td>
+<td>0.028450</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.811558</td>
+<td>2.837869</td>
+<td>0.121266</td>
+<td>0.028060</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.807289</td>
+<td>2.837321</td>
+<td>0.120717</td>
+<td>0.027880</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.803516</td>
+<td>2.837816</td>
+<td>0.121213</td>
+<td>0.027995</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold3------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.212177</td>
+<td>3.133322</td>
+<td>0.442178</td>
+<td>0.092641</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.106556</td>
+<td>3.004702</td>
+<td>0.313558</td>
+<td>0.071619</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.032302</td>
+<td>2.924537</td>
+<td>0.233393</td>
+<td>0.047923</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.991408</td>
+<td>2.954709</td>
+<td>0.263565</td>
+<td>0.050648</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.968174</td>
+<td>2.931870</td>
+<td>0.240725</td>
+<td>0.048159</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.950806</td>
+<td>2.916796</td>
+<td>0.225652</td>
+<td>0.045101</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.931854</td>
+<td>2.925281</td>
+<td>0.234136</td>
+<td>0.044713</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.914292</td>
+<td>2.914789</td>
+<td>0.223645</td>
+<td>0.044635</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.897355</td>
+<td>2.928928</td>
+<td>0.237784</td>
+<td>0.045836</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.882802</td>
+<td>2.949000</td>
+<td>0.257856</td>
+<td>0.049210</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.871844</td>
+<td>2.924596</td>
+<td>0.233452</td>
+<td>0.045192</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.861349</td>
+<td>2.941857</td>
+<td>0.250713</td>
+<td>0.045851</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.851713</td>
+<td>2.931137</td>
+<td>0.239993</td>
+<td>0.045195</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.843136</td>
+<td>2.934772</td>
+<td>0.243628</td>
+<td>0.046192</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.835923</td>
+<td>2.943913</td>
+<td>0.252769</td>
+<td>0.046927</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.829265</td>
+<td>2.942097</td>
+<td>0.250953</td>
+<td>0.045970</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.823912</td>
+<td>2.941896</td>
+<td>0.250752</td>
+<td>0.046320</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.818480</td>
+<td>2.941997</td>
+<td>0.250853</td>
+<td>0.046473</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.814164</td>
+<td>2.941214</td>
+<td>0.250070</td>
+<td>0.046557</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.810336</td>
+<td>2.940857</td>
+<td>0.249713</td>
+<td>0.046489</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold4------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.194705</td>
+<td>3.130977</td>
+<td>0.341532</td>
+<td>0.074929</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.085594</td>
+<td>2.977972</td>
+<td>0.188527</td>
+<td>0.048879</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.013692</td>
+<td>2.913405</td>
+<td>0.123960</td>
+<td>0.030272</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.973788</td>
+<td>2.917067</td>
+<td>0.127621</td>
+<td>0.030684</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.949276</td>
+<td>2.918989</td>
+<td>0.129544</td>
+<td>0.030319</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.931125</td>
+<td>2.899799</td>
+<td>0.110354</td>
+<td>0.025940</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.915670</td>
+<td>2.903029</td>
+<td>0.113584</td>
+<td>0.026157</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.898051</td>
+<td>2.902057</td>
+<td>0.112611</td>
+<td>0.026029</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.882174</td>
+<td>2.906800</td>
+<td>0.117355</td>
+<td>0.026956</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.866555</td>
+<td>2.902642</td>
+<td>0.113197</td>
+<td>0.026084</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.852777</td>
+<td>2.896940</td>
+<td>0.107495</td>
+<td>0.024940</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.841741</td>
+<td>2.897538</td>
+<td>0.108094</td>
+<td>0.024887</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.831769</td>
+<td>2.893549</td>
+<td>0.104104</td>
+<td>0.024063</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.823283</td>
+<td>2.896918</td>
+<td>0.107473</td>
+<td>0.024945</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.815448</td>
+<td>2.890926</td>
+<td>0.101481</td>
+<td>0.023427</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.809115</td>
+<td>2.893538</td>
+<td>0.104093</td>
+<td>0.024058</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.803209</td>
+<td>2.894400</td>
+<td>0.104955</td>
+<td>0.024268</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.798704</td>
+<td>2.892303</td>
+<td>0.102858</td>
+<td>0.023838</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.794743</td>
+<td>2.893203</td>
+<td>0.103758</td>
+<td>0.024038</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.790997</td>
+<td>2.892954</td>
+<td>0.103509</td>
+<td>0.023988</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold5------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.200059</td>
+<td>3.129740</td>
+<td>0.340930</td>
+<td>0.074560</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.075892</td>
+<td>2.966832</td>
+<td>0.178021</td>
+<td>0.046580</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.002707</td>
+<td>2.912999</td>
+<td>0.124188</td>
+<td>0.030773</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.964410</td>
+<td>2.892187</td>
+<td>0.103376</td>
+<td>0.024924</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.943762</td>
+<td>2.902257</td>
+<td>0.113446</td>
+<td>0.027689</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.927169</td>
+<td>2.901444</td>
+<td>0.112634</td>
+<td>0.027502</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.908855</td>
+<td>2.900654</td>
+<td>0.111842</td>
+<td>0.027249</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.891726</td>
+<td>2.897303</td>
+<td>0.108493</td>
+<td>0.026128</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.875688</td>
+<td>2.877074</td>
+<td>0.088263</td>
+<td>0.021336</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.861317</td>
+<td>2.884102</td>
+<td>0.095291</td>
+<td>0.023083</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.849794</td>
+<td>2.875574</td>
+<td>0.086763</td>
+<td>0.021232</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.839657</td>
+<td>2.886439</td>
+<td>0.097628</td>
+<td>0.023711</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.830924</td>
+<td>2.874263</td>
+<td>0.085452</td>
+<td>0.020829</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.822428</td>
+<td>2.873805</td>
+<td>0.084994</td>
+<td>0.020808</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.815482</td>
+<td>2.876380</td>
+<td>0.087570</td>
+<td>0.021238</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.809337</td>
+<td>2.879371</td>
+<td>0.090560</td>
+<td>0.022160</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.803722</td>
+<td>2.876238</td>
+<td>0.087428</td>
+<td>0.021313</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.799258</td>
+<td>2.875834</td>
+<td>0.087023</td>
+<td>0.021196</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.795357</td>
+<td>2.876079</td>
+<td>0.087268</td>
+<td>0.021257</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.791848</td>
+<td>2.875440</td>
+<td>0.086629</td>
+<td>0.021087</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold6------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.194345</td>
+<td>3.125804</td>
+<td>0.310537</td>
+<td>0.070330</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.076619</td>
+<td>2.947607</td>
+<td>0.132340</td>
+<td>0.035070</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.005765</td>
+<td>2.965863</td>
+<td>0.150596</td>
+<td>0.034322</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.967664</td>
+<td>2.947836</td>
+<td>0.132569</td>
+<td>0.031117</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.949170</td>
+<td>2.930657</td>
+<td>0.115390</td>
+<td>0.027440</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.929431</td>
+<td>2.919086</td>
+<td>0.103819</td>
+<td>0.023647</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.909898</td>
+<td>2.909945</td>
+<td>0.094679</td>
+<td>0.022008</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.889873</td>
+<td>2.941175</td>
+<td>0.125908</td>
+<td>0.030769</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.872821</td>
+<td>3.019504</td>
+<td>0.204238</td>
+<td>0.042314</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.857681</td>
+<td>3.009388</td>
+<td>0.194121</td>
+<td>0.037455</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.845142</td>
+<td>3.022245</td>
+<td>0.206979</td>
+<td>0.038697</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.835162</td>
+<td>3.000225</td>
+<td>0.184959</td>
+<td>0.035884</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.826885</td>
+<td>2.913549</td>
+<td>0.098283</td>
+<td>0.022825</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.818968</td>
+<td>2.909821</td>
+<td>0.094554</td>
+<td>0.022073</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.812242</td>
+<td>2.911905</td>
+<td>0.096639</td>
+<td>0.022330</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.806073</td>
+<td>2.905437</td>
+<td>0.090171</td>
+<td>0.021060</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.800760</td>
+<td>2.906015</td>
+<td>0.090748</td>
+<td>0.021134</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.796509</td>
+<td>2.906666</td>
+<td>0.091399</td>
+<td>0.021194</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.792567</td>
+<td>2.907202</td>
+<td>0.091935</td>
+<td>0.021378</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.789075</td>
+<td>2.906040</td>
+<td>0.090773</td>
+<td>0.021116</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold7------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.193431</td>
+<td>3.132979</td>
+<td>0.470934</td>
+<td>0.100316</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.075129</td>
+<td>2.952929</td>
+<td>0.290884</td>
+<td>0.064314</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.004288</td>
+<td>2.980430</td>
+<td>0.318384</td>
+<td>0.064712</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.964430</td>
+<td>3.106791</td>
+<td>0.444746</td>
+<td>0.087948</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.943281</td>
+<td>3.030717</td>
+<td>0.368672</td>
+<td>0.071883</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.921506</td>
+<td>2.966967</td>
+<td>0.304921</td>
+<td>0.064954</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.901086</td>
+<td>2.966125</td>
+<td>0.304080</td>
+<td>0.066394</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.882934</td>
+<td>2.906911</td>
+<td>0.244865</td>
+<td>0.056612</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.866958</td>
+<td>2.959419</td>
+<td>0.297374</td>
+<td>0.067109</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.853956</td>
+<td>2.950435</td>
+<td>0.288389</td>
+<td>0.062158</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.842523</td>
+<td>2.916209</td>
+<td>0.254164</td>
+<td>0.058917</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.833035</td>
+<td>2.969146</td>
+<td>0.307100</td>
+<td>0.066712</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.824414</td>
+<td>2.963351</td>
+<td>0.301306</td>
+<td>0.066902</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.817049</td>
+<td>2.939359</td>
+<td>0.277314</td>
+<td>0.059954</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.810813</td>
+<td>2.942940</td>
+<td>0.280895</td>
+<td>0.062915</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.805465</td>
+<td>2.947105</td>
+<td>0.285059</td>
+<td>0.062276</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.800686</td>
+<td>2.942368</td>
+<td>0.280322</td>
+<td>0.061662</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.796548</td>
+<td>2.940688</td>
+<td>0.278642</td>
+<td>0.061684</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.793428</td>
+<td>2.938184</td>
+<td>0.276139</td>
+<td>0.061416</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.790892</td>
+<td>2.941559</td>
+<td>0.279513</td>
+<td>0.062046</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold8------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.204335</td>
+<td>3.128751</td>
+<td>0.330619</td>
+<td>0.071953</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.082736</td>
+<td>2.936792</td>
+<td>0.138660</td>
+<td>0.031960</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.005778</td>
+<td>2.975837</td>
+<td>0.177705</td>
+<td>0.038728</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.966585</td>
+<td>2.978967</td>
+<td>0.180836</td>
+<td>0.040213</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.941424</td>
+<td>2.933694</td>
+<td>0.135562</td>
+<td>0.028999</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.919094</td>
+<td>2.920082</td>
+<td>0.121951</td>
+<td>0.026912</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.902150</td>
+<td>2.910596</td>
+<td>0.112464</td>
+<td>0.024009</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.884098</td>
+<td>2.900814</td>
+<td>0.102682</td>
+<td>0.022055</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.867814</td>
+<td>2.900837</td>
+<td>0.102706</td>
+<td>0.022942</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.854059</td>
+<td>2.904717</td>
+<td>0.106585</td>
+<td>0.023494</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.842533</td>
+<td>2.899587</td>
+<td>0.101455</td>
+<td>0.022210</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.836719</td>
+<td>2.903193</td>
+<td>0.105061</td>
+<td>0.023006</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.828672</td>
+<td>2.906362</td>
+<td>0.108229</td>
+<td>0.024207</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.820787</td>
+<td>2.915592</td>
+<td>0.117460</td>
+<td>0.026719</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.813905</td>
+<td>2.919409</td>
+<td>0.121277</td>
+<td>0.027612</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.807625</td>
+<td>2.913126</td>
+<td>0.114994</td>
+<td>0.026046</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.802210</td>
+<td>2.911582</td>
+<td>0.113450</td>
+<td>0.025277</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.797727</td>
+<td>2.912738</td>
+<td>0.114606</td>
+<td>0.025724</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.794279</td>
+<td>2.921650</td>
+<td>0.123518</td>
+<td>0.028250</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.791564</td>
+<td>2.915612</td>
+<td>0.117481</td>
+<td>0.026559</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+</div>
+<div id="4dddc9a0-0043-4373-92dd-63607ba22294" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;jupyter&quot;,&quot;value&quot;:{&quot;outputs_hidden&quot;:true}}" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>oof_mlp <span class="op">=</span> train_dl_cv(df,feat_col,target_col,</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>                  splits <span class="op">=</span> splits,</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>                  model_func <span class="op">=</span> get_mlp,</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>                  n_epoch<span class="op">=</span><span class="dv">20</span>,lr<span class="op">=</span><span class="fl">3e-3</span>,save<span class="op">=</span><span class="st">'mlp'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold0------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.171476</td>
+<td>3.139420</td>
+<td>0.400859</td>
+<td>0.080985</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.106711</td>
+<td>3.147713</td>
+<td>0.409152</td>
+<td>0.082218</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3.038125</td>
+<td>3.160561</td>
+<td>0.422000</td>
+<td>0.083707</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.976095</td>
+<td>3.189467</td>
+<td>0.450906</td>
+<td>0.085103</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.928933</td>
+<td>3.253317</td>
+<td>0.514756</td>
+<td>0.087918</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.895859</td>
+<td>3.290741</td>
+<td>0.552180</td>
+<td>0.087818</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.871152</td>
+<td>3.370811</td>
+<td>0.632249</td>
+<td>0.091517</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.852960</td>
+<td>3.411198</td>
+<td>0.672637</td>
+<td>0.090949</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.838817</td>
+<td>3.496814</td>
+<td>0.758253</td>
+<td>0.091359</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.827737</td>
+<td>3.521644</td>
+<td>0.783083</td>
+<td>0.093565</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.818174</td>
+<td>3.498032</td>
+<td>0.759471</td>
+<td>0.093064</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.810489</td>
+<td>3.504961</td>
+<td>0.766400</td>
+<td>0.094115</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.803670</td>
+<td>3.508696</td>
+<td>0.770135</td>
+<td>0.092760</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.797866</td>
+<td>3.541964</td>
+<td>0.803403</td>
+<td>0.094965</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.792816</td>
+<td>3.547325</td>
+<td>0.808764</td>
+<td>0.094005</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.788567</td>
+<td>3.548905</td>
+<td>0.810344</td>
+<td>0.094359</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.784840</td>
+<td>3.552236</td>
+<td>0.813675</td>
+<td>0.094531</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.781688</td>
+<td>3.556740</td>
+<td>0.818179</td>
+<td>0.094105</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.779126</td>
+<td>3.557160</td>
+<td>0.818599</td>
+<td>0.094202</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.776936</td>
+<td>3.562564</td>
+<td>0.824003</td>
+<td>0.094342</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold1------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.138040</td>
+<td>3.135045</td>
+<td>0.375653</td>
+<td>0.082271</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.054276</td>
+<td>3.113542</td>
+<td>0.354149</td>
+<td>0.079574</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>2.989687</td>
+<td>3.048094</td>
+<td>0.288702</td>
+<td>0.069778</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.937330</td>
+<td>2.952537</td>
+<td>0.193144</td>
+<td>0.050103</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.901045</td>
+<td>2.872171</td>
+<td>0.112778</td>
+<td>0.028355</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.875492</td>
+<td>2.863093</td>
+<td>0.103700</td>
+<td>0.025160</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.856277</td>
+<td>2.865705</td>
+<td>0.106313</td>
+<td>0.025039</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.840961</td>
+<td>2.864216</td>
+<td>0.104823</td>
+<td>0.024369</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.829274</td>
+<td>2.864235</td>
+<td>0.104842</td>
+<td>0.024402</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.820478</td>
+<td>2.877947</td>
+<td>0.118554</td>
+<td>0.027575</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.812226</td>
+<td>2.873299</td>
+<td>0.113906</td>
+<td>0.026126</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.806044</td>
+<td>2.869767</td>
+<td>0.110374</td>
+<td>0.025534</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.800019</td>
+<td>2.872890</td>
+<td>0.113498</td>
+<td>0.026378</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.794942</td>
+<td>2.871101</td>
+<td>0.111708</td>
+<td>0.025842</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.790824</td>
+<td>2.871950</td>
+<td>0.112557</td>
+<td>0.025829</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.786819</td>
+<td>2.872271</td>
+<td>0.112878</td>
+<td>0.025944</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.783419</td>
+<td>2.869001</td>
+<td>0.109608</td>
+<td>0.025354</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.780620</td>
+<td>2.871257</td>
+<td>0.111864</td>
+<td>0.025823</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.778407</td>
+<td>2.871228</td>
+<td>0.111836</td>
+<td>0.025827</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.776483</td>
+<td>2.869788</td>
+<td>0.110395</td>
+<td>0.025548</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold2------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.132754</td>
+<td>3.134609</td>
+<td>0.418006</td>
+<td>0.089472</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.046801</td>
+<td>3.113223</td>
+<td>0.396620</td>
+<td>0.086776</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>2.980770</td>
+<td>3.055556</td>
+<td>0.338953</td>
+<td>0.078529</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.932360</td>
+<td>2.969013</td>
+<td>0.252410</td>
+<td>0.062473</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.899219</td>
+<td>2.899032</td>
+<td>0.182429</td>
+<td>0.046023</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.875994</td>
+<td>2.873559</td>
+<td>0.156956</td>
+<td>0.038564</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.858054</td>
+<td>2.845880</td>
+<td>0.129277</td>
+<td>0.030850</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.844874</td>
+<td>2.827710</td>
+<td>0.111107</td>
+<td>0.026074</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.834472</td>
+<td>2.832326</td>
+<td>0.115723</td>
+<td>0.026925</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.826840</td>
+<td>2.842240</td>
+<td>0.125637</td>
+<td>0.030043</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.819004</td>
+<td>2.836573</td>
+<td>0.119970</td>
+<td>0.027737</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.812238</td>
+<td>2.861251</td>
+<td>0.144647</td>
+<td>0.033234</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.806651</td>
+<td>2.852784</td>
+<td>0.136180</td>
+<td>0.031518</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.801448</td>
+<td>2.847494</td>
+<td>0.130891</td>
+<td>0.030155</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.796698</td>
+<td>2.846005</td>
+<td>0.129401</td>
+<td>0.029958</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.792893</td>
+<td>2.848514</td>
+<td>0.131910</td>
+<td>0.030794</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.789678</td>
+<td>2.848055</td>
+<td>0.131451</td>
+<td>0.030317</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.786758</td>
+<td>2.846974</td>
+<td>0.130371</td>
+<td>0.030086</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.784590</td>
+<td>2.847528</td>
+<td>0.130924</td>
+<td>0.030296</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.782532</td>
+<td>2.848963</td>
+<td>0.132360</td>
+<td>0.030637</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold3------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.123281</td>
+<td>3.132412</td>
+<td>0.441268</td>
+<td>0.092814</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.042101</td>
+<td>3.114030</td>
+<td>0.422886</td>
+<td>0.090477</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>2.979384</td>
+<td>3.074581</td>
+<td>0.383437</td>
+<td>0.084360</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.931671</td>
+<td>3.003192</td>
+<td>0.312048</td>
+<td>0.069243</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.900101</td>
+<td>2.941841</td>
+<td>0.250697</td>
+<td>0.052327</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.877186</td>
+<td>2.922068</td>
+<td>0.230924</td>
+<td>0.046006</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.860131</td>
+<td>2.931553</td>
+<td>0.240409</td>
+<td>0.046516</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.847045</td>
+<td>2.928376</td>
+<td>0.237232</td>
+<td>0.045358</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.836282</td>
+<td>2.931814</td>
+<td>0.240670</td>
+<td>0.045169</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.827431</td>
+<td>2.939419</td>
+<td>0.248275</td>
+<td>0.048628</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.819919</td>
+<td>2.932438</td>
+<td>0.241293</td>
+<td>0.046815</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.814036</td>
+<td>2.933811</td>
+<td>0.242668</td>
+<td>0.046418</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.808680</td>
+<td>2.934338</td>
+<td>0.243193</td>
+<td>0.046852</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.804248</td>
+<td>2.950339</td>
+<td>0.259195</td>
+<td>0.049754</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.799972</td>
+<td>2.938487</td>
+<td>0.247342</td>
+<td>0.046829</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.796435</td>
+<td>2.941572</td>
+<td>0.250428</td>
+<td>0.048000</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.793111</td>
+<td>2.947199</td>
+<td>0.256055</td>
+<td>0.048709</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.790409</td>
+<td>2.951463</td>
+<td>0.260318</td>
+<td>0.049281</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.788168</td>
+<td>2.950207</td>
+<td>0.259063</td>
+<td>0.049058</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.786237</td>
+<td>2.950060</td>
+<td>0.258915</td>
+<td>0.049077</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold4------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.124104</td>
+<td>3.134452</td>
+<td>0.345007</td>
+<td>0.075167</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.038496</td>
+<td>3.111592</td>
+<td>0.322147</td>
+<td>0.072473</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>2.970284</td>
+<td>3.048591</td>
+<td>0.259146</td>
+<td>0.063065</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.920771</td>
+<td>2.958019</td>
+<td>0.168574</td>
+<td>0.043953</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.887409</td>
+<td>2.898182</td>
+<td>0.108737</td>
+<td>0.026950</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.863338</td>
+<td>2.887498</td>
+<td>0.098053</td>
+<td>0.023644</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.845474</td>
+<td>2.888538</td>
+<td>0.099093</td>
+<td>0.023433</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.831556</td>
+<td>2.886909</td>
+<td>0.097464</td>
+<td>0.022886</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.819985</td>
+<td>2.892709</td>
+<td>0.103265</td>
+<td>0.024001</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.810792</td>
+<td>2.892037</td>
+<td>0.102592</td>
+<td>0.023989</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.803365</td>
+<td>2.895198</td>
+<td>0.105753</td>
+<td>0.024882</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.797357</td>
+<td>2.895902</td>
+<td>0.106457</td>
+<td>0.024947</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.792247</td>
+<td>2.894876</td>
+<td>0.105431</td>
+<td>0.024678</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.787674</td>
+<td>2.896597</td>
+<td>0.107152</td>
+<td>0.025046</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.783528</td>
+<td>2.894453</td>
+<td>0.105008</td>
+<td>0.024469</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.780488</td>
+<td>2.896704</td>
+<td>0.107259</td>
+<td>0.025280</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.777241</td>
+<td>2.896692</td>
+<td>0.107246</td>
+<td>0.025114</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.774627</td>
+<td>2.895978</td>
+<td>0.106533</td>
+<td>0.024936</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.772030</td>
+<td>2.896508</td>
+<td>0.107063</td>
+<td>0.025073</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.770392</td>
+<td>2.896650</td>
+<td>0.107205</td>
+<td>0.025118</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold5------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.140697</td>
+<td>3.135143</td>
+<td>0.346332</td>
+<td>0.075070</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.048342</td>
+<td>3.119731</td>
+<td>0.330920</td>
+<td>0.073235</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>2.979255</td>
+<td>3.078922</td>
+<td>0.290112</td>
+<td>0.067775</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.929077</td>
+<td>2.995795</td>
+<td>0.206985</td>
+<td>0.052510</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.893279</td>
+<td>2.975678</td>
+<td>0.186867</td>
+<td>0.047241</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.868217</td>
+<td>2.886815</td>
+<td>0.098004</td>
+<td>0.024602</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.849210</td>
+<td>2.916328</td>
+<td>0.127517</td>
+<td>0.032733</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.835844</td>
+<td>2.884094</td>
+<td>0.095283</td>
+<td>0.024124</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.824802</td>
+<td>2.893069</td>
+<td>0.104258</td>
+<td>0.026342</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.815038</td>
+<td>2.909672</td>
+<td>0.120861</td>
+<td>0.030394</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.806904</td>
+<td>2.879725</td>
+<td>0.090915</td>
+<td>0.022690</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.800042</td>
+<td>2.910357</td>
+<td>0.121546</td>
+<td>0.030322</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.794713</td>
+<td>2.887380</td>
+<td>0.098569</td>
+<td>0.024505</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.789812</td>
+<td>2.891015</td>
+<td>0.102204</td>
+<td>0.025047</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.785572</td>
+<td>2.883691</td>
+<td>0.094880</td>
+<td>0.023556</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.781896</td>
+<td>2.886951</td>
+<td>0.098140</td>
+<td>0.024198</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.778671</td>
+<td>2.888133</td>
+<td>0.099322</td>
+<td>0.024640</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.775967</td>
+<td>2.890878</td>
+<td>0.102067</td>
+<td>0.025343</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.773479</td>
+<td>2.889570</td>
+<td>0.100760</td>
+<td>0.025070</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.771580</td>
+<td>2.886280</td>
+<td>0.097469</td>
+<td>0.024140</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold6------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.125239</td>
+<td>3.143044</td>
+<td>0.327778</td>
+<td>0.072367</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.036369</td>
+<td>3.146004</td>
+<td>0.330738</td>
+<td>0.072551</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>2.969717</td>
+<td>3.142249</td>
+<td>0.326983</td>
+<td>0.071680</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.921383</td>
+<td>3.125622</td>
+<td>0.310355</td>
+<td>0.069347</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.886705</td>
+<td>3.119030</td>
+<td>0.303763</td>
+<td>0.067855</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.863236</td>
+<td>3.150701</td>
+<td>0.335434</td>
+<td>0.069734</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.846394</td>
+<td>3.105358</td>
+<td>0.290092</td>
+<td>0.062999</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.833611</td>
+<td>3.020862</td>
+<td>0.205595</td>
+<td>0.049413</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.822827</td>
+<td>3.081616</td>
+<td>0.266349</td>
+<td>0.058375</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.814345</td>
+<td>3.046980</td>
+<td>0.231713</td>
+<td>0.052382</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.806578</td>
+<td>3.069500</td>
+<td>0.254233</td>
+<td>0.056023</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.800230</td>
+<td>3.049825</td>
+<td>0.234558</td>
+<td>0.052775</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.794504</td>
+<td>3.000489</td>
+<td>0.185222</td>
+<td>0.044598</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.790055</td>
+<td>3.022670</td>
+<td>0.207403</td>
+<td>0.048725</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.786135</td>
+<td>3.001585</td>
+<td>0.186319</td>
+<td>0.044600</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.782260</td>
+<td>2.999725</td>
+<td>0.184458</td>
+<td>0.044126</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.778924</td>
+<td>2.977914</td>
+<td>0.162648</td>
+<td>0.039644</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.775975</td>
+<td>2.984549</td>
+<td>0.169282</td>
+<td>0.041061</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.773758</td>
+<td>2.973586</td>
+<td>0.158320</td>
+<td>0.038846</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.772370</td>
+<td>2.993045</td>
+<td>0.177778</td>
+<td>0.042562</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold7------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.110090</td>
+<td>3.133375</td>
+<td>0.471330</td>
+<td>0.100618</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.027103</td>
+<td>3.102594</td>
+<td>0.440548</td>
+<td>0.096998</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>2.965780</td>
+<td>3.024230</td>
+<td>0.362184</td>
+<td>0.084081</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.917700</td>
+<td>2.935767</td>
+<td>0.273722</td>
+<td>0.061535</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.885562</td>
+<td>2.921035</td>
+<td>0.258989</td>
+<td>0.056032</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.862646</td>
+<td>2.910833</td>
+<td>0.248788</td>
+<td>0.054900</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.845487</td>
+<td>2.937936</td>
+<td>0.275890</td>
+<td>0.060785</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.832792</td>
+<td>2.922657</td>
+<td>0.260612</td>
+<td>0.060340</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.822367</td>
+<td>2.944104</td>
+<td>0.282059</td>
+<td>0.066009</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.813707</td>
+<td>2.972666</td>
+<td>0.310620</td>
+<td>0.072871</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.806854</td>
+<td>2.938702</td>
+<td>0.276657</td>
+<td>0.063607</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.800919</td>
+<td>2.948178</td>
+<td>0.286132</td>
+<td>0.065070</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.795901</td>
+<td>2.972046</td>
+<td>0.310000</td>
+<td>0.071711</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.791595</td>
+<td>2.929130</td>
+<td>0.267084</td>
+<td>0.062957</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.787729</td>
+<td>2.940015</td>
+<td>0.277970</td>
+<td>0.065189</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.784400</td>
+<td>2.937132</td>
+<td>0.275087</td>
+<td>0.064643</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.781541</td>
+<td>2.944604</td>
+<td>0.282558</td>
+<td>0.066189</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.779098</td>
+<td>2.947384</td>
+<td>0.285339</td>
+<td>0.066931</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.777092</td>
+<td>2.944833</td>
+<td>0.282787</td>
+<td>0.066404</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.775365</td>
+<td>2.944260</td>
+<td>0.282215</td>
+<td>0.066229</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------fold8------
+lr in training is 0.003</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">KLD</th>
+<th data-quarto-table-cell-role="th">JSD</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.140649</td>
+<td>3.132743</td>
+<td>0.334611</td>
+<td>0.072549</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>3.045759</td>
+<td>3.118004</td>
+<td>0.319872</td>
+<td>0.070753</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>2.977565</td>
+<td>3.083817</td>
+<td>0.285684</td>
+<td>0.065886</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>2.924772</td>
+<td>3.019604</td>
+<td>0.221472</td>
+<td>0.054484</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2.889525</td>
+<td>3.027496</td>
+<td>0.229364</td>
+<td>0.055167</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>2.864700</td>
+<td>3.021855</td>
+<td>0.223723</td>
+<td>0.052769</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2.847138</td>
+<td>3.056512</td>
+<td>0.258380</td>
+<td>0.059230</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>2.833452</td>
+<td>3.042546</td>
+<td>0.244414</td>
+<td>0.056720</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2.822788</td>
+<td>3.159932</td>
+<td>0.361800</td>
+<td>0.073176</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>2.814126</td>
+<td>3.136939</td>
+<td>0.338807</td>
+<td>0.071001</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>2.806904</td>
+<td>3.083386</td>
+<td>0.285255</td>
+<td>0.064539</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>2.800378</td>
+<td>3.071976</td>
+<td>0.273844</td>
+<td>0.062171</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>2.794891</td>
+<td>3.084828</td>
+<td>0.286696</td>
+<td>0.064775</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>2.790077</td>
+<td>3.075835</td>
+<td>0.277704</td>
+<td>0.062719</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>2.785990</td>
+<td>3.074905</td>
+<td>0.276773</td>
+<td>0.062855</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>2.782810</td>
+<td>3.051820</td>
+<td>0.253688</td>
+<td>0.058684</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>2.779867</td>
+<td>3.048082</td>
+<td>0.249950</td>
+<td>0.057938</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>2.777103</td>
+<td>3.049922</td>
+<td>0.251790</td>
+<td>0.058291</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td>2.775033</td>
+<td>3.048445</td>
+<td>0.250313</td>
+<td>0.058125</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>2.773071</td>
+<td>3.064700</td>
+<td>0.266568</td>
+<td>0.061091</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+</div>
+</section>
+<section id="ml" class="level2">
+<h2 class="anchored" data-anchor-id="ml">ML</h2>
+<div id="24130690-fd90-413f-92f3-fe33aa643101" class="cell" data-execution_count="42">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.multioutput <span class="im">import</span> MultiOutputRegressor</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="411808c8-6731-4fb8-9616-181f2cb547d8" class="cell" data-execution_count="89">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>ml_models <span class="op">=</span> {</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'LinearRegression'</span>: LinearRegression(),</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Lasso'</span>: Lasso(<span class="fl">0.1</span>), <span class="co"># L1 regularization # changing alpha does not change the result</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Ridge'</span>: Ridge(alpha<span class="op">=</span><span class="fl">0.1</span>), <span class="co"># L2 regularization</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'ElasticNet'</span>: ElasticNet(<span class="fl">0.1</span>), <span class="co"># Combine L1 and L2</span></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 'SVR':SVR(C=10,gamma=1),</span></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'DecisionTreeRegressor'</span>: DecisionTreeRegressor(), <span class="co"># not very good</span></span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'KNN'</span>: KNeighborsRegressor(n_neighbors<span class="op">=</span><span class="dv">3</span>), <span class="co"># compared with others, n=3 gives the best results</span></span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 'XGBRegressor': XGBRegressor(), #slow without gpu</span></span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 'RandomForestRegressor': RandomForestRegressor() # slow, use cuml to use gpu</span></span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a>                                      }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="ef703bd0-bac7-4eb7-b3da-5e8d6850cd17" class="cell" data-execution_count="90">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>oofs_ml <span class="op">=</span> {}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="339dbffe-9795-45c9-bd25-55f0b879bc08" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;jupyter&quot;,&quot;value&quot;:{&quot;outputs_hidden&quot;:true}}" data-execution_count="108">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name,model <span class="kw">in</span> ml_models.items():</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>    oofs_ml[name] <span class="op">=</span> train_ml_cv(df, feat_col, target_col, splits, model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(
+/home/sky1ove/git/KATLAS/katlas/.venv/lib/python3.12/site-packages/logomaker/../sklearn/linear_model/_coordinate_descent.py:695: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 0.000e+00, tolerance: 0.000e+00
+  model = cd_fast.enet_coordinate_descent(</code></pre>
+</div>
+</div>
+</section>
+<section id="score" class="level2">
+<h2 class="anchored" data-anchor-id="score">Score</h2>
+<div id="f33fa0e8-ad65-4143-800e-6b78625ca8c7" class="cell" data-execution_count="92">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>target<span class="op">=</span>df[target_col].copy()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="3cc15e9e-024b-437d-b458-697f2d94db8f" class="cell" data-execution_count="93">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>pspa_info[<span class="st">'split'</span>] <span class="op">=</span> oof_cnn.nfold</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="a10773e4-e3ea-4412-8adb-a8fc51b0b93d" class="cell" data-execution_count="128">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>pspa_info[<span class="st">'MLP'</span>] <span class="op">=</span>get_score_jsd(target,oof_mlp)</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>pspa_info[<span class="st">'CNN'</span>] <span class="op">=</span>get_score_jsd(target,oof_cnn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="af24398c-2297-4023-8990-959ea381d792" class="cell" data-execution_count="95">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tqdm <span class="im">import</span> tqdm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="194ad8c8-2bcd-4016-83fc-2847d64f6f4a" class="cell" data-execution_count="109">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> post_process_oof(oof_ml,target_col):</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>    oof <span class="op">=</span> oof_ml.copy()</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>    oof[target_col] <span class="op">=</span> oof.<span class="bu">apply</span>(<span class="kw">lambda</span> r: pd.Series(flatten_pssm(post_process(recover_pssm(r[target_col])),column_wise<span class="op">=</span><span class="va">False</span>)), axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> oof</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="90dfd50c-f663-45f2-8477-cd4e9401e951" class="cell" data-execution_count="110">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name,oof <span class="kw">in</span> tqdm(oofs_ml.items()):</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>    oof <span class="op">=</span> post_process_oof(oof,target_col)</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>    pspa_info[name] <span class="op">=</span> get_score_jsd(target,oof)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|██████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [00:19&lt;00:00,  3.29s/it]</code></pre>
+</div>
+</div>
+<div id="afec83f4-e09f-4409-b918-41c316dc846f" class="cell" data-execution_count="48">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.plot <span class="im">import</span> <span class="op">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="30d8190a-f4ff-43bf-9da1-fefcae250cd4" class="cell" data-execution_count="99">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>set_sns()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="bf1c42f3-934a-4b86-b0d3-ee08e5ce9934" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;jupyter&quot;,&quot;value&quot;:{&quot;outputs_hidden&quot;:true}}" data-execution_count="112">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>pspa_info</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="112">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">kinase</th>
+<th data-quarto-table-cell-role="th">subfamily</th>
+<th data-quarto-table-cell-role="th">family</th>
+<th data-quarto-table-cell-role="th">group</th>
+<th data-quarto-table-cell-role="th">split</th>
+<th data-quarto-table-cell-role="th">mlp</th>
+<th data-quarto-table-cell-role="th">cnn</th>
+<th data-quarto-table-cell-role="th">LinearRegression</th>
+<th data-quarto-table-cell-role="th">Lasso</th>
+<th data-quarto-table-cell-role="th">Ridge</th>
+<th data-quarto-table-cell-role="th">ElasticNet</th>
+<th data-quarto-table-cell-role="th">DecisionTreeRegressor</th>
+<th data-quarto-table-cell-role="th">KNN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Q2M2I8_AAK1_HUMAN_KD1</td>
+<td>NAK</td>
+<td>NAK</td>
+<td>Other</td>
+<td>4</td>
+<td>0.048600</td>
+<td>0.051749</td>
+<td>0.098876</td>
+<td>0.067539</td>
+<td>0.056838</td>
+<td>0.067539</td>
+<td>0.074387</td>
+<td>0.048014</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>P27037_AVR2A_HUMAN_KD1</td>
+<td>STKR2</td>
+<td>STKR</td>
+<td>TKL</td>
+<td>6</td>
+<td>0.044587</td>
+<td>0.029739</td>
+<td>0.088647</td>
+<td>0.037442</td>
+<td>0.040927</td>
+<td>0.037442</td>
+<td>0.100231</td>
+<td>0.095125</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Q13705_AVR2B_HUMAN_KD1</td>
+<td>STKR2</td>
+<td>STKR</td>
+<td>TKL</td>
+<td>6</td>
+<td>0.043153</td>
+<td>0.036690</td>
+<td>0.086192</td>
+<td>0.039007</td>
+<td>0.042801</td>
+<td>0.039007</td>
+<td>0.099457</td>
+<td>0.093459</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>P31749_AKT1_HUMAN_KD1</td>
+<td>Akt</td>
+<td>Akt</td>
+<td>AGC</td>
+<td>2</td>
+<td>0.023194</td>
+<td>0.019785</td>
+<td>0.084334</td>
+<td>0.042558</td>
+<td>0.039124</td>
+<td>0.042558</td>
+<td>0.055568</td>
+<td>0.068775</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>P31751_AKT2_HUMAN_KD1</td>
+<td>Akt</td>
+<td>Akt</td>
+<td>AGC</td>
+<td>2</td>
+<td>0.015898</td>
+<td>0.013228</td>
+<td>0.067616</td>
+<td>0.038013</td>
+<td>0.031472</td>
+<td>0.038013</td>
+<td>0.020330</td>
+<td>0.040728</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">363</td>
+<td>P17948_VGFR1_HUMAN_KD1</td>
+<td>VEGFR</td>
+<td>VEGFR</td>
+<td>TK</td>
+<td>0</td>
+<td>0.089577</td>
+<td>0.090952</td>
+<td>0.150470</td>
+<td>0.095850</td>
+<td>0.107327</td>
+<td>0.095850</td>
+<td>0.089927</td>
+<td>0.088376</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">364</td>
+<td>P35968_VGFR2_HUMAN_KD1</td>
+<td>VEGFR</td>
+<td>VEGFR</td>
+<td>TK</td>
+<td>0</td>
+<td>0.085835</td>
+<td>0.085874</td>
+<td>0.161182</td>
+<td>0.088967</td>
+<td>0.099599</td>
+<td>0.088967</td>
+<td>0.087649</td>
+<td>0.085550</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">365</td>
+<td>P35916_VGFR3_HUMAN_KD1</td>
+<td>VEGFR</td>
+<td>VEGFR</td>
+<td>TK</td>
+<td>0</td>
+<td>0.088425</td>
+<td>0.090141</td>
+<td>0.170160</td>
+<td>0.092814</td>
+<td>0.109089</td>
+<td>0.092814</td>
+<td>0.099440</td>
+<td>0.095619</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">366</td>
+<td>P07947_YES_HUMAN_KD1</td>
+<td>Src</td>
+<td>Src</td>
+<td>TK</td>
+<td>0</td>
+<td>0.095206</td>
+<td>0.092859</td>
+<td>0.127592</td>
+<td>0.093916</td>
+<td>0.103253</td>
+<td>0.093916</td>
+<td>0.100129</td>
+<td>0.094951</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">367</td>
+<td>P43403_ZAP70_HUMAN_KD1</td>
+<td>Syk</td>
+<td>Syk</td>
+<td>TK</td>
+<td>0</td>
+<td>0.122080</td>
+<td>0.125842</td>
+<td>0.149385</td>
+<td>0.133662</td>
+<td>0.125509</td>
+<td>0.133662</td>
+<td>0.126916</td>
+<td>0.126143</td>
+</tr>
+</tbody>
+</table>
+
+<p>368 rows × 13 columns</p>
+</div>
+</div>
+</div>
+<div id="cf88fa7c-6aa9-4e8e-a325-943552adb2f1" class="cell" data-execution_count="113">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>pspa_info.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="113">
+<pre><code>Index(['kinase', 'subfamily', 'family', 'group', 'split', 'mlp', 'cnn',
+       'LinearRegression', 'Lasso', 'Ridge', 'ElasticNet',
+       'DecisionTreeRegressor', 'KNN'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<div id="ee7a9e9d-8903-43bc-9a79-92308a54d8b7" class="cell" data-execution_count="129">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>model_list <span class="op">=</span> [<span class="st">'MLP'</span>,<span class="st">'CNN'</span>]<span class="op">+</span><span class="bu">list</span>(ml_models.keys())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="ab64af9e-2fa8-4ac0-9abc-ac9e36278bd9" class="cell" data-execution_count="130">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>ordered_list <span class="op">=</span> pspa_info[model_list].mean().sort_values(ascending<span class="op">=</span><span class="va">False</span>).index</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>ordered_list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="130">
+<pre><code>Index(['LinearRegression', 'DecisionTreeRegressor', 'KNN', 'Ridge', 'Lasso',
+       'ElasticNet', 'MLP', 'CNN'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<div id="f7408191-c886-45bf-8af3-d72c01cec62b" class="cell" data-execution_count="148">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_group_bar(df, </span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>                   value_cols,  <span class="co"># list of column names for values, the order depends on the first item</span></span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>                   group,       <span class="co"># column name of group (e.g., 'kinase')</span></span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>                   figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">5</span>),</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>                   order<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>                   title<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>                   fontsize<span class="op">=</span><span class="dv">14</span>,</span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>                   rotation<span class="op">=</span><span class="dv">90</span>,</span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a>                   <span class="op">**</span>kwargs):</span>
+<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">" Plot grouped bar graph from dataframe. "</span></span>
+<span id="cb79-12"><a href="#cb79-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-13"><a href="#cb79-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Prepare the dataframe for plotting</span></span>
+<span id="cb79-14"><a href="#cb79-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Melt the dataframe to go from wide to long format</span></span>
+<span id="cb79-15"><a href="#cb79-15" aria-hidden="true" tabindex="-1"></a>    df_melted <span class="op">=</span> df.melt(id_vars<span class="op">=</span>group, value_vars<span class="op">=</span>value_cols, var_name<span class="op">=</span><span class="st">'Ranking'</span>, value_name<span class="op">=</span><span class="st">'Value'</span>)</span>
+<span id="cb79-16"><a href="#cb79-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-17"><a href="#cb79-17" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>figsize)</span>
+<span id="cb79-18"><a href="#cb79-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb79-19"><a href="#cb79-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create the bar plot</span></span>
+<span id="cb79-20"><a href="#cb79-20" aria-hidden="true" tabindex="-1"></a>    sns.barplot(data<span class="op">=</span>df_melted, </span>
+<span id="cb79-21"><a href="#cb79-21" aria-hidden="true" tabindex="-1"></a>                x<span class="op">=</span>group, </span>
+<span id="cb79-22"><a href="#cb79-22" aria-hidden="true" tabindex="-1"></a>                y<span class="op">=</span><span class="st">'Value'</span>, </span>
+<span id="cb79-23"><a href="#cb79-23" aria-hidden="true" tabindex="-1"></a>                hue<span class="op">=</span><span class="st">'Ranking'</span>, </span>
+<span id="cb79-24"><a href="#cb79-24" aria-hidden="true" tabindex="-1"></a>                order<span class="op">=</span>order, </span>
+<span id="cb79-25"><a href="#cb79-25" aria-hidden="true" tabindex="-1"></a>                capsize<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span id="cb79-26"><a href="#cb79-26" aria-hidden="true" tabindex="-1"></a>                err_kws<span class="op">=</span>{<span class="st">'linewidth'</span>: <span class="fl">1.5</span>,<span class="st">'color'</span>: <span class="st">'gray'</span>}, </span>
+<span id="cb79-27"><a href="#cb79-27" aria-hidden="true" tabindex="-1"></a>                <span class="op">**</span>kwargs)</span>
+<span id="cb79-28"><a href="#cb79-28" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb79-29"><a href="#cb79-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Increase font size for the x-axis and y-axis tick labels</span></span>
+<span id="cb79-30"><a href="#cb79-30" aria-hidden="true" tabindex="-1"></a>    plt.tick_params(axis<span class="op">=</span><span class="st">'x'</span>, labelsize<span class="op">=</span>fontsize)  <span class="co"># Increase x-axis label size</span></span>
+<span id="cb79-31"><a href="#cb79-31" aria-hidden="true" tabindex="-1"></a>    plt.tick_params(axis<span class="op">=</span><span class="st">'y'</span>, labelsize<span class="op">=</span>fontsize)  <span class="co"># Increase y-axis label size</span></span>
+<span id="cb79-32"><a href="#cb79-32" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb79-33"><a href="#cb79-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Modify x and y label and increase font size</span></span>
+<span id="cb79-34"><a href="#cb79-34" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">''</span>, fontsize<span class="op">=</span>fontsize)</span>
+<span id="cb79-35"><a href="#cb79-35" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Value'</span>, fontsize<span class="op">=</span>fontsize)</span>
+<span id="cb79-36"><a href="#cb79-36" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb79-37"><a href="#cb79-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Rotate X labels</span></span>
+<span id="cb79-38"><a href="#cb79-38" aria-hidden="true" tabindex="-1"></a>    plt.xticks(rotation<span class="op">=</span>rotation)</span>
+<span id="cb79-39"><a href="#cb79-39" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb79-40"><a href="#cb79-40" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot titles</span></span>
+<span id="cb79-41"><a href="#cb79-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> title <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb79-42"><a href="#cb79-42" aria-hidden="true" tabindex="-1"></a>        plt.title(title, fontsize<span class="op">=</span>fontsize)</span>
+<span id="cb79-43"><a href="#cb79-43" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb79-44"><a href="#cb79-44" aria-hidden="true" tabindex="-1"></a>    plt.gca().spines[[<span class="st">'right'</span>, <span class="st">'top'</span>]].set_visible(<span class="va">False</span>)</span>
+<span id="cb79-45"><a href="#cb79-45" aria-hidden="true" tabindex="-1"></a>    plt.legend(</span>
+<span id="cb79-46"><a href="#cb79-46" aria-hidden="true" tabindex="-1"></a>        fontsize<span class="op">=</span>fontsize,</span>
+<span id="cb79-47"><a href="#cb79-47" aria-hidden="true" tabindex="-1"></a>        loc<span class="op">=</span><span class="st">"upper left"</span>,</span>
+<span id="cb79-48"><a href="#cb79-48" aria-hidden="true" tabindex="-1"></a>        <span class="co"># alpha=0.2</span></span>
+<span id="cb79-49"><a href="#cb79-49" aria-hidden="true" tabindex="-1"></a>        <span class="co"># bbox_to_anchor=(1.02, 1),</span></span>
+<span id="cb79-50"><a href="#cb79-50" aria-hidden="true" tabindex="-1"></a>        <span class="co"># borderaxespad=0</span></span>
+<span id="cb79-51"><a href="#cb79-51" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="c48a8fc3-c7ef-47c4-a83a-6c6e9340f1cc" class="cell" data-execution_count="136">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="882f1800-e676-4ed8-b96e-0d18fd50715e" class="cell" data-execution_count="142">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>pspa_info.to_parquet(<span class="st">'raw/model_compare_results.parquet'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="c7530348-e7f4-41a7-839e-bc662f7d966b" class="cell" data-execution_count="150">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>plot_group_bar(pspa_info,ordered_list,group<span class="op">=</span><span class="st">'group'</span>,figsize<span class="op">=</span>(<span class="dv">14</span>,<span class="dv">6</span>))</span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'JS divergence'</span>)</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Comparison of models'</span>)</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a><span class="co"># save_svg()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="150">
+<pre><code>Text(0.5, 1.0, 'Comparison of models')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="kd_07a_pspa_training_model_comparison_files/figure-html/cell-48-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/sky1ove\.github\.io\/katlas");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

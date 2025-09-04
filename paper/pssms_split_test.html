@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.34">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Get kinase-specific PSSMs – python-katlas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-c8ad9e5dbd60b7b70b38521ab19b7da4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-8b4df6d66d7ae9c68dc69a488c45eae1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="Get kinase-specific PSSMs – python-katlas">
+<meta property="og:description" content="tools for predicting kinome specificities">
+<meta property="og:site_name" content="python-katlas">
+<meta name="twitter:title" content="Get kinase-specific PSSMs – python-katlas">
+<meta name="twitter:description" content="tools for predicting kinome specificities">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">python-katlas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/sky1ove/katlas"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../paper/preprocess_dataset.html">2025 NC Paper</a></li><li class="breadcrumb-item"><a href="../paper/pssms_split_test.html">Get kinase-specific PSSMs</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get Started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preprocess</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pssm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PSSM</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../hierarchical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hierarchical clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+ <span class="menu-text">03_score.ipynb</span>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pathway.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pathway analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Alignment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../statistics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analyze</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train ML</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+ <span class="menu-text">11_DL.ipynb</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">2025 NC Paper</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/preprocess_dataset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preprocess kinase-substrate datasets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/eda_fig1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exploratory data analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/site_promiscuity_fig1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Site promiscuity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/modi_group.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modi group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/scale_pspa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PSPA scaled data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Background frequencies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/reactome_path-copy1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reactome pathway analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/ml_embedding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinase embeddings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/kmeans_motif.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kmeans motifs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/plot_cddm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot heatmap and logo of CDDM</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/reactome_path.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reactome pathway analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/train_set.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prepare training set</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/mutual_information.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mutual information</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/entropy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Entropy</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/color.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Color</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/pssms_split_test.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Get kinase-specific PSSMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/pssms_split_test_psp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get kinase-specific PSSMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/pssms_split_test_psp_01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get kinase-specific PSSMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/pssms_split_test_psp-copy1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get kinase-specific PSSMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/scoring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring evaluation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/scoring_compare_all.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring evaluation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/scoring_compare_psp_02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring evaluation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/scoring-copy1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring evaluation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/specificity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Specificity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/sty_composition.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">STY composition</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/Untitled.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Untitled</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../paper/Untitled1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Untitled1</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#all-pssms" id="toc-all-pssms" class="nav-link active" data-scroll-target="#all-pssms">All PSSMs</a>
+  <ul class="collapse">
+  <li><a href="#upper" id="toc-upper" class="nav-link" data-scroll-target="#upper">Upper</a></li>
+  </ul></li>
+  <li><a href="#all-log-odds" id="toc-all-log-odds" class="nav-link" data-scroll-target="#all-log-odds">All log-odds</a></li>
+  <li><a href="#split-dataset-for-eval" id="toc-split-dataset-for-eval" class="nav-link" data-scroll-target="#split-dataset-for-eval">Split dataset for eval</a>
+  <ul class="collapse">
+  <li><a href="#get-eval-pssms" id="toc-get-eval-pssms" class="nav-link" data-scroll-target="#get-eval-pssms">Get eval PSSMs</a></li>
+  <li><a href="#lo-of-eval-pssms" id="toc-lo-of-eval-pssms" class="nav-link" data-scroll-target="#lo-of-eval-pssms">LO of eval PSSMs</a></li>
+  </ul></li>
+  <li><a href="#eval-filter-those-on-kinome-tree" id="toc-eval-filter-those-on-kinome-tree" class="nav-link" data-scroll-target="#eval-filter-those-on-kinome-tree">Eval: Filter those on kinome tree</a>
+  <ul class="collapse">
+  <li><a href="#cddm" id="toc-cddm" class="nav-link" data-scroll-target="#cddm">CDDM</a></li>
+  </ul></li>
+  <li><a href="#overlap" id="toc-overlap" class="nav-link" data-scroll-target="#overlap">Overlap</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../paper/preprocess_dataset.html">2025 NC Paper</a></li><li class="breadcrumb-item"><a href="../paper/pssms_split_test.html">Get kinase-specific PSSMs</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Get kinase-specific PSSMs</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div id="781c9925-435d-4f6e-9c34-4aba02b111b2" class="cell" data-execution_count="147">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.core <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="7c6420f4-d431-4f5f-adf1-fe1243868b5c" class="cell" data-execution_count="148">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> Data.get_ks_dataset()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 2.9 s, sys: 404 ms, total: 3.31 s
+Wall time: 7.36 s</code></pre>
+</div>
+</div>
+<div id="156d7e96-48dc-4de8-a213-50de14ee8ed1" class="cell" data-execution_count="149">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'kinase_id'</span>] <span class="op">=</span> df[<span class="st">'kinase_uniprot'</span>] <span class="op">+</span> <span class="st">'_'</span> <span class="op">+</span> df[<span class="st">'kinase_protein'</span>].<span class="bu">str</span>.split().<span class="bu">str</span>[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="1957e6a2-28e8-4520-8fdb-d8e35fcc1e79" class="cell" data-execution_count="150">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cnt <span class="op">=</span> df[<span class="st">'kinase_id'</span>].value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="fd75a8fd-dcc7-495d-bd43-4801b48459ff" class="cell" data-execution_count="151">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> cnt[cnt<span class="op">&gt;=</span><span class="dv">40</span>].index</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>idx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="151">
+<pre><code>Index(['P12931_SRC', 'P29320_EPHA3', 'P07332_FES', 'Q16288_NTRK3',
+       'Q9UM73_ALK', 'P00519_ABL1', 'P36888_FLT3', 'P29322_EPHA8',
+       'P29323_EPHB2', 'P54762_EPHB1',
+       ...
+       'P35626_GRK3', 'Q99640_PKMYT1', 'Q6P2M8_CAMK1B', 'O00311_CDC7',
+       'Q9NYV4_CDK12', 'Q15746_SMMLCK', 'Q01973_ROR1', 'P15056_BRAF',
+       'Q6P0Q8_MAST2', 'O14976_GAK'],
+      dtype='object', name='kinase_id', length=333)</code></pre>
+</div>
+</div>
+<div id="2f78c391-e5aa-4d4b-a5a7-1841e0fb5799" class="cell" data-execution_count="152">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="152">
+<pre><code>(187066, 22)</code></pre>
+</div>
+</div>
+<section id="all-pssms" class="level2">
+<h2 class="anchored" data-anchor-id="all-pssms">All PSSMs</h2>
+<div id="8b9d1717-d21e-48f8-910f-44ac48502bab" class="cell" data-execution_count="153">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[df[<span class="st">'kinase_id'</span>].isin(idx)].copy()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="887461d7-a4fd-4705-b5d5-65a88296763e" class="cell" data-execution_count="154">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pssms_all <span class="op">=</span> get_cluster_pssms(df,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                          cluster_col <span class="op">=</span> <span class="st">'kinase_id'</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                          count_thr<span class="op">=</span><span class="va">None</span>, <span class="co"># since we already filtered, we set None here</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                          valid_thr<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|███████████████████████████████████████████████████████████████████████████| 333/333 [00:11&lt;00:00, 27.83it/s]</code></pre>
+</div>
+</div>
+<div id="a66dab41-0bd8-49ab-a0b8-aba6cc1bb0b8" class="cell" data-execution_count="155">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pssms_all.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="155">
+<pre><code>(333, 943)</code></pre>
+</div>
+</div>
+<div id="bb8b8663-2d2a-439b-8269-dbc1faf070c2" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pssms_all.to_parquet('out/CDDM_pssms.parquet')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="upper" class="level3">
+<h3 class="anchored" data-anchor-id="upper">Upper</h3>
+<div id="fbcce44f-7455-48dd-a24d-a5b16025cc92" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'site_seq_upper'</span>] <span class="op">=</span> df.site_seq.<span class="bu">str</span>.upper()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="702fdcb8-ce90-491d-955e-a74852a6b274" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>pssms_all_upper <span class="op">=</span> get_cluster_pssms(df,</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                              seq_col<span class="op">=</span><span class="st">'site_seq_upper'</span>,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                          cluster_col <span class="op">=</span> <span class="st">'kinase_id'</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                          count_thr<span class="op">=</span><span class="va">None</span>, <span class="co"># since we already filtered, we set None here</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                          valid_thr<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|███████████████████████████████████████████████████████████████████████████| 333/333 [00:11&lt;00:00, 27.98it/s]</code></pre>
+</div>
+</div>
+<div id="726d50fa-a3d9-4ef9-8d70-891161e3ba1e" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pssms_all_upper.to_parquet('out/CDDM_pssms_upper.parquet')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="all-log-odds" class="level2">
+<h2 class="anchored" data-anchor-id="all-log-odds">All log-odds</h2>
+<div id="190772ab-d7ca-4e4e-82af-efbc59a1d976" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_LO_all(pssms,site_type<span class="op">=</span><span class="st">'STY'</span>):</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    out<span class="op">=</span>[]</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, flat_pssm <span class="kw">in</span> pssms.iterrows():</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>        out.append(flatten_pssm(get_pssm_LO_flat(flat_pssm,site_type)))</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(out,index<span class="op">=</span>pssms.index)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="e2f09925-1d23-4d07-884b-3e7e2c4a7bef" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>LO_all <span class="op">=</span> get_LO_all(pssms_all)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="f1540581-8a54-4abf-9bc0-c5c03195f73d" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># LO_all.to_parquet('out/CDDM_pssms_LO.parquet')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="a1a6b976-6ba2-41a1-b03f-801783d06b5e" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>LO_all_upper <span class="op">=</span> get_LO_all(pssms_all_upper,site_type<span class="op">=</span><span class="st">'STY_upper'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="aadcd74b-4e74-4e39-8b29-0453a8797ddd" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># LO_all_upper.to_parquet('out/CDDM_pssms_LO_upper.parquet')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="split-dataset-for-eval" class="level2">
+<h2 class="anchored" data-anchor-id="split-dataset-for-eval">Split dataset for eval</h2>
+<div id="379ef5e4-6835-4c67-ab26-a3452742adcc" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'source_len'</span>] <span class="op">=</span> df.source.<span class="bu">str</span>.split(<span class="st">'|'</span>).<span class="bu">str</span>.<span class="bu">len</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="fdc3cb75-46ff-4fbc-84d2-ecf513ac9926" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df.source_len.value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<pre><code>source_len
+1    173678
+2      5977
+3      3232
+4      1291
+5       901
+6       754
+7        50
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+<div id="2f91c611-18ca-426f-ba78-57b3ebcdd09d" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sample_with_weights(group):</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="bu">max</span>(<span class="dv">1</span>, <span class="bu">int</span>(<span class="bu">len</span>(group) <span class="op">*</span> <span class="fl">0.1</span>))  <span class="co"># At least 1 row if group is small</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    weights <span class="op">=</span> group[<span class="st">'source_len'</span>].values</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    weights <span class="op">=</span> weights <span class="op">/</span> weights.<span class="bu">sum</span>()  <span class="co"># normalize</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    sampled <span class="op">=</span> group.sample(</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>        n<span class="op">=</span>n, weights<span class="op">=</span>weights, replace<span class="op">=</span><span class="va">False</span>, random_state<span class="op">=</span><span class="dv">42</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add back the group key as a column</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    sampled[<span class="st">'kinase_uniprot'</span>] <span class="op">=</span> group.name</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> sampled</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="60cd6dd1-831b-4cfe-986f-1f65b2c289b6" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>test <span class="op">=</span> df.groupby(<span class="st">'kinase_uniprot'</span>, group_keys<span class="op">=</span><span class="va">False</span>)<span class="op">\</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(sample_with_weights,include_groups<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="e14a8b1d-937b-48fb-b294-bbed6cf5e536" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># test.to_parquet('out/CDDM_test_set.parquet')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="6bef9638-95bf-4488-b8dc-bf895f8c1ac3" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>test.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">kin_sub_site</th>
+<th data-quarto-table-cell-role="th">substrate_uniprot</th>
+<th data-quarto-table-cell-role="th">site</th>
+<th data-quarto-table-cell-role="th">source</th>
+<th data-quarto-table-cell-role="th">substrate_genes</th>
+<th data-quarto-table-cell-role="th">substrate_phosphoseq</th>
+<th data-quarto-table-cell-role="th">position</th>
+<th data-quarto-table-cell-role="th">site_seq</th>
+<th data-quarto-table-cell-role="th">sub_site</th>
+<th data-quarto-table-cell-role="th">substrate_sequence</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">kinase_family</th>
+<th data-quarto-table-cell-role="th">kinase_subfamily</th>
+<th data-quarto-table-cell-role="th">kinase_pspa_big</th>
+<th data-quarto-table-cell-role="th">kinase_pspa_small</th>
+<th data-quarto-table-cell-role="th">kinase_coral_ID</th>
+<th data-quarto-table-cell-role="th">num_kin</th>
+<th data-quarto-table-cell-role="th">kinase_id</th>
+<th data-quarto-table-cell-role="th">site_seq_upper</th>
+<th data-quarto-table-cell-role="th">source_len</th>
+<th data-quarto-table-cell-role="th">kinase_uniprot</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">154</td>
+<td>O00141_P43243_S188</td>
+<td>P43243</td>
+<td>S188</td>
+<td>Sugiyama</td>
+<td>MATR3 KIAA0723</td>
+<td>MsKsFQQssLsRDsQGHGRDLsAAGIGLLAAAtQsLsMPAsLGRMN...</td>
+<td>188</td>
+<td>EPPyRVPRDDWEEKRHFRRDsFDDRGPsLNPVLDyDHGsRs</td>
+<td>P43243_S188</td>
+<td>MSKSFQQSSLSRDSQGHGRDLSAAGIGLLAAATQSLSMPASLGRMN...</td>
+<td>...</td>
+<td>SGK</td>
+<td>SGK</td>
+<td>Basophilic</td>
+<td>Akt/rock</td>
+<td>SGK1</td>
+<td>106</td>
+<td>O00141_SGK1</td>
+<td>EPPYRVPRDDWEEKRHFRRDSFDDRGPSLNPVLDYDHGSRS</td>
+<td>1</td>
+<td>O00141</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">370</td>
+<td>O00141_Q9UN36_T330</td>
+<td>Q9UN36</td>
+<td>T330</td>
+<td>GPS6|SIGNOR|ELM|EPSD|PSP</td>
+<td>NDRG2 KIAA1248 SYLD</td>
+<td>MAELQEVQITEEKPLLPGQTPEAAKEAELAARILLDQGQTHSVETP...</td>
+<td>330</td>
+<td>FLQGMGYMASSCMTRLsRsRtAsLtsAAsVDGNRsRsRtLs</td>
+<td>Q9UN36_T330</td>
+<td>MAELQEVQITEEKPLLPGQTPEAAKEAELAARILLDQGQTHSVETP...</td>
+<td>...</td>
+<td>SGK</td>
+<td>SGK</td>
+<td>Basophilic</td>
+<td>Akt/rock</td>
+<td>SGK1</td>
+<td>2</td>
+<td>O00141_SGK1</td>
+<td>FLQGMGYMASSCMTRLSRSRTASLTSAASVDGNRSRSRTLS</td>
+<td>5</td>
+<td>O00141</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">299</td>
+<td>O00141_Q92597_T356</td>
+<td>Q92597</td>
+<td>T356</td>
+<td>GPS6|SIGNOR|ELM|EPSD|PSP</td>
+<td>NDRG1 CAP43 DRG1 RTP</td>
+<td>MsREMQDVDLAEVKPLVEKGETITGLLQEFDVQEQDIETLHGSVHV...</td>
+<td>356</td>
+<td>sLDGtRsRsHtSEGTRsRsHtsEGtRsRsHtsEGAHLDItP</td>
+<td>Q92597_T356</td>
+<td>MSREMQDVDLAEVKPLVEKGETITGLLQEFDVQEQDIETLHGSVHV...</td>
+<td>...</td>
+<td>SGK</td>
+<td>SGK</td>
+<td>Basophilic</td>
+<td>Akt/rock</td>
+<td>SGK1</td>
+<td>2</td>
+<td>O00141_SGK1</td>
+<td>SLDGTRSRSHTSEGTRSRSHTSEGTRSRSHTSEGAHLDITP</td>
+<td>5</td>
+<td>O00141</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">251</td>
+<td>O00141_Q15149_S4386</td>
+<td>Q15149</td>
+<td>S4386</td>
+<td>Sugiyama</td>
+<td>PLEC PLEC1</td>
+<td>MVAGMLMPRDQLRAIYEVLFREGVMVAKKDRRPRSLHPHVPGVTNL...</td>
+<td>4386</td>
+<td>ItEFADMLsGNAGGFRsRsssVGssssyPIsPAVsRtQLAs</td>
+<td>Q15149_S4386</td>
+<td>MVAGMLMPRDQLRAIYEVLFREGVMVAKKDRRPRSLHPHVPGVTNL...</td>
+<td>...</td>
+<td>SGK</td>
+<td>SGK</td>
+<td>Basophilic</td>
+<td>Akt/rock</td>
+<td>SGK1</td>
+<td>8</td>
+<td>O00141_SGK1</td>
+<td>ITEFADMLSGNAGGFRSRSSSVGSSSSYPISPAVSRTQLAS</td>
+<td>1</td>
+<td>O00141</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">58</td>
+<td>O00141_P00338_T322</td>
+<td>P00338</td>
+<td>T322</td>
+<td>Sugiyama</td>
+<td>LDHA PIG19</td>
+<td>MAtLKDQLIyNLLKEEQtPQNKITVVGVGAVGMACAISILMKDLAD...</td>
+<td>322</td>
+<td>DLVKVTLtsEEEARLKKsADtLWGIQKELQF__________</td>
+<td>P00338_T322</td>
+<td>MATLKDQLIYNLLKEEQTPQNKITVVGVGAVGMACAISILMKDLAD...</td>
+<td>...</td>
+<td>SGK</td>
+<td>SGK</td>
+<td>Basophilic</td>
+<td>Akt/rock</td>
+<td>SGK1</td>
+<td>52</td>
+<td>O00141_SGK1</td>
+<td>DLVKVTLTSEEEARLKKSADTLWGIQKELQF__________</td>
+<td>1</td>
+<td>O00141</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 24 columns</p>
+</div>
+</div>
+</div>
+<div id="11b43df9-e93c-42ca-9b1b-1ec44aca0f4a" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>df.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>(185883, 24)</code></pre>
+</div>
+</div>
+<div id="6c2ea1e3-fe18-4a02-8d1c-a93bdb0e5886" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>df_eval <span class="op">=</span> df[<span class="op">~</span>df.index.isin(test.index)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="040b7e6a-8937-4ffa-933a-14c38d6b73f3" class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>df_eval.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<pre><code>(167441, 24)</code></pre>
+</div>
+</div>
+<section id="get-eval-pssms" class="level3">
+<h3 class="anchored" data-anchor-id="get-eval-pssms">Get eval PSSMs</h3>
+<div id="468129b9-1b5d-4338-8e69-f1e6a1627f69" class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>pssms_eval <span class="op">=</span> get_cluster_pssms(df_eval,</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>                          cluster_col <span class="op">=</span> <span class="st">'kinase_id'</span>,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>                          count_thr<span class="op">=</span><span class="va">None</span>, <span class="co"># since we already filtered, we set None here</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>                          valid_thr<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|███████████████████████████████████████████████████████████████████████████| 333/333 [00:09&lt;00:00, 33.41it/s]</code></pre>
+</div>
+</div>
+<div id="755cc8ca-86d7-4fb3-a123-dc9df983fffd" class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pssms_eval.to_parquet('out/CDDM_pssms_eval.parquet')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cf207948-0d17-40fb-9f20-f522e58d802f" class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>pssms_eval_upper <span class="op">=</span> get_cluster_pssms(df_eval,</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>                                     seq_col<span class="op">=</span><span class="st">'site_seq_upper'</span>,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>                          cluster_col <span class="op">=</span> <span class="st">'kinase_id'</span>,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>                          count_thr<span class="op">=</span><span class="va">None</span>, <span class="co"># since we already filtered, we set None here</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>                          valid_thr<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|███████████████████████████████████████████████████████████████████████████| 333/333 [00:11&lt;00:00, 28.91it/s]</code></pre>
+</div>
+</div>
+<div id="e5577dcc-f3ff-4362-821f-64fc8c5c6bc1" class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>pssms_eval_upper.to_parquet(<span class="st">'out/CDDM_pssms_eval_upper.parquet'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="lo-of-eval-pssms" class="level3">
+<h3 class="anchored" data-anchor-id="lo-of-eval-pssms">LO of eval PSSMs</h3>
+<div id="67c21426-aa97-4cf7-99b4-d8e02ccac517" class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>LO_eval <span class="op">=</span> get_LO_all(pssms_eval)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="c479df72-b2f1-4bdc-80f0-5e476f95abe7" class="cell" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># LO_eval.to_parquet('out/CDDM_pssms_LO_eval.parquet')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="801bea57-da10-4e50-977d-54abd2a1dd61" class="cell" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>LO_eval_upper <span class="op">=</span> get_LO_all(pssms_eval_upper,<span class="st">'STY_upper'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="99e26411-4c77-49ba-9c7f-2d887d82dd36" class="cell" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># LO_eval_upper.to_parquet('out/CDDM_pssms_LO_eval_upper.parquet')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="eval-filter-those-on-kinome-tree" class="level2">
+<h2 class="anchored" data-anchor-id="eval-filter-those-on-kinome-tree">Eval: Filter those on kinome tree</h2>
+<div id="3b083ef1-0dcd-4ec4-be2c-a2e67c1ca27c" class="cell" data-execution_count="42">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.data <span class="im">import</span> <span class="op">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="cddm" class="level3">
+<h3 class="anchored" data-anchor-id="cddm">CDDM</h3>
+<div id="ff06dda3-2d49-44df-bcc2-b6e77e17234f" class="cell" data-execution_count="115">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>LO <span class="op">=</span> pd.read_parquet(<span class="st">'out/CDDM_pssms_LO.parquet'</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>LO_upper <span class="op">=</span> pd.read_parquet(<span class="st">'out/CDDM_pssms_LO_upper.parquet'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="f0e187b8-adfb-4a40-aa32-8d8bba1f2d7d" class="cell" data-execution_count="116">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>pssms <span class="op">=</span> pd.read_parquet(<span class="st">'out/CDDM_pssms.parquet'</span>)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>pssms_upper <span class="op">=</span> pd.read_parquet(<span class="st">'out/CDDM_pssms_upper.parquet'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="92df9681-983b-4d95-b349-21a8ff771182" class="cell" data-execution_count="118">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>LO.shape,pssms.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="118">
+<pre><code>((333, 943), (333, 943))</code></pre>
+</div>
+</div>
+<div id="5cc7fc1e-dc8f-453e-8c35-dea8a1d5a7ec" class="cell" data-execution_count="119">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>info<span class="op">=</span> Data.get_kinase_info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="c33d4ea5-39c8-4bb6-8525-6f238e0a826a" class="cell" data-execution_count="120">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>info <span class="op">=</span> info[info.pseudo<span class="op">==</span><span class="st">'0'</span>].copy()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="e072a552-8ea4-416d-9d93-6850c8018877" class="cell" data-execution_count="121">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>info[<span class="st">'id'</span>] <span class="op">=</span> info.uniprot<span class="op">+</span><span class="st">'_'</span><span class="op">+</span>info.kinase</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="9f8103e3-9453-4955-bfc0-8594b7db2765" class="cell" data-execution_count="122">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>LO[<span class="op">~</span>LO.index.isin(info.<span class="bu">id</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="122">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">-20P</th>
+<th data-quarto-table-cell-role="th">-20G</th>
+<th data-quarto-table-cell-role="th">-20A</th>
+<th data-quarto-table-cell-role="th">-20C</th>
+<th data-quarto-table-cell-role="th">-20S</th>
+<th data-quarto-table-cell-role="th">-20T</th>
+<th data-quarto-table-cell-role="th">-20V</th>
+<th data-quarto-table-cell-role="th">-20I</th>
+<th data-quarto-table-cell-role="th">-20L</th>
+<th data-quarto-table-cell-role="th">-20M</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">20H</th>
+<th data-quarto-table-cell-role="th">20K</th>
+<th data-quarto-table-cell-role="th">20R</th>
+<th data-quarto-table-cell-role="th">20Q</th>
+<th data-quarto-table-cell-role="th">20N</th>
+<th data-quarto-table-cell-role="th">20D</th>
+<th data-quarto-table-cell-role="th">20E</th>
+<th data-quarto-table-cell-role="th">20pS</th>
+<th data-quarto-table-cell-role="th">20pT</th>
+<th data-quarto-table-cell-role="th">20pY</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">index</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">P07948-2_LYN</td>
+<td>-0.695061</td>
+<td>0.248942</td>
+<td>-0.181606</td>
+<td>-0.523522</td>
+<td>-0.241880</td>
+<td>-0.087184</td>
+<td>0.270835</td>
+<td>0.248626</td>
+<td>-0.177055</td>
+<td>0.151905</td>
+<td>...</td>
+<td>-1.002663</td>
+<td>0.187090</td>
+<td>-0.131176</td>
+<td>-0.477873</td>
+<td>0.089392</td>
+<td>-0.069890</td>
+<td>0.272381</td>
+<td>-0.624875</td>
+<td>-0.293957</td>
+<td>0.686397</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">O60566_BUB1B</td>
+<td>-0.098063</td>
+<td>0.177522</td>
+<td>0.006417</td>
+<td>-2.364642</td>
+<td>-0.336759</td>
+<td>-0.656228</td>
+<td>0.622357</td>
+<td>0.285512</td>
+<td>-1.214575</td>
+<td>-1.313708</td>
+<td>...</td>
+<td>0.538365</td>
+<td>0.313082</td>
+<td>-0.184508</td>
+<td>-1.521805</td>
+<td>0.314920</td>
+<td>0.267606</td>
+<td>0.993983</td>
+<td>-0.586346</td>
+<td>-0.015962</td>
+<td>-0.647041</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">P05771-2_PKCB</td>
+<td>-0.513296</td>
+<td>0.082197</td>
+<td>-0.419347</td>
+<td>0.153007</td>
+<td>0.387344</td>
+<td>0.446387</td>
+<td>1.033094</td>
+<td>1.359558</td>
+<td>-0.959957</td>
+<td>-0.059090</td>
+<td>...</td>
+<td>1.086193</td>
+<td>-0.296631</td>
+<td>-0.264711</td>
+<td>-1.710942</td>
+<td>0.415289</td>
+<td>0.443465</td>
+<td>0.117313</td>
+<td>0.283410</td>
+<td>-0.205099</td>
+<td>-0.099214</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Q13976-2_PKG1</td>
+<td>0.267160</td>
+<td>-0.880855</td>
+<td>0.326552</td>
+<td>-20.552054</td>
+<td>-0.980098</td>
+<td>-0.599127</td>
+<td>0.959565</td>
+<td>-0.422922</td>
+<td>-0.420509</td>
+<td>-0.841570</td>
+<td>...</td>
+<td>0.565165</td>
+<td>0.388792</td>
+<td>0.076757</td>
+<td>0.183066</td>
+<td>-0.243242</td>
+<td>-0.843097</td>
+<td>-0.192211</td>
+<td>0.440454</td>
+<td>-1.311089</td>
+<td>1.379757</td>
+</tr>
+</tbody>
+</table>
+
+<p>4 rows × 943 columns</p>
+</div>
+</div>
+</div>
+<div id="33dc20b3-733b-4db3-be8b-f7e702f5c943" class="cell" data-execution_count="123">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>LO <span class="op">=</span> LO[LO.index.isin(info.<span class="bu">id</span>)]</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>LO_upper <span class="op">=</span>LO_upper[LO_upper.index.isin(info.<span class="bu">id</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="7e905cbd-8eec-46f5-b30c-0ee6c4fa6d23" class="cell" data-execution_count="124">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>pssms<span class="op">=</span> pssms[pssms.index.isin(info.<span class="bu">id</span>)]</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>pssms_upper <span class="op">=</span> pssms_upper[pssms_upper.index.isin(info.<span class="bu">id</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="37f3d855-acd8-4c2c-af38-1922830c1ea5" class="cell" data-execution_count="125">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>LO.shape,pssms.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="125">
+<pre><code>((329, 943), (329, 943))</code></pre>
+</div>
+</div>
+<div id="c8429194-e1e9-4fd7-baa4-81a42edf2362" class="cell" data-execution_count="126">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>LO.to_parquet(<span class="st">'out/CDDM_pssms_LO.parquet'</span>)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>LO_upper.to_parquet(<span class="st">'out/CDDM_pssms_LO_upper.parquet'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="41fd58ac-64fd-44e3-93e2-6663b006e27d" class="cell" data-execution_count="127">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>pssms.to_parquet(<span class="st">'out/CDDM_pssms.parquet'</span>)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>pssms_upper.to_parquet(<span class="st">'out/CDDM_pssms_upper.parquet'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Do the same for _eval parquet</p>
+</section>
+</section>
+<section id="overlap" class="level2">
+<h2 class="anchored" data-anchor-id="overlap">Overlap</h2>
+<div id="b3fceb3c-3d72-48f6-8523-d1c3b6ce1f07" class="cell" data-execution_count="132">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>pspa <span class="op">=</span> Data.get_pspa_all_norm()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="a378b7d9-a8af-491b-9518-1e64f75f2805" class="cell" data-execution_count="133">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>pspa.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="133">
+<pre><code>(396, 236)</code></pre>
+</div>
+</div>
+<div id="2942bb55-7c8e-41d0-b9b6-1be23860eb52" class="cell" data-execution_count="134">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># drop those with TYR</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>pspa <span class="op">=</span> pspa[<span class="op">~</span>pspa.index.<span class="bu">str</span>.contains(<span class="st">'_'</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="9dd97492-82b9-4ec7-982d-64ef47fa41b2" class="cell" data-execution_count="135">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>pspa.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="135">
+<pre><code>(381, 236)</code></pre>
+</div>
+</div>
+<div id="2d9ac9d9-3d64-426f-9761-25cefb20685a" class="cell" data-execution_count="136">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>idx_map <span class="op">=</span> info.set_index(<span class="st">'kinase'</span>).<span class="bu">id</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="304a3fee-b355-4159-b542-71d2559b40e5" class="cell" data-execution_count="137">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>pspa.index <span class="op">=</span> pspa.index.<span class="bu">map</span>(idx_map)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="3bcbf588-8a64-4976-9334-7224c35e8b03" class="cell" data-execution_count="138">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>pspa.index.duplicated().<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="138">
+<pre><code>np.int64(0)</code></pre>
+</div>
+</div>
+<div id="16e1b85e-af0a-4732-b15a-026592ee3063" class="cell" data-execution_count="139">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>pspa.index.isna().<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="139">
+<pre><code>np.int64(0)</code></pre>
+</div>
+</div>
+<p>In CDDM but not in PSPA:</p>
+<p>Some are _TYR in PSPA, such as LIMK1/2 and MAP2K</p>
+<div id="20d1e030-f466-4546-ae4f-21bf82a6ba1b" class="cell" data-execution_count="140">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>LO[<span class="op">~</span>LO.index.isin(pspa.index)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="140">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">-20P</th>
+<th data-quarto-table-cell-role="th">-20G</th>
+<th data-quarto-table-cell-role="th">-20A</th>
+<th data-quarto-table-cell-role="th">-20C</th>
+<th data-quarto-table-cell-role="th">-20S</th>
+<th data-quarto-table-cell-role="th">-20T</th>
+<th data-quarto-table-cell-role="th">-20V</th>
+<th data-quarto-table-cell-role="th">-20I</th>
+<th data-quarto-table-cell-role="th">-20L</th>
+<th data-quarto-table-cell-role="th">-20M</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">20H</th>
+<th data-quarto-table-cell-role="th">20K</th>
+<th data-quarto-table-cell-role="th">20R</th>
+<th data-quarto-table-cell-role="th">20Q</th>
+<th data-quarto-table-cell-role="th">20N</th>
+<th data-quarto-table-cell-role="th">20D</th>
+<th data-quarto-table-cell-role="th">20E</th>
+<th data-quarto-table-cell-role="th">20pS</th>
+<th data-quarto-table-cell-role="th">20pT</th>
+<th data-quarto-table-cell-role="th">20pY</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">index</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">P53667_LIMK1</td>
+<td>-0.743331</td>
+<td>0.425765</td>
+<td>0.460108</td>
+<td>-0.617596</td>
+<td>-0.152646</td>
+<td>-0.530667</td>
+<td>-0.174914</td>
+<td>0.667565</td>
+<td>-0.286954</td>
+<td>0.696375</td>
+<td>...</td>
+<td>-0.264557</td>
+<td>0.331659</td>
+<td>0.416959</td>
+<td>-0.865297</td>
+<td>0.511997</td>
+<td>-0.585357</td>
+<td>-0.205241</td>
+<td>0.102584</td>
+<td>0.766077</td>
+<td>1.331394</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Q6PHR2_ULK3</td>
+<td>-0.490634</td>
+<td>-0.087072</td>
+<td>0.029732</td>
+<td>-0.867398</td>
+<td>0.123012</td>
+<td>-0.158981</td>
+<td>0.634177</td>
+<td>0.110333</td>
+<td>-0.887254</td>
+<td>-0.986387</td>
+<td>...</td>
+<td>0.814737</td>
+<td>0.168879</td>
+<td>-1.088708</td>
+<td>-0.245434</td>
+<td>0.813684</td>
+<td>0.069440</td>
+<td>0.504820</td>
+<td>0.011954</td>
+<td>0.845372</td>
+<td>0.688223</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Q9Y3S1_WNK2</td>
+<td>-0.549822</td>
+<td>0.658648</td>
+<td>-0.455872</td>
+<td>0.438409</td>
+<td>-2.556071</td>
+<td>0.525339</td>
+<td>0.755560</td>
+<td>0.849101</td>
+<td>-0.617971</td>
+<td>-1.417543</td>
+<td>...</td>
+<td>1.166616</td>
+<td>0.338166</td>
+<td>-0.973869</td>
+<td>-1.031058</td>
+<td>1.542632</td>
+<td>0.205812</td>
+<td>-1.380340</td>
+<td>-0.095599</td>
+<td>-0.847142</td>
+<td>1.165632</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Q9HBY8_SGK2</td>
+<td>-0.015252</td>
+<td>-0.725862</td>
+<td>0.230006</td>
+<td>-0.889517</td>
+<td>-0.392146</td>
+<td>-0.011175</td>
+<td>1.460055</td>
+<td>-1.326822</td>
+<td>-0.739447</td>
+<td>-1.423542</td>
+<td>...</td>
+<td>0.249261</td>
+<td>-1.512075</td>
+<td>-0.016755</td>
+<td>-0.395873</td>
+<td>-1.144109</td>
+<td>-0.284533</td>
+<td>0.676309</td>
+<td>1.561955</td>
+<td>-1.890026</td>
+<td>0.800819</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">P30291_WEE1</td>
+<td>-1.324755</td>
+<td>-0.357293</td>
+<td>0.466785</td>
+<td>-1.783981</td>
+<td>-0.649181</td>
+<td>-0.753637</td>
+<td>-0.144904</td>
+<td>-0.899360</td>
+<td>-0.218875</td>
+<td>-0.318009</td>
+<td>...</td>
+<td>-1.155933</td>
+<td>1.212013</td>
+<td>-0.322414</td>
+<td>-1.216105</td>
+<td>-0.156987</td>
+<td>-1.242268</td>
+<td>-0.465851</td>
+<td>0.041283</td>
+<td>0.874701</td>
+<td>-1.019412</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Q15569_TESK1</td>
+<td>-1.198287</td>
+<td>0.147686</td>
+<td>0.654654</td>
+<td>0.190482</td>
+<td>-0.067034</td>
+<td>-0.101100</td>
+<td>1.033094</td>
+<td>-0.509857</td>
+<td>-1.507445</td>
+<td>-0.343544</td>
+<td>...</td>
+<td>1.711714</td>
+<td>0.490946</td>
+<td>-0.066201</td>
+<td>-2.807887</td>
+<td>-0.234197</td>
+<td>-0.155980</td>
+<td>0.264293</td>
+<td>0.034462</td>
+<td>0.282917</td>
+<td>1.388802</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">P45985_MAP2K4</td>
+<td>-0.646683</td>
+<td>0.642707</td>
+<td>0.708758</td>
+<td>1.701443</td>
+<td>-0.456536</td>
+<td>0.924434</td>
+<td>0.073736</td>
+<td>-0.543216</td>
+<td>-0.081372</td>
+<td>-0.639936</td>
+<td>...</td>
+<td>0.073312</td>
+<td>0.311976</td>
+<td>-0.192703</td>
+<td>0.013141</td>
+<td>0.001870</td>
+<td>-0.334951</td>
+<td>-0.406530</td>
+<td>0.685566</td>
+<td>1.518984</td>
+<td>-19.873740</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">P53671_LIMK2</td>
+<td>0.402872</td>
+<td>0.611342</td>
+<td>1.044310</td>
+<td>-0.930824</td>
+<td>-0.603378</td>
+<td>0.584948</td>
+<td>-1.166214</td>
+<td>0.216833</td>
+<td>-0.780754</td>
+<td>-21.086079</td>
+<td>...</td>
+<td>0.944579</td>
+<td>0.768205</td>
+<td>0.593674</td>
+<td>-2.437519</td>
+<td>-1.185757</td>
+<td>-1.200649</td>
+<td>0.187203</td>
+<td>0.627222</td>
+<td>0.653286</td>
+<td>-0.240828</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">O14733_MAP2K7</td>
+<td>0.561353</td>
+<td>0.376813</td>
+<td>0.262292</td>
+<td>1.687088</td>
+<td>0.277569</td>
+<td>1.073578</td>
+<td>-2.455191</td>
+<td>-0.487182</td>
+<td>-0.069732</td>
+<td>-21.086079</td>
+<td>...</td>
+<td>0.610969</td>
+<td>0.586599</td>
+<td>0.859526</td>
+<td>-0.449202</td>
+<td>0.217599</td>
+<td>-0.060328</td>
+<td>-0.546945</td>
+<td>1.223223</td>
+<td>-0.528320</td>
+<td>-19.873740</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">P46734_MAP2K3</td>
+<td>-0.610158</td>
+<td>0.816736</td>
+<td>-0.435288</td>
+<td>1.515577</td>
+<td>-0.156976</td>
+<td>0.545923</td>
+<td>-1.304775</td>
+<td>0.400200</td>
+<td>-0.111960</td>
+<td>-21.086079</td>
+<td>...</td>
+<td>0.207613</td>
+<td>0.253632</td>
+<td>0.041133</td>
+<td>0.954797</td>
+<td>-1.600794</td>
+<td>-2.200649</td>
+<td>0.120089</td>
+<td>-0.010207</td>
+<td>0.653286</td>
+<td>0.344134</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">P52564_MAP2K6</td>
+<td>-0.206700</td>
+<td>0.608759</td>
+<td>1.024753</td>
+<td>1.597106</td>
+<td>-0.490484</td>
+<td>0.627453</td>
+<td>-22.372406</td>
+<td>0.159802</td>
+<td>-0.252823</td>
+<td>-21.086079</td>
+<td>...</td>
+<td>0.207613</td>
+<td>0.031240</td>
+<td>0.041133</td>
+<td>0.147442</td>
+<td>-0.015832</td>
+<td>-2.200649</td>
+<td>-0.365338</td>
+<td>0.726758</td>
+<td>1.653285</td>
+<td>-19.873740</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Q59H18_TNNI3K</td>
+<td>-1.210887</td>
+<td>0.341537</td>
+<td>1.642054</td>
+<td>-20.552054</td>
+<td>-22.224607</td>
+<td>-21.843636</td>
+<td>-0.320542</td>
+<td>-1.522457</td>
+<td>-0.198117</td>
+<td>-21.086079</td>
+<td>...</td>
+<td>-21.010260</td>
+<td>0.301329</td>
+<td>-2.010705</td>
+<td>-1.582468</td>
+<td>-0.330705</td>
+<td>0.654402</td>
+<td>0.582823</td>
+<td>-1.325080</td>
+<td>0.923375</td>
+<td>2.199185</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Q15120_PDHK3</td>
+<td>-0.583490</td>
+<td>0.120938</td>
+<td>1.491844</td>
+<td>0.957282</td>
+<td>-0.130308</td>
+<td>-21.843636</td>
+<td>0.944285</td>
+<td>0.841906</td>
+<td>-0.892647</td>
+<td>-21.086079</td>
+<td>...</td>
+<td>-21.010260</td>
+<td>0.506149</td>
+<td>-1.805885</td>
+<td>-0.377649</td>
+<td>-0.125886</td>
+<td>-22.418522</td>
+<td>-0.212357</td>
+<td>0.879739</td>
+<td>-20.564588</td>
+<td>0.819042</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Q01974_ROR2</td>
+<td>-1.935252</td>
+<td>0.839564</td>
+<td>-0.497349</td>
+<td>0.190482</td>
+<td>-0.482071</td>
+<td>-0.101100</td>
+<td>2.070569</td>
+<td>-21.989358</td>
+<td>-0.659448</td>
+<td>-0.343544</td>
+<td>...</td>
+<td>-21.010260</td>
+<td>1.151753</td>
+<td>-0.382674</td>
+<td>-22.070431</td>
+<td>-0.702674</td>
+<td>-1.302529</td>
+<td>2.018209</td>
+<td>-0.697049</td>
+<td>-20.564588</td>
+<td>-19.873740</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Q99640_PKMYT1</td>
+<td>-1.687325</td>
+<td>-0.719863</td>
+<td>1.165616</td>
+<td>-20.552054</td>
+<td>-22.224607</td>
+<td>0.731789</td>
+<td>1.203019</td>
+<td>-0.998895</td>
+<td>-0.996483</td>
+<td>-21.086079</td>
+<td>...</td>
+<td>0.010576</td>
+<td>1.571168</td>
+<td>0.107131</td>
+<td>-22.070431</td>
+<td>-0.797831</td>
+<td>-1.397686</td>
+<td>-1.884303</td>
+<td>0.207793</td>
+<td>0.456249</td>
+<td>-19.873740</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Q01973_ROR1</td>
+<td>0.540085</td>
+<td>0.507547</td>
+<td>-1.606973</td>
+<td>-20.552054</td>
+<td>-1.006733</td>
+<td>1.959200</td>
+<td>1.652822</td>
+<td>-0.771485</td>
+<td>-0.769072</td>
+<td>-21.086079</td>
+<td>...</td>
+<td>-21.010260</td>
+<td>0.066864</td>
+<td>-0.245171</td>
+<td>-22.070431</td>
+<td>0.434829</td>
+<td>-1.165025</td>
+<td>0.670286</td>
+<td>1.762382</td>
+<td>-20.564588</td>
+<td>1.379757</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Q6P0Q8_MAST2</td>
+<td>-0.528628</td>
+<td>0.760762</td>
+<td>-0.090724</td>
+<td>-20.552054</td>
+<td>-1.075446</td>
+<td>0.890487</td>
+<td>0.361717</td>
+<td>-21.989358</td>
+<td>-0.837785</td>
+<td>1.063081</td>
+<td>...</td>
+<td>-21.010260</td>
+<td>-0.553723</td>
+<td>1.889130</td>
+<td>-22.070431</td>
+<td>0.399205</td>
+<td>-1.200649</td>
+<td>-1.687266</td>
+<td>-0.595170</td>
+<td>-20.564588</td>
+<td>-19.873740</td>
+</tr>
+</tbody>
+</table>
+
+<p>17 rows × 943 columns</p>
+</div>
+</div>
+</div>
+<p>In PSPA but not in CDDM</p>
+<div id="451de291-1323-4e79-accc-c713f46bc662" class="cell" data-execution_count="141">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>pspa[<span class="op">~</span>pspa.index.isin(LO.index)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="141">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">-5P</th>
+<th data-quarto-table-cell-role="th">-5G</th>
+<th data-quarto-table-cell-role="th">-5A</th>
+<th data-quarto-table-cell-role="th">-5C</th>
+<th data-quarto-table-cell-role="th">-5S</th>
+<th data-quarto-table-cell-role="th">-5T</th>
+<th data-quarto-table-cell-role="th">-5V</th>
+<th data-quarto-table-cell-role="th">-5I</th>
+<th data-quarto-table-cell-role="th">-5L</th>
+<th data-quarto-table-cell-role="th">-5M</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">5H</th>
+<th data-quarto-table-cell-role="th">5K</th>
+<th data-quarto-table-cell-role="th">5R</th>
+<th data-quarto-table-cell-role="th">5Q</th>
+<th data-quarto-table-cell-role="th">5N</th>
+<th data-quarto-table-cell-role="th">5D</th>
+<th data-quarto-table-cell-role="th">5E</th>
+<th data-quarto-table-cell-role="th">5s</th>
+<th data-quarto-table-cell-role="th">5t</th>
+<th data-quarto-table-cell-role="th">5y</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">kinase</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Q2M2I8_AAK1</td>
+<td>0.0720</td>
+<td>0.0245</td>
+<td>0.0284</td>
+<td>0.0456</td>
+<td>0.0425</td>
+<td>0.0425</td>
+<td>0.0951</td>
+<td>0.1554</td>
+<td>0.0993</td>
+<td>0.0864</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Q13705_ACVR2B</td>
+<td>0.0533</td>
+<td>0.0517</td>
+<td>0.0566</td>
+<td>0.0772</td>
+<td>0.0533</td>
+<td>0.0533</td>
+<td>0.0543</td>
+<td>0.0442</td>
+<td>0.0471</td>
+<td>0.0516</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Q96QP1_ALPHAK3</td>
+<td>0.0571</td>
+<td>0.0478</td>
+<td>0.0253</td>
+<td>0.0384</td>
+<td>0.0571</td>
+<td>0.0571</td>
+<td>0.0586</td>
+<td>0.0602</td>
+<td>0.0394</td>
+<td>0.0673</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">P57078_ANKRD3</td>
+<td>0.0542</td>
+<td>0.0555</td>
+<td>0.0611</td>
+<td>0.0521</td>
+<td>0.0554</td>
+<td>0.0554</td>
+<td>0.0509</td>
+<td>0.0515</td>
+<td>0.0545</td>
+<td>0.0534</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">O14874_BCKDK</td>
+<td>0.0482</td>
+<td>0.0672</td>
+<td>0.0598</td>
+<td>0.0694</td>
+<td>0.0566</td>
+<td>0.0566</td>
+<td>0.0517</td>
+<td>0.0467</td>
+<td>0.0505</td>
+<td>0.0566</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Q8IYT8_ULK2</td>
+<td>0.0593</td>
+<td>0.0724</td>
+<td>0.0812</td>
+<td>0.0682</td>
+<td>0.0603</td>
+<td>0.0603</td>
+<td>0.0479</td>
+<td>0.0399</td>
+<td>0.0440</td>
+<td>0.0415</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Q96J92_WNK4</td>
+<td>0.0369</td>
+<td>0.0523</td>
+<td>0.0539</td>
+<td>0.0544</td>
+<td>0.0580</td>
+<td>0.0580</td>
+<td>0.0524</td>
+<td>0.0631</td>
+<td>0.0668</td>
+<td>0.0580</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Q9NY57_YANK2</td>
+<td>0.0580</td>
+<td>0.0699</td>
+<td>0.0637</td>
+<td>0.0602</td>
+<td>0.0580</td>
+<td>0.0580</td>
+<td>0.0433</td>
+<td>0.0470</td>
+<td>0.0459</td>
+<td>0.0469</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Q86UX6_YANK3</td>
+<td>0.0625</td>
+<td>0.0776</td>
+<td>0.0647</td>
+<td>0.0598</td>
+<td>0.0545</td>
+<td>0.0545</td>
+<td>0.0502</td>
+<td>0.0537</td>
+<td>0.0561</td>
+<td>0.0543</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Q56UN5_YSK4</td>
+<td>0.0593</td>
+<td>0.0728</td>
+<td>0.0744</td>
+<td>0.0734</td>
+<td>0.0597</td>
+<td>0.0597</td>
+<td>0.0517</td>
+<td>0.0400</td>
+<td>0.0433</td>
+<td>0.0512</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>69 rows × 236 columns</p>
+</div>
+</div>
+</div>
+<div id="d3fcfbf2-276d-4164-8eea-ce9756ebe185" class="cell" data-execution_count="142">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>overlap_cddm <span class="op">=</span> LO[LO.index.isin(pspa.index)].copy()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="d50fb945-f90f-44e6-a0ef-d432c717dd37" class="cell" data-execution_count="143">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>overlap_cddm.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="143">
+<pre><code>(312, 943)</code></pre>
+</div>
+</div>
+<div id="cbdf3584-bc6b-4fde-addd-59781571a566" class="cell" data-execution_count="144">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>overlap_pspa <span class="op">=</span> pspa[pspa.index.isin(LO.index)].copy()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="55e4e441-c1a5-401d-b9ad-b4207dc43828" class="cell" data-execution_count="145">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>overlap_pspa.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="145">
+<pre><code>(312, 236)</code></pre>
+</div>
+</div>
+<div id="adbb2ba5-16b3-4fcd-b82e-1bb58ba052c0" class="cell" data-execution_count="146">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="co"># overlap_cddm.to_parquet('raw/overlap_cddm_eval.parquet')</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>overlap_cddm.to_parquet(<span class="st">'raw/overlap_cddm.parquet'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="f414969e-11e7-4bd0-a797-8d84219adff1" class="cell" data-execution_count="128">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>overlap_pspa.to_parquet(<span class="st">'raw/overlap_pspa.parquet'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/sky1ove\.github\.io\/katlas");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
