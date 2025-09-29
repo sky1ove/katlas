@@ -1,6 +1,10 @@
 _docs/
 _proc/
 
+*.svg
+*.parquet
+*.pdf
+
 *.bak
 .gitattributes
 .last_checked

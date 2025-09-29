@@ -58,6 +58,7 @@ def set_sns(dpi=300):
 # %% ../nbs/05_plot.ipynb 6
 def save_svg(path): 
     plt.rcParams['svg.fonttype'] = 'none'
+    plt.rcParams['font.family'] = 'Arial'
     return plt.savefig(path, format='svg', bbox_inches='tight',transparent=True)
 
 # %% ../nbs/05_plot.ipynb 7
@@ -313,7 +314,7 @@ def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality 
     tooltips = [("Identity", "@identity")]
 
     for key in kwargs.keys():
-        tooltips.append((key.capitalize(), f"@{key}"))
+        tooltips.append((key, f"@{key}"))
 
     
     hover.tooltips = tooltips
@@ -398,7 +399,7 @@ def plot_rank(sorted_df: pd.DataFrame, # a sorted dataframe
     if len(texts)>0:
         # Use adjustText to adjust text positions
         adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
-    plt.ylabel(y.capitalize())
+    plt.ylabel(y)
     plt.tight_layout()
 
 # %% ../nbs/05_plot.ipynb 44
@@ -448,6 +449,7 @@ def plot_bar(df,
              dots = True, # whether or not add dots in the graph
              rotation=90,
              ascending=False,
+             ymin=None,
              **kwargs
               ):
     
@@ -481,15 +483,16 @@ def plot_bar(df,
     
     # Modify x and y label and increase font size
     plt.xlabel('', fontsize=fontsize)
-    plt.ylabel(value.capitalize(), fontsize=fontsize)
+    plt.ylabel(value, fontsize=fontsize)
     
     # Rotate X labels
     plt.xticks(rotation=rotation)
     
     # Plot titles
-    if title is not None:
-        plt.title(title,fontsize=fontsize)
-    
+    if title is not None: plt.title(title,fontsize=fontsize)
+
+    # set ymin limit
+    if ymin is not None: plt.ylim(bottom=ymin)
     plt.gca().spines[['right', 'top']].set_visible(False)
 
 # %% ../nbs/05_plot.ipynb 53
@@ -562,8 +565,8 @@ def plot_stacked(df, column, hue, figsize=(5, 4),xlabel=None, ylabel=None, add_v
         **kwargs
     )
 
-    plt.xlabel(xlabel.capitalize())
-    plt.ylabel(ylabel.capitalize())
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
     plt.xticks(rotation=0)
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'{int(x):,}'))
 
@@ -606,7 +609,7 @@ def plot_box(df,
     plt.tick_params(axis='y', labelsize=fontsize)  # Increase y-axis label size
 
     plt.xlabel('', fontsize=fontsize)
-    plt.ylabel(value.capitalize(), fontsize=fontsize)
+    plt.ylabel(value, fontsize=fontsize)
 
     plt.xticks(rotation=rotation)
     
@@ -619,38 +622,73 @@ def plot_box(df,
 
 # %% ../nbs/05_plot.ipynb 61
 @delegates(sns.regplot)
-def plot_corr(x, # x axis values, or colname of x axis
-              y, # y axis values, or colname of y axis
-              xlabel=None,# x axis label
-              ylabel=None,# y axis label
-              data = None, # dataframe that contains data
-              text_location = [0.8,0.1],
-              **kwargs
-              ):
-    "Given a dataframe and the name of two columns, plot the two columns' correlation"
-    if data is not None:
-        x=data[x]
-        y=data[y]
-        
-    pear, pvalue = pearsonr(x, y)
-        
-    sns.regplot(
-                x=x,
-                y=y,
-                line_kws={'color': 'gray'}, **kwargs
-           )
-    
-    if xlabel is not None: plt.xlabel(xlabel.capitalize())
-        
-    if ylabel is not None: plt.ylabel(ylabel.capitalize())
-    
-    # correlation_text = f'Spearman: {correlation:.2f}' if method == 'spearman' else f'Pearson: {correlation:.2f}'
+def plot_corr(
+    df,  # dataframe that contains data
+    x,  # x axis values, or colname of x axis
+    y,  # y axis values, or colname of y axis
+    text_location=(0.8, 0.1),  # relative coords in Axes (0–1)
+    method="spearman",  # correlation method: 'pearson' or 'spearman'
+    index_list=None,  # list of indices to annotate
+    hue=None,
+    reg_line=True,
+    **kwargs
+):
+    """
+    Given a dataframe and the name of two columns, 
+    plot the two columns' correlation with either Pearson or Spearman.
+    Annotate points if their index is in index_list.
+    """
+    x_vals = df[x]
+    y_vals = df[y]
 
-    # plt.text(x=0.8, y=0.1, s=correlation_text, transform=plt.gca().transAxes, ha='center', va='center')
-    plt.text(s=f'Pearson = {round(pear,2)}\n   p = {"{:.2e}".format(pvalue)}',
-             x=text_location[0],y=text_location[1],
-            transform=plt.gca().transAxes, 
-             ha='center', va='center')
+    # Compute correlation
+    if method.lower() == "spearman":
+        corr_val, pvalue = spearmanr(x_vals, y_vals)
+        corr_label = f"Spearman ρ = {corr_val:.2f}\n p = {pvalue:.2e}"
+    else:
+        corr_val, pvalue = pearsonr(x_vals, y_vals)
+        corr_label = f"Pearson r = {corr_val:.2f}\n p = {pvalue:.2e}"
+
+    # Plot regression line + scatter
+    if hue is not None:
+        sns.scatterplot(data=df, x=x, y=y, hue=hue, **kwargs)
+        if reg_line: sns.regplot(x=x_vals, y=y_vals, scatter=False, line_kws={'color': 'gray','alpha': 0.5})
+        plt.legend(
+            bbox_to_anchor=(1.05, 1),   # (x, y) anchor relative to axes
+            loc="upper left",           # where to attach the legend box
+            borderaxespad=0.
+        )
+    else:
+        sns.regplot(x=x_vals, y=y_vals, line_kws={'color': 'gray'}, **kwargs)
+
+
+    # Add correlation text
+    plt.text(
+        x=text_location[0],
+        y=text_location[1],
+        s=corr_label,
+        transform=plt.gca().transAxes,
+        ha="center",
+        va="center"
+    )
+
+    # Annotate selected points if index_list is given
+    texts = []
+    if index_list is not None:
+        for idx in index_list:
+            if idx in df.index:  # make sure index exists
+                texts.append(
+                    plt.text(
+                        x_vals.loc[idx], 
+                        y_vals.loc[idx], 
+                        str(idx),
+                        fontsize=9,
+                        ha="center",
+                        va="center"
+                    )
+                )
+        if texts:
+            adjust_text(texts, arrowprops=dict(arrowstyle="->", color="black", lw=0.5))
 
 # %% ../nbs/05_plot.ipynb 65
 def get_similarity(df, metric='euclidean'):
@@ -682,7 +720,7 @@ def plot_matrix(dist_matrix, inverse_color=False):
     plt.ylabel('')
     plt.yticks(rotation=0)
 
-# %% ../nbs/05_plot.ipynb 70
+# %% ../nbs/05_plot.ipynb 71
 def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
     
     "Plot CDF curve and get relative area under the curve"
@@ -748,7 +786,7 @@ def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
         
     return AUCDF
 
-# %% ../nbs/05_plot.ipynb 73
+# %% ../nbs/05_plot.ipynb 74
 def plot_confusion_matrix(target, # pd.Series 
                           pred, # pd.Series
                           class_names:list=['0','1'],
@@ -775,7 +813,7 @@ def plot_confusion_matrix(target, # pd.Series
     plt.xticks(np.arange(len(class_names)) + 0.5, class_names)
     plt.yticks(np.arange(len(class_names)) + 0.5, class_names, rotation=0)
 
-# %% ../nbs/05_plot.ipynb 77
+# %% ../nbs/05_plot.ipynb 78
 def plot_pie(value_counts, # value counts
              hue_order=None, # list of strings
              labeldistance=0.8,
@@ -796,14 +834,14 @@ def plot_pie(value_counts, # value counts
     plt.ylabel('')
     plt.title(f'n={value_counts.sum():,}')
 
-# %% ../nbs/05_plot.ipynb 81
+# %% ../nbs/05_plot.ipynb 82
 def get_pct(df,bin_col, hue_col):
     "Get percentage for hue in each bin; with hue adding up to 1 in each bin."
     count_df = df.groupby([bin_col, hue_col], observed=False).size().unstack(fill_value=0)
     pct_df = count_df.div(count_df.sum(axis=1), axis=0) * 100
     return pct_df
 
-# %% ../nbs/05_plot.ipynb 82
+# %% ../nbs/05_plot.ipynb 83
 def plot_composition(df, bin_col, hue_col,palette='tab20',legend_title=None,rotate=45,xlabel=None,ylabel='Percentage',figsize=(5,3)):
     pct_df = get_pct(df,bin_col,hue_col)
 
@@ -817,7 +855,7 @@ def plot_composition(df, bin_col, hue_col,palette='tab20',legend_title=None,rota
     if legend_title is None: legend_title = hue_col 
     plt.legend(title=legend_title, bbox_to_anchor=(1.05, 1), loc='upper left')
 
-# %% ../nbs/05_plot.ipynb 84
+# %% ../nbs/05_plot.ipynb 85
 def plot_cnt(cnt, xlabel=None,ylabel='Count',figsize=(6, 3)):
     fig, ax = plt.subplots(figsize=figsize)
     cnt.plot.bar(ax=ax)

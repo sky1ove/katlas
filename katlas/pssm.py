@@ -34,7 +34,7 @@ from scipy.cluster.hierarchy import linkage, fcluster,dendrogram
 EPSILON = 1e-8
 
 # %% ../nbs/02_pssm.ipynb 8
-def get_prob(df: pd.DataFrame, col: str, aa_order=[i for i in 'PGACSTVILMFYWHKRQNDEsty']):
+def get_prob(df: pd.DataFrame, col: str='site_seq', aa_order=[i for i in 'PGACSTVILMFYWHKRQNDEsty']):
     "Get the probability matrix of PSSM from phosphorylation site sequences."
     
     site = check_seq_df(df, col)
