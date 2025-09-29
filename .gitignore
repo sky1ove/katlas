@@ -2,8 +2,13 @@ _docs/
 _proc/
 
 *.svg
-*.parquet
 *.pdf
+models/
+fig/
+train/
+raw/
+out/
+
 
 *.bak
 .gitattributes
