@@ -16,13 +16,18 @@ from pathlib import Path
 # %% ../nbs/00_data.ipynb 9
 class Data:
     "A class for fetching various datasets."
-    DATASET_DIR = Path(tempfile.gettempdir()) / 'dataset'
+    DATASET_DIR = Path(tempfile.gettempdir()) / 'katlas_dataset'
 
 # %% ../nbs/00_data.ipynb 10
 @patch_to(Data)
-def download(force=True):
+def download(force=False, # if force, will overwrite the current dataset folder
+             verbose=True, # print existing dataset folder
+             dataset_dir=None, # dest directory of downloaded folder
+            ):
+    "Download dataset zip and extract them in tmp folder if dataset_dir is not given."
     path = 'https://drive.google.com/uc?id=17wIl0DbdoHV036Z3xgaT_0H3LlM_W47l'
     local_zip = Path('katlas_dataset.zip')
+    if dataset_dir is not None: Data.DATASET_DIR=Path(dataset_dir)/'katlas_dataset'
     
     # 🧹 If old extracted folder exists, remove it (so we overwrite cleanly)
     if Data.DATASET_DIR.exists():
@@ -30,7 +35,7 @@ def download(force=True):
             print(f"♻️ Removing existing folder: {Data.DATASET_DIR}")
             shutil.rmtree(Data.DATASET_DIR)
         else:
-            print(f"✅ Dataset already exists at: {Data.DATASET_DIR}")
+            if verbose: print(f"✅ Dataset exists at: {Data.DATASET_DIR}")
             return
 
     # ⬇️ Download zip (always fresh)
@@ -56,6 +61,7 @@ def read_file(rel_path):
     Automatically infers file type from the filename extension.
     Renames 'Unnamed: 0' column to 'kinase' if present.
     """
+    Data.download(verbose=False)
     path = Data.DATASET_DIR / rel_path
     ext = path.suffix.lower()
 
