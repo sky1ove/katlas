@@ -10,24 +10,17 @@ import pandas as pd
 from functools import lru_cache
 from fastcore.all import patch,patch_to
 
-import gdown,zipfile,shutil
+import gdown,zipfile,shutil,tempfile
 from pathlib import Path
 
 # %% ../nbs/00_data.ipynb 9
 class Data:
     "A class for fetching various datasets."
-    try:
-        # When inside a .py file, use the file's folder’s parent
-        ROOT_DIR = Path(__file__).resolve().parents[1]
-    except NameError:
-        # When in a Jupyter notebook or REPL, fallback to ../dataset relative to current dir
-        ROOT_DIR = (Path.cwd() / '..').resolve()
-
-    DATASET_DIR = ROOT_DIR / 'dataset'
+    DATASET_DIR = Path(tempfile.gettempdir()) / 'dataset'
 
 # %% ../nbs/00_data.ipynb 10
 @patch_to(Data)
-def download(force=False):
+def download(force=True):
     path = 'https://drive.google.com/uc?id=17wIl0DbdoHV036Z3xgaT_0H3LlM_W47l'
     local_zip = Path('katlas_dataset.zip')
     
