@@ -73,7 +73,7 @@ def save_show(path=None, # image path, e.g., img.svg, if not None, will save, el
              ):
     "Show plot or save path"
     if show_only: plt.show()
-    elif path is not None: plt.savefig(path, bbox_inches='tight', pad_inches=0.05)
+    elif path is not None: plt.savefig(path, bbox_inches='tight', pad_inches=0.05,transparent=True)
     else: plt.show()
     plt.close()
 
