@@ -1,14 +1,14 @@
 _docs/
 _proc/
 
-*.svg
-*.pdf
-models/
-fig/
-train/
-raw/
-out/
-
+# *.svg
+# *.pdf
+*.zip
+# models/
+# fig*
+# train/
+# raw/
+# out/
 
 *.bak
 .gitattributes
