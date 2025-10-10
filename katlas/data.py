@@ -47,8 +47,11 @@ def download(force=False, # if force, will overwrite the current dataset folder
     with zipfile.ZipFile(local_zip, 'r') as zip_ref:
         zip_ref.extractall(Data.DATASET_DIR)
     # 🧹 Remove the zip after extraction
-    print(f"🧹 Removing zip file: {local_zip}")
-    local_zip.unlink()
+    try:
+        print(f"🧹 Removing zip file: {local_zip}")
+        local_zip.unlink()
+    except Exception as e:
+        print(f"⚠️ Could not remove {local_zip}: {e}")
 
     print(f"✅ Done! Extracted dataset is at: {Data.DATASET_DIR}")
 
