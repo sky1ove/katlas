@@ -26,7 +26,6 @@ def download(force=False, # if force, will overwrite the current dataset folder
             ):
     "Download dataset zip and extract them in tmp folder if dataset_dir is not given."
     path = 'https://drive.google.com/uc?id=17wIl0DbdoHV036Z3xgaT_0H3LlM_W47l'
-    local_zip = Path('katlas_dataset.zip')
     if dataset_dir is not None: Data.DATASET_DIR=Path(dataset_dir)/'katlas_dataset'
     
     # 🧹 If old extracted folder exists, remove it (so we overwrite cleanly)
@@ -39,19 +38,19 @@ def download(force=False, # if force, will overwrite the current dataset folder
             return
 
     # ⬇️ Download zip (always fresh)
-    print(f"⬇️ Downloading {local_zip} ...")
-    gdown.download(path, str(local_zip), quiet=False)
+    print(f"⬇️ Downloading katlas_dataset.zip ...")
+    downloaded_file = gdown.download(path)
 
     # 📦 Extract zip to folder
     print(f"📂 Extracting to {Data.DATASET_DIR} ...")
-    with zipfile.ZipFile(local_zip, 'r') as zip_ref:
+    with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
         zip_ref.extractall(Data.DATASET_DIR)
     # 🧹 Remove the zip after extraction
     try:
-        print(f"🧹 Removing zip file: {local_zip}")
-        local_zip.unlink()
+        print(f"🧹 Removing zip file: {downloaded_file}")
+        Path(downloaded_file).unlink()
     except Exception as e:
-        print(f"⚠️ Could not remove {local_zip}: {e}")
+        print(f"⚠️ Could not remove {downloaded_file}: {e}")
 
     print(f"✅ Done! Extracted dataset is at: {Data.DATASET_DIR}")
 
