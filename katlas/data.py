@@ -68,7 +68,12 @@ def read_file(rel_path):
     ext = path.suffix.lower()
 
     if ext == '.csv': df = pd.read_csv(path)
-    elif ext == '.parquet': df = pd.read_parquet(path)
+    elif ext == '.parquet': 
+        # df = pd.read_parquet(path)
+        try:
+            df = pd.read_parquet(path, engine="fastparquet")
+        except Exception:
+            df = pd.read_parquet(path, engine="pyarrow")
     else: raise ValueError(f"❌ Unsupported file type: {ext}")
 
     if "Unnamed: 0" in df.columns:
