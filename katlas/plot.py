@@ -4,10 +4,10 @@
 
 # %% auto 0
 __all__ = ['sty_color', 'group_color', 'pspa_category_color', 'set_sns', 'save_svg', 'save_pdf', 'save_show', 'get_color_dict',
-           'get_plt_color', 'get_hue_big', 'reduce_feature', 'plot_2d', 'plot_cluster', 'plot_bokeh', 'plot_rank',
-           'plot_hist', 'plot_count', 'plot_bar', 'plot_group_bar', 'plot_stacked', 'plot_box', 'plot_corr',
-           'get_similarity', 'plot_matrix', 'get_AUCDF', 'plot_confusion_matrix', 'plot_pie', 'get_pct',
-           'plot_composition', 'plot_cnt']
+           'get_subfamily_color', 'get_plt_color', 'get_hue_big', 'reduce_feature', 'plot_2d', 'plot_cluster',
+           'plot_bokeh', 'plot_rank', 'plot_hist', 'plot_count', 'plot_bar', 'plot_group_bar', 'plot_stacked',
+           'plot_box', 'plot_corr', 'get_similarity', 'plot_matrix', 'get_AUCDF', 'plot_confusion_matrix', 'plot_pie',
+           'get_pct', 'plot_composition', 'plot_cnt']
 
 # %% ../nbs/05_plot.ipynb 3
 import joblib,logomaker
@@ -24,7 +24,6 @@ from matplotlib.ticker import MultipleLocator
 from numpy import trapz
 
 # Katlas
-from .feature import *
 from .data import *
 
 # Bokeh
@@ -58,7 +57,7 @@ def set_sns(dpi=300):
 # %% ../nbs/05_plot.ipynb 6
 def save_svg(path): 
     plt.rcParams['svg.fonttype'] = 'none'
-    plt.rcParams['font.family'] = 'Arial'
+    plt.rcParams['font.family'] = ['Arial', 'DejaVu Sans']
     return plt.savefig(path, format='svg', bbox_inches='tight',transparent=True)
 
 # %% ../nbs/05_plot.ipynb 7
@@ -75,7 +74,7 @@ def save_show(path=None, # image path, e.g., img.svg, if not None, will save, el
     if show_only: plt.show()
     elif path is not None: plt.savefig(path, bbox_inches='tight', pad_inches=0.05,transparent=True)
     else: plt.show()
-    plt.close()
+    plt.close('all') # close all figures to avoid memory leak
 
 # %% ../nbs/05_plot.ipynb 10
 def get_color_dict(categories, # list of names to assign color
@@ -102,12 +101,21 @@ group_color=get_color_dict(
 )
 
 # %% ../nbs/05_plot.ipynb 16
+def get_subfamily_color():
+    group_color2 = pd.DataFrame(group_color).T
+    group_color2 = group_color2.reset_index(names='modi_group')
+    info=Data.get_kinase_info()
+    subfamily_color = info[['modi_group','subfamily']].merge(group_color2).drop(columns=['modi_group']).set_index('subfamily')
+    subfamily_color = subfamily_color.apply(tuple, axis=1).to_dict()
+    return subfamily_color
+
+# %% ../nbs/05_plot.ipynb 18
 pspa_category_color = get_color_dict(['Basophilic', 'Pro-directed', 'Acidophilic', 'Map3k', 'Map4k',
        'Alpha/mlk', 'Fgf and vegf receptors', 'Assorted', 'Ripk/wnk', 'Pkc',
        'Ephrin receptors', 'Eif2ak/tlk', 'Nek/ask', 'Pdgf receptors', 'Src',
        'Jak', 'Ulk/ttbk', 'Cmgc', 'Tec', 'Tam receptors'])
 
-# %% ../nbs/05_plot.ipynb 18
+# %% ../nbs/05_plot.ipynb 20
 def get_plt_color(palette, # dict, list, or set name (tab10)
                   columns, # columns in the df for plot
                  ):
@@ -121,7 +129,7 @@ def get_plt_color(palette, # dict, list, or set name (tab10)
         colors = palette
     return colors
 
-# %% ../nbs/05_plot.ipynb 20
+# %% ../nbs/05_plot.ipynb 22
 def get_hue_big(df,
                 hue_col, # column of hue
                 cnt_thr=10, # higher or equal to this threshold will be considered
@@ -131,7 +139,7 @@ def get_hue_big(df,
     names = cnt[cnt>=cnt_thr].index
     return df[hue_col][df[hue_col].isin(names)]
 
-# %% ../nbs/05_plot.ipynb 25
+# %% ../nbs/05_plot.ipynb 27
 def reduce_feature(df: pd.DataFrame, 
                    method: str='pca', # dimensionality reduction method, accept both capital and lower case
                    complexity: int=20, # None for PCA; perfplexity for TSNE, recommend: 30; n_neigbors for UMAP, recommend: 15
@@ -177,7 +185,7 @@ def reduce_feature(df: pd.DataFrame,
 
     return embedding_df
 
-# %% ../nbs/05_plot.ipynb 30
+# %% ../nbs/05_plot.ipynb 32
 def plot_2d(
     embedding_df: pd.DataFrame,  # a dataframe of values that is waited for dimensionality reduction
     hue: str = None,  # colname of color
@@ -217,7 +225,7 @@ def plot_2d(
         ]
         adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
 
-# %% ../nbs/05_plot.ipynb 33
+# %% ../nbs/05_plot.ipynb 35
 def plot_cluster(
     df: pd.DataFrame,  # a dataframe of values that is waited for dimensionality reduction
     method: str = 'pca',  # dimensionality reduction method, choose from pca, umap, and tsne
@@ -260,7 +268,7 @@ def plot_cluster(
         ]
         adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
 
-# %% ../nbs/05_plot.ipynb 37
+# %% ../nbs/05_plot.ipynb 38
 def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality reduction
                idx, # pd.Series or list that indicates identities for searching box
                hue:None, # pd.Series or list that indicates category for each sample
@@ -358,7 +366,7 @@ def plot_bokeh(X:pd.DataFrame, # a dataframe of two columns from dimensionality 
     layout = column(autocomplete, p)
     show(layout)
 
-# %% ../nbs/05_plot.ipynb 40
+# %% ../nbs/05_plot.ipynb 41
 @delegates(sns.scatterplot)
 def plot_rank(sorted_df: pd.DataFrame, # a sorted dataframe
               x: str, # column name for x axis
@@ -402,7 +410,7 @@ def plot_rank(sorted_df: pd.DataFrame, # a sorted dataframe
     plt.ylabel(y)
     plt.tight_layout()
 
-# %% ../nbs/05_plot.ipynb 44
+# %% ../nbs/05_plot.ipynb 45
 @delegates(sns.histplot)
 def plot_hist(df: pd.DataFrame, # a dataframe that contain values for plot
               x: str, # column name of values
@@ -419,7 +427,7 @@ def plot_hist(df: pd.DataFrame, # a dataframe that contain values for plot
     plt.figure(figsize=figsize)
     sns.histplot(data=df,x=x,**hist_params,**kwargs)
 
-# %% ../nbs/05_plot.ipynb 48
+# %% ../nbs/05_plot.ipynb 49
 def plot_count(cnt, # from df['x'].value_counts()
                tick_spacing: float= None, # tick spacing for x axis
                palette: str='tab20'):
@@ -438,7 +446,7 @@ def plot_count(cnt, # from df['x'].value_counts()
     if tick_spacing is not None:
         ax.xaxis.set_major_locator(MultipleLocator(tick_spacing))
 
-# %% ../nbs/05_plot.ipynb 50
+# %% ../nbs/05_plot.ipynb 52
 @delegates(sns.barplot)
 def plot_bar(df, 
              value, # colname of value
@@ -495,7 +503,7 @@ def plot_bar(df,
     if ymin is not None: plt.ylim(bottom=ymin)
     plt.gca().spines[['right', 'top']].set_visible(False)
 
-# %% ../nbs/05_plot.ipynb 53
+# %% ../nbs/05_plot.ipynb 55
 @delegates(sns.barplot)
 def plot_group_bar(df, 
                    value_cols,  # list of column names for values, the order depends on the first item
@@ -550,7 +558,7 @@ def plot_group_bar(df,
         borderaxespad=0
     )
 
-# %% ../nbs/05_plot.ipynb 56
+# %% ../nbs/05_plot.ipynb 58
 def plot_stacked(df, column, hue, figsize=(5, 4),xlabel=None, ylabel=None, add_value=True, **kwargs):
     plt.figure(figsize=figsize)
     
@@ -578,7 +586,7 @@ def plot_stacked(df, column, hue, figsize=(5, 4),xlabel=None, ylabel=None, add_v
 
     plt.tight_layout()
 
-# %% ../nbs/05_plot.ipynb 58
+# %% ../nbs/05_plot.ipynb 60
 @delegates(sns.boxplot)
 def plot_box(df,
              value, # colname of value
@@ -620,7 +628,7 @@ def plot_box(df,
     # plt.gca().spines[['right', 'top']].set_visible(False)
     
 
-# %% ../nbs/05_plot.ipynb 61
+# %% ../nbs/05_plot.ipynb 63
 @delegates(sns.regplot)
 def plot_corr(
     df,  # dataframe that contains data
@@ -690,7 +698,7 @@ def plot_corr(
         if texts:
             adjust_text(texts, arrowprops=dict(arrowstyle="->", color="black", lw=0.5))
 
-# %% ../nbs/05_plot.ipynb 65
+# %% ../nbs/05_plot.ipynb 67
 def get_similarity(df, metric='euclidean'):
     "Calculate distance matrix of a df; also return inverse df (similarity df)"
     dist_matrix = pairwise_distances(df, metric=metric)
@@ -700,7 +708,7 @@ def get_similarity(df, metric='euclidean'):
     sim_df = np.exp(-dist_df**2 / (2 * sigma**2))
     return dist_df, sim_df
 
-# %% ../nbs/05_plot.ipynb 66
+# %% ../nbs/05_plot.ipynb 68
 def plot_matrix(dist_matrix, inverse_color=False):
     "Plot distance/similarity matrix"
     
@@ -720,7 +728,7 @@ def plot_matrix(dist_matrix, inverse_color=False):
     plt.ylabel('')
     plt.yticks(rotation=0)
 
-# %% ../nbs/05_plot.ipynb 71
+# %% ../nbs/05_plot.ipynb 73
 def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
     
     "Plot CDF curve and get relative area under the curve"
@@ -786,7 +794,7 @@ def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
         
     return AUCDF
 
-# %% ../nbs/05_plot.ipynb 74
+# %% ../nbs/05_plot.ipynb 76
 def plot_confusion_matrix(target, # pd.Series 
                           pred, # pd.Series
                           class_names:list=['0','1'],
@@ -813,7 +821,7 @@ def plot_confusion_matrix(target, # pd.Series
     plt.xticks(np.arange(len(class_names)) + 0.5, class_names)
     plt.yticks(np.arange(len(class_names)) + 0.5, class_names, rotation=0)
 
-# %% ../nbs/05_plot.ipynb 78
+# %% ../nbs/05_plot.ipynb 80
 def plot_pie(value_counts, # value counts
              hue_order=None, # list of strings
              labeldistance=0.8,
@@ -834,14 +842,14 @@ def plot_pie(value_counts, # value counts
     plt.ylabel('')
     plt.title(f'n={value_counts.sum():,}')
 
-# %% ../nbs/05_plot.ipynb 82
+# %% ../nbs/05_plot.ipynb 84
 def get_pct(df,bin_col, hue_col):
     "Get percentage for hue in each bin; with hue adding up to 1 in each bin."
     count_df = df.groupby([bin_col, hue_col], observed=False).size().unstack(fill_value=0)
     pct_df = count_df.div(count_df.sum(axis=1), axis=0) * 100
     return pct_df
 
-# %% ../nbs/05_plot.ipynb 83
+# %% ../nbs/05_plot.ipynb 85
 def plot_composition(df, bin_col, hue_col,palette='tab20',legend_title=None,rotate=45,xlabel=None,ylabel='Percentage',figsize=(5,3)):
     pct_df = get_pct(df,bin_col,hue_col)
 
@@ -855,7 +863,7 @@ def plot_composition(df, bin_col, hue_col,palette='tab20',legend_title=None,rota
     if legend_title is None: legend_title = hue_col 
     plt.legend(title=legend_title, bbox_to_anchor=(1.05, 1), loc='upper left')
 
-# %% ../nbs/05_plot.ipynb 85
+# %% ../nbs/05_plot.ipynb 87
 def plot_cnt(cnt, xlabel=None,ylabel='Count',figsize=(6, 3)):
     fig, ax = plt.subplots(figsize=figsize)
     cnt.plot.bar(ax=ax)

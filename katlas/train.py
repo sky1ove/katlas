@@ -10,7 +10,7 @@ __all__ = ['get_score_jsd', 'get_score_kld', 'get_score_ce', 'get_splits', 'spli
 # katlas
 from .data import Data
 from .pssm import *
-from .feature import *
+# from katlas.feature import *
 from .clustering import *
 from functools import partial
 
