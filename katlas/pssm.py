@@ -9,8 +9,9 @@ __all__ = ['EPSILON', 'get_prob', 'pSTY2sty', 'flatten_pssm', 'recover_pssm', 'c
            'get_pos_min_max', 'scale_zero_position', 'scale_pos_neg_values', 'convert_logo_df', 'plot_logo_raw',
            'get_logo_IC', 'plot_logo', 'plot_logo_LO', 'plot_logos_idx', 'plot_logos', 'plot_logo_heatmap',
            'plot_logo_heatmap_LO', 'change_center_name_series', 'recover_pssm_pspa', 'preprocess_pssm_pspa',
-           'plot_logo_heatmap_pspa', 'raw2norm', 'get_one_kinase', 'get_logo', 'kl_divergence', 'kl_divergence_flat',
-           'js_divergence', 'js_divergence_flat', 'cosine_similarity']
+           'plot_logo_pspa', 'plot_logo_heatmap_pspa', 'raw2norm', 'get_one_kinase', 'get_logo', 'kl_divergence',
+           'kl_divergence_flat', 'js_divergence', 'js_divergence_flat', 'js_similarity', 'cosine_similarity',
+           'cosine_overall_flat']
 
 # %% ../nbs/02_pssm.ipynb 3
 import numpy as np, pandas as pd
@@ -557,6 +558,12 @@ def preprocess_pssm_pspa(pssm):
     return pssm
 
 # %% ../nbs/02_pssm.ipynb 129
+def plot_logo_pspa(row,title='Motif',figsize=(5,2)):
+    pssm = recover_pssm_pspa(row)
+    logo_pssm = preprocess_pssm_pspa(pssm)
+    plot_logo_raw(logo_pssm,ytitle='log₂(Value / Median)',title=title,figsize=figsize)
+
+# %% ../nbs/02_pssm.ipynb 130
 def plot_logo_heatmap_pspa(row, # row of Data.get_pspa_all_norm()
                        title='Motif',
                        figsize=(6,10),
@@ -577,7 +584,7 @@ def plot_logo_heatmap_pspa(row, # row of Data.get_pspa_all_norm()
     ax_heatmap = fig.add_subplot(gs[1, :])
     plot_heatmap(pssm,ax=ax_heatmap,position_label=False,include_zero=include_zero,colorbar_title='Value')
 
-# %% ../nbs/02_pssm.ipynb 133
+# %% ../nbs/02_pssm.ipynb 134
 def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and single amino acid as columns
              PDHK: bool=False, # whether this kinase belongs to PDHK family 
             ):
@@ -600,7 +607,7 @@ def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and s
     
     return df2
 
-# %% ../nbs/02_pssm.ipynb 135
+# %% ../nbs/02_pssm.ipynb 136
 def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
                    kinase:str, # a specific kinase
                    normalize: bool=False, # normalize according to the paper; special for PDHK1/4
@@ -621,7 +628,7 @@ def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
         pp = raw2norm(pp, PDHK=True if kinase == 'PDHK1' or kinase == 'PDHK4' else False)
     return pp
 
-# %% ../nbs/02_pssm.ipynb 141
+# %% ../nbs/02_pssm.ipynb 142
 def get_logo(df: pd.DataFrame, # stacked Dataframe with kinase as index, substrates as columns
              kinase: str, # a specific kinase name in index
              ):
@@ -661,7 +668,7 @@ def get_logo(df: pd.DataFrame, # stacked Dataframe with kinase as index, substra
     # logo_func(ratio2, kinase)
     plot_logo_raw(ratio2.T,title=kinase,ytitle='log₂(Value / Median)')
 
-# %% ../nbs/02_pssm.ipynb 148
+# %% ../nbs/02_pssm.ipynb 151
 def kl_divergence(p1,  # target pssm p (array-like, shape: (AA, positions))
                   p2,  # pred pssm q (array-like, same shape as p1)
                  ):
@@ -672,7 +679,7 @@ def kl_divergence(p1,  # target pssm p (array-like, shape: (AA, positions))
     Returns average divergence across positions if mean=True, else per-position.
     """
     assert p1.shape == p2.shape
-    
+    p1, p2 = p1.align(p2, join='inner', axis=None)
     # Mask invalid positions (both zero)
     valid = (p1 + p2) > 0
     p1 = np.where(valid, p1, 0.0)
@@ -683,7 +690,7 @@ def kl_divergence(p1,  # target pssm p (array-like, shape: (AA, positions))
 
     return kl
 
-# %% ../nbs/02_pssm.ipynb 155
+# %% ../nbs/02_pssm.ipynb 156
 def kl_divergence_flat(p1_flat, # pd.Series of target flattened pssm p
                        p2_flat, # pd.Series of pred flattened pssm q
                        ):
@@ -693,12 +700,15 @@ def kl_divergence_flat(p1_flat, # pd.Series of target flattened pssm p
     total_position = len(p1_flat.index.str.extract(r'(-?\d+)').drop_duplicates())
     return float(kld/total_position)
 
-# %% ../nbs/02_pssm.ipynb 158
+# %% ../nbs/02_pssm.ipynb 159
 def js_divergence(p1, # pssm 
                   p2, # pssm
+                  index=True,
                  ):
     "p1 and p2 are two arrays (df or np) with index as aa and column as position"
     assert p1.shape==p2.shape
+    p1, p2 = p1.align(p2, join='inner', axis=None)
+    if index: positions=p1.columns
     valid = (p1 + p2) > 0
     p1 = np.where(valid, p1, 0.0)
     p2 = np.where(valid, p2, 0.0)
@@ -707,19 +717,26 @@ def js_divergence(p1, # pssm
     
     js = 0.5 * np.sum(p1 * np.log((p1+ EPSILON) / (m + EPSILON)), axis=0) + \
          0.5 * np.sum(p2 * np.log((p2+ EPSILON) / (m + EPSILON)), axis=0)
-    return js
+    return pd.Series(js,index=positions) if index else js
 
-# %% ../nbs/02_pssm.ipynb 163
+# %% ../nbs/02_pssm.ipynb 164
 def js_divergence_flat(p1_flat, # pd.Series of flattened pssm
                        p2_flat, # pd.Series of flattened pssm
                        ):
 
     "p1 and p2 are two flattened pd.Series with index as aa and column as position"
-    js = js_divergence(p1_flat,p2_flat)
+    js = js_divergence(p1_flat,p2_flat,index=False)
     total_position = len(p1_flat.index.str.extract(r'(-?\d+)').drop_duplicates())
     return float(js/total_position)
 
-# %% ../nbs/02_pssm.ipynb 166
+# %% ../nbs/02_pssm.ipynb 168
+def js_similarity(pssm1,pssm2):
+    "Convert JSD to bits to be in range (0,1) then 1-JSD."
+    distance = js_divergence(pssm1,pssm2)/np.log(2)
+    similarity = 1-distance
+    return similarity
+
+# %% ../nbs/02_pssm.ipynb 172
 def cosine_similarity(pssm1: pd.DataFrame, pssm2: pd.DataFrame) -> pd.Series:
     "Compute cosine similarity per position (column) between two PSSMs."
     
@@ -727,8 +744,9 @@ def cosine_similarity(pssm1: pd.DataFrame, pssm2: pd.DataFrame) -> pd.Series:
     
     sims = {}
     for pos in pssm1.columns:
-        v1 = pssm1[pos].values
-        v2 = pssm2[pos].values
+        v1 = pssm1[pos]
+        v2 = pssm2[pos]
+        v1,v2 = v1.align(v2, join='inner') # make sure the aa index match with each other
 
         norm1 = np.linalg.norm(v1)
         norm2 = np.linalg.norm(v2)
@@ -736,6 +754,18 @@ def cosine_similarity(pssm1: pd.DataFrame, pssm2: pd.DataFrame) -> pd.Series:
         if norm1 == 0 or norm2 == 0:
             sims[pos] = 0.0
         else:
-            sims[pos] = np.dot(v1, v2) / (norm1 * norm2)
+            dot_product = sum(v1*v2) # np.dot(v1,v2)
+            sims[pos] = dot_product / (norm1 * norm2)
 
     return pd.Series(sims)
+
+# %% ../nbs/02_pssm.ipynb 177
+def cosine_overall_flat(pssm1_flat, pssm2_flat):
+    """Compute overall cosine similarity between two PSSMs (flattened)."""
+    # match index for dot product
+    pssm1_flat, pssm2_flat = pssm1_flat.align(pssm2_flat, join='inner')
+    norm1 = np.linalg.norm(pssm1_flat)
+    norm2 = np.linalg.norm(pssm2_flat)
+    if norm1 == 0 or norm2 == 0: return 0.0
+    dot_product = sum(pssm1_flat*pssm2_flat) # np.dot(pssm1_flat, pssm2_flat)
+    return  dot_product/ (norm1 * norm2)

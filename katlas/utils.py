@@ -4,7 +4,8 @@
 
 # %% auto 0
 __all__ = ['prepare_path', 'get_diff', 'check_seq', 'check_seqs', 'check_seq_df', 'validate_site', 'validate_site_df',
-           'phosphorylate_seq', 'phosphorylate_seq_df', 'extract_site_seq']
+           'phosphorylate_seq', 'phosphorylate_seq_df', 'extract_site_seq', 'get_fasta', 'run_clustalo', 'aln2df',
+           'get_aln_freq']
 
 # %% ../nbs/01_utils.ipynb 3
 import numpy as np, pandas as pd
@@ -12,6 +13,13 @@ from tqdm import tqdm
 from .data import *
 from fastcore.meta import delegates
 from pathlib import Path
+
+# for alignment
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from Bio import SeqIO, AlignIO
+import subprocess
+
 
 # %% ../nbs/01_utils.ipynb 7
 def prepare_path(path):
@@ -125,3 +133,44 @@ def extract_site_seq(df: pd.DataFrame, # dataframe that contains protein sequenc
         data.append(subseq)
         
     return np.array(data)
+
+# %% ../nbs/01_utils.ipynb 39
+def get_fasta(df,seq_col='kd_seq',id_col='kd_ID',path='out.fasta'):
+    "Generate fasta file from sequences."
+    records = [
+        SeqRecord(Seq(str(row[seq_col])), id=str(row[id_col]), description="")
+        for _, row in df.iterrows()
+    ]
+    SeqIO.write(records, path, "fasta")
+    print(len(records))
+
+# %% ../nbs/01_utils.ipynb 43
+def run_clustalo(input_fasta,  # .fasta fname
+                 output_aln, # .aln output fname
+                 outfmt="clu"):
+    "Run Clustal Omega to perform multiple sequence alignment."
+    # if the output directory does not exist, create one
+    output_aln = Path(output_aln)
+    output_aln.parent.mkdir(parents=True, exist_ok=True)
+
+    # run clustalo
+    subprocess.run([
+        "clustalo", "-i", str(input_fasta),
+        "-o", str(output_aln),
+        "--force", "--outfmt=clu"
+    ], check=True)
+
+# %% ../nbs/01_utils.ipynb 45
+def aln2df(fname):
+    alignment = AlignIO.read(fname, "clustal")
+    alignment_array = [list(str(record.seq)) for record in alignment]
+    ids = [record.id for record in alignment]
+    df = pd.DataFrame(alignment_array, index=ids)
+    df.columns = df.columns+1
+    return df
+
+# %% ../nbs/01_utils.ipynb 47
+def get_aln_freq(df):
+    "Get frequency of each amino acid across each position from the aln2df output."
+    counts_df = df.apply(lambda col: col.value_counts(), axis=0).fillna(0)
+    return counts_df.div(counts_df.sum(axis=0), axis=1)

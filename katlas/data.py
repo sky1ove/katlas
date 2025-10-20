@@ -247,95 +247,88 @@ def get_ks_background():
 # %% ../nbs/00_data.ipynb 45
 @patch_to(Data)
 def get_cddm():
-    """Get the primary CDDM dataset."""
-    path = "CDDM/ks_main.parquet"
+    """Get the CDDM dataset."""
+    path = "CDDM/pssms.parquet"
     return Data.read_file(path)
 
 # %% ../nbs/00_data.ipynb 47
 @patch_to(Data)
 def get_cddm_upper():
-    """Get the CDDM dataset for all uppercase."""
-    path = "CDDM/ks_main_upper.parquet"
+    """Get the CDDM dataset of all uppercase sequence."""
+    path = "CDDM/pssms_upper.parquet"
     return Data.read_file(path)
 
 # %% ../nbs/00_data.ipynb 49
 @patch_to(Data)
-def get_cddm_others():
-    """Get CDDM data for other kinases with mutations."""
-    path = "CDDM/ks_others.parquet"
+def get_cddm_LO():
+    """Get CDDM Log-odds data with 'STY' background."""
+    path = "CDDM/pssms_LO.parquet"
     return Data.read_file(path)
 
 # %% ../nbs/00_data.ipynb 51
 @patch_to(Data)
-def get_cddm_others_info():
-    """Get additional information for CDDM 'others' dataset."""
-    path = "CDDM/ks_others_info.parquet"
+def get_cddm_LO_upper():
+    """Get CDDM Log-odds data of all-uppercase sequence with 'STY' background."""
+    path = "CDDM/pssms_LO_upper.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 53
-@patch_to(Data)
-def get_combine():
-    """Get the combined PSPA and CDDM dataset."""
-    path = "combine_main.parquet"
-    return Data.read_file(path)
-
-# %% ../nbs/00_data.ipynb 56
+# %% ../nbs/00_data.ipynb 54
 @patch_to(Data)
 def get_aa_info():
     """Get amino acid information."""
     path = f"amino_acids/aa_info.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 58
+# %% ../nbs/00_data.ipynb 56
 @patch_to(Data)
 def get_aa_rdkit():
     """Get RDKit representations of amino acids."""
     path = "amino_acids/aa_rdkit.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 60
+# %% ../nbs/00_data.ipynb 58
 @patch_to(Data)
 def get_aa_morgan():
     """Get Morgan fingerprint representations of amino acids."""
     path = "amino_acids/aa_morgan.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 63
+# %% ../nbs/00_data.ipynb 61
 @patch_to(Data)
 def get_cptac_ensembl_site():
     """Get CPTAC dataset with unique EnsemblProteinID+site."""
     path = "phosphosites/linkedOmicsKB_ref_pan.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 65
+# %% ../nbs/00_data.ipynb 63
 @patch_to(Data)
 def get_cptac_unique_site():
     """Get CPTAC dataset with unique site sequences."""
     path = "phosphosites/cptac_unique_site.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 67
+# %% ../nbs/00_data.ipynb 65
 @patch_to(Data)
 def get_cptac_gene_site():
     """Get CPTAC dataset with unique Gene+site."""
     path = "phosphosites/linkedOmics_ref_pan.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 69
+# %% ../nbs/00_data.ipynb 67
 @patch_to(Data)
 def get_psp_human_site():
     """Get PhosphoSitePlus human dataset (Gene+site)."""
     path = "phosphosites/psp_human.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 71
+# %% ../nbs/00_data.ipynb 69
 @patch_to(Data)
 def get_ochoa_site():
     """Get phosphoproteomics dataset from Ochoa et al."""
     path = "phosphosites/ochoa_site.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 73
+# %% ../nbs/00_data.ipynb 71
 @patch_to(Data)
 def get_combine_site_psp_ochoa() -> pd.DataFrame:
     """
@@ -344,7 +337,7 @@ def get_combine_site_psp_ochoa() -> pd.DataFrame:
     path = "phosphosites/combine_site_psp_ochoa.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 75
+# %% ../nbs/00_data.ipynb 73
 @patch_to(Data)
 def get_combine_site_phosphorylated():
     """
@@ -353,7 +346,7 @@ def get_combine_site_phosphorylated():
     path = "phosphosites/phosphorylated_combine_site.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 77
+# %% ../nbs/00_data.ipynb 75
 @patch_to(Data)
 @lru_cache
 def get_human_site():
@@ -361,6 +354,16 @@ def get_human_site():
     Get the combined phosphorylated dataset from Ochoa and PhosphoSitePlus (20-length version).
     """
     path = "phosphosites/phosphorylated_combine_site20.parquet"
+    return Data.read_file(path)
+
+# %% ../nbs/00_data.ipynb 78
+@patch_to(Data)
+@lru_cache
+def get_reactome_pathway_lo() -> pd.DataFrame:
+    """
+    Get lowest reactome pathways with Uniprot ID as identifier.
+    """
+    path = "reactome_lowest_level.parquet"
     return Data.read_file(path)
 
 # %% ../nbs/00_data.ipynb 80
@@ -371,19 +374,12 @@ def get_reactome_pathway() -> pd.DataFrame:
     Get all level reactome pathways with Uniprot ID as identifier.
     """
     path = "reactome_all_levels.parquet"
-    return Data.read_file(path)
+    path_all = Data.read_file(path)
+    # path_lo = Data.get_reactome_pathway_lo()
+    # path_all['lowest'] = path_all.reactome_id.isin(path_lo.reactome_id).astype(int)
+    return path_all
 
-# %% ../nbs/00_data.ipynb 83
-@patch_to(Data)
-@lru_cache
-def get_reactome_pathway_lo() -> pd.DataFrame:
-    """
-    Get all level reactome pathways with Uniprot ID as identifier.
-    """
-    path = "reactome_lowest_level.parquet"
-    return Data.read_file(path)
-
-# %% ../nbs/00_data.ipynb 86
+# %% ../nbs/00_data.ipynb 84
 class CPTAC:
     
     "A class for fetching CPTAC phosphoproteomics data."
@@ -429,13 +425,13 @@ class CPTAC:
             return info
     
 
-# %% ../nbs/00_data.ipynb 87
+# %% ../nbs/00_data.ipynb 85
 @patch_to(CPTAC)
 def list_cancer():
     "List available CPTAC cancer type"
     return ['HNSCC','GBM','COAD','CCRCC','LSCC','BRCA','UCEC','LUAD','PDAC','OV']
 
-# %% ../nbs/00_data.ipynb 89
+# %% ../nbs/00_data.ipynb 87
 @patch_to(CPTAC)
 def get_id(cancer_type: str,
            is_Tumor: bool=True, # tumor tissue or normal
