@@ -5,12 +5,6 @@
 
 <img alt="Katlas logo" width="600" caption="Katlas logo" src="https://github.com/sky1ove/katlas/raw/main/logo.png" id="logo"/>
 
-<p>
-
-<a target="_blank" href="https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/Tutorials/tutorial_01_sinlge_input.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
-<a href="https://pypi.org/project/python-katlas/"><img src="https://img.shields.io/pypi/v/python-katlas?link=https%3A%2F%2Fpypi.org%2Fproject%2Fpython-katlas%2F" alt="PyPI"></a>
-</p>
-
 KATLAS is a repository containing python tools to predict kinases given
 a substrate sequence. It also contains datasets of kinase substrate
 specificities and human phosphoproteomics.
@@ -55,28 +49,24 @@ code.
 Check out our latest web platform:
 [kinase-atlas.com](https://kinase-atlas.com/)
 
-## Tutorials on Colab
-
-- 1.  [Substrate scoring on a single substrate
-      sequence](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/Tutorials/tutorial_01_sinlge_input.ipynb)
-- 2.  [High throughput substrate scoring on phosphoproteomics
-      dataset](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/Tutorials/tutorial_02_high_throughput.ipynb)
-- 3.  [Kinase enrichment analysis for AKT
-      inhibitor](https://colab.research.google.com/github/sky1ove/katlas/blob/main/nbs/Tutorials/tutorial_03a_enrichment_AKTi.ipynb)
-
 ## Install
 
-    pip install python-katlas -U
-    pip install git+https://github.com/sky1ove/katlas.git
-    pip install "git+https://github.com/sky1ove/katlas.git@main#egg=python-katlas[dev]"
+UV:
 
-To use other modules besides the core, do
-`pip install 'python-katlas[dev]' -U`
+``` bash
+uv add git+https://github.com/sky1ove/katlas.git
+```
+
+pip:
+
+``` bash
+pip install git+https://github.com/sky1ove/katlas.git
+```
 
 ## Import
 
 ``` python
-from katlas.core import *
+from katlas.common import *
 ```
 
 # Quick start
@@ -96,31 +86,32 @@ For input sequences, we also consider it in two conditions:
 - all capital
 - contains lower cases indicating phosphorylation status
 
-## Single sequence as input
+## Quick start
 
-### CDDM, all capital
+### Site scoring
+
+CDDM, all capital
 
 ``` python
-predict_kinase('AAAAAAASGGAGSDN',**Params("CDDM_upper"))
+predict_kinase('AAAAAAASGAGSDN',**Params("CDDM_upper"))
 ```
 
-    considering string: ['-7A', '-6A', '-5A', '-4A', '-3A', '-2A', '-1A', '0S', '1G', '2G', '3A', '4G', '5S', '6D', '7N']
+    considering string: ['-7A', '-6A', '-5A', '-4A', '-3A', '-2A', '-1A', '0S', '1G', '2A', '3G', '4S', '5D', '6N']
 
-    kinase
-    PAK6     2.032
-    ULK3     2.032
-    PRKX     2.012
-    ATR      1.991
-    PRKD1    1.988
-             ...  
-    DDR2     0.928
-    EPHA4    0.928
-    TEK      0.921
-    KIT      0.915
-    FGFR3    0.910
-    Length: 289, dtype: float64
+    GCN2      4.556
+    MPSK1     4.425
+    MEKK2     4.253
+    WNK3      4.213
+    WNK1      4.064
+              ...  
+    PDK1    -25.077
+    PDHK3   -25.346
+    CLK2    -27.251
+    ROR2    -27.582
+    DDR1    -53.581
+    Length: 328, dtype: float64
 
-### CDDM, with lower case indicating phosphorylation status
+CDDM, with lower case indicating phosphorylation status
 
 ``` python
 predict_kinase('AAAAAAAsGGAGsDN',**Params("CDDM"))
@@ -128,61 +119,68 @@ predict_kinase('AAAAAAAsGGAGsDN',**Params("CDDM"))
 
     considering string: ['-7A', '-6A', '-5A', '-4A', '-3A', '-2A', '-1A', '0s', '1G', '2G', '3A', '4G', '5s', '6D', '7N']
 
-    kinase
-    ULK3     1.987
-    PAK6     1.981
-    PRKD1    1.946
-    PIM3     1.944
-    PRKX     1.939
-             ...  
-    EPHA4    0.905
-    EGFR     0.900
-    TEK      0.898
-    FGFR3    0.894
-    KIT      0.882
-    Length: 289, dtype: float64
+    ROR1       8.355
+    WNK1       4.907
+    WNK2       4.782
+    ERK5       4.466
+    RIPK2      4.045
+               ...  
+    DDR1     -29.393
+    TNNI3K   -29.884
+    CHAK1    -31.775
+    VRK1     -45.287
+    BRAF     -49.403
+    Length: 328, dtype: float64
 
-### PSPA, with lower case indicating phosphorylation status
+PSPA, with lower case indicating phosphorylation status
 
 ``` python
-predict_kinase('AEEKEyHsEGG',**Params("PSPA")).head()
+predict_kinase('AEEKEyHsEGG',**Params("PSPA"))
 ```
 
     considering string: ['-5A', '-4E', '-3E', '-2K', '-1E', '0y', '1H', '2s', '3E', '4G', '5G']
 
     kinase
-    EGFR     4.013
-    FGFR4    3.568
-    ZAP70    3.412
-    CSK      3.241
-    SYK      3.209
-    dtype: float64
+    EGFR          4.013
+    FGFR4         3.568
+    ZAP70         3.412
+    CSK           3.241
+    SYK           3.209
+                  ...  
+    JAK1         -3.837
+    DDR2         -4.421
+    TNK2         -4.534
+    TNNI3K_TYR   -4.651
+    TNK1         -5.320
+    Length: 93, dtype: float64
 
-### To replicate the results from The Kinase Library (PSPA)
+To replicate the results from The Kinase Library (PSPA)
 
 Check this link: [The Kinase
-Library](https://kinase-library.phosphosite.org/site?s=AEEKEy*HsEGG&pp=false&scp=true),
+Library](https://kinase-library.mit.edu/site?s=AEEKEy*HSEGG&pp=false&scp=true),
 and use log2(score) to rank, it shows same results with the below (with
 slight differences due to rounding).
 
 ``` python
-predict_kinase('AEEKEyHSEGG',**Params("PSPA")).head(10)
+out = predict_kinase('AEEKEyHSEGG',**Params("PSPA"))
+out
 ```
 
     considering string: ['-5A', '-4E', '-3E', '-2K', '-1E', '0y', '1H', '2S', '3E', '4G', '5G']
 
     kinase
-    EGFR         3.181
-    FGFR4        2.390
-    CSK          2.308
-    ZAP70        2.068
-    SYK          1.998
-    PDHK1_TYR    1.922
-    RET          1.732
-    MATK         1.688
-    FLT1         1.627
-    BMPR2_TYR    1.456
-    dtype: float64
+    EGFR     3.181
+    FGFR4    2.390
+    CSK      2.308
+    ZAP70    2.068
+    SYK      1.998
+             ...  
+    EPHA1   -3.501
+    FES     -3.699
+    TNK1    -4.269
+    TNK2    -4.577
+    DDR2    -4.920
+    Length: 93, dtype: float64
 
 - So far [The kinase Library](https://kinase-library.phosphosite.org)
   considers all ***tyr sequences*** in capital regardless of whether or
@@ -204,23 +202,47 @@ y_pct = Data.get_pspa_tyr_pct()
 get_pct('AEEKEyHSEGG',pct_ref = y_pct,**Params("PSPA_y"))
 ```
 
-    TypeError: get_pct() got an unexpected keyword argument 'pct_ref'
-    [31m---------------------------------------------------------------------------[39m
-    [31mTypeError[39m                                 Traceback (most recent call last)
-    [36mCell[39m[36m [39m[32mIn[9][39m[32m, line 1[39m
-    [32m----> [39m[32m1[39m [43mget_pct[49m[43m([49m[33;43m'[39;49m[33;43mAEEKEyHSEGG[39;49m[33;43m'[39;49m[43m,[49m[43mpct_ref[49m[43m [49m[43m=[49m[43m [49m[43my_pct[49m[43m,[49m[43m*[49m[43m*[49m[43mParams[49m[43m([49m[33;43m"[39;49m[33;43mPSPA_y[39;49m[33;43m"[39;49m[43m)[49m[43m)[49m
+    considering string: ['-5A', '-4E', '-3E', '-2K', '-1E', '0Y', '1H', '2S', '3E', '4G', '5G']
 
-    [31mTypeError[39m: get_pct() got an unexpected keyword argument 'pct_ref'
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 
-## High-throughput substrate scoring on a dataframe
+|       | log2(score) | percentile |
+|-------|-------------|------------|
+| EGFR  | 3.181       | 96.787423  |
+| FGFR4 | 2.390       | 94.012303  |
+| CSK   | 2.308       | 95.201640  |
+| ZAP70 | 2.068       | 88.380041  |
+| SYK   | 1.998       | 85.522898  |
+| ...   | ...         | ...        |
+| EPHA1 | -3.501      | 12.139440  |
+| FES   | -3.699      | 21.216678  |
+| TNK1  | -4.269      | 5.481887   |
+| TNK2  | -4.577      | 2.050581   |
+| DDR2  | -4.920      | 10.403281  |
 
-### Load your csv
+<p>93 rows × 2 columns</p>
+</div>
+
+### Site scoring in a df
+
+Load your csv:
 
 ``` python
 # df = pd.read_csv('your_file.csv')
 ```
 
-### Load a demo df
+Or load a demo df
 
 ``` python
 # Load a demo df with phosphorylation sites
@@ -228,7 +250,30 @@ df = Data.get_ochoa_site().head()
 df.iloc[:,-2:]
 ```
 
-### Set the column name and param to calculate
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|     | site_seq        | gene_site      |
+|-----|-----------------|----------------|
+| 0   | VDDEKGDSNDDYDSA | A0A075B6Q4_S24 |
+| 1   | YDSAGLLSDEDCMSV | A0A075B6Q4_S35 |
+| 2   | IADHLFWSEETKSRF | A0A075B6Q4_S57 |
+| 3   | KSRFTEYSMTSSVMR | A0A075B6Q4_S68 |
+| 4   | FTEYSMTSSVMRRNE | A0A075B6Q4_S71 |
+
+</div>
+
+Set the column name and param to calculate
 
 Here we choose param_CDDM_upper, as the sequences in the demo df are all
 in capital. You can also choose other params.
@@ -238,7 +283,54 @@ results = predict_kinase_df(df,'site_seq',**Params("CDDM_upper"))
 results
 ```
 
-## Phosphorylation sites
+    input dataframe has a length 5
+    Preprocessing
+    Finish preprocessing
+    Merging reference
+    Finish merging
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|  | SRC | EPHA3 | FES | NTRK3 | ALK | ABL1 | FLT3 | EPHA8 | EPHB2 | EPHB1 | ... | VRK1 | PKMYT1 | GRK3 | CAMK1B | CDC7 | SMMLCK | ROR1 | GAK | MAST2 | BRAF |
+|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+| 0 | -2.440640 | -0.818753 | -1.663990 | -0.738991 | -2.047628 | -3.602344 | -3.200998 | -0.935176 | -1.388444 | -1.859450 | ... | -17.103237 | -113.698143 | -16.848783 | -41.520172 | -41.646187 | 1.284159 | -26.566362 | -69.165062 | -17.706400 | -87.763214 |
+| 1 | -3.838486 | -2.735969 | -2.533986 | -2.150399 | -3.792498 | -4.725527 | -5.711791 | -4.534240 | -3.148449 | -2.511518 | ... | -67.889053 | -68.652641 | -45.833855 | -64.171600 | -39.465572 | -65.061722 | -109.561707 | -85.911224 | -60.105064 | -63.889122 |
+| 2 | -2.610423 | -2.370090 | -3.235637 | -1.508413 | -2.571347 | -3.740941 | -3.025596 | -3.373504 | -2.776297 | -3.060740 | ... | -15.798462 | -45.905319 | -61.440742 | -67.695694 | -55.047962 | -42.135216 | -38.501572 | -62.624382 | -56.119389 | -107.060989 |
+| 3 | -5.180541 | -4.201880 | -5.766463 | -3.038421 | -3.836897 | -4.249900 | -5.029885 | -5.411311 | -4.713308 | -4.827825 | ... | -96.978317 | -83.419777 | -22.559393 | -110.611588 | -63.283070 | -37.240440 | -24.497492 | -112.878151 | -43.538158 | -60.348518 |
+| 4 | -2.844254 | -3.322700 | -3.681745 | -1.766435 | -2.666579 | -3.748774 | -4.083619 | -3.912834 | -3.724181 | -3.948160 | ... | -35.824612 | -87.983566 | -83.312317 | -107.162407 | -61.478374 | -85.793571 | -43.738819 | -47.004211 | -42.281624 | -59.518513 |
+
+<p>5 rows × 328 columns</p>
+</div>
+
+``` python
+results.iloc[0].sort_values(ascending=False)
+```
+
+    TLK2        8.264621
+    GCN2        8.101542
+    TLK1        7.693897
+    HRI         6.691402
+    PLK3        6.579368
+                 ...    
+    NIK       -64.605148
+    SRPK2     -67.300667
+    GAK       -69.165062
+    BRAF      -87.763214
+    PKMYT1   -113.698143
+    Name: 0, Length: 328, dtype: float32
+
+## Dataset
 
 Besides calculating sequence scores, we also provides multiple datasets
 of phosphorylation sites.
@@ -250,12 +342,54 @@ df = Data.get_cptac_ensembl_site()
 df.head(3)
 ```
 
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|  | gene | site | site_seq | protein | gene_name | gene_site | protein_site |
+|----|----|----|----|----|----|----|----|
+| 0 | ENSG00000003056.8 | S267 | DDQLGEESEERDDHL | ENSP00000000412.3 | M6PR | M6PR_S267 | ENSP00000000412_S267 |
+| 1 | ENSG00000003056.8 | S267 | DDQLGEESEERDDHL | ENSP00000440488.2 | M6PR | M6PR_S267 | ENSP00000440488_S267 |
+| 2 | ENSG00000048028.11 | S1053 | PPTIRPNSPYDLCSR | ENSP00000003302.4 | USP28 | USP28_S1053 | ENSP00000003302_S1053 |
+
+</div>
+
 ### [Ochoa et al. human phosphoproteome](https://www.nature.com/articles/s41587-019-0344-3)
 
 ``` python
 df = Data.get_ochoa_site()
 df.head(3)
 ```
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|  | uniprot | position | residue | is_disopred | disopred_score | log10_hotspot_pval_min | isHotspot | uniprot_position | functional_score | current_uniprot | name | gene | Sequence | is_valid | site_seq | gene_site |
+|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+| 0 | A0A075B6Q4 | 24 | S | 1.0 | 0.91 | 6.839384 | 1.0 | A0A075B6Q4_24 | 0.149257 | A0A075B6Q4 | A0A075B6Q4_HUMAN | None | MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT... | True | VDDEKGDSNDDYDSA | A0A075B6Q4_S24 |
+| 1 | A0A075B6Q4 | 35 | S | 1.0 | 0.87 | 9.192622 | 0.0 | A0A075B6Q4_35 | 0.136966 | A0A075B6Q4 | A0A075B6Q4_HUMAN | None | MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT... | True | YDSAGLLSDEDCMSV | A0A075B6Q4_S35 |
+| 2 | A0A075B6Q4 | 57 | S | 0.0 | 0.28 | 0.818834 | 0.0 | A0A075B6Q4_57 | 0.125364 | A0A075B6Q4 | A0A075B6Q4_HUMAN | None | MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT... | True | IADHLFWSEETKSRF | A0A075B6Q4_S57 |
+
+</div>
 
 ### PhosphoSitePlus human phosphorylation site
 
@@ -264,12 +398,54 @@ df = Data.get_psp_human_site()
 df.head(3)
 ```
 
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|  | gene | protein | uniprot | site | gene_site | SITE_GRP_ID | species | site_seq | LT_LIT | MS_LIT | MS_CST | CST_CAT# | Ambiguous_Site |
+|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+| 0 | YWHAB | 14-3-3 beta | P31946 | T2 | YWHAB_T2 | 15718712 | human | \_\_\_\_\_\_MtMDksELV | NaN | 3.0 | 1.0 | None | 0 |
+| 1 | YWHAB | 14-3-3 beta | P31946 | S6 | YWHAB_S6 | 15718709 | human | \_\_MtMDksELVQkAk | NaN | 8.0 | NaN | None | 0 |
+| 2 | YWHAB | 14-3-3 beta | P31946 | Y21 | YWHAB_Y21 | 3426383 | human | LAEQAERyDDMAAAM | NaN | NaN | 4.0 | None | 0 |
+
+</div>
+
 ### Unique sites of combined Ochoa & PhosphoSitePlus
 
 ``` python
 df = Data.get_combine_site_psp_ochoa()
 df.head(3)
 ```
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|  | uniprot | gene | site | site_seq | source | AM_pathogenicity | CDDM_upper | CDDM_max_score |
+|----|----|----|----|----|----|----|----|----|
+| 0 | A0A024R4G9 | C19orf48 | S20 | ITGSRLLSMVPGPAR | psp | NaN | PRKX,AKT1,PKG1,P90RSK,HIPK4,AKT3,HIPK1,PKACB,H... | 2.407041 |
+| 1 | A0A075B6Q4 | None | S24 | VDDEKGDSNDDYDSA | ochoa | NaN | CK2A2,CK2A1,GRK7,GRK5,CK1G1,CK1A,IKKA,CK1G2,CA... | 2.295654 |
+| 2 | A0A075B6Q4 | None | S35 | YDSAGLLSDEDCMSV | ochoa | NaN | CK2A2,CK2A1,IKKA,ATM,IKKB,CAMK1D,MARK2,GRK7,IK... | 2.488683 |
+
+</div>
 
 ## Phosphorylation site sequence example
 

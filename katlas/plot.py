@@ -7,7 +7,7 @@ __all__ = ['sty_color', 'group_color', 'pspa_category_color', 'set_sns', 'save_s
            'get_subfamily_color', 'get_plt_color', 'get_hue_big', 'reduce_feature', 'plot_2d', 'plot_cluster',
            'plot_bokeh', 'plot_rank', 'plot_hist', 'plot_count', 'plot_bar', 'plot_group_bar', 'plot_stacked',
            'plot_box', 'plot_corr', 'get_similarity', 'plot_matrix', 'get_AUCDF', 'plot_confusion_matrix', 'plot_pie',
-           'get_pct', 'plot_composition', 'plot_cnt']
+           'calculate_pct', 'plot_composition', 'plot_cnt']
 
 # %% ../nbs/05_plot.ipynb 3
 import joblib,logomaker
@@ -843,7 +843,7 @@ def plot_pie(value_counts, # value counts
     plt.title(f'n={value_counts.sum():,}')
 
 # %% ../nbs/05_plot.ipynb 83
-def get_pct(df,bin_col, hue_col):
+def calculate_pct(df,bin_col, hue_col):
     "Get percentage for hue in each bin; with hue adding up to 1 in each bin."
     count_df = df.groupby([bin_col, hue_col], observed=False).size().unstack(fill_value=0)
     pct_df = count_df.div(count_df.sum(axis=1), axis=0) * 100
@@ -851,7 +851,7 @@ def get_pct(df,bin_col, hue_col):
 
 # %% ../nbs/05_plot.ipynb 84
 def plot_composition(df, bin_col, hue_col,palette='tab20',legend_title=None,rotate=45,xlabel=None,ylabel='Percentage',figsize=(5,3)):
-    pct_df = get_pct(df,bin_col,hue_col)
+    pct_df = calculate_pct(df,bin_col,hue_col)
 
     colors = get_plt_color(palette,pct_df.columns)
     

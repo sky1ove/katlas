@@ -95,17 +95,30 @@ def flatten_pssm(pssm_df,
     return pssm.set_index('position_residue')['value'].to_dict()
 
 # %% ../nbs/02_pssm.ipynb 18
-def recover_pssm(flat_pssm:pd.Series):
-    "Recover 2D PSSM from flattened PSSM Series."
+def recover_pssm(flat_pssm: pd.Series):
+    """Recover 2D PSSM from flattened PSSM Series.
+    Only includes amino acids present in `flat_pssm`, preserving canonical order.
+    """
     df = flat_pssm.copy().reset_index()
-    df.columns=['info','value']
-    df['Position']=df['info'].str.extract(r'(-?\d+)').astype(int)
-    df['aa']=df['info'].str.extract(r'-?\d+\s*(.*)')
-    df = df.pivot(index='aa',columns='Position',values='value').fillna(0)
-    # for cases where pS, pT, pY is already used
-    if 'pS' in df.index: return df.reindex(index=list('PGACSTVILMFYWHKRQNDE')+['pS','pT','pY'])
-    # for cases where s, t, y needs to converted to pS, pT, pY
-    else: return df.reindex(index=list('PGACSTVILMFYWHKRQNDEsty')).rename(index={'s': 'pS', 't': 'pT', 'y': 'pY'})
+    df.columns = ['info', 'value']
+    df['Position'] = df['info'].str.extract(r'(-?\d+)').astype(int)
+    df['aa'] = df['info'].str.extract(r'-?\d+\s*(.*)')
+
+    df = df.pivot(index='aa', columns='Position', values='value').fillna(0)
+
+    aa_order_basic = list('PGACSTVILMFYWHKRQNDE')
+    aa_order_phospho = aa_order_basic + ['pS', 'pT', 'pY']
+    aa_order_lower = aa_order_basic + ['s', 't', 'y']
+
+    # if already phospho-labeled (pS/pT/pY)
+    if any(x.startswith('p') for x in df.index):
+        order = [aa for aa in aa_order_phospho if aa in df.index]
+        return df.reindex(index=order)
+    # otherwise convert lowercase s/t/y to pS/pT/pY if they exist
+    else:
+        df = df.rename(index={'s': 'pS', 't': 'pT', 'y': 'pY'})
+        order = [aa for aa in aa_order_phospho if aa in df.index]
+        return df.reindex(index=order)
 
 # %% ../nbs/02_pssm.ipynb 26
 def _clean_zero(pssm_df):
