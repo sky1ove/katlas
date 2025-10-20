@@ -20,13 +20,13 @@ class Data:
 
 # %% ../nbs/00_data.ipynb 12
 @patch_to(Data)
-def download(force=False, # if force, will overwrite the current dataset folder
+def download(download_dir=None, # dest directory of downloaded folder
+             force=False, # if force, will overwrite the current dataset folder
              verbose=True, # print existing dataset folder
-             dataset_dir=None, # dest directory of downloaded folder
             ):
     "Download dataset zip and extract them in tmp folder if dataset_dir is not given."
     path = 'https://drive.google.com/uc?id=17wIl0DbdoHV036Z3xgaT_0H3LlM_W47l'
-    if dataset_dir is not None: Data.DATASET_DIR=Path(dataset_dir)/'katlas_dataset'
+    if download_dir is not None: Data.DATASET_DIR=Path(download_dir)/'katlas_dataset'
     
     # 🧹 If old extracted folder exists, remove it (so we overwrite cleanly)
     if Data.DATASET_DIR.exists():

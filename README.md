@@ -39,8 +39,6 @@ helpful to your research.
 Follow the instructions in katlas_raw:
 https://github.com/sky1ove/katlas_raw
 
-Need to install the package via: `pip install 'python-katlas[dev]' -U`
-
 ## Web applications
 
 Users can now run the analysis directly on the web without needing to
@@ -54,14 +52,17 @@ Check out our latest web platform:
 UV:
 
 ``` bash
-uv add git+https://github.com/sky1ove/katlas.git
+uv add -U python-katlas
 ```
 
 pip:
 
 ``` bash
-pip install git+https://github.com/sky1ove/katlas.git
+pip install -U python-katlas
 ```
+
+If using machine-learning related modules, need to install development
+verison: `pip install -U "python-katlas[dev]"`
 
 ## Import
 
