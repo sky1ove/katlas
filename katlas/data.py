@@ -73,7 +73,11 @@ def read_file(rel_path):
         try:
             df = pd.read_parquet(path, engine="fastparquet")
         except Exception:
-            df = pd.read_parquet(path, engine="pyarrow")
+            try:
+                df = pd.read_parquet(path, engine="pyarrow")
+            except Exception as e:
+                print(f"Failed to read parquet file {path}: {e}")
+                return None
     else: raise ValueError(f"❌ Unsupported file type: {ext}")
 
     if "Unnamed: 0" in df.columns:
