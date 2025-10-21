@@ -116,6 +116,7 @@ def get_kd_uniprot():
 
 # %% ../nbs/00_data.ipynb 26
 @patch_to(Data)
+@lru_cache
 def get_pspa_tyr_norm():
     """Get PSPA normalized data of tyrosine kinase."""
     path = "PSPA/pspa_tyr_norm.parquet"
@@ -123,6 +124,7 @@ def get_pspa_tyr_norm():
 
 # %% ../nbs/00_data.ipynb 28
 @patch_to(Data)
+@lru_cache
 def get_pspa_st_norm():
     """Get PSPA normalized data of serine/threonine kinase."""
     path = "PSPA/pspa_st_norm.parquet"
@@ -130,6 +132,7 @@ def get_pspa_st_norm():
 
 # %% ../nbs/00_data.ipynb 30
 @patch_to(Data)
+@lru_cache
 def get_pspa_all_norm() -> pd.DataFrame:
     """Get PSPA normalized data of serine/threonine and tyrosine kinases."""
     path = "PSPA/pspa_all_norm.parquet"
@@ -137,6 +140,7 @@ def get_pspa_all_norm() -> pd.DataFrame:
 
 # %% ../nbs/00_data.ipynb 32
 @patch_to(Data)
+@lru_cache
 def get_pspa_all_scale():
     """
     Get PSPA (-5 to +4) scaled data from PSPA normalized data. 
@@ -250,6 +254,7 @@ def get_ks_background():
 
 # %% ../nbs/00_data.ipynb 47
 @patch_to(Data)
+@lru_cache
 def get_cddm():
     """Get the CDDM dataset."""
     path = "CDDM/pssms.parquet"
@@ -257,6 +262,7 @@ def get_cddm():
 
 # %% ../nbs/00_data.ipynb 49
 @patch_to(Data)
+@lru_cache
 def get_cddm_upper():
     """Get the CDDM dataset of all uppercase sequence."""
     path = "CDDM/pssms_upper.parquet"
@@ -264,6 +270,7 @@ def get_cddm_upper():
 
 # %% ../nbs/00_data.ipynb 51
 @patch_to(Data)
+@lru_cache
 def get_cddm_LO():
     """Get CDDM Log-odds data with 'STY' background."""
     path = "CDDM/pssms_LO.parquet"
@@ -271,6 +278,7 @@ def get_cddm_LO():
 
 # %% ../nbs/00_data.ipynb 53
 @patch_to(Data)
+@lru_cache
 def get_cddm_LO_upper():
     """Get CDDM Log-odds data of all-uppercase sequence with 'STY' background."""
     path = "CDDM/pssms_LO_upper.parquet"
