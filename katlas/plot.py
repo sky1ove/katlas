@@ -57,7 +57,6 @@ def set_sns(dpi=300):
 # %% ../nbs/05_plot.ipynb 6
 def save_svg(path): 
     plt.rcParams['svg.fonttype'] = 'none'
-    plt.rcParams['font.family'] = ['Arial', 'DejaVu Sans']
     return plt.savefig(path, format='svg', bbox_inches='tight',transparent=True)
 
 # %% ../nbs/05_plot.ipynb 7

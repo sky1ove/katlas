@@ -10,8 +10,8 @@ __all__ = ['EPSILON', 'get_prob', 'pSTY2sty', 'flatten_pssm', 'recover_pssm', 'c
            'get_logo_IC', 'plot_logo', 'plot_logo_LO', 'plot_logos_idx', 'plot_logos', 'plot_logo_heatmap',
            'plot_logo_heatmap_LO', 'change_center_name_series', 'recover_pssm_pspa', 'preprocess_pssm_pspa',
            'plot_logo_pspa', 'plot_logo_heatmap_pspa', 'raw2norm', 'get_one_kinase', 'get_logo', 'kl_divergence',
-           'kl_divergence_flat', 'js_divergence', 'js_divergence_flat', 'js_similarity', 'cosine_similarity',
-           'cosine_overall_flat']
+           'kl_divergence_flat', 'js_divergence', 'js_divergence_flat', 'js_similarity', 'js_similarity_flat',
+           'cosine_similarity', 'cosine_overall_flat']
 
 # %% ../nbs/02_pssm.ipynb 3
 import numpy as np, pandas as pd
@@ -749,7 +749,12 @@ def js_similarity(pssm1,pssm2):
     similarity = 1-distance
     return similarity
 
-# %% ../nbs/02_pssm.ipynb 172
+# %% ../nbs/02_pssm.ipynb 170
+def js_similarity_flat(p1_flat,p2_flat):
+    "Convert JSD to bits to be in range (0,1) then 1-JSD. "
+    return 1-(js_divergence_flat(p1_flat,p2_flat)/np.log(2))
+
+# %% ../nbs/02_pssm.ipynb 173
 def cosine_similarity(pssm1: pd.DataFrame, pssm2: pd.DataFrame) -> pd.Series:
     "Compute cosine similarity per position (column) between two PSSMs."
     
@@ -772,7 +777,7 @@ def cosine_similarity(pssm1: pd.DataFrame, pssm2: pd.DataFrame) -> pd.Series:
 
     return pd.Series(sims)
 
-# %% ../nbs/02_pssm.ipynb 177
+# %% ../nbs/02_pssm.ipynb 178
 def cosine_overall_flat(pssm1_flat, pssm2_flat):
     """Compute overall cosine similarity between two PSSMs (flattened)."""
     # match index for dot product

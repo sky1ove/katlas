@@ -219,13 +219,13 @@ def KLD(logits: torch.Tensor,
           target_probs: torch.Tensor,
          ):
     """
-    KL divergence between target_probs (p) and softmax(logits) (q).
+    Averaged KL divergence across positions between target_probs (p) and softmax(logits) (q).
     
     logits:       (B, 20, 10)
     target_probs: (B, 20, 10), each column (over AA) sums to 1
     """
     logq = F.log_softmax(logits, dim=1)    # log q(x)
-    logp = torch.log(target_probs + 1e-12) # log p(x), safe for zeros
+    logp = torch.log(target_probs + 1e-8) # log p(x), safe for zeros
     kl   = (target_probs * (logp - logq)).sum(dim=1)   # (B, 10)
     return kl.mean()
 
@@ -234,7 +234,7 @@ def JSD(logits: torch.Tensor,
         target_probs: torch.Tensor,
        ):
     """
-    Jensen-Shannon Divergence between target_probs (p) and softmax(logits) (q).
+    Averaged Jensen-Shannon Divergence across positions between target_probs (p) and softmax(logits) (q).
 
     logits:       (B, 20, 10)
     target_probs: (B, 20, 10), each column (over AA) sums to 1
@@ -245,9 +245,9 @@ def JSD(logits: torch.Tensor,
     m = 0.5 * (p + q)                           # midpoint distribution
 
     # logs (with epsilon for stability)
-    logp = torch.log(p + 1e-12)
-    logq = torch.log(q + 1e-12)
-    logm = torch.log(m + 1e-12)
+    logp = torch.log(p + 1e-8)
+    logq = torch.log(q + 1e-8)
+    logm = torch.log(m + 1e-8)
 
     # KL(p||m) and KL(q||m)
     kld_pm = (p * (logp - logm)).sum(dim=1)
