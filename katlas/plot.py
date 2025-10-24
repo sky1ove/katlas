@@ -204,7 +204,7 @@ def plot_2d(
     x_col, y_col = embedding_df.columns 
     
     g = sns.relplot(
-        data=embedding_df, x=x_col, y=y_col, hue=hue, palette=palette, s=s, alpha=0.8, legend=legend
+        data=embedding_df, x=x_col, y=y_col, hue=hue, palette=palette, s=s, alpha=0.8, legend=legend,**kwargs
     )
     plt.xticks([])
     plt.yticks([])
