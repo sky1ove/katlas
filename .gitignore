@@ -4,6 +4,7 @@ _proc/
 # *.svg
 # *.pdf
 *.zip
+_*
 # models/
 # fig*
 # train/

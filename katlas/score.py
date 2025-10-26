@@ -226,7 +226,7 @@ def predict_kinase_df(df, seq_col, ref, func, to_lower=False, to_upper=False):
     ref = preprocess_ref(ref)
     
     df = df.copy()
-    df[seq_col] = check_seq_df(df, seq_col)
+    df[seq_col] = check_seqs(df, seq_col)
     
     if to_lower: df[seq_col] = df[seq_col].apply(STY2sty)
         

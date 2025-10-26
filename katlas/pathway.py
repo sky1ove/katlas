@@ -116,6 +116,7 @@ def get_overlap(react_df,
                  p_type='FDR',
                  thr=0.05,  # original threshold of p value, will be log10 transformed
                  plot=True,
+                 **kwargs
                 ):
     assert p_type in ['p', 'FDR']
     p_col = f'-log10_{p_type}'
@@ -139,7 +140,7 @@ def get_overlap(react_df,
 
     # Plot histogram
     if plot:
-        subset[p_col].hist(bins=100)
+        subset[p_col].hist(bins=100,**kwargs)
     
         # Add threshold line
         plt.axvline(x=threshold, color='red', linestyle='--', label=f'{p_type} = {thr}')

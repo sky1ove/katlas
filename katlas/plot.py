@@ -6,8 +6,8 @@
 __all__ = ['sty_color', 'group_color', 'pspa_category_color', 'set_sns', 'save_svg', 'save_pdf', 'save_show', 'get_color_dict',
            'get_subfamily_color', 'get_plt_color', 'get_hue_big', 'reduce_feature', 'plot_2d', 'plot_cluster',
            'plot_bokeh', 'plot_rank', 'plot_hist', 'plot_count', 'plot_bar', 'plot_group_bar', 'plot_stacked',
-           'plot_box', 'plot_corr', 'get_similarity', 'plot_matrix', 'get_AUCDF', 'plot_confusion_matrix', 'plot_pie',
-           'calculate_pct', 'plot_composition', 'plot_cnt']
+           'plot_box', 'plot_corr', 'get_similarity', 'get_AUCDF', 'plot_confusion_matrix', 'plot_pie', 'calculate_pct',
+           'plot_composition', 'plot_cnt']
 
 # %% ../nbs/05_plot.ipynb 3
 import joblib,logomaker
@@ -86,7 +86,7 @@ def get_color_dict(categories, # list of names to assign color
     return color_map
 
 # %% ../nbs/05_plot.ipynb 11
-sty_color=get_color_dict(['S','T','Y'])
+sty_color=get_color_dict(['S','T','Y'])| get_color_dict(['s','t','y'])
 
 # %% ../nbs/05_plot.ipynb 14
 group_color=get_color_dict(
@@ -708,20 +708,20 @@ def get_similarity(df, metric='euclidean'):
     return dist_df, sim_df
 
 # %% ../nbs/05_plot.ipynb 67
-def plot_matrix(dist_matrix, inverse_color=False):
+def plot_corr(df_corr, inverse_color=False):
     "Plot distance/similarity matrix"
     
-    mask = np.triu(np.ones_like(dist_matrix, dtype=bool))
+    mask = np.triu(np.ones_like(df_corr, dtype=bool))
     cmap = 'coolwarm' if not inverse_color else 'coolwarm_r'
-    plt.figure(figsize=(10, 8))
+    plt.figure(figsize=(15,10))
     sns.heatmap(
-        dist_matrix,
+        df_corr,
         cmap=cmap,
         mask=mask,
-        # annot=False,
-        # fmt='.2f',
+        annot=True,
+        fmt='.2f',
         linewidths=0.1,  
-        linecolor='white' 
+        linecolor='white',
     )
     plt.xlabel('')
     plt.ylabel('')
