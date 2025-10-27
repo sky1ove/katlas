@@ -57,9 +57,22 @@ def query_reactome(uniprot_id):
 # %% ../nbs/06_pathway.ipynb 20
 def add_reactome_ref(df,uniprot):
     path = query_reactome(uniprot)
-    df=df.copy()
+    df = df.copy()
     df['ref_path'] = df.reactome_id.isin(path.reactome_id).astype(int)
     df['ref_path_lowest'] = df.reactome_id.isin(path[path["lowest"] == 1].reactome_id).astype(int)
+
+    # find missing reactome_ids
+    missing = path.loc[~path.reactome_id.isin(df.reactome_id), ['reactome_id', 'pathway', 'lowest']]
+    if not missing.empty:
+        add_df = pd.DataFrame({
+            'name': missing['pathway'],
+            'reactome_id': missing['reactome_id'],
+            'ref_path': 1,
+            'ref_path_lowest': (missing['lowest'] == 1).astype(int),
+            df.columns[2]: 1.0,         # assign 1.0 to p value column
+            df.columns[3]: 0,      # assign 0 to log10 p column
+        })
+        df = pd.concat([df, add_df], ignore_index=True)
     return df
 
 # %% ../nbs/06_pathway.ipynb 23

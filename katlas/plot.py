@@ -6,8 +6,8 @@
 __all__ = ['sty_color', 'group_color', 'pspa_category_color', 'set_sns', 'save_svg', 'save_pdf', 'save_show', 'get_color_dict',
            'get_subfamily_color', 'get_plt_color', 'get_hue_big', 'reduce_feature', 'plot_2d', 'plot_cluster',
            'plot_bokeh', 'plot_rank', 'plot_hist', 'plot_count', 'plot_bar', 'plot_group_bar', 'plot_stacked',
-           'plot_box', 'plot_corr', 'get_similarity', 'get_AUCDF', 'plot_confusion_matrix', 'plot_pie', 'calculate_pct',
-           'plot_composition', 'plot_cnt']
+           'plot_violin', 'add_stats', 'plot_box', 'plot_corr', 'get_similarity', 'get_AUCDF', 'plot_confusion_matrix',
+           'plot_pie', 'calculate_pct', 'plot_composition', 'plot_cnt']
 
 # %% ../nbs/05_plot.ipynb 3
 import joblib,logomaker
@@ -46,6 +46,10 @@ from sklearn.metrics import pairwise_distances
 import matplotlib.ticker as mticker
 
 import matplotlib as mpl
+
+# for statistical annotations
+from statannotations.Annotator import Annotator
+import itertools
 
 # %% ../nbs/05_plot.ipynb 5
 def set_sns(dpi=300):
@@ -586,6 +590,47 @@ def plot_stacked(df, column, hue, figsize=(5, 4),xlabel=None, ylabel=None, add_v
     plt.tight_layout()
 
 # %% ../nbs/05_plot.ipynb 59
+def plot_violin(
+    data, 
+    value='value',
+    group='variable', 
+    ylabel=None, 
+    dots=True, 
+    figsize=(5,3),
+    **kwargs
+):
+    "Plot violin plots (with optional strip dots) for long-form data."
+
+    plt.figure(figsize=figsize)
+
+    ax=sns.violinplot(
+        data=data, x=group, y=value,
+        inner='box', linewidth=1,
+        cut=0,         # prevents tails extending beyond data range
+        bw_adjust=0.7,  # the smaller, the shape have more curves that fit to the data
+        hue=group,**kwargs
+    )
+
+    if dots:
+        sns.stripplot(
+            data=data, x=group, y=value,
+            color='k', size=2, jitter=0.1, alpha=0.6
+        )
+
+    plt.xlabel('')
+    if ylabel is not None: plt.ylabel(ylabel)
+    plt.tight_layout()
+    return ax
+
+# %% ../nbs/05_plot.ipynb 61
+def add_stats(ax,data,value='value',group='variable',pairs=None,test='t-test_ind',loc='inside',text_format='star',**kwargs):
+    group_items = data[group].unique()
+    if pairs is None: pairs = list(itertools.combinations(group_items, 2))
+    annotator = Annotator(ax, pairs, data=data, x=group, y=value)
+    annotator.configure(test=test, text_format=text_format, loc=loc,verbose=False,**kwargs)
+    annotator.apply_and_annotate()
+
+# %% ../nbs/05_plot.ipynb 63
 @delegates(sns.boxplot)
 def plot_box(df,
              value, # colname of value
@@ -627,7 +672,7 @@ def plot_box(df,
     # plt.gca().spines[['right', 'top']].set_visible(False)
     
 
-# %% ../nbs/05_plot.ipynb 62
+# %% ../nbs/05_plot.ipynb 66
 @delegates(sns.regplot)
 def plot_corr(
     df,  # dataframe that contains data
@@ -697,7 +742,7 @@ def plot_corr(
         if texts:
             adjust_text(texts, arrowprops=dict(arrowstyle="->", color="black", lw=0.5))
 
-# %% ../nbs/05_plot.ipynb 66
+# %% ../nbs/05_plot.ipynb 70
 def get_similarity(df, metric='euclidean'):
     "Calculate distance matrix of a df; also return inverse df (similarity df)"
     dist_matrix = pairwise_distances(df, metric=metric)
@@ -707,7 +752,7 @@ def get_similarity(df, metric='euclidean'):
     sim_df = np.exp(-dist_df**2 / (2 * sigma**2))
     return dist_df, sim_df
 
-# %% ../nbs/05_plot.ipynb 67
+# %% ../nbs/05_plot.ipynb 71
 def plot_corr(df_corr, inverse_color=False):
     "Plot distance/similarity matrix"
     
@@ -727,7 +772,7 @@ def plot_corr(df_corr, inverse_color=False):
     plt.ylabel('')
     plt.yticks(rotation=0)
 
-# %% ../nbs/05_plot.ipynb 72
+# %% ../nbs/05_plot.ipynb 76
 def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
     
     "Plot CDF curve and get relative area under the curve"
@@ -793,7 +838,7 @@ def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
         
     return AUCDF
 
-# %% ../nbs/05_plot.ipynb 75
+# %% ../nbs/05_plot.ipynb 79
 def plot_confusion_matrix(target, # pd.Series 
                           pred, # pd.Series
                           class_names:list=['0','1'],
@@ -820,7 +865,7 @@ def plot_confusion_matrix(target, # pd.Series
     plt.xticks(np.arange(len(class_names)) + 0.5, class_names)
     plt.yticks(np.arange(len(class_names)) + 0.5, class_names, rotation=0)
 
-# %% ../nbs/05_plot.ipynb 79
+# %% ../nbs/05_plot.ipynb 83
 def plot_pie(value_counts, # value counts
              hue_order=None, # list of strings
              labeldistance=0.8,
@@ -841,14 +886,14 @@ def plot_pie(value_counts, # value counts
     plt.ylabel('')
     plt.title(f'n={value_counts.sum():,}')
 
-# %% ../nbs/05_plot.ipynb 83
+# %% ../nbs/05_plot.ipynb 87
 def calculate_pct(df,bin_col, hue_col):
     "Get percentage for hue in each bin; with hue adding up to 1 in each bin."
     count_df = df.groupby([bin_col, hue_col], observed=False).size().unstack(fill_value=0)
     pct_df = count_df.div(count_df.sum(axis=1), axis=0) * 100
     return pct_df
 
-# %% ../nbs/05_plot.ipynb 84
+# %% ../nbs/05_plot.ipynb 88
 def plot_composition(df, bin_col, hue_col,palette='tab20',legend_title=None,rotate=45,xlabel=None,ylabel='Percentage',figsize=(5,3)):
     pct_df = calculate_pct(df,bin_col,hue_col)
 
@@ -862,7 +907,7 @@ def plot_composition(df, bin_col, hue_col,palette='tab20',legend_title=None,rota
     if legend_title is None: legend_title = hue_col 
     plt.legend(title=legend_title, bbox_to_anchor=(1.05, 1), loc='upper left')
 
-# %% ../nbs/05_plot.ipynb 86
+# %% ../nbs/05_plot.ipynb 90
 def plot_cnt(cnt, xlabel=None,ylabel='Count',figsize=(6, 3)):
     fig, ax = plt.subplots(figsize=figsize)
     cnt.plot.bar(ax=ax)

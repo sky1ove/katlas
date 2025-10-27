@@ -6366,6 +6366,8 @@ dependencies = [
     { name = "scikit-learn", version = "1.7.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "seaborn", version = "0.12.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
     { name = "seaborn", version = "0.13.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.8'" },
+    { name = "statannotations", version = "0.7.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
+    { name = "statannotations", version = "0.7.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.8'" },
     { name = "statsmodels", version = "0.13.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
     { name = "statsmodels", version = "0.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
     { name = "statsmodels", version = "0.14.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
@@ -6418,6 +6420,7 @@ requires-dist = [
     { name = "scikit-learn" },
     { name = "seaborn" },
     { name = "sentencepiece", marker = "extra == 'dev'" },
+    { name = "statannotations" },
     { name = "statsmodels" },
     { name = "tqdm" },
     { name = "transformers", marker = "extra == 'dev'" },
@@ -7908,6 +7911,63 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/28/e3/55dcc2cfbc3ca9c29519eb6884dd1415ecb53b0e934862d3559ddcb7e20b/stack_data-0.6.3.tar.gz", hash = "sha256:836a778de4fec4dcd1dcd89ed8abff8a221f58308462e1c4aa2a3cf30148f0b9", size = 44707, upload-time = "2023-09-30T13:58:05.479Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f1/7b/ce1eafaf1a76852e2ec9b22edecf1daa58175c090266e9f6c64afcd81d91/stack_data-0.6.3-py3-none-any.whl", hash = "sha256:d5558e0c25a4cb0853cddad3d77da9891a08cb85dd9f9f91b9f8cd66e511e695", size = 24521, upload-time = "2023-09-30T13:58:03.53Z" },
+]
+
+[[package]]
+name = "statannotations"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "(python_full_version >= '3.7.1' and python_full_version < '3.8' and platform_machine != 'aarch64' and platform_machine != 'arm64' and platform_machine != 'x86') or (python_full_version >= '3.7.1' and python_full_version < '3.8' and platform_machine != 'aarch64' and platform_machine != 'arm64' and sys_platform != 'win32')",
+    "python_full_version >= '3.7.1' and python_full_version < '3.8' and platform_machine == 'aarch64'",
+    "python_full_version >= '3.7.1' and python_full_version < '3.8' and platform_machine == 'arm64'",
+    "(python_full_version < '3.7.1' and platform_machine != 'x86') or (python_full_version < '3.7.1' and sys_platform != 'win32')",
+    "python_full_version >= '3.7.1' and python_full_version < '3.8' and platform_machine == 'x86' and sys_platform == 'win32'",
+    "python_full_version < '3.7.1' and platform_machine == 'x86' and sys_platform == 'win32'",
+]
+dependencies = [
+    { name = "matplotlib", version = "3.5.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
+    { name = "numpy", version = "1.21.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
+    { name = "pandas", version = "1.1.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.7.1'" },
+    { name = "pandas", version = "1.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.7.1' and python_full_version < '3.8'" },
+    { name = "scipy", version = "1.7.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
+    { name = "seaborn", version = "0.12.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/61/3c/4ec5b8af763bbfdfabbf5a2e40c345d91f60d521d3c7efeb15d5e6c1c1f1/statannotations-0.7.0.tar.gz", hash = "sha256:ae6fb48058fcb6f895995af2eb67c54e462e8ac354f3159d20f2e2717515a58d", size = 45817, upload-time = "2024-11-19T13:24:35.175Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/aa/81/3c9aa6489a7f28c371e57cd18376e213825190024f4218b8a03b74a8bacf/statannotations-0.7.0-py3-none-any.whl", hash = "sha256:e85a29f6a55f1ef94eb4519e08a58b39366f05da4be172fc7a471cada601291d", size = 39242, upload-time = "2024-11-19T13:24:33.252Z" },
+]
+
+[[package]]
+name = "statannotations"
+version = "0.7.2"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.12'",
+    "python_full_version == '3.11.*'",
+    "python_full_version == '3.10.*'",
+    "python_full_version == '3.9.*'",
+    "python_full_version == '3.8.*' and sys_platform == 'win32'",
+    "python_full_version == '3.8.*' and sys_platform != 'win32'",
+]
+dependencies = [
+    { name = "matplotlib", version = "3.7.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "matplotlib", version = "3.10.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "numpy", version = "1.24.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "pandas", version = "2.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "pandas", version = "2.3.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "scipy", version = "1.10.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "scipy", version = "1.13.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
+    { name = "scipy", version = "1.16.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "seaborn", version = "0.13.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.8'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/07/6d/9f851b0ca42eb429f1b044634d63ff07bc4f6bbfb52639ceb7e03a5a46eb/statannotations-0.7.2.tar.gz", hash = "sha256:a93e428682d66c9fca5a399d5bd3fe7c9cef0500f53840c6f5362526b4501e93", size = 46629, upload-time = "2025-03-22T13:27:14.706Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f1/ef/19390fa617d0417dd432d14a10eb5735a5513d7b6aebb357b10900d42af8/statannotations-0.7.2-py3-none-any.whl", hash = "sha256:61cd63c9bcdffe37dad30bb2a33aa6aa03f28df9636eda8deae1548f91be8580", size = 39684, upload-time = "2025-03-22T13:27:13.19Z" },
 ]
 
 [[package]]
