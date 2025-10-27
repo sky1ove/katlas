@@ -58,8 +58,8 @@ def query_reactome(uniprot_id):
 def add_reactome_ref(df,uniprot):
     path = query_reactome(uniprot)
     df=df.copy()
-    df[f'{uniprot}_path_all'] = df.reactome_id.isin(path.reactome_id).astype(int)
-    df[f'{uniprot}_path_lowest'] = df.reactome_id.isin(path[path["lowest"] == 1].reactome_id).astype(int)
+    df['ref_path'] = df.reactome_id.isin(path.reactome_id).astype(int)
+    df['ref_path_lowest'] = df.reactome_id.isin(path[path["lowest"] == 1].reactome_id).astype(int)
     return df
 
 # %% ../nbs/06_pathway.ipynb 23
@@ -116,6 +116,7 @@ def get_overlap(react_df,
                  p_type='FDR',
                  thr=0.05,  # original threshold of p value, will be log10 transformed
                  plot=True,
+                 figsize=(5,3),
                  **kwargs
                 ):
     assert p_type in ['p', 'FDR']
@@ -136,11 +137,11 @@ def get_overlap(react_df,
     num_total = len(subset)
     num_pass = (subset[p_col] > threshold).sum()
 
-    percent_pass = (num_pass / num_total) * 100
+    percent_pass = (num_pass / num_total) * 100 if num_total else 0
 
     # Plot histogram
     if plot:
-        subset[p_col].hist(bins=100,**kwargs)
+        subset[p_col].hist(bins=100, figsize=figsize, **kwargs)
     
         # Add threshold line
         plt.axvline(x=threshold, color='red', linestyle='--', label=f'{p_type} = {thr}')
@@ -148,10 +149,9 @@ def get_overlap(react_df,
     
         # Label axes
         plt.xlabel(p_col_convert)
-        plt.title(f'Histogram of {p_col_convert}')
     
         plt.text(0.66, 0.85, f'{percent_pass:.1f}% ({num_pass}/{num_total}) pass',
                  transform=plt.gca().transAxes,
                  ha='right', va='top', fontsize=10, color='green')
 
-    return float(num_pass / num_total)
+    return float(num_pass / num_total) if num_total else np.nan

@@ -197,123 +197,81 @@ def Params(name=None, load=True):
 
 # %% ../nbs/03_scoring.ipynb 44
 def multiply_generic(merged_df, kinases, df_index, divide_factor_func):
+    """Multiply-based log-sum aggregation across kinases."""
     out = {}
-    for kinase in tqdm(kinases):
+    log2 = np.log2  # local alias for speed
+    
+    for kinase in tqdm(kinases, desc="Computing multiply_generic"):
         divide_factor = divide_factor_func(kinase)
-
-        kinase_df = merged_df[['input_index', kinase]].copy()
-        kinase_df = kinase_df.rename(columns={kinase: 'value'})
-        # kinase_df['log_value'] = np.log2(kinase_df['value'].where(kinase_df['value'] > 0))
-        kinase_df['log_value'] = np.log2(kinase_df['value']+EPSILON)
+        df = merged_df[['input_index', kinase]].dropna()
+        if df.empty:
+            out[kinase] = pd.Series(index=df_index, dtype=float)
+            continue
         
-        grouped = kinase_df.dropna().groupby('input_index')
-        sum_log_values = grouped['log_value'].sum()
-        len_values = grouped['log_value'].count()
-
-        log_sum = sum_log_values + (len_values - 1) * np.log2(divide_factor)
-        # nan_input_indices = kinase_df.loc[kinase_df['value']==0, 'input_index'].unique()
-        # log_sum.loc[nan_input_indices] = np.nan
-
+        log_values = log2(df[kinase] + EPSILON)
+        grouped = df.assign(log_value=log_values).groupby('input_index')['log_value']
+        
+        # vectorized form
+        log_sum = grouped.sum() + (grouped.count() - 1) * log2(divide_factor)
         out[kinase] = log_sum
+
     return pd.DataFrame(out).reindex(df_index)
 
 # %% ../nbs/03_scoring.ipynb 45
 def predict_kinase_df(df, seq_col, ref, func, to_lower=False, to_upper=False):
-    
-    print('input dataframe has a length', df.shape[0])
-    print('Preprocessing')
-    
+    """
+    Predict kinase scores based on reference PSSM or weight matrix.
+    Applies preprocessing, merges long format keys, then aggregates using given func.
+    """
+    print(f"Input dataframe has {len(df)} rows")
+    print("Preprocessing...")
+
     ref = preprocess_ref(ref)
-    
     df = df.copy()
-    df[seq_col] = check_seqs(df, seq_col)
-    
-    if to_lower: df[seq_col] = df[seq_col].apply(STY2sty)
-        
-    if to_upper: df[seq_col] = df[seq_col].str.upper()
-        
-    # Adjust sequence lengths to match the reference matrix's expected inputs
-    # Cut only work when ref is shorter than the input sequence
-    max_value = ref.columns.str[:-1].astype(int).max() # Get the highest position index from the reference columns
-    min_value = ref.columns.str[:-1].astype(int).min() # Get the lowest position index
-    df[seq_col] = df[seq_col].apply(partial(cut_seq, min_position=min_value, max_position=max_value))
-    
-    print('Finish preprocessing')
-    
-    
-    # wide form to long form
-    df['keys'] = df[seq_col].apply(get_dict)
-    input_keys_df  = df[['keys']].explode('keys').reset_index()
-    input_keys_df.columns = ['input_index', 'key']
-    
-    
-    ref_T = ref.T
-    
-    input_keys_df = input_keys_df.set_index('key')
-    
-    
-    print('Merging reference')
+    df[seq_col] = check_seqs(df[seq_col])  # accepts both Series and DataFrame per your earlier fix
+
+    if to_lower:
+        df[seq_col] = df[seq_col].apply(STY2sty)
+    if to_upper:
+        df[seq_col] = df[seq_col].str.upper()
+
+    # Align sequence length to ref
+    pos = ref.columns.str[:-1].astype(int)
+    df[seq_col] = df[seq_col].apply(partial(cut_seq, min_position=pos.min(), max_position=pos.max()))
+
+    print("Preprocessing done. Expanding sequences...")
+
+    # Convert sequences to long-form keys
+    input_keys_df = (
+        df.assign(keys=df[seq_col].apply(get_dict))
+          .explode('keys')
+          .reset_index(names='input_index')[['input_index', 'keys']]
+          .rename(columns={'keys': 'key'})
+          .set_index('key')
+    )
+
+    print("Merging reference...")
+    ref_T = ref.T.astype('float32')
     merged_df = input_keys_df.merge(ref_T, left_index=True, right_index=True, how='inner')
+    print("Merge complete.")
 
-    print('Finish merging')
-    
+    # Dispatch by func
     if func == sumup:
-        grouped_df = merged_df.groupby('input_index').sum()
-        out = grouped_df.reindex(df.index)
+        out = merged_df.groupby('input_index').sum().reindex(df.index)
+    elif func in (multiply_pspa, multiply_23, multiply_20):
+        num_dict = Data.get_num_dict() if func == multiply_pspa else None
+        divisor = (
+            (lambda k: num_dict[k])
+            if func == multiply_pspa else
+            (lambda k: 23 if func == multiply_23 else 20)
+        )
+        out = multiply_generic(merged_df, ref_T.columns, df.index, divide_factor_func=divisor)
+    else:
+        raise ValueError(f"Unknown function: {func}")
 
-    elif func == multiply_pspa:
-        num_dict = Data.get_num_dict()
-        out = multiply_generic(merged_df, ref_T.columns, df.index, 
-                               divide_factor_func=lambda k: num_dict[k])
+    return out.round(3)
 
-    elif func == multiply_23:
-        out = multiply_generic(merged_df, ref_T.columns, df.index, 
-                               divide_factor_func=lambda k: 23)
-
-    elif func == multiply_20:
-        out = multiply_generic(merged_df, ref_T.columns, df.index, 
-                               divide_factor_func=lambda k: 20)
-    # elif func==multiply:
-    #     # Get the list of kinases and num_dict
-    #     kinases = ref_T.columns
-    #     num_dict = Data.get_num_dict()
-        
-    #     out = {}
-    #     for kinase in tqdm(kinases):
-    #         divide_factor = num_dict[kinase] if num_aa is None else num_aa
-    #         # Extract data for this kinase
-    #         kinase_df = merged_df[['input_index', kinase]].copy()
-    #         kinase_df = kinase_df.rename(columns={kinase: 'value'})
-
-    #         # Compute log_value
-    #         # kinase_df['log_value'] = np.log2(kinase_df['value'].where(kinase_df['value'] > 0))
-    #         kinase_df['log_value'] = np.log2(kinase_df['value']+EPSILON)
-    #         print(len(kinase_df['log_value']))
-    #         # Group by 'input_index' and compute sum and count
-    #         grouped = kinase_df.dropna().groupby('input_index')
-    #         sum_log_values = grouped['log_value'].sum()
-    #         len_values = grouped['log_value'].count()
-
-    #         # Compute log_sum using the formula
-    #         log_sum = sum_log_values + (len_values - 1) * np.log2(divide_factor)
-
-    #         # # Find all 'input_index' where 'log_value' is NaN
-    #         # nan_input_indices = kinase_df.loc[kinase_df['value']==0, 'input_index'].unique()
-    #         # # Set log_sum at those indices to NaN
-    #         # log_sum.loc[nan_input_indices] = np.nan
-
-    #         # Assign the computed values to the results DataFrame
-    #         out[kinase] = log_sum
-
-    #     out = pd.DataFrame(out).reindex(df.index)
-        
-    # else:
-    #     grouped_df = merged_df.drop(columns=['key']).groupby('input_index').agg(func)
-    #     out = grouped_df.reindex(df.index)
-        
-    return out
-
-# %% ../nbs/03_scoring.ipynb 49
+# %% ../nbs/03_scoring.ipynb 50
 def get_pct(site,ref,func,pct_ref):
     
     "Replicate the precentile results from The Kinase Library."
@@ -338,7 +296,7 @@ def get_pct(site,ref,func,pct_ref):
     final.columns=['log2(score)','percentile']
     return final
 
-# %% ../nbs/03_scoring.ipynb 53
+# %% ../nbs/03_scoring.ipynb 54
 def get_pct_df(score_df, # output from predict_kinase_df 
                pct_ref, # a reference df for percentile calculation
               ):
