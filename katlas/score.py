@@ -182,9 +182,9 @@ def Params(name=None, load=True):
     params = {
         "CDDM": {'ref': lazy(Data.get_cddm_LO), 'func': sumup},
         "CDDM_upper": {'ref': lazy(Data.get_cddm_LO_upper), 'func': sumup, 'to_upper': True},
-        "PSPA_st": {'ref': lazy(Data.get_pspa_st_norm), 'func': multiply_pspa},
-        "PSPA_y": {'ref': lazy(Data.get_pspa_tyr_norm), 'func': multiply_pspa},
-        "PSPA": {'ref': lazy(Data.get_pspa_all_norm), 'func': multiply_pspa},
+        "PSPA_st": {'ref': lazy(Data.get_pspa_st), 'func': multiply_pspa},
+        "PSPA_y": {'ref': lazy(Data.get_pspa_tyr), 'func': multiply_pspa},
+        "PSPA": {'ref': lazy(Data.get_pspa), 'func': multiply_pspa},
     }
 
     if name is None:

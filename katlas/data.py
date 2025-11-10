@@ -118,7 +118,7 @@ def get_kd_uniprot():
 # %% ../nbs/00_data.ipynb 26
 @patch_to(Data)
 @lru_cache
-def get_pspa_tyr_norm():
+def get_pspa_tyr():
     """Get PSPA normalized data of tyrosine kinase."""
     path = "PSPA/pspa_tyr_norm.parquet"
     return Data.read_file(path)
@@ -126,7 +126,7 @@ def get_pspa_tyr_norm():
 # %% ../nbs/00_data.ipynb 28
 @patch_to(Data)
 @lru_cache
-def get_pspa_st_norm():
+def get_pspa_st():
     """Get PSPA normalized data of serine/threonine kinase."""
     path = "PSPA/pspa_st_norm.parquet"
     return Data.read_file(path)
