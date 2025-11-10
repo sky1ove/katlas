@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Functions to preprocess sequence to prepare kinase substrate dataset">
+
+<title>Utils – python-katlas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-45a6b1ee3682cc1dbb0c772b170fe9b7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Utils – python-katlas">
+<meta property="og:description" content="Functions to preprocess sequence to prepare kinase substrate dataset">
+<meta property="og:site_name" content="python-katlas">
+<meta name="twitter:title" content="Utils – python-katlas">
+<meta name="twitter:description" content="Functions to preprocess sequence to prepare kinase substrate dataset">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">python-katlas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/sky1ove/katlas"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data.html">Modules</a></li><li class="breadcrumb-item"><a href="./utils.html">Utils</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get Started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pssm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PSSM</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hierarchical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hierarchical clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./scoring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pathway.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pathway analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train ML</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dnn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train DL</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#common-funcs" id="toc-common-funcs" class="nav-link" data-scroll-target="#common-funcs">Common funcs</a>
+  <ul class="collapse">
+  <li><a href="#prepare_path" id="toc-prepare_path" class="nav-link" data-scroll-target="#prepare_path">prepare_path</a></li>
+  <li><a href="#get_diff" id="toc-get_diff" class="nav-link" data-scroll-target="#get_diff">get_diff</a></li>
+  <li><a href="#psty2sty" id="toc-psty2sty" class="nav-link" data-scroll-target="#psty2sty">pSTY2sty</a></li>
+  <li><a href="#sty2psty" id="toc-sty2psty" class="nav-link" data-scroll-target="#sty2psty">sty2pSTY</a></li>
+  </ul></li>
+  <li><a href="#checker" id="toc-checker" class="nav-link" data-scroll-target="#checker">Checker</a>
+  <ul class="collapse">
+  <li><a href="#check_seq" id="toc-check_seq" class="nav-link" data-scroll-target="#check_seq">check_seq</a></li>
+  <li><a href="#check_seqs" id="toc-check_seqs" class="nav-link" data-scroll-target="#check_seqs">check_seqs</a></li>
+  <li><a href="#validate_site" id="toc-validate_site" class="nav-link" data-scroll-target="#validate_site">validate_site</a></li>
+  <li><a href="#validate_site_df" id="toc-validate_site_df" class="nav-link" data-scroll-target="#validate_site_df">validate_site_df</a></li>
+  </ul></li>
+  <li><a href="#phosphorylate-protein-seq" id="toc-phosphorylate-protein-seq" class="nav-link" data-scroll-target="#phosphorylate-protein-seq">Phosphorylate protein seq</a>
+  <ul class="collapse">
+  <li><a href="#phosphorylate_seq" id="toc-phosphorylate_seq" class="nav-link" data-scroll-target="#phosphorylate_seq">phosphorylate_seq</a></li>
+  <li><a href="#phosphorylate_seq_df" id="toc-phosphorylate_seq_df" class="nav-link" data-scroll-target="#phosphorylate_seq_df">phosphorylate_seq_df</a></li>
+  </ul></li>
+  <li><a href="#extract-site-seq" id="toc-extract-site-seq" class="nav-link" data-scroll-target="#extract-site-seq">Extract site seq</a>
+  <ul class="collapse">
+  <li><a href="#extract_site_seq" id="toc-extract_site_seq" class="nav-link" data-scroll-target="#extract_site_seq">extract_site_seq</a></li>
+  </ul></li>
+  <li><a href="#alignment" id="toc-alignment" class="nav-link" data-scroll-target="#alignment">Alignment</a>
+  <ul class="collapse">
+  <li><a href="#get_fasta" id="toc-get_fasta" class="nav-link" data-scroll-target="#get_fasta">get_fasta</a></li>
+  <li><a href="#run_clustalo" id="toc-run_clustalo" class="nav-link" data-scroll-target="#run_clustalo">run_clustalo</a></li>
+  <li><a href="#aln2df" id="toc-aln2df" class="nav-link" data-scroll-target="#aln2df">aln2df</a></li>
+  <li><a href="#get_aln_freq" id="toc-get_aln_freq" class="nav-link" data-scroll-target="#get_aln_freq">get_aln_freq</a></li>
+  </ul></li>
+  <li><a href="#end" id="toc-end" class="nav-link" data-scroll-target="#end">End</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data.html">Modules</a></li><li class="breadcrumb-item"><a href="./utils.html">Utils</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Utils</h1>
+</div>
+
+<div>
+  <div class="description">
+    Functions to preprocess sequence to prepare kinase substrate dataset
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+</section>
+<section id="common-funcs" class="level2">
+<h2 class="anchored" data-anchor-id="common-funcs">Common funcs</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L25" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="prepare_path" class="level3">
+<h3 class="anchored" data-anchor-id="prepare_path">prepare_path</h3>
+<blockquote class="blockquote">
+<pre><code> prepare_path (path)</code></pre>
+</blockquote>
+<p><em>Ensure the parent directory exists and return the full file path.</em></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pssm_df <span class="op">=</span> get_prob(df_k,<span class="st">'site_seq'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>plot_logo_heatmap(pssm_df,title<span class="op">=</span><span class="ss">f'</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss"> (n=</span><span class="sc">{</span><span class="bu">len</span>(df_k)<span class="sc">:,}</span><span class="ss">)'</span>,figsize<span class="op">=</span>(<span class="dv">17</span>,<span class="dv">10</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># check if directory exist; if not, create one, then return the full path</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>path1<span class="op">=</span>prepare_path(<span class="ss">f'fig/cddm/</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">/pssm_freq.svg'</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>save_show(path1,show_only<span class="op">=</span>SHOW)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L32" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_diff" class="level3">
+<h3 class="anchored" data-anchor-id="get_diff">get_diff</h3>
+<blockquote class="blockquote">
+<pre><code> get_diff (df1, df2, col1, col2=None)</code></pre>
+</blockquote>
+<p><em>Get non-overlap parts of two dataframes.</em></p>
+<div id="cell-7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="op">=</span> pd.DataFrame({<span class="st">'gene'</span>: [<span class="st">'A'</span>, <span class="st">'B'</span>, <span class="st">'C'</span>]})</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> pd.DataFrame({<span class="st">'gene'</span>: [<span class="st">'B'</span>, <span class="st">'C'</span>, <span class="st">'D'</span>]})</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>df1_unq, df2_unq <span class="op">=</span> get_diff(df1, df2, <span class="st">'gene'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df1_unq</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">gene</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>A</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-9" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df2_unq</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">gene</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>D</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L41" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="psty2sty" class="level3">
+<h3 class="anchored" data-anchor-id="psty2sty">pSTY2sty</h3>
+<blockquote class="blockquote">
+<pre><code> pSTY2sty (string)</code></pre>
+</blockquote>
+<p><em>Convert pS/pT/pY to s/t/y in a string.</em></p>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L46" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="sty2psty" class="level3">
+<h3 class="anchored" data-anchor-id="sty2psty">sty2pSTY</h3>
+<blockquote class="blockquote">
+<pre><code> sty2pSTY (string)</code></pre>
+</blockquote>
+<p><em>Convert s/t/y to pS/pT/pY in a string.</em></p>
+</section>
+</section>
+<section id="checker" class="level2">
+<h2 class="anchored" data-anchor-id="checker">Checker</h2>
+<p>In many phosphorylation datsets, there are amino acids in the site sequence that are in lower case but does not belong to s/t/y. Also, there are uncommon amino acids such as U or O that appear in the sequence. Therefore, it is essential to convert the sequence string for kinase ranking.</p>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L51" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="check_seq" class="level3">
+<h3 class="anchored" data-anchor-id="check_seq">check_seq</h3>
+<blockquote class="blockquote">
+<pre><code> check_seq (seq)</code></pre>
+</blockquote>
+<p><em>Convert non-s/t/y characters to uppercase and replace disallowed characters with underscores.</em></p>
+<div id="cell-15" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    check_seq(<span class="st">'aaadaaa'</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(e)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>aaadaaa has d at position 3; need to have one of 's', 't', or 'y' in the center</code></pre>
+</div>
+</div>
+<div id="cell-16" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>check_seq(<span class="st">'AAkUuPSFstTH'</span>) <span class="co"># if the center amino acid does not belong to sty/STY, will raise an error</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'AAK__PSFstTH'</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L60" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="check_seqs" class="level3">
+<h3 class="anchored" data-anchor-id="check_seqs">check_seqs</h3>
+<blockquote class="blockquote">
+<pre><code> check_seqs (data, col=None)</code></pre>
+</blockquote>
+<p><em>Convert non-s/t/y to upper case &amp; replace with underscore if the character is not in the allowed set</em></p>
+<div id="cell-18" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df<span class="op">=</span>Data.get_human_site()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>check_seqs(df.head(),<span class="st">'site_seq'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>0    _MTVLEAVLEIQAITGSRLLsMVPGPARPPGSCWDPTQCTR
+1    QKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPG
+2    EDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKTHRAIADHLF
+3    EDCMSVPGKTHRAIADHLFWsEETKSRFTEYsMTssVMRRN
+4    RAIADHLFWsEETKSRFTEYsMTssVMRRNEQLTLHDERFE
+Name: site_seq, dtype: object</code></pre>
+</div>
+</div>
+<div id="cell-19" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>check_seqs(df[<span class="st">'site_seq'</span>].head())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>0    _MTVLEAVLEIQAITGSRLLsMVPGPARPPGSCWDPTQCTR
+1    QKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPG
+2    EDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKTHRAIADHLF
+3    EDCMSVPGKTHRAIADHLFWsEETKSRFTEYsMTssVMRRN
+4    RAIADHLFWsEETKSRFTEYsMTssVMRRNEQLTLHDERFE
+Name: site_seq, dtype: object</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L75" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="validate_site" class="level3">
+<h3 class="anchored" data-anchor-id="validate_site">validate_site</h3>
+<blockquote class="blockquote">
+<pre><code> validate_site (site_info, seq)</code></pre>
+</blockquote>
+<p><em>Validate site position residue match with site residue.</em></p>
+<div id="cell-21" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>site<span class="op">=</span><span class="st">'S610'</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>seq <span class="op">=</span> <span class="st">'MSVPSSLSQSAINANSHGGPALSLPLPLHAAHNQLLNAKLQATAVGPKDLRSAMGEGGGPEPGPANAKWLKEGQNQLRRAATAHRDQNRNVTLTLAEEASQEPEMAPLGPKGLIHLYSELELSAHNAANRGLRGPGLIISTQEQGPDEGEEKAAGEAEEEEEDDDDEEEEEDLSSPPGLPEPLESVEAPPRPQALTDGPREHSKSASLLFGMRNSAASDEDSSWATLSQGSPSYGSPEDTDSFWNPNAFETDSDLPAGWMRVQDTSGTYYWHIPTGTTQWEPPGRASPSQGSSPQEESQLTWTGFAHGEGFEDGEFWKDEPSDEAPMELGLKEPEEGTLTFPAQSLSPEPLPQEEEKLPPRNTNPGIKCFAVRSLGWVEMTEEELAPGRSSVAVNNCIRQLSYHKNNLHDPMSGGWGEGKDLLLQLEDETLKLVEPQSQALLHAQPIISIRVWGVGRDSGRERDFAYVARDKLTQMLKCHVFRCEAPAKNIATSLHEICSKIMAERRNARCLVNGLSLDHSKLVDVPFQVEFPAPKNELVQKFQVYYLGNVPVAKPVGVDVINGALESVLSSSSREQWTPSHVSVAPATLTILHQQTEAVLGECRVRFLSFLAVGRDVHTFAFIMAAGPASFCCHMFWCEPNAASLSEAVQAACMLRYQKCLDARSQASTSCLPAPPAESVARRVGWTVRRGVQSLWGSLKPKRLGAHTP'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-22" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>validate_site(site,seq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>1</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L84" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="validate_site_df" class="level3">
+<h3 class="anchored" data-anchor-id="validate_site_df">validate_site_df</h3>
+<blockquote class="blockquote">
+<pre><code> validate_site_df (df, site_info_col, protein_seq_col)</code></pre>
+</blockquote>
+<p><em>Validate site position residue match with site residue in a dataframe.</em></p>
+<div id="cell-24" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>validate_site_df(df.head(),<span class="st">'site'</span>,<span class="st">'substrate_sequence'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>0    1
+1    1
+2    1
+3    1
+4    1
+dtype: int64</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="phosphorylate-protein-seq" class="level2">
+<h2 class="anchored" data-anchor-id="phosphorylate-protein-seq">Phosphorylate protein seq</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L91" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="phosphorylate_seq" class="level3">
+<h3 class="anchored" data-anchor-id="phosphorylate_seq">phosphorylate_seq</h3>
+<blockquote class="blockquote">
+<pre><code> phosphorylate_seq (seq, *sites)</code></pre>
+</blockquote>
+<p><em>Phosphorylate protein sequence based on phosphosites (e.g.,S140).</em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>seq</td>
+<td></td>
+<td>full protein sequence</td>
+</tr>
+<tr class="even">
+<td>sites</td>
+<td>VAR_POSITIONAL</td>
+<td>site info, e.g., S140</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-27" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>seq <span class="op">=</span> <span class="st">'MSKSESPKEPEQLRKLFIGGLSFETTDESLRSHFEQWGTLTDCVVMRDPNTKRSRGFGFVTYATVEEVDAAMNARPHKVDGRVVEPKRAVSREDSQRPDAHLTVKKIFVGGIKEDTEEHHLRDYFEQYGKIEVIEIMTDRGSGKKRGFAFVTFDDHDSVDKIVIQKYHTVNGHNCEVRKALSKQEMASASSSQRGRSGSGNFGGGRGGGFGGNDNFGRGGNFSGRGGFGGSRGGGGYGGSGDGYNGFGNDGSNFGGGGSYNDFGNYNNQSSNFGPMKGGNFEGRSSGPHGGGGQYFAKPRNQGGYGGSSSSSSYGSGRRF'</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>phosphorylate_seq(seq,<span class="op">*</span>[<span class="st">'S95'</span>, <span class="st">'S22'</span>, <span class="st">'T25'</span>, <span class="st">'S6'</span>, <span class="st">'S158'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'MSKSEsPKEPEQLRKLFIGGLsFEtTDESLRSHFEQWGTLTDCVVMRDPNTKRSRGFGFVTYATVEEVDAAMNARPHKVDGRVVEPKRAVSREDsQRPDAHLTVKKIFVGGIKEDTEEHHLRDYFEQYGKIEVIEIMTDRGSGKKRGFAFVTFDDHDsVDKIVIQKYHTVNGHNCEVRKALSKQEMASASSSQRGRSGSGNFGGGRGGGFGGNDNFGRGGNFSGRGGFGGSRGGGGYGGSGDGYNGFGNDGSNFGGGGSYNDFGNYNNQSSNFGPMKGGNFEGRSSGPHGGGGQYFAKPRNQGGYGGSSSSSSYGSGRRF'</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L112" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="phosphorylate_seq_df" class="level3">
+<h3 class="anchored" data-anchor-id="phosphorylate_seq_df">phosphorylate_seq_df</h3>
+<blockquote class="blockquote">
+<pre><code> phosphorylate_seq_df (df, id_col='substrate_uniprot',
+                       seq_col='substrate_sequence', site_col='site')</code></pre>
+</blockquote>
+<p><em>Phosphorylate whole sequence based on phosphosites in a dataframe</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>df</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>id_col</td>
+<td>str</td>
+<td>substrate_uniprot</td>
+<td>column of sequence ID</td>
+</tr>
+<tr class="odd">
+<td>seq_col</td>
+<td>str</td>
+<td>substrate_sequence</td>
+<td>column that contains protein sequence</td>
+</tr>
+<tr class="even">
+<td>site_col</td>
+<td>str</td>
+<td>site</td>
+<td>column that contains site info, e.g., S140</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-29" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>df<span class="op">=</span>Data.get_human_site()</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>df.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">substrate_uniprot</th>
+<th data-quarto-table-cell-role="th">substrate_genes</th>
+<th data-quarto-table-cell-role="th">site</th>
+<th data-quarto-table-cell-role="th">source</th>
+<th data-quarto-table-cell-role="th">AM_pathogenicity</th>
+<th data-quarto-table-cell-role="th">substrate_sequence</th>
+<th data-quarto-table-cell-role="th">substrate_species</th>
+<th data-quarto-table-cell-role="th">sub_site</th>
+<th data-quarto-table-cell-role="th">substrate_phosphoseq</th>
+<th data-quarto-table-cell-role="th">position</th>
+<th data-quarto-table-cell-role="th">site_seq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>A0A024R4G9</td>
+<td>C19orf48 MGC13170 hCG_2008493</td>
+<td>S20</td>
+<td>psp</td>
+<td>NaN</td>
+<td>MTVLEAVLEIQAITGSRLLSMVPGPARPPGSCWDPTQCTRTWLLSH...</td>
+<td>Homo sapiens (Human)</td>
+<td>A0A024R4G9_S20</td>
+<td>MTVLEAVLEIQAITGSRLLsMVPGPARPPGSCWDPTQCTRTWLLSH...</td>
+<td>20</td>
+<td>_MTVLEAVLEIQAITGSRLLsMVPGPARPPGSCWDPTQCTR</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>A0A075B6Q4</td>
+<td>None</td>
+<td>S24</td>
+<td>ochoa</td>
+<td>NaN</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT...</td>
+<td>Homo sapiens (Human)</td>
+<td>A0A075B6Q4_S24</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKT...</td>
+<td>24</td>
+<td>QKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPG</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>A0A075B6Q4</td>
+<td>None</td>
+<td>S35</td>
+<td>ochoa</td>
+<td>NaN</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT...</td>
+<td>Homo sapiens (Human)</td>
+<td>A0A075B6Q4_S35</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKT...</td>
+<td>35</td>
+<td>EDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKTHRAIADHLF</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>A0A075B6Q4</td>
+<td>None</td>
+<td>S57</td>
+<td>ochoa</td>
+<td>NaN</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT...</td>
+<td>Homo sapiens (Human)</td>
+<td>A0A075B6Q4_S57</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKT...</td>
+<td>57</td>
+<td>EDCMSVPGKTHRAIADHLFWsEETKSRFTEYsMTssVMRRN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>A0A075B6Q4</td>
+<td>None</td>
+<td>S68</td>
+<td>ochoa</td>
+<td>NaN</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT...</td>
+<td>Homo sapiens (Human)</td>
+<td>A0A075B6Q4_S68</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKT...</td>
+<td>68</td>
+<td>RAIADHLFWsEETKSRFTEYsMTssVMRRNEQLTLHDERFE</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-30" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>phosphorylate_seq_df(df.head(<span class="dv">100</span>),<span class="st">'substrate_uniprot'</span>,<span class="st">'substrate_sequence'</span>,<span class="st">'site'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">substrate_uniprot</th>
+<th data-quarto-table-cell-role="th">site</th>
+<th data-quarto-table-cell-role="th">substrate_sequence</th>
+<th data-quarto-table-cell-role="th">phosphoseq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>A0A024R4G9</td>
+<td>[S20]</td>
+<td>MTVLEAVLEIQAITGSRLLSMVPGPARPPGSCWDPTQCTRTWLLSH...</td>
+<td>MTVLEAVLEIQAITGSRLLsMVPGPARPPGSCWDPTQCTRTWLLSH...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>A0A075B6Q4</td>
+<td>[S24, S35, S57, S68, S71, S72]</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT...</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKT...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">22</th>
+<td>A0A0A6YYL6</td>
+<td>[S5, Y139, S141, S142]</td>
+<td>MVRYSLDPENPTKSCKSRGSNLRVHFKNTRETAQAIKGMHIRKATK...</td>
+<td>MVRYsLDPENPTKSCKSRGSNLRVHFKNTRETAQAIKGMHIRKATK...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">23</th>
+<td>A0A0B4J1R7</td>
+<td>[T6, S43, S45, S46]</td>
+<td>MMATGTPESQARFGQSVKGLLTEKVTTCGTDVIALTKQVLKGSRSS...</td>
+<td>MMATGtPESQARFGQSVKGLLTEKVTTCGTDVIALTKQVLKGsRss...</td>
+</tr>
+</tbody>
+</table>
+
+<p>24 rows × 4 columns</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="extract-site-seq" class="level2">
+<h2 class="anchored" data-anchor-id="extract-site-seq">Extract site seq</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L124" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="extract_site_seq" class="level3">
+<h3 class="anchored" data-anchor-id="extract_site_seq">extract_site_seq</h3>
+<blockquote class="blockquote">
+<pre><code> extract_site_seq (df:pandas.core.frame.DataFrame, seq_col:str,
+                   site_col:str, n=7)</code></pre>
+</blockquote>
+<p><em>Extract -n to +n site sequence from protein sequence</em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>df</td>
+<td>DataFrame</td>
+<td></td>
+<td>dataframe that contains protein sequence</td>
+</tr>
+<tr class="even">
+<td>seq_col</td>
+<td>str</td>
+<td></td>
+<td>column name of protein sequence</td>
+</tr>
+<tr class="odd">
+<td>site_col</td>
+<td>str</td>
+<td></td>
+<td>column name of site information (e.g., S10)</td>
+</tr>
+<tr class="even">
+<td>n</td>
+<td>int</td>
+<td>7</td>
+<td>length of surrounding sequence (default -7 to +7)</td>
+</tr>
+</tbody>
+</table>
+<p>As some datasets only contains protein information and position of phosphorylation sites, but not phosphorylation site sequence, we can retreive protein sequence and use this function to get -7 to +7 phosphorylation site sequence (as numpy array).</p>
+<p>Remember to validate the phospho-acceptor at position 0 before extract the site sequence, as there could be mismatch due to the protein sequence database updates.</p>
+<div id="cell-34" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>df.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">substrate_uniprot</th>
+<th data-quarto-table-cell-role="th">substrate_genes</th>
+<th data-quarto-table-cell-role="th">site</th>
+<th data-quarto-table-cell-role="th">source</th>
+<th data-quarto-table-cell-role="th">AM_pathogenicity</th>
+<th data-quarto-table-cell-role="th">substrate_sequence</th>
+<th data-quarto-table-cell-role="th">substrate_species</th>
+<th data-quarto-table-cell-role="th">sub_site</th>
+<th data-quarto-table-cell-role="th">substrate_phosphoseq</th>
+<th data-quarto-table-cell-role="th">position</th>
+<th data-quarto-table-cell-role="th">site_seq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>A0A024R4G9</td>
+<td>C19orf48 MGC13170 hCG_2008493</td>
+<td>S20</td>
+<td>psp</td>
+<td>NaN</td>
+<td>MTVLEAVLEIQAITGSRLLSMVPGPARPPGSCWDPTQCTRTWLLSH...</td>
+<td>Homo sapiens (Human)</td>
+<td>A0A024R4G9_S20</td>
+<td>MTVLEAVLEIQAITGSRLLsMVPGPARPPGSCWDPTQCTRTWLLSH...</td>
+<td>20</td>
+<td>_MTVLEAVLEIQAITGSRLLsMVPGPARPPGSCWDPTQCTR</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>A0A075B6Q4</td>
+<td>None</td>
+<td>S24</td>
+<td>ochoa</td>
+<td>NaN</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT...</td>
+<td>Homo sapiens (Human)</td>
+<td>A0A075B6Q4_S24</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKT...</td>
+<td>24</td>
+<td>QKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPG</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>A0A075B6Q4</td>
+<td>None</td>
+<td>S35</td>
+<td>ochoa</td>
+<td>NaN</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT...</td>
+<td>Homo sapiens (Human)</td>
+<td>A0A075B6Q4_S35</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKT...</td>
+<td>35</td>
+<td>EDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKTHRAIADHLF</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>A0A075B6Q4</td>
+<td>None</td>
+<td>S57</td>
+<td>ochoa</td>
+<td>NaN</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT...</td>
+<td>Homo sapiens (Human)</td>
+<td>A0A075B6Q4_S57</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKT...</td>
+<td>57</td>
+<td>EDCMSVPGKTHRAIADHLFWsEETKSRFTEYsMTssVMRRN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>A0A075B6Q4</td>
+<td>None</td>
+<td>S68</td>
+<td>ochoa</td>
+<td>NaN</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKT...</td>
+<td>Homo sapiens (Human)</td>
+<td>A0A075B6Q4_S68</td>
+<td>MDIQKSENEDDSEWEDVDDEKGDsNDDYDSAGLLsDEDCMSVPGKT...</td>
+<td>68</td>
+<td>RAIADHLFWsEETKSRFTEYsMTssVMRRNEQLTLHDERFE</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-35" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>extract_site_seq(df.head(),</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                 seq_col<span class="op">=</span><span class="st">'substrate_sequence'</span>,</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                 site_col<span class="op">=</span><span class="st">'site'</span>,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>                 n<span class="op">=</span><span class="dv">30</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>                 )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>100%|██████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:00&lt;00:00, 9493.67it/s]</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>array(['___________MTVLEAVLEIQAITGSRLLSMVPGPARPPGSCWDPTQCTRTWLLSHTPRR',
+       '_______MDIQKSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKTHRAIADHL',
+       'KSENEDDSEWEDVDDEKGDSNDDYDSAGLLSDEDCMSVPGKTHRAIADHLFWSEETKSRFT',
+       'DYDSAGLLSDEDCMSVPGKTHRAIADHLFWSEETKSRFTEYSMTSSVMRRNEQLTLHDERF',
+       'DCMSVPGKTHRAIADHLFWSEETKSRFTEYSMTSSVMRRNEQLTLHDERFEKFYEQYDDDE'],
+      dtype='&lt;U61')</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="alignment" class="level2">
+<h2 class="anchored" data-anchor-id="alignment">Alignment</h2>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L151" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="get_fasta" class="level3">
+<h3 class="anchored" data-anchor-id="get_fasta">get_fasta</h3>
+<blockquote class="blockquote">
+<pre><code> get_fasta (df, seq_col='kd_seq', id_col='kd_ID', path='out.fasta')</code></pre>
+</blockquote>
+<p><em>Generate fasta file from sequences.</em></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>get_fasta(kd,seq_col<span class="op">=</span><span class="st">'kd_seq'</span>,id_col<span class="op">=</span><span class="st">'kd_ID'</span>,path<span class="op">=</span><span class="st">'raw/kinase_domains.fasta'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To run clustalo alignment, can run either through terminal or the function</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt-get update</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt-get install clustalo</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="ex">clustalo</span> <span class="at">-i</span> kinase_domains.fasta <span class="at">-o</span> kinase_domains.aln <span class="at">--force</span> <span class="at">--outfmt</span><span class="op">=</span>clu</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L161" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="run_clustalo" class="level3">
+<h3 class="anchored" data-anchor-id="run_clustalo">run_clustalo</h3>
+<blockquote class="blockquote">
+<pre><code> run_clustalo (input_fasta, output_aln, outfmt='clu')</code></pre>
+</blockquote>
+<p><em>Run Clustal Omega to perform multiple sequence alignment.</em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>input_fasta</td>
+<td></td>
+<td></td>
+<td>.fasta fname</td>
+</tr>
+<tr class="even">
+<td>output_aln</td>
+<td></td>
+<td></td>
+<td>.aln output fname</td>
+</tr>
+<tr class="odd">
+<td>outfmt</td>
+<td>str</td>
+<td>clu</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>run_clustalo(<span class="st">"kinase_domains.fasta"</span>, <span class="st">"raw/kinase_domains.aln"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L177" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="aln2df" class="level3">
+<h3 class="anchored" data-anchor-id="aln2df">aln2df</h3>
+<blockquote class="blockquote">
+<pre><code> aln2df (fname)</code></pre>
+</blockquote>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> aln2df(<span class="st">"raw/kinase_domains.aln"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<p><a href="https://github.com/sky1ove/katlas/blob/main/katlas/utils.py#L186" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_aln_freq" class="level3">
+<h3 class="anchored" data-anchor-id="get_aln_freq">get_aln_freq</h3>
+<blockquote class="blockquote">
+<pre><code> get_aln_freq (df)</code></pre>
+</blockquote>
+<p><em>Get frequency of each amino acid across each position from the aln2df output.</em></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>freq_df <span class="op">=</span> get_aln_freq(df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="end" class="level2">
+<h2 class="anchored" data-anchor-id="end">End</h2>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/sky1ove\.github\.io\/katlas");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
