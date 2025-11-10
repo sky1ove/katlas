@@ -37,6 +37,7 @@ def download(download_dir=None, # dest directory of downloaded folder
             if verbose: print(f"✅ Dataset exists at: {Data.DATASET_DIR}")
             return
 
+    Data.DATASET_DIR.mkdir(parents=True, exist_ok=True)
     # ⬇️ Download zip (always fresh)
     print(f"⬇️ Downloading katlas_dataset.zip ...")
     downloaded_file = gdown.download(path)
@@ -133,7 +134,7 @@ def get_pspa_st_norm():
 # %% ../nbs/00_data.ipynb 30
 @patch_to(Data)
 @lru_cache
-def get_pspa_all_norm() -> pd.DataFrame:
+def get_pspa() -> pd.DataFrame:
     """Get PSPA normalized data of serine/threonine and tyrosine kinases."""
     path = "PSPA/pspa_all_norm.parquet"
     return Data.read_file(path)
@@ -141,7 +142,7 @@ def get_pspa_all_norm() -> pd.DataFrame:
 # %% ../nbs/00_data.ipynb 32
 @patch_to(Data)
 @lru_cache
-def get_pspa_all_scale():
+def get_pspa_scale():
     """
     Get PSPA (-5 to +4) scaled data from PSPA normalized data. 
     Each position (including both pS/pT and pS=pT) are normalized to 1.

@@ -6,8 +6,8 @@
 __all__ = ['sty_color', 'group_color', 'pspa_category_color', 'set_sns', 'save_svg', 'save_pdf', 'save_show', 'get_color_dict',
            'get_subfamily_color', 'get_plt_color', 'get_hue_big', 'reduce_feature', 'plot_2d', 'plot_cluster',
            'plot_bokeh', 'plot_rank', 'plot_hist', 'plot_count', 'plot_bar', 'plot_group_bar', 'plot_stacked',
-           'plot_violin', 'add_stats', 'plot_box', 'plot_corr', 'get_similarity', 'get_AUCDF', 'plot_confusion_matrix',
-           'plot_pie', 'calculate_pct', 'plot_composition', 'plot_cnt']
+           'plot_violin', 'add_stats', 'plot_box', 'plot_rel', 'get_similarity', 'plot_corr', 'get_AUCDF',
+           'plot_confusion_matrix', 'plot_pie', 'calculate_pct', 'plot_composition', 'plot_cnt']
 
 # %% ../nbs/05_plot.ipynb 3
 import joblib,logomaker
@@ -674,7 +674,7 @@ def plot_box(df,
 
 # %% ../nbs/05_plot.ipynb 66
 @delegates(sns.regplot)
-def plot_corr(
+def plot_rel(
     df,  # dataframe that contains data
     x,  # x axis values, or colname of x axis
     y,  # y axis values, or colname of y axis
@@ -753,12 +753,12 @@ def get_similarity(df, metric='euclidean'):
     return dist_df, sim_df
 
 # %% ../nbs/05_plot.ipynb 71
-def plot_corr(df_corr, inverse_color=False):
+def plot_corr(df_corr, inverse_color=False,figsize=(15,10),**kwargs):
     "Plot distance/similarity matrix"
     
     mask = np.triu(np.ones_like(df_corr, dtype=bool))
     cmap = 'coolwarm' if not inverse_color else 'coolwarm_r'
-    plt.figure(figsize=(15,10))
+    plt.figure(figsize=figsize)
     sns.heatmap(
         df_corr,
         cmap=cmap,
@@ -767,6 +767,7 @@ def plot_corr(df_corr, inverse_color=False):
         fmt='.2f',
         linewidths=0.1,  
         linecolor='white',
+        **kwargs
     )
     plt.xlabel('')
     plt.ylabel('')

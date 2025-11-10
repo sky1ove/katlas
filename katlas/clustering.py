@@ -66,7 +66,7 @@ def plot_dendrogram(Z,
                     color_thr=0.07,
                     dense=7, # the higher the more dense for each row
                     line_width=1,
-                    title='Hierarchical Clustering Dendrogram',
+                    title=None,
                     scale=1,
                     **kwargs):
     length = (len(Z) + 1) // dense
@@ -80,8 +80,8 @@ def plot_dendrogram(Z,
             color_threshold=color_thr,
             **kwargs
         )
-    plt.title(title)
-    plt.ylabel('Distance')
+    if title is not None: plt.title(title)
+    plt.xlabel('Distance')
     # plt.savefig(output, bbox_inches='tight')
     # plt.close()
     ax = plt.gca()
