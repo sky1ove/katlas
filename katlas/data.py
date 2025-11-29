@@ -5,7 +5,7 @@
 # %% auto 0
 __all__ = ['Data', 'CPTAC']
 
-# %% ../nbs/00_data.ipynb 3
+# %% ../nbs/00_data.ipynb 5
 import pandas as pd
 from functools import lru_cache
 from fastcore.all import patch,patch_to
@@ -13,22 +13,33 @@ from fastcore.all import patch,patch_to
 import gdown,zipfile,shutil,tempfile
 from pathlib import Path
 
-# %% ../nbs/00_data.ipynb 9
+# %% ../nbs/00_data.ipynb 10
 class Data:
     "A class for fetching various datasets."
     DATASET_DIR = Path(tempfile.gettempdir()) / 'katlas_dataset'
 
-# %% ../nbs/00_data.ipynb 12
+# %% ../nbs/00_data.ipynb 11
 @patch_to(Data)
-def download(download_dir=None, # dest directory of downloaded folder
-             force=False, # if force, will overwrite the current dataset folder
-             verbose=True, # print existing dataset folder
-            ):
-    "Download dataset zip and extract them in tmp folder if dataset_dir is not given."
+def set_dir(path):
+    Data.DATASET_DIR = Path(path)/'katlas_dataset'
+    print(f"✅ Dataset path set to: {Data.DATASET_DIR}")
+
+# %% ../nbs/00_data.ipynb 15
+@patch_to(Data)
+def download(download_dir=None, # Parent directory for katlas_dataset folder. If None, uses current Data.DATASET_DIR.
+             force=False, #If True, re-download even if exists
+             verbose=True, # Print status messages
+             ):
+    """
+    Download dataset zip and extract to folder.
+    """
     path = 'https://drive.google.com/uc?id=17wIl0DbdoHV036Z3xgaT_0H3LlM_W47l'
-    if download_dir is not None: Data.DATASET_DIR=Path(download_dir)/'katlas_dataset'
     
-    # 🧹 If old extracted folder exists, remove it (so we overwrite cleanly)
+    # Update path if custom dir provided
+    if download_dir is not None: 
+        Data.DATASET_DIR = Path(download_dir) / 'katlas_dataset'
+    
+    # Check if already exists
     if Data.DATASET_DIR.exists():
         if force:
             print(f"♻️ Removing existing folder: {Data.DATASET_DIR}")
@@ -38,15 +49,14 @@ def download(download_dir=None, # dest directory of downloaded folder
             return
 
     Data.DATASET_DIR.mkdir(parents=True, exist_ok=True)
-    # ⬇️ Download zip (always fresh)
+    
     print(f"⬇️ Downloading katlas_dataset.zip ...")
     downloaded_file = gdown.download(path)
 
-    # 📦 Extract zip to folder
     print(f"📂 Extracting to {Data.DATASET_DIR} ...")
     with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
         zip_ref.extractall(Data.DATASET_DIR)
-    # 🧹 Remove the zip after extraction
+    
     try:
         print(f"🧹 Removing zip file: {downloaded_file}")
         Path(downloaded_file).unlink()
@@ -55,7 +65,7 @@ def download(download_dir=None, # dest directory of downloaded folder
 
     print(f"✅ Done! Extracted dataset is at: {Data.DATASET_DIR}")
 
-# %% ../nbs/00_data.ipynb 16
+# %% ../nbs/00_data.ipynb 19
 @patch_to(Data)
 def read_file(rel_path):
     """
@@ -66,27 +76,18 @@ def read_file(rel_path):
     """
     Data.download(verbose=False)
     path = Data.DATASET_DIR / rel_path
+    
+    if not path.exists(): raise FileNotFoundError(f"Dataset file not found: {path}")
+    
     ext = path.suffix.lower()
-
+    
     if ext == '.csv': df = pd.read_csv(path)
-    elif ext == '.parquet': 
-        # df = pd.read_parquet(path)
-        try:
-            df = pd.read_parquet(path, engine="fastparquet")
-        except Exception:
-            try:
-                df = pd.read_parquet(path, engine="pyarrow")
-            except Exception as e:
-                print(f"Failed to read parquet file {path}: {e}")
-                return None
-    else: raise ValueError(f"❌ Unsupported file type: {ext}")
+    elif ext == '.parquet': df = pd.read_parquet(path)  # Let pandas choose engine automatically
+    else: raise ValueError(f"Unsupported file type: {ext}. Supported types: .csv, .parquet")
+    
+    return df.rename(columns={"Unnamed: 0": "kinase"}) if "Unnamed: 0" in df.columns else df
 
-    if "Unnamed: 0" in df.columns:
-        df = df.rename(columns={"Unnamed: 0": "kinase"})
-
-    return df
-
-# %% ../nbs/00_data.ipynb 19
+# %% ../nbs/00_data.ipynb 22
 @patch_to(Data)
 def get_kinase_info():
     """
@@ -98,7 +99,7 @@ def get_kinase_info():
     """
     return Data.read_file("kinase_info.csv")
 
-# %% ../nbs/00_data.ipynb 21
+# %% ../nbs/00_data.ipynb 24
 @patch_to(Data)
 def get_kinase_uniprot() -> pd.DataFrame:
     """
@@ -108,14 +109,14 @@ def get_kinase_uniprot() -> pd.DataFrame:
     path = "uniprot_human_keyword_kinase.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 23
+# %% ../nbs/00_data.ipynb 26
 @patch_to(Data)
 def get_kd_uniprot():
     "Kinase domains extracted from UniProt database. "
     path = "uniprot_kd_labeled.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 26
+# %% ../nbs/00_data.ipynb 29
 @patch_to(Data)
 @lru_cache
 def get_pspa_tyr():
@@ -123,7 +124,7 @@ def get_pspa_tyr():
     path = "PSPA/pspa_tyr_norm.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 28
+# %% ../nbs/00_data.ipynb 31
 @patch_to(Data)
 @lru_cache
 def get_pspa_st():
@@ -131,7 +132,7 @@ def get_pspa_st():
     path = "PSPA/pspa_st_norm.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 30
+# %% ../nbs/00_data.ipynb 33
 @patch_to(Data)
 @lru_cache
 def get_pspa() -> pd.DataFrame:
@@ -139,7 +140,7 @@ def get_pspa() -> pd.DataFrame:
     path = "PSPA/pspa_all_norm.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 32
+# %% ../nbs/00_data.ipynb 35
 @patch_to(Data)
 @lru_cache
 def get_pspa_scale():
@@ -150,7 +151,7 @@ def get_pspa_scale():
     path = "PSPA/pspa_all_scale.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 34
+# %% ../nbs/00_data.ipynb 37
 @patch_to(Data)
 @lru_cache
 def get_pspa_st_pct():
@@ -158,7 +159,7 @@ def get_pspa_st_pct():
     path = "PSPA/pspa_pct_st.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 36
+# %% ../nbs/00_data.ipynb 39
 @patch_to(Data)
 @lru_cache
 def get_pspa_tyr_pct():
@@ -166,7 +167,7 @@ def get_pspa_tyr_pct():
     path = "PSPA/pspa_pct_tyr.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 38
+# %% ../nbs/00_data.ipynb 41
 @patch_to(Data)
 @lru_cache
 def get_num_dict() -> dict:
@@ -174,14 +175,14 @@ def get_num_dict() -> dict:
     path = "PSPA/pspa_divide_num.csv"
     return Data.read_file(path).set_index("kinase")["num_random_aa"].to_dict()
 
-# %% ../nbs/00_data.ipynb 41
+# %% ../nbs/00_data.ipynb 44
 @patch_to(Data)
 def get_ks_unique():
     """Get kinase substrate dataset with unique sub site ID."""
     path = "CDDM/unique_ks_sites.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 43
+# %% ../nbs/00_data.ipynb 46
 @patch_to(Data)
 def get_ks_dataset(add_kinase_info=True):
     """
@@ -245,7 +246,7 @@ def get_ks_dataset(add_kinase_info=True):
     df.drop(columns="uniprot_clean", inplace=True)
     return df
 
-# %% ../nbs/00_data.ipynb 45
+# %% ../nbs/00_data.ipynb 48
 @patch_to(Data)
 @lru_cache
 def get_ks_background():
@@ -253,7 +254,7 @@ def get_ks_background():
     path = "CDDM/ks_background.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 47
+# %% ../nbs/00_data.ipynb 50
 @patch_to(Data)
 @lru_cache
 def get_cddm():
@@ -261,7 +262,7 @@ def get_cddm():
     path = "CDDM/pssms.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 49
+# %% ../nbs/00_data.ipynb 52
 @patch_to(Data)
 @lru_cache
 def get_cddm_upper():
@@ -269,7 +270,7 @@ def get_cddm_upper():
     path = "CDDM/pssms_upper.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 51
+# %% ../nbs/00_data.ipynb 54
 @patch_to(Data)
 @lru_cache
 def get_cddm_LO():
@@ -277,7 +278,7 @@ def get_cddm_LO():
     path = "CDDM/pssms_LO.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 53
+# %% ../nbs/00_data.ipynb 56
 @patch_to(Data)
 @lru_cache
 def get_cddm_LO_upper():
@@ -285,63 +286,63 @@ def get_cddm_LO_upper():
     path = "CDDM/pssms_LO_upper.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 56
+# %% ../nbs/00_data.ipynb 59
 @patch_to(Data)
 def get_aa_info():
     """Get amino acid information."""
     path = f"amino_acids/aa_info.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 58
+# %% ../nbs/00_data.ipynb 61
 @patch_to(Data)
 def get_aa_rdkit():
     """Get RDKit representations of amino acids."""
     path = "amino_acids/aa_rdkit.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 60
+# %% ../nbs/00_data.ipynb 63
 @patch_to(Data)
 def get_aa_morgan():
     """Get Morgan fingerprint representations of amino acids."""
     path = "amino_acids/aa_morgan.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 63
+# %% ../nbs/00_data.ipynb 66
 @patch_to(Data)
 def get_cptac_ensembl_site():
     """Get CPTAC dataset with unique EnsemblProteinID+site."""
     path = "phosphosites/linkedOmicsKB_ref_pan.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 65
+# %% ../nbs/00_data.ipynb 68
 @patch_to(Data)
 def get_cptac_unique_site():
     """Get CPTAC dataset with unique site sequences."""
     path = "phosphosites/cptac_unique_site.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 67
+# %% ../nbs/00_data.ipynb 70
 @patch_to(Data)
 def get_cptac_gene_site():
     """Get CPTAC dataset with unique Gene+site."""
     path = "phosphosites/linkedOmics_ref_pan.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 69
+# %% ../nbs/00_data.ipynb 72
 @patch_to(Data)
 def get_psp_human_site():
     """Get PhosphoSitePlus human dataset (Gene+site)."""
     path = "phosphosites/psp_human.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 71
+# %% ../nbs/00_data.ipynb 74
 @patch_to(Data)
 def get_ochoa_site():
     """Get phosphoproteomics dataset from Ochoa et al."""
     path = "phosphosites/ochoa_site.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 73
+# %% ../nbs/00_data.ipynb 76
 @patch_to(Data)
 def get_combine_site_psp_ochoa() -> pd.DataFrame:
     """
@@ -350,7 +351,7 @@ def get_combine_site_psp_ochoa() -> pd.DataFrame:
     path = "phosphosites/combine_site_psp_ochoa.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 75
+# %% ../nbs/00_data.ipynb 78
 @patch_to(Data)
 def get_combine_site_phosphorylated():
     """
@@ -359,7 +360,7 @@ def get_combine_site_phosphorylated():
     path = "phosphosites/phosphorylated_combine_site.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 77
+# %% ../nbs/00_data.ipynb 80
 @patch_to(Data)
 @lru_cache
 def get_human_site():
@@ -369,7 +370,7 @@ def get_human_site():
     path = "phosphosites/phosphorylated_combine_site20.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 80
+# %% ../nbs/00_data.ipynb 83
 @patch_to(Data)
 @lru_cache
 def get_reactome_pathway_lo() -> pd.DataFrame:
@@ -379,7 +380,7 @@ def get_reactome_pathway_lo() -> pd.DataFrame:
     path = "reactome_lowest_level.parquet"
     return Data.read_file(path)
 
-# %% ../nbs/00_data.ipynb 82
+# %% ../nbs/00_data.ipynb 85
 @patch_to(Data)
 @lru_cache
 def get_reactome_pathway() -> pd.DataFrame:
@@ -392,7 +393,7 @@ def get_reactome_pathway() -> pd.DataFrame:
     # path_all['lowest'] = path_all.reactome_id.isin(path_lo.reactome_id).astype(int)
     return path_all
 
-# %% ../nbs/00_data.ipynb 86
+# %% ../nbs/00_data.ipynb 89
 class CPTAC:
     
     "A class for fetching CPTAC phosphoproteomics data."
@@ -438,13 +439,13 @@ class CPTAC:
             return info
     
 
-# %% ../nbs/00_data.ipynb 87
+# %% ../nbs/00_data.ipynb 90
 @patch_to(CPTAC)
 def list_cancer():
     "List available CPTAC cancer type"
     return ['HNSCC','GBM','COAD','CCRCC','LSCC','BRCA','UCEC','LUAD','PDAC','OV']
 
-# %% ../nbs/00_data.ipynb 89
+# %% ../nbs/00_data.ipynb 93
 @patch_to(CPTAC)
 def get_id(cancer_type: str,
            is_Tumor: bool=True, # tumor tissue or normal
