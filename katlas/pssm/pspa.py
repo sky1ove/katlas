@@ -5,14 +5,15 @@
 # %% auto 0
 __all__ = ['preprocess_pspa', 'plot_logo_pspa', 'plot_logo_heatmap_pspa', 'raw2norm', 'get_one_kinase', 'get_logo']
 
-# %% ../../nbs/02d_pssm_pspa.ipynb 3
+# %% ../../nbs/02d_pssm_pspa.ipynb 4
 import numpy as np, pandas as pd
 from .plot import *
 from matplotlib import pyplot as plt
 from ..data import *
 from .core import *
+from .plot import *
 
-# %% ../../nbs/02d_pssm_pspa.ipynb 5
+# %% ../../nbs/02d_pssm_pspa.ipynb 6
 def preprocess_pspa(pssm):
     "Drop row s as it's a duplicate of t; rename t to pS/pT; calculate np.log2(pssm/pssm.median())"
     pssm = change_center_name(pssm)
@@ -26,13 +27,13 @@ def preprocess_pspa(pssm):
     pssm=scale_zero_position(pssm)
     return pssm
 
-# %% ../../nbs/02d_pssm_pspa.ipynb 7
+# %% ../../nbs/02d_pssm_pspa.ipynb 8
 def plot_logo_pspa(row,title='Motif',figsize=(5,2)):
     pssm = recover_pssm(row.dropna())
     logo_pssm = preprocess_pspa(pssm)
     plot_logo_raw(logo_pssm,ytitle='log₂(Value / Median)',title=title,figsize=figsize)
 
-# %% ../../nbs/02d_pssm_pspa.ipynb 9
+# %% ../../nbs/02d_pssm_pspa.ipynb 10
 def plot_logo_heatmap_pspa(row, # row of Data.get_pspa()
                        title='Motif',
                        figsize=(6,10),
@@ -53,7 +54,7 @@ def plot_logo_heatmap_pspa(row, # row of Data.get_pspa()
     ax_heatmap = fig.add_subplot(gs[1, :])
     plot_heatmap(pssm,ax=ax_heatmap,position_label=False,include_zero=include_zero,colorbar_title='Value')
 
-# %% ../../nbs/02d_pssm_pspa.ipynb 12
+# %% ../../nbs/02d_pssm_pspa.ipynb 13
 def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and single amino acid as columns
              PDHK: bool=False, # whether this kinase belongs to PDHK family 
             ):
@@ -76,7 +77,7 @@ def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and s
     
     return df2
 
-# %% ../../nbs/02d_pssm_pspa.ipynb 14
+# %% ../../nbs/02d_pssm_pspa.ipynb 15
 def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
                    kinase:str, # a specific kinase
                    normalize: bool=False, # normalize according to the paper; special for PDHK1/4
@@ -97,7 +98,7 @@ def get_one_kinase(df: pd.DataFrame, #stacked dataframe (paper's raw data)
         pp = raw2norm(pp, PDHK=True if kinase == 'PDHK1' or kinase == 'PDHK4' else False)
     return pp
 
-# %% ../../nbs/02d_pssm_pspa.ipynb 18
+# %% ../../nbs/02d_pssm_pspa.ipynb 19
 def get_logo(df: pd.DataFrame, # stacked Dataframe with kinase as index, substrates as columns
              kinase: str, # a specific kinase name in index
              ):

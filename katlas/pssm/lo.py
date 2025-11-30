@@ -5,12 +5,13 @@
 # %% auto 0
 __all__ = ['get_pssm_LO', 'get_pssm_LO_flat', 'plot_logo_LO', 'plot_logo_heatmap_LO']
 
-# %% ../../nbs/02c_pssm_lo.ipynb 3
+# %% ../../nbs/02c_pssm_lo.ipynb 4
 import numpy as np, pandas as pd
 from .plot import *
+from .core import *
 from matplotlib import pyplot as plt
 
-# %% ../../nbs/02c_pssm_lo.ipynb 7
+# %% ../../nbs/02c_pssm_lo.ipynb 8
 def get_pssm_LO(pssm_df,
                 site_type, # S, T, Y, ST, or STY
                ):
@@ -23,14 +24,14 @@ def get_pssm_LO(pssm_df,
     assert pssm_odds.shape == pssm_df.shape
     return np.log2(pssm_odds).replace([np.inf, -np.inf], 0).fillna(0)
 
-# %% ../../nbs/02c_pssm_lo.ipynb 10
+# %% ../../nbs/02c_pssm_lo.ipynb 11
 def get_pssm_LO_flat(flat_pssm,
                     site_type, # S, T, Y, ST, or STY
                     ):
     pssm_df = recover_pssm(flat_pssm)
     return get_pssm_LO(pssm_df,site_type)
 
-# %% ../../nbs/02c_pssm_lo.ipynb 14
+# %% ../../nbs/02c_pssm_lo.ipynb 15
 def plot_logo_LO(pssm_LO,title='Motif', acceptor=None, scale_zero=True,scale_pos_neg=True,ax=None,figsize=(10,1)):
     "Plot logo of log-odds given a frequency PSSM."
     if acceptor is not None: 
@@ -44,7 +45,7 @@ def plot_logo_LO(pssm_LO,title='Motif', acceptor=None, scale_zero=True,scale_pos
     ytitle = "Scaled Log-Odds" if scale_pos_neg else "Log-Odds (bits)"
     plot_logo_raw(pssm_LO,ax=ax,title=title,ytitle=ytitle,figsize=figsize)
 
-# %% ../../nbs/02c_pssm_lo.ipynb 21
+# %% ../../nbs/02c_pssm_lo.ipynb 22
 def plot_logo_heatmap_LO(pssm_LO, # pssm of log-odds
                              title='Motif',
                          acceptor=None,

@@ -6,7 +6,7 @@
 __all__ = ['EPSILON', 'get_prob', 'flatten_pssm', 'recover_pssm', 'clean_zero_normalize', 'get_cluster_pssms', 'get_entropy',
            'get_entropy_flat', 'get_IC', 'get_IC_flat', 'get_specificity', 'get_specificity_flat']
 
-# %% ../../nbs/02a_pssm_core.ipynb 22
+# %% ../../nbs/02a_pssm_core.ipynb 4
 import numpy as np, pandas as pd
 from ..data import *
 from ..utils import *
@@ -18,10 +18,10 @@ from functools import partial
 # for type
 from typing import Sequence
 
-# %% ../../nbs/02a_pssm_core.ipynb 24
+# %% ../../nbs/02a_pssm_core.ipynb 6
 EPSILON = 1e-8
 
-# %% ../../nbs/02a_pssm_core.ipynb 27
+# %% ../../nbs/02a_pssm_core.ipynb 9
 def get_prob(data: pd.DataFrame | pd.Series | Sequence[str], # input data, list or df
              col: str='site_seq', # column name if input is df
              ):
@@ -61,7 +61,7 @@ def get_prob(data: pd.DataFrame | pd.Series | Sequence[str], # input data, list 
     
     return pssm_df
 
-# %% ../../nbs/02a_pssm_core.ipynb 32
+# %% ../../nbs/02a_pssm_core.ipynb 14
 def flatten_pssm(pssm_df,
                  column_wise=True, # if True, column major flatten; else row wise flatten (for pytorch training)
                 ):
@@ -84,7 +84,7 @@ def flatten_pssm(pssm_df,
     # Set index to be position+residue
     return pssm.set_index('position_residue')['value'].to_dict()
 
-# %% ../../nbs/02a_pssm_core.ipynb 35
+# %% ../../nbs/02a_pssm_core.ipynb 17
 def recover_pssm(flat_pssm: pd.Series):
     "Recover 2D PSSM from flattened PSSM Series."
     df = flat_pssm.reset_index()
@@ -97,7 +97,7 @@ def recover_pssm(flat_pssm: pd.Series):
     order = [aa for aa in aa_order if aa in df.index]
     return df.reindex(index=order)
 
-# %% ../../nbs/02a_pssm_core.ipynb 43
+# %% ../../nbs/02a_pssm_core.ipynb 25
 def _clean_zero(pssm_df):
     "Zero out non-last three values in position 0 (keep only s,t,y values at center)"
     pssm_df = pssm_df.copy()
@@ -105,7 +105,7 @@ def _clean_zero(pssm_df):
     pssm_df.loc[standard_aa, 0] = 0
     return pssm_df
 
-# %% ../../nbs/02a_pssm_core.ipynb 45
+# %% ../../nbs/02a_pssm_core.ipynb 27
 def clean_zero_normalize(pssm_df):
     "Zero out non-last three values in position 0 (keep only s,t,y values at center), and normalize per position"
     pssm_df=pssm_df.copy()
@@ -113,7 +113,7 @@ def clean_zero_normalize(pssm_df):
     pssm_df = _clean_zero(pssm_df)
     return pssm_df/pssm_df.sum()
 
-# %% ../../nbs/02a_pssm_core.ipynb 49
+# %% ../../nbs/02a_pssm_core.ipynb 31
 def get_cluster_pssms(df, 
                     cluster_col, 
                     seq_col='site_seq', 
@@ -151,7 +151,7 @@ def get_cluster_pssms(df,
     pssm_df = pd.DataFrame(pssms, index=ids)
     return pssm_df
 
-# %% ../../nbs/02a_pssm_core.ipynb 52
+# %% ../../nbs/02a_pssm_core.ipynb 34
 def get_entropy(pssm_df,# a dataframe of pssm with index as aa and column as position
             return_min=False, # return min entropy as a single value or return all entropy as a pd.series
             exclude_zero=False, # exclude the column of 0 (center position) in the entropy calculation
@@ -174,14 +174,14 @@ def get_entropy(pssm_df,# a dataframe of pssm with index as aa and column as pos
     per_position[pssm_df.sum() == 0] = 0
     return float(per_position.min()) if return_min else per_position
 
-# %% ../../nbs/02a_pssm_core.ipynb 56
+# %% ../../nbs/02a_pssm_core.ipynb 38
 @delegates(get_entropy)
 def get_entropy_flat(flat_pssm:pd.Series,**kwargs): 
     "Calculate entropy per position of a flat PSSM surrounding 0"
     pssm_df = recover_pssm(flat_pssm)
     return get_entropy(pssm_df,**kwargs)
 
-# %% ../../nbs/02a_pssm_core.ipynb 61
+# %% ../../nbs/02a_pssm_core.ipynb 43
 @delegates(get_entropy)
 def get_IC(pssm_df,**kwargs):
     """
@@ -205,7 +205,7 @@ def get_IC(pssm_df,**kwargs):
     IC_position[entropy_position == 0] = 0
     return IC_position
 
-# %% ../../nbs/02a_pssm_core.ipynb 68
+# %% ../../nbs/02a_pssm_core.ipynb 50
 @delegates(get_IC)
 def get_IC_flat(flat_pssm:pd.Series,**kwargs):
     """Calculate the information content (bits) from a flattened pssm pd.Series,
@@ -214,7 +214,7 @@ def get_IC_flat(flat_pssm:pd.Series,**kwargs):
     pssm_df = recover_pssm(flat_pssm)
     return get_IC(pssm_df,**kwargs)
 
-# %% ../../nbs/02a_pssm_core.ipynb 72
+# %% ../../nbs/02a_pssm_core.ipynb 54
 def get_specificity(pssm_df):
     "Get specificity score of a pssm, excluding zero position."
     ICs = get_IC(pssm_df, exclude_zero=True)
@@ -222,7 +222,7 @@ def get_specificity(pssm_df):
     ICs= ICs[ICs > 0]
     return float(2*ICs.max()+ICs.var())
 
-# %% ../../nbs/02a_pssm_core.ipynb 75
+# %% ../../nbs/02a_pssm_core.ipynb 57
 def get_specificity_flat(flat_pssm):
     "Get specificity score of a pssm, excluding zero position."
     ICs = get_IC_flat(flat_pssm, exclude_zero=True)

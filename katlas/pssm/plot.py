@@ -7,9 +7,10 @@ __all__ = ['plot_heatmap_simple', 'pSTY2sty', 'sty2pSTY', 'sty2pSTY_df', 'plot_h
            'change_center_name', 'get_pos_min_max', 'scale_zero_position', 'scale_pos_neg_values', 'convert_logo_df',
            'get_logo_IC', 'plot_logo', 'plot_logos_idx', 'plot_logos', 'plot_logo_heatmap']
 
-# %% ../../nbs/02b_pssm_plot.ipynb 10
+# %% ../../nbs/02b_pssm_plot.ipynb 4
 from fastcore.meta import delegates
 import numpy as np, pandas as pd
+from .core import get_IC
 
 from matplotlib import pyplot as plt
 import logomaker,math
@@ -22,7 +23,7 @@ from matplotlib.patches import Rectangle
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.ticker import FuncFormatter
 
-# %% ../../nbs/02b_pssm_plot.ipynb 14
+# %% ../../nbs/02b_pssm_plot.ipynb 8
 @delegates(sns.heatmap)
 def plot_heatmap_simple(matrix, # a matrix of values
                  title: str='heatmap', # title of the heatmap
@@ -40,23 +41,23 @@ def plot_heatmap_simple(matrix, # a matrix of values
     plt.xlabel('')
     plt.yticks(rotation=0)
 
-# %% ../../nbs/02b_pssm_plot.ipynb 18
+# %% ../../nbs/02b_pssm_plot.ipynb 12
 def pSTY2sty(string):
     "Convert pS/pT/pY to s/t/y in a string."
     return string.replace('pS', 's').replace('pT', 't').replace('pY', 'y')
 
-# %% ../../nbs/02b_pssm_plot.ipynb 19
+# %% ../../nbs/02b_pssm_plot.ipynb 13
 def sty2pSTY(string):
     "Convert s/t/y to pS/pT/pY in a string."
     return string.replace('s', 'pS').replace('t', 'pT').replace('y', 'pY')
 
-# %% ../../nbs/02b_pssm_plot.ipynb 20
+# %% ../../nbs/02b_pssm_plot.ipynb 14
 def sty2pSTY_df(df):
     df=df.copy()
     df.index = df.index.map(sty2pSTY)
     return df
 
-# %% ../../nbs/02b_pssm_plot.ipynb 21
+# %% ../../nbs/02b_pssm_plot.ipynb 15
 def plot_heatmap(heatmap_df, ax=None, position_label=True, figsize=(5, 6), include_zero=True,scale_pos_neg=False, colorbar_title='Prob.'):
     "Plot a heatmap of pssm."
     if ax is None:
@@ -116,7 +117,7 @@ def plot_heatmap(heatmap_df, ax=None, position_label=True, figsize=(5, 6), inclu
 
     return ax
 
-# %% ../../nbs/02b_pssm_plot.ipynb 27
+# %% ../../nbs/02b_pssm_plot.ipynb 21
 def plot_two_heatmaps(pssm1, pssm2, 
                       kinase_name="Kinase", title1='CDDM',title2='PSPA',
                       figsize=(4,4.5), cbar=True,scale_01=False,
@@ -181,7 +182,7 @@ def plot_two_heatmaps(pssm1, pssm2,
     # Shared kinase label below
     fig.suptitle(kinase_name, fontsize=14, x=0.52,y=0.96)
 
-# %% ../../nbs/02b_pssm_plot.ipynb 32
+# %% ../../nbs/02b_pssm_plot.ipynb 26
 def plot_logo_raw(pssm_df,ax=None,title='Motif',ytitle='Bits',figsize=(10,2)):
     "Plot logo motif using Logomaker."
     if ax is None:
@@ -195,7 +196,7 @@ def plot_logo_raw(pssm_df,ax=None,title='Motif',ytitle='Bits',figsize=(10,2)):
     logo.style_xticks(fmt='%d')
     ax.set_title(title)
 
-# %% ../../nbs/02b_pssm_plot.ipynb 35
+# %% ../../nbs/02b_pssm_plot.ipynb 29
 def change_center_name(df):
     "Transfer the middle s,t,y to S,T,Y for plot if s,t,y have values; otherwise keep the original."
     df=df.copy()
@@ -207,7 +208,7 @@ def change_center_name(df):
         df.loc[['s', 't', 'y'], 0] = 0
     return df
 
-# %% ../../nbs/02b_pssm_plot.ipynb 38
+# %% ../../nbs/02b_pssm_plot.ipynb 32
 def get_pos_min_max(pssm_df):
     """
     Get min and max value of sum of positive and negative values across each position.
@@ -219,7 +220,7 @@ def get_pos_min_max(pssm_df):
     max_sum_neg = pssm_neighbor[pssm_neighbor<0].sum().min()
     return max_sum_neg,max_sum_pos
 
-# %% ../../nbs/02b_pssm_plot.ipynb 39
+# %% ../../nbs/02b_pssm_plot.ipynb 33
 def scale_zero_position(pssm_df):
     """
     Scale position 0 so that:
@@ -242,7 +243,7 @@ def scale_zero_position(pssm_df):
     return pssm_df
     
 
-# %% ../../nbs/02b_pssm_plot.ipynb 41
+# %% ../../nbs/02b_pssm_plot.ipynb 35
 def scale_pos_neg_values(pssm_df):
     """
     Globally scale all positive values by max positive column sum,
@@ -259,7 +260,7 @@ def scale_pos_neg_values(pssm_df):
 
     return pos_part + neg_part
 
-# %% ../../nbs/02b_pssm_plot.ipynb 42
+# %% ../../nbs/02b_pssm_plot.ipynb 36
 def convert_logo_df(pssm_df,scale_zero=True,scale_pos_neg=False):
     "Change center name from s,t,y to S, T, Y in a pssm and scaled zero position to the max of neigbors."
     pssm_df = change_center_name(pssm_df)
@@ -267,7 +268,7 @@ def convert_logo_df(pssm_df,scale_zero=True,scale_pos_neg=False):
     if scale_pos_neg: pssm_df = scale_pos_neg_values(pssm_df)
     return pssm_df
 
-# %% ../../nbs/02b_pssm_plot.ipynb 43
+# %% ../../nbs/02b_pssm_plot.ipynb 37
 def get_logo_IC(pssm_df):
     """
     For plotting purpose, calculate the scaled information content (bits) from a frequency matrix,
@@ -277,14 +278,14 @@ def get_logo_IC(pssm_df):
     
     return pssm_df.mul(IC_position, axis=1) # total_IC = pssm_df.sum().sum().round(2)
 
-# %% ../../nbs/02b_pssm_plot.ipynb 46
+# %% ../../nbs/02b_pssm_plot.ipynb 40
 def plot_logo(pssm_df,title='Motif', scale_zero=True,ax=None,figsize=(10,1)):
     "Plot logo of information content given a frequency PSSM."
     pssm_df = get_logo_IC(pssm_df)
     pssm_df= convert_logo_df(pssm_df,scale_zero=scale_zero)
     plot_logo_raw(pssm_df,ax=ax,title=title,ytitle='IC (bits)',figsize=figsize)
 
-# %% ../../nbs/02b_pssm_plot.ipynb 53
+# %% ../../nbs/02b_pssm_plot.ipynb 47
 def plot_logos_idx(pssms_df,*idxs,figsize=(14,1)):
     "Plot logos of a dataframe with flattened PSSMs with index ad IDs."
     for idx in idxs:
@@ -293,7 +294,7 @@ def plot_logos_idx(pssms_df,*idxs,figsize=(14,1)):
         plt.show()
         plt.close()
 
-# %% ../../nbs/02b_pssm_plot.ipynb 57
+# %% ../../nbs/02b_pssm_plot.ipynb 51
 def plot_logos(pssms_df, 
                count_dict=None, # used to display n in motif title
                path=None,
@@ -319,7 +320,7 @@ def plot_logos(pssms_df,
         else:
             plot_logo(pssm, title=f"{prefix or ''} {idx}",ax=ax)
 
-# %% ../../nbs/02b_pssm_plot.ipynb 61
+# %% ../../nbs/02b_pssm_plot.ipynb 55
 def plot_logo_heatmap(pssm_df, # column is position, index is aa
                        title='Motif',
                        figsize=(17,10),
