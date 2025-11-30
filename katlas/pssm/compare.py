@@ -6,10 +6,11 @@
 __all__ = ['kl_divergence', 'kl_divergence_flat', 'js_divergence', 'js_divergence_flat', 'js_similarity', 'js_similarity_flat',
            'cosine_similarity', 'cosine_overall_flat']
 
-# %% ../../nbs/02e_pssm_compare.ipynb 10
+# %% ../../nbs/02e_pssm_compare.ipynb 4
 import numpy as np, pandas as pd
+from .core import EPSILON
 
-# %% ../../nbs/02e_pssm_compare.ipynb 16
+# %% ../../nbs/02e_pssm_compare.ipynb 10
 def kl_divergence(p1,  # target pssm p (array-like, shape: (AA, positions))
                   p2,  # pred pssm q (array-like, same shape as p1)
                  ):
@@ -31,7 +32,7 @@ def kl_divergence(p1,  # target pssm p (array-like, shape: (AA, positions))
 
     return kl
 
-# %% ../../nbs/02e_pssm_compare.ipynb 20
+# %% ../../nbs/02e_pssm_compare.ipynb 14
 def kl_divergence_flat(p1_flat, # pd.Series of target flattened pssm p
                        p2_flat, # pd.Series of pred flattened pssm q
                        ):
@@ -41,7 +42,7 @@ def kl_divergence_flat(p1_flat, # pd.Series of target flattened pssm p
     total_position = len(p1_flat.index.str.extract(r'(-?\d+)').drop_duplicates())
     return float(kld/total_position)
 
-# %% ../../nbs/02e_pssm_compare.ipynb 23
+# %% ../../nbs/02e_pssm_compare.ipynb 17
 def js_divergence(p1, # pssm 
                   p2, # pssm
                   index=True,
@@ -60,7 +61,7 @@ def js_divergence(p1, # pssm
          0.5 * np.sum(p2 * np.log((p2+ EPSILON) / (m + EPSILON)), axis=0)
     return pd.Series(js,index=positions) if index else js
 
-# %% ../../nbs/02e_pssm_compare.ipynb 27
+# %% ../../nbs/02e_pssm_compare.ipynb 21
 def js_divergence_flat(p1_flat, # pd.Series of flattened pssm
                        p2_flat, # pd.Series of flattened pssm
                        ):
@@ -70,19 +71,19 @@ def js_divergence_flat(p1_flat, # pd.Series of flattened pssm
     total_position = len(p1_flat.index.str.extract(r'(-?\d+)').drop_duplicates())
     return float(js/total_position)
 
-# %% ../../nbs/02e_pssm_compare.ipynb 31
+# %% ../../nbs/02e_pssm_compare.ipynb 25
 def js_similarity(pssm1,pssm2):
     "Convert JSD to bits to be in range (0,1) then 1-JSD."
     distance = js_divergence(pssm1,pssm2)/np.log(2)
     similarity = 1-distance
     return similarity
 
-# %% ../../nbs/02e_pssm_compare.ipynb 33
+# %% ../../nbs/02e_pssm_compare.ipynb 27
 def js_similarity_flat(p1_flat,p2_flat):
     "Convert JSD to bits to be in range (0,1) then 1-JSD. "
     return 1-(js_divergence_flat(p1_flat,p2_flat)/np.log(2))
 
-# %% ../../nbs/02e_pssm_compare.ipynb 36
+# %% ../../nbs/02e_pssm_compare.ipynb 30
 def cosine_similarity(pssm1: pd.DataFrame, pssm2: pd.DataFrame) -> pd.Series:
     "Compute cosine similarity per position (column) between two PSSMs."
     
@@ -105,7 +106,7 @@ def cosine_similarity(pssm1: pd.DataFrame, pssm2: pd.DataFrame) -> pd.Series:
 
     return pd.Series(sims)
 
-# %% ../../nbs/02e_pssm_compare.ipynb 41
+# %% ../../nbs/02e_pssm_compare.ipynb 35
 def cosine_overall_flat(pssm1_flat, pssm2_flat):
     """Compute overall cosine similarity between two PSSMs (flattened)."""
     # match index for dot product
