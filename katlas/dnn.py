@@ -6,7 +6,7 @@
 __all__ = ['def_device', 'seed_everything', 'GeneralDataset', 'MLP', 'init_weights', 'lin_wn', 'conv_wn', 'CNN1D', 'PSSM_model',
            'CE', 'KLD', 'JSD', 'train_dl', 'predict_dl', 'train_dl_cv']
 
-# %% ../nbs/11_DNN.ipynb 3
+# %% ../nbs/11_DNN.ipynb 4
 import torch
 from torch.utils.data import Dataset
 import torch.nn.functional as F
@@ -20,7 +20,7 @@ from .pssm import *
 from fastai.vision.all import *
 import pandas as pd
 
-# %% ../nbs/11_DNN.ipynb 5
+# %% ../nbs/11_DNN.ipynb 6
 def seed_everything(seed=123):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
@@ -30,10 +30,10 @@ def seed_everything(seed=123):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-# %% ../nbs/11_DNN.ipynb 7
+# %% ../nbs/11_DNN.ipynb 8
 def_device = 'mps' if torch.backends.mps.is_available() else 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# %% ../nbs/11_DNN.ipynb 18
+# %% ../nbs/11_DNN.ipynb 19
 class GeneralDataset(Dataset):
     def __init__(self,
                  df,
@@ -76,7 +76,7 @@ class GeneralDataset(Dataset):
         y = torch.from_numpy(self.y[index])        # (23, L)
         return X, y
 
-# %% ../nbs/11_DNN.ipynb 25
+# %% ../nbs/11_DNN.ipynb 26
 def MLP(num_features, 
           num_targets,
           hidden_units = [512, 218],
@@ -106,12 +106,12 @@ def MLP(num_features,
     
     return model
 
-# %% ../nbs/11_DNN.ipynb 30
+# %% ../nbs/11_DNN.ipynb 31
 def init_weights(m, leaky=0.):
     "Initiate any Conv layer with Kaiming norm."
     if isinstance(m, (nn.Conv1d,nn.Conv2d,nn.Conv3d)): nn.init.kaiming_normal_(m.weight, a=leaky)
 
-# %% ../nbs/11_DNN.ipynb 31
+# %% ../nbs/11_DNN.ipynb 32
 def lin_wn(ni,nf,dp=0.1,act=nn.SiLU):
     "Weight norm of linear."
     layers =  nn.Sequential(
@@ -121,7 +121,7 @@ def lin_wn(ni,nf,dp=0.1,act=nn.SiLU):
     if act: layers.append(act())
     return layers
 
-# %% ../nbs/11_DNN.ipynb 32
+# %% ../nbs/11_DNN.ipynb 33
 def conv_wn(ni, nf, ks=3, stride=1, padding=1, dp=0.1,act=nn.ReLU):
     "Weight norm of conv."
     layers =  nn.Sequential(
@@ -131,7 +131,7 @@ def conv_wn(ni, nf, ks=3, stride=1, padding=1, dp=0.1,act=nn.ReLU):
     if act: layers.append(act())
     return layers
 
-# %% ../nbs/11_DNN.ipynb 33
+# %% ../nbs/11_DNN.ipynb 34
 class CNN1D(nn.Module):
     
     def __init__(self, ni, nf, amp_scale = 16):
@@ -181,7 +181,7 @@ class CNN1D(nn.Module):
 
         return x
 
-# %% ../nbs/11_DNN.ipynb 37
+# %% ../nbs/11_DNN.ipynb 38
 class PSSM_model(nn.Module):
     def __init__(self, 
                  n_features,
@@ -201,7 +201,7 @@ class PSSM_model(nn.Module):
         logits = self.model(x).reshape(-1, self.n_aa,self.n_positions)
         return logits
 
-# %% ../nbs/11_DNN.ipynb 43
+# %% ../nbs/11_DNN.ipynb 44
 def CE(logits: torch.Tensor,
        target_probs: torch.Tensor,
       ):
@@ -214,7 +214,7 @@ def CE(logits: torch.Tensor,
     ce   = -(target_probs * logp).sum(dim=1)         # (B, 10)
     return ce.mean()
 
-# %% ../nbs/11_DNN.ipynb 46
+# %% ../nbs/11_DNN.ipynb 47
 def KLD(logits: torch.Tensor,
           target_probs: torch.Tensor,
          ):
@@ -229,7 +229,7 @@ def KLD(logits: torch.Tensor,
     kl   = (target_probs * (logp - logq)).sum(dim=1)   # (B, 10)
     return kl.mean()
 
-# %% ../nbs/11_DNN.ipynb 48
+# %% ../nbs/11_DNN.ipynb 49
 def JSD(logits: torch.Tensor,
         target_probs: torch.Tensor,
        ):
@@ -256,7 +256,7 @@ def JSD(logits: torch.Tensor,
     jsd = 0.5 * (kld_pm + kld_qm)               # (B, 10)
     return jsd.mean()
 
-# %% ../nbs/11_DNN.ipynb 51
+# %% ../nbs/11_DNN.ipynb 52
 def train_dl(df, 
             feat_col, 
             target_col,
@@ -317,7 +317,7 @@ def train_dl(df,
     
     return target, pred
 
-# %% ../nbs/11_DNN.ipynb 56
+# %% ../nbs/11_DNN.ipynb 57
 def predict_dl(df, 
                feat_col, 
                target_col,
@@ -352,7 +352,7 @@ def predict_dl(df,
 
     return preds
 
-# %% ../nbs/11_DNN.ipynb 63
+# %% ../nbs/11_DNN.ipynb 64
 def train_dl_cv(df, 
                 feat_col, 
                 target_col, 
