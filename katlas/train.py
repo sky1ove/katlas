@@ -6,10 +6,11 @@
 __all__ = ['get_score_jsd', 'get_score_kld', 'get_score_ce', 'get_splits', 'split_data', 'train_ml', 'train_ml_cv',
            'post_process', 'post_process_oof', 'get_score', 'calculate_ce', 'predict_ml']
 
-# %% ../nbs/10_ML.ipynb 3
+# %% ../nbs/10_ML.ipynb 4
 # katlas
 from .data import Data
-from .pssm import *
+from .pssm.core import *
+from .pssm.compare import *
 # from katlas.feature import *
 from .clustering import *
 from functools import partial
@@ -22,7 +23,6 @@ from pathlib import Path
 
 # scipy
 from scipy.stats import spearmanr, pearsonr
-from scipy.stats import spearmanr,pearsonr
 
 # sklearn
 from sklearn.model_selection import *
@@ -34,7 +34,7 @@ from sklearn.ensemble import *
 from sklearn import set_config
 set_config(transform_output="pandas")
 
-# %% ../nbs/10_ML.ipynb 5
+# %% ../nbs/10_ML.ipynb 6
 def get_splits(df: pd.DataFrame, # df contains info for split
                stratified: str=None, # colname to make stratified kfold; sampling from different groups
                group: str=None, # colname to make group kfold; test and train are from different groups
@@ -75,7 +75,7 @@ def get_splits(df: pd.DataFrame, # df contains info for split
     
     return splits
 
-# %% ../nbs/10_ML.ipynb 14
+# %% ../nbs/10_ML.ipynb 15
 def split_data(df: pd.DataFrame, # dataframe of values
                feat_col: list, # feature columns
                target_col: list, # target columns
@@ -91,7 +91,7 @@ def split_data(df: pd.DataFrame, # dataframe of values
     
     return X_train, y_train, X_test, y_test
 
-# %% ../nbs/10_ML.ipynb 18
+# %% ../nbs/10_ML.ipynb 19
 def train_ml(df, # dataframe of values
              feat_col, # feature columns
              target_col, # target columns
@@ -125,7 +125,7 @@ def train_ml(df, # dataframe of values
     
     return y_test, y_pred
 
-# %% ../nbs/10_ML.ipynb 21
+# %% ../nbs/10_ML.ipynb 22
 def train_ml_cv( df, # dataframe of values
                  feat_col, # feature columns
                  target_col,  # target columns
@@ -156,38 +156,38 @@ def train_ml_cv( df, # dataframe of values
     
     return oof
 
-# %% ../nbs/10_ML.ipynb 24
+# %% ../nbs/10_ML.ipynb 25
 def post_process(pssm_df):
     "Convert neg value to 0, clean non-last three values in position zero, and normalize each position"
     pssm = pssm_df.copy()
     pssm = pssm.clip(lower=0)
     return clean_zero_normalize(pssm)
 
-# %% ../nbs/10_ML.ipynb 27
+# %% ../nbs/10_ML.ipynb 28
 def post_process_oof(oof_ml,target_col):
     oof = oof_ml.copy()
     oof[target_col] = oof.apply(lambda r: pd.Series(flatten_pssm(post_process(recover_pssm(r[target_col])),column_wise=False)), axis=1)
     return oof
 
-# %% ../nbs/10_ML.ipynb 29
+# %% ../nbs/10_ML.ipynb 30
 def get_score(target,pred,func):
     distance = [func(target.loc[i],pred.loc[i,target.columns]) for i in target.index]
     return pd.Series(distance,index=target.index)
 
-# %% ../nbs/10_ML.ipynb 30
+# %% ../nbs/10_ML.ipynb 31
 get_score_jsd = partial(get_score,func=js_divergence_flat)
 
-# %% ../nbs/10_ML.ipynb 31
+# %% ../nbs/10_ML.ipynb 32
 get_score_kld = partial(get_score,func=kl_divergence_flat)
 
-# %% ../nbs/10_ML.ipynb 36
+# %% ../nbs/10_ML.ipynb 37
 def calculate_ce(target_series,pred_series):
     return float((-(np.log(recover_pssm(pred_series+EPSILON))*(recover_pssm(target_series))).sum()).mean())
 
-# %% ../nbs/10_ML.ipynb 37
+# %% ../nbs/10_ML.ipynb 38
 get_score_ce = partial(get_score,func=calculate_ce)
 
-# %% ../nbs/10_ML.ipynb 43
+# %% ../nbs/10_ML.ipynb 44
 def predict_ml(df, # Dataframe that contains features
                feat_col, # feature columns
                target_col=None,
