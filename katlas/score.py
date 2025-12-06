@@ -7,16 +7,13 @@ __all__ = ['multiply_23', 'multiply_20', 'cut_seq', 'STY2sty', 'get_dict', 'mult
            'duplicate_ref_zero', 'preprocess_ref', 'predict_kinase', 'Params', 'multiply_generic', 'predict_kinase_df',
            'get_pct', 'get_pct_df']
 
-# %% ../nbs/03_scoring.ipynb 3
+# %% ../nbs/03_scoring.ipynb 4
 import numpy as np, pandas as pd
 from .data import *
 from .utils import *
-from .pssm import *
+from .pssm.core import *
 from typing import Callable
 from functools import partial
-
-from tqdm.contrib.concurrent import process_map
-from tqdm import tqdm
 
 # %% ../nbs/03_scoring.ipynb 6
 def cut_seq(input_string: str, # site sequence
