@@ -12,8 +12,10 @@ import numpy as np, pandas as pd
 from .data import *
 from .utils import *
 from .pssm.core import *
+from .pssm.plot import pSTY2sty
 from typing import Callable
 from functools import partial
+from tqdm import tqdm
 
 # %% ../nbs/03_scoring.ipynb 6
 def cut_seq(input_string: str, # site sequence
@@ -80,9 +82,10 @@ multiply_23 = partial(multiply,num_aa=23)
 multiply_20 = partial(multiply,num_aa=20)
 
 # %% ../nbs/03_scoring.ipynb 20
-def multiply_pspa(values, kinase, num_aa_dict=Data.get_num_dict()):
+def multiply_pspa(values, kinase, num_aa_dict=None):
     "Multiply values, consider the dynamics of scale factor, which is PSPA random aa number."
-
+    if num_aa_dict is None:
+        num_aa_dict = Data.get_num_dict()
     # Check if any values are less than or equal to zero
     if np.any(np.array(values) == 0):
         return np.nan
