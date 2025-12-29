@@ -20,7 +20,7 @@ def kl_divergence(p1,  # target pssm p (array-like, shape: (AA, positions))
     p1 and p2 are arrays (df or np) with index as aa and column as position.
     Returns average divergence across positions if mean=True, else per-position.
     """
-    assert p1.shape == p2.shape
+    if p1.shape != p2.shape: raise ValueError("Shapes of p1 and p2 must match.")
     p1, p2 = p1.align(p2, join='inner', axis=None)
     # Mask invalid positions (both zero)
     valid = (p1 + p2) > 0
@@ -48,7 +48,7 @@ def js_divergence(p1, # pssm
                   index=True,
                  ):
     "p1 and p2 are two arrays (df or np) with index as aa and column as position"
-    assert p1.shape==p2.shape
+    if p1.shape != p2.shape: raise ValueError("Shapes of p1 and p2 must match.")
     p1, p2 = p1.align(p2, join='inner', axis=None)
     if index: positions=p1.columns
     valid = (p1 + p2) > 0
@@ -86,9 +86,9 @@ def js_similarity_flat(p1_flat,p2_flat):
 # %% ../../nbs/02e_pssm_compare.ipynb 30
 def cosine_similarity(pssm1: pd.DataFrame, pssm2: pd.DataFrame) -> pd.Series:
     "Compute cosine similarity per position (column) between two PSSMs."
-    
-    assert pssm1.shape == pssm2.shape, "PSSMs must have the same shape"
-    
+
+    if pssm1.shape != pssm2.shape: raise ValueError("PSSMs must have the same shape")
+
     sims = {}
     for pos in pssm1.columns:
         v1 = pssm1[pos]

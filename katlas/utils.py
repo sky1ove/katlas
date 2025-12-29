@@ -31,7 +31,7 @@ def prepare_path(path):
 def check_seq(seq):
     """Convert non-s/t/y characters to uppercase and replace disallowed characters with underscores."""
     acceptor = seq[len(seq) // 2]
-    assert acceptor.lower() in {'s', 't', 'y'}, f"{seq} has {acceptor} at position {len(seq) // 2}; need to have one of 's', 't', or 'y' in the center"
+    if acceptor.lower() not in {"s","t","y"}: raise ValueError(f"Center must be s/t/y; got {acceptor} in {seq!r}")
 
     allowed_chars = set("PGACSTVILMFYWHKRQNDEsty")
     return "".join(char if char in {'s', 't', 'y'} else (char.upper() if char.upper() in allowed_chars else '_') for char in seq)
@@ -40,15 +40,13 @@ def check_seq(seq):
 def check_seqs(data,col=None):
     "Convert non-s/t/y to upper case & replace with underscore if the character is not in the allowed set"
     if isinstance(data, pd.DataFrame):
-        if col is None:
-            raise ValueError("Must specify 'col' when passing a DataFrame.")
+        if col is None: raise ValueError("Must specify 'col' when passing a DataFrame.")
         seqs = data[col]
-    elif isinstance(data, (pd.Series, list)):
-        seqs = pd.Series(data)
-    else:
-        raise TypeError("Input must be a DataFrame, Series, or list.")
+    elif isinstance(data, (pd.Series, list)): seqs = pd.Series(data)
+    else: raise TypeError("Input must be a DataFrame, Series, or list.")
     
-    assert len(seqs.str.len().value_counts()) == 1, "Inconsistent sequence length detected."
+    lengths = seqs.str.len().value_counts()
+    if len(lengths) != 1: raise ValueError(f"Inconsistent sequence lengths detected: {lengths.to_dict()}")
     return seqs.apply(check_seq)
 
 # %% ../nbs/01_utils.ipynb 17

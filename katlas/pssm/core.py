@@ -34,6 +34,8 @@ def get_prob(data: pd.DataFrame | pd.Series | Sequence[str], # input data, list 
             raise ValueError(f"Column '{col}' not found in DataFrame.")
         site = data[col]
     else:
+        if isinstance(data, (str, bytes)):
+            raise TypeError("Input looks like a single sequence string; pass [seq] or a Series instead.")
         try:
             site = pd.Series(data,copy=False)
         except Exception:
@@ -44,7 +46,8 @@ def get_prob(data: pd.DataFrame | pd.Series | Sequence[str], # input data, list 
     
     site_array = np.array(site.apply(list).tolist())
     seq_len = site_array.shape[1]
-    
+    # if seq_len % 2 == 0: raise ValueError(f"Expected odd sequence length (centered window). Got even length: {seq_len}")
+
     position = list(range(-(seq_len // 2), (seq_len // 2)+1)) # add 1 because range do not include the final num
     
     site_df = pd.DataFrame(site_array, columns=position)
@@ -55,9 +58,9 @@ def get_prob(data: pd.DataFrame | pd.Series | Sequence[str], # input data, list 
     
     pivot_df = grouped.pivot(index='aa', columns='Position', values='Count').fillna(0)
     pssm_df = pivot_df / pivot_df.sum()
-    
-    pssm_df = pssm_df.reindex(index=aa_order, columns=position, fill_value=0)
-    # pssm_df = pssm_df.rename(index={'s': 'pS', 't': 'pT', 'y': 'pY'}) # convert sty to pS,pT,pY
+
+    ordered_aa = [aa for aa in aa_order if aa in pssm_df.index]
+    pssm_df = pssm_df.reindex(index=ordered_aa, columns=position, fill_value=0)
     
     return pssm_df
 

@@ -21,7 +21,7 @@ def get_pssm_LO(pssm_df,
     pssm_bg = recover_pssm(flat_bg)
     pssm_odds = ((pssm_df+EPSILON)/(pssm_bg+EPSILON)).dropna(axis=0,how='all').dropna(axis=1, how='all')
     # make sure all columns and index matched
-    assert pssm_odds.shape == pssm_df.shape
+    if pssm_odds.shape != pssm_df.shape: raise ValueError("Shape mismatch between PSSM and background PSSM.")
     return np.log2(pssm_odds).replace([np.inf, -np.inf], 0).fillna(0)
 
 # %% ../../nbs/02c_pssm_lo.ipynb 11
@@ -36,7 +36,8 @@ def plot_logo_LO(pssm_LO,title='Motif', acceptor=None, scale_zero=True,scale_pos
     "Plot logo of log-odds given a frequency PSSM."
     if acceptor is not None: 
         acceptor = acceptor.upper()
-        assert acceptor in ['S','T','Y']
+        if acceptor not in ['S','T','Y']:
+            raise ValueError(f"Acceptor must be one of 'S', 'T', or 'Y'; got {acceptor!r}")
         pssm_LO= pssm_LO.copy()
         pssm_LO.loc[acceptor,0]=0.1 # give it a value so that it can be shown on the motif
 

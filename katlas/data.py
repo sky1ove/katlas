@@ -26,44 +26,69 @@ def set_dir(path):
 
 # %% ../nbs/00_data.ipynb 15
 @patch_to(Data)
-def download(download_dir=None, # Parent directory for katlas_dataset folder. If None, uses current Data.DATASET_DIR.
-             force=False, #If True, re-download even if exists
-             verbose=True, # Print status messages
-             ):
-    """
-    Download dataset zip and extract to folder.
-    """
-    path = 'https://drive.google.com/uc?id=17wIl0DbdoHV036Z3xgaT_0H3LlM_W47l'
+def download(
+    download_dir=None,   # Parent directory for katlas_dataset folder
+    force=False,          # If True, re-download even if exists
+    verbose=True,         # Print status messages
+):
+    """Download dataset zip and extract to folder."""
     
-    # Update path if custom dir provided
-    if download_dir is not None: 
-        Data.DATASET_DIR = Path(download_dir) / 'katlas_dataset'
-    
-    # Check if already exists
-    if Data.DATASET_DIR.exists():
+    url = "https://drive.google.com/uc?id=17wIl0DbdoHV036Z3xgaT_0H3LlM_W47l"
+
+    # Resolve dataset directory
+    if download_dir is not None:
+        Data.DATASET_DIR = Path(download_dir).expanduser().resolve() / "katlas_dataset"
+
+    dataset_dir = Data.DATASET_DIR
+    zip_path = dataset_dir.parent / "katlas_dataset.zip"
+
+    # Existing dataset handling
+    if dataset_dir.exists():
         if force:
-            print(f"♻️ Removing existing folder: {Data.DATASET_DIR}")
-            shutil.rmtree(Data.DATASET_DIR)
+            if verbose:
+                print(f"♻️ Removing existing folder: {dataset_dir}")
+            shutil.rmtree(dataset_dir)
         else:
-            if verbose: print(f"✅ Dataset exists at: {Data.DATASET_DIR}")
+            if verbose:
+                print(f"✅ Dataset exists at: {dataset_dir}")
             return
 
-    Data.DATASET_DIR.mkdir(parents=True, exist_ok=True)
-    
-    print(f"⬇️ Downloading katlas_dataset.zip ...")
-    downloaded_file = gdown.download(path)
+    dataset_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"📂 Extracting to {Data.DATASET_DIR} ...")
-    with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
-        zip_ref.extractall(Data.DATASET_DIR)
-    
+    # Download
+    if verbose:
+        print(f"⬇️ Downloading katlas_dataset.zip ...")
+
+    downloaded_file = gdown.download(url, output=str(zip_path), quiet=not verbose)
+
+    if downloaded_file is None or not Path(downloaded_file).exists():
+        raise RuntimeError(
+            "Dataset download failed. "
+            "Please check your internet connection or Google Drive permissions."
+        )
+
+    # Safe extraction (zip-slip protection)
+    if verbose:
+        print(f"📂 Extracting to {dataset_dir} ...")
+
+    with zipfile.ZipFile(downloaded_file, "r") as zip_ref:
+        for member in zip_ref.namelist():
+            member_path = dataset_dir / member
+            if not member_path.resolve().is_relative_to(dataset_dir.resolve()):
+                raise RuntimeError(f"Unsafe zip file detected (zip-slip): {member}")
+        zip_ref.extractall(dataset_dir)
+
+    # Cleanup
     try:
-        print(f"🧹 Removing zip file: {downloaded_file}")
+        if verbose:
+            print(f"🧹 Removing zip file: {downloaded_file}")
         Path(downloaded_file).unlink()
     except Exception as e:
-        print(f"⚠️ Could not remove {downloaded_file}: {e}")
+        if verbose:
+            print(f"⚠️ Could not remove {downloaded_file}: {e}")
 
-    print(f"✅ Done! Extracted dataset is at: {Data.DATASET_DIR}")
+    if verbose:
+        print(f"✅ Done! Extracted dataset is at: {dataset_dir}")
 
 # %% ../nbs/00_data.ipynb 19
 @patch_to(Data)
@@ -452,5 +477,5 @@ def get_id(cancer_type: str,
            is_KB: bool=False, # whether it is for LinkedOmicsKB or LinkedOmics
           ):
     "Get CPTAC phosphorylation sites information given a cancer type"
-    assert cancer_type in CPTAC.list_cancer(), "cancer type is not included, check available cancer types from CPTAC.list_cancer()"
+    if cancer_type not in CPTAC.list_cancer(): raise ValueError("cancer type is not included, check available cancer types from CPTAC.list_cancer()")
     return CPTAC._read_file(cancer_type,is_Tumor, is_KB)

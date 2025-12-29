@@ -154,7 +154,7 @@ def reduce_feature(df: pd.DataFrame,
     "Reduce the dimensionality given a dataframe of values"
     
     method = method.lower()
-    assert method in ['pca','tsne','umap'], "Please choose a method among PCA, TSNE, and UMAP"
+    if method not in ['pca','tsne','umap']: raise ValueError("Please choose a method among PCA, TSNE, and UMAP")
     
     if load is not None:
         reducer = joblib.load(load)
@@ -179,10 +179,8 @@ def reduce_feature(df: pd.DataFrame,
     embedding_df.columns = [f"{method.upper()}{i}" for i in range(1, n + 1)]
 
     if save is not None:
-        path = Path(save)
-        path.parent.mkdir(exist_ok=True)
-        
-        joblib.dump(reducer, save)
+        path = prepare_path(save)        
+        joblib.dump(reducer, path)
 
     return embedding_df
 

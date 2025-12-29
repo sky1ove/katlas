@@ -98,7 +98,7 @@ def train_ml(df, # dataframe of values
              split, # one split in splits
              model,  # a sklearn models
              save = None, # file (.joblib) to save, e.g. 'model.joblib'
-             params={}, # parameters for model.fit from sklearn
+             params=None, # dict parameters for model.fit from sklearn
             ):
     
     "Fit and predict using sklearn model format, return target and pred of valid dataset."
@@ -107,7 +107,7 @@ def train_ml(df, # dataframe of values
     X_train, y_train, X_test, y_test = split_data(df, feat_col, target_col, split)
     
     # Fit the model
-    model.fit(X_train, y_train, **params) # better convert y_train to numpy array and flatten
+    model.fit(X_train, y_train, **(params or {})) # better convert y_train to numpy array and flatten
     
     if save is not None:
         # Save the model to a file
@@ -132,7 +132,7 @@ def train_ml_cv( df, # dataframe of values
                  splits, # splits
                  model, # sklearn model
                  save = None, # model name to be saved, e.g., 'LR'
-                 params = {}, # act as kwargs, for model.fit
+                 params = None, # act as kwargs, for model.fit
                 ):
     
     "Cross-validation through the given splits"
@@ -152,7 +152,6 @@ def train_ml_cv( df, # dataframe of values
         
     # Concatenate OOF from each fold to a new dataframe
     oof = pd.concat(OOF).sort_index()
-    
     
     return oof
 

@@ -58,7 +58,15 @@ def sty2pSTY_df(df):
     return df
 
 # %% ../../nbs/02b_pssm_plot.ipynb 15
-def plot_heatmap(heatmap_df, ax=None, position_label=True, figsize=(5, 6), include_zero=True,scale_pos_neg=False, colorbar_title='Prob.'):
+def plot_heatmap(heatmap_df, 
+                 ax=None, 
+                 position_label=True, 
+                 figsize=(5, 6), 
+                 include_zero=True,
+                 scale_pos_neg=False, 
+                 colorbar_title='Prob.',
+                 **kwargs
+                 ):
     "Plot a heatmap of pssm."
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
@@ -82,7 +90,8 @@ def plot_heatmap(heatmap_df, ax=None, position_label=True, figsize=(5, 6), inclu
             norm=norm,
             linewidth=0.3,
             ax=ax,
-            mask=mask
+            mask=mask,
+            **kwargs
         )
     else:
         sns.heatmap(
@@ -91,7 +100,8 @@ def plot_heatmap(heatmap_df, ax=None, position_label=True, figsize=(5, 6), inclu
             center=0,  # Center for diverging colormap
             linewidth=0.3,
             ax=ax,
-            mask=mask
+            mask=mask,
+            **kwargs
         )
 
 
@@ -199,13 +209,19 @@ def plot_logo_raw(pssm_df,ax=None,title='Motif',ytitle='Bits',figsize=(10,2)):
 # %% ../../nbs/02b_pssm_plot.ipynb 29
 def change_center_name(df):
     "Transfer the middle s,t,y to S,T,Y for plot if s,t,y have values; otherwise keep the original."
-    df=df.copy()
-    
-    if not (df.loc[['s','t','y'],0]==0).all():
-        df.loc['S', 0] = df.loc['s', 0]
-        df.loc['T', 0] = df.loc['t', 0]
-        df.loc['Y', 0] = df.loc['y', 0]
-        df.loc[['s', 't', 'y'], 0] = 0
+    df = df.copy()
+
+    # find which of s/t/y actually exist
+    lowercase = [aa for aa in ['s', 't', 'y'] if aa in df.index]
+
+    if not lowercase: return df  # nothing to do
+
+    # check if any of them have non-zero value at position 0
+    if (df.loc[lowercase, 0] != 0).any():
+        for aa in lowercase:
+            df.loc[aa.upper(), 0] = df.loc[aa, 0]
+            df.loc[aa, 0] = 0
+
     return df
 
 # %% ../../nbs/02b_pssm_plot.ipynb 32

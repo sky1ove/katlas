@@ -24,7 +24,7 @@ def get_reactome(gene_list,
                  p_type='FDR', # or p
                 ):
     "Reactome pathway analysis for a given gene set; returns formated output in dataframe with additional -log10(p)"
-    assert p_type in ['p','FDR']
+    if p_type not in ['p','FDR']: raise ValueError("p_type must be either 'p' or 'FDR'")
     col='entities.pValue' if p_type=='p' else 'entities.fdr'
     print('Running pathway anlysis')
     out = get_reactome_raw(gene_list)
@@ -86,7 +86,7 @@ def plot_path(react_df, # the output df of get_reactome
     Plot the output of get_reactome.
     If ref_df is provided, bars corresponding to pathways in ref_df are shown in dark red.
     """
-    assert p_type in ['p','FDR']
+    if p_type not in ['p','FDR']: raise ValueError("p_type must be either 'p' or 'FDR'")
     p_col=f'-log10_{p_type}'
     # Take top_n rows
     subset = react_df.head(top_n)
@@ -132,7 +132,7 @@ def get_overlap(react_df,
                  figsize=(5,3),
                  **kwargs
                 ):
-    assert p_type in ['p', 'FDR']
+    if p_type not in ['p', 'FDR']: raise ValueError("p_type must be either 'p' or 'FDR'")
     p_col = f'-log10_{p_type}'
     p_col_convert = p_col.replace('_', '(', 1) + ')'  # e.g., -log10(FDR)
 
