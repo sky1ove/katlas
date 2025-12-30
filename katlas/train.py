@@ -12,7 +12,6 @@ from .data import Data
 from .pssm.core import *
 from .pssm.compare import *
 # from katlas.feature import *
-from .clustering import *
 from functools import partial
 
 # essentials
