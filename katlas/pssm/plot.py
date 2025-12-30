@@ -53,11 +53,13 @@ def sty2pSTY(string):
 
 # %% ../../nbs/02b_pssm_plot.ipynb 14
 def sty2pSTY_df(df):
+    "Applies sty→pSTY to dataframe index"
     df=df.copy()
     df.index = df.index.map(sty2pSTY)
     return df
 
 # %% ../../nbs/02b_pssm_plot.ipynb 15
+@delegates(sns.heatmap)
 def plot_heatmap(heatmap_df, 
                  ax=None, 
                  position_label=True, 
@@ -313,7 +315,6 @@ def plot_logos_idx(pssms_df,*idxs,figsize=(14,1)):
 # %% ../../nbs/02b_pssm_plot.ipynb 51
 def plot_logos(pssms_df, 
                count_dict=None, # used to display n in motif title
-               path=None,
                prefix='Motif',
                figsize=(14,1)
                ):

@@ -280,9 +280,7 @@ def train_dl(df,
     train_ds = GeneralDataset(train, feat_col, target_col)
     valid_ds = GeneralDataset(valid, feat_col, target_col)
     
-    n_workers = fc.defaults.cpus
-
-    dls = DataLoaders.from_dsets(train_ds, valid_ds, bs=bs, num_workers=n_workers)
+    dls = DataLoaders.from_dsets(train_ds, valid_ds, bs=bs, num_workers=min(fc.defaults.cpus, 4))
 
     model = model_func()
     learn = Learner(dls.to(def_device), model.to(def_device), loss, 

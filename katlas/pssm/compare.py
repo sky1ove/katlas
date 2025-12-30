@@ -101,7 +101,7 @@ def cosine_similarity(pssm1: pd.DataFrame, pssm2: pd.DataFrame) -> pd.Series:
         if norm1 == 0 or norm2 == 0:
             sims[pos] = 0.0
         else:
-            dot_product = sum(v1*v2) # np.dot(v1,v2)
+            dot_product = np.dot(v1,v2) # sum(v1*v2)
             sims[pos] = dot_product / (norm1 * norm2)
 
     return pd.Series(sims)

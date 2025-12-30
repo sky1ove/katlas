@@ -4,7 +4,7 @@
 
 # %% auto 0
 __all__ = ['def_device', 'remove_hi_corr', 'preprocess', 'standardize', 'get_rdkit', 'get_rdkit_3d', 'get_rdkit_all',
-           'get_rdkit_df', 'get_morgan', 'onehot_encode', 'onehot_encode_df', 'kmeans', 'filter_range_columns',
+           'get_rdkit_df', 'get_morgan', 'onehot_encode', 'onehot_encode_df', 'run_kmeans', 'filter_range_columns',
            'get_clusters_elbow', 'get_esm', 'get_t5', 'get_t5_bfd']
 
 # %% ../nbs/05_feature.ipynb 4
@@ -35,7 +35,7 @@ def remove_hi_corr(df: pd.DataFrame,
     "Remove highly correlated features in a dataframe given a pearson threshold"
     
     # Create correlation matrix
-    corr_matrix = df.corr().abs()
+    corr_matrix = df.corr(numeric_only=True).abs()
     
     # Select upper triangle of correlation matrix
     upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
@@ -127,7 +127,7 @@ def onehot_encode(sequences, transform_colname=True, n=20):
     encoded_array = encoder.fit_transform([list(seq) for seq in sequences])
     colnames = [x[1:] for x in encoder.get_feature_names_out()]
     if transform_colname:
-        colnames = [f"{int(item.split('_', 1)[0]) - 20}{item.split('_', 1)[1]}" for item in colnames]
+        colnames = [f"{int(item.split('_', 1)[0]) - n}{item.split('_', 1)[1]}" for item in colnames]
     encoded_df = pd.DataFrame(encoded_array)
     encoded_df.columns=colnames
     return encoded_df
@@ -137,7 +137,7 @@ def onehot_encode_df(df,seq_col='site_seq', **kwargs):
     return onehot_encode(df[seq_col],**kwargs)
 
 # %% ../nbs/05_feature.ipynb 35
-def kmeans(onehot,n=2,seed=42):
+def run_kmeans(onehot,n=2,seed=42):
     "Take onehot encoded and regurn the cluster number."
     kmeans = KMeans(n_clusters=n, random_state=seed,n_init='auto')
     return kmeans.fit_predict(onehot)

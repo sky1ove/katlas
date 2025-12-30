@@ -98,7 +98,7 @@ def recover_pssm(flat_pssm: pd.Series):
     df = df.pivot(index='aa', columns='Position', values='value').fillna(0)
     aa_order=tuple('PGACSTVILMFYWHKRQNDEsty')
     order = [aa for aa in aa_order if aa in df.index]
-    return df.reindex(index=order)
+    return df.reindex(index=order).sort_index(axis=1)
 
 # %% ../../nbs/02a_pssm_core.ipynb 25
 def _clean_zero(pssm_df):

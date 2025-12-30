@@ -24,7 +24,7 @@ from pathlib import Path
 from scipy.stats import spearmanr, pearsonr
 
 # sklearn
-from sklearn.model_selection import *
+from sklearn.model_selection import StratifiedKFold, GroupKFold, StratifiedGroupKFold
 from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import *
 from sklearn.svm import *

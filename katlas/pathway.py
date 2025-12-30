@@ -26,7 +26,7 @@ def get_reactome(gene_list,
     "Reactome pathway analysis for a given gene set; returns formated output in dataframe with additional -log10(p)"
     if p_type not in ['p','FDR']: raise ValueError("p_type must be either 'p' or 'FDR'")
     col='entities.pValue' if p_type=='p' else 'entities.fdr'
-    print('Running pathway anlysis')
+    print('Running pathway analysis')
     out = get_reactome_raw(gene_list)
     print('Done')
     out = out[['name','stId',col]].rename(columns={col:p_type,'stId':'reactome_id'})

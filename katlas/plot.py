@@ -20,7 +20,6 @@ from scipy.stats import spearmanr, pearsonr
 from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 from matplotlib.ticker import MultipleLocator
-from numpy import trapz
 
 # Katlas
 from .data import *
@@ -188,11 +187,9 @@ def reduce_feature(df: pd.DataFrame,
 def plot_2d(
     embedding_df: pd.DataFrame,  # a dataframe of values that is waited for dimensionality reduction
     hue: str = None,  # colname of color
-    complexity: int = 30,  # this argument does not affect pca but others; recommend 30 for tsne, 15 for umap
     palette: str = 'tab20',  # color scheme, could be tab10 if less categories
     legend: bool = False,  # whether or not add the legend on the side
     name_list=None,  # a list of names to annotate each dot in the plot
-    seed: int = 123,  # seed for dimensionality reduction
     s: int = 20,  # size of the dot
     legend_title: str = None,  # new argument to override legend title
     **kwargs  # arguments for dimensional reduction method to be used
@@ -784,7 +781,7 @@ def get_AUCDF(df,col, reverse=False,plot=True,xlabel='Rank of reported kinase'):
     if reverse:
         y_values = 1 - y_values + y_values.min()  # Adjust for reverse while keeping the distribution's integrity
     # calculate the area under the curve using the trapezoidal rule
-    area_under_curve = np.trapezoid(y_values, x_values)
+    area_under_curve = np.trapz(y_values, x_values)
     
     # calculate total area
     # total_area = (x_values[-1] - x_values[0]) * (y_values[-1] - y_values[0])

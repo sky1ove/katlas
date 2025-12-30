@@ -195,7 +195,7 @@ def get_pspa_tyr_pct():
 # %% ../nbs/00_data.ipynb 41
 @patch_to(Data)
 @lru_cache
-def get_num_dict() -> dict:
+def get_num_dict():
     """Get a dictionary mapping kinase to number of random amino acids in PSPA."""
     path = "PSPA/pspa_divide_num.csv"
     return Data.read_file(path).set_index("kinase")["num_random_aa"].to_dict()
@@ -470,7 +470,7 @@ def list_cancer():
     "List available CPTAC cancer type"
     return ['HNSCC','GBM','COAD','CCRCC','LSCC','BRCA','UCEC','LUAD','PDAC','OV']
 
-# %% ../nbs/00_data.ipynb 93
+# %% ../nbs/00_data.ipynb 92
 @patch_to(CPTAC)
 def get_id(cancer_type: str,
            is_Tumor: bool=True, # tumor tissue or normal
