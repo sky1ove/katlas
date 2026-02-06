@@ -22,7 +22,17 @@ Documentation = "https://sky1ove.github.io/katlas"
 katlas = "katlas._modidx:d"
 
 [project.optional-dependencies]
-dev = ['nbdev', 'pyngrok', 'fastai', 'fairscale', 'rdkit', 'openpyxl', 'transformers', 'sentencepiece']
+dev = [
+    'nbdev',
+    'pyngrok',
+    'fastai',
+    'fairscale',
+    'rdkit',
+    'openpyxl',
+    'transformers',
+    'sentencepiece',
+    "jupyterlab>=3.6.8",
+]
 
 [tool.setuptools.dynamic]
 version = {attr = "katlas.__version__"}
