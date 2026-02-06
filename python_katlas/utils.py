@@ -9,7 +9,7 @@ __all__ = ['prepare_path', 'check_seq', 'check_seqs', 'validate_site', 'validate
 # %% ../nbs/01_utils.ipynb #1b68d25a
 import numpy as np, pandas as pd
 from tqdm import tqdm
-from .data import *
+from katlas.data import *
 from fastcore.meta import delegates
 from pathlib import Path
 

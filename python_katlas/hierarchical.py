@@ -6,9 +6,9 @@ __all__ = ['get_Z_custom', 'get_Z_cache', 'auto_thr', 'plot_dendrogram', 'get_co
 
 # %% ../nbs/04b_hierarchical.ipynb #1a982def
 import pandas as pd,numpy as np
-from .data import *
-from .pssm.core import recover_pssm
-from .pssm.compare import js_divergence_flat
+from katlas.data import *
+from katlas.pssm.core import recover_pssm
+from katlas.pssm.compare import js_divergence_flat
 from scipy.cluster.hierarchy import fcluster,linkage,dendrogram
 from scipy.spatial.distance import pdist
 from matplotlib import pyplot as plt

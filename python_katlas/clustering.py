@@ -6,10 +6,10 @@ __all__ = ['get_1d_distance', 'get_1d_js', 'get_distance', 'get_1d_distance_para
 
 # %% ../nbs/04_clustering.ipynb #7c11d571-dc85-4223-a245-c864c847b2e7
 import pandas as pd,numpy as np
-from .data import *
-from .pssm.compare import js_divergence_flat
-from .pssm.core import recover_pssm
-from .plot import set_sns
+from katlas.data import *
+from katlas.pssm.compare import js_divergence_flat
+from katlas.pssm.core import recover_pssm
+from katlas.plot import set_sns
 from tqdm import tqdm
 from functools import partial
 from tqdm.contrib.concurrent import process_map

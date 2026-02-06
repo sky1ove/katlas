@@ -22,7 +22,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
 # Katlas
-from .data import *
+from katlas.data import *
 
 # Bokeh
 from bokeh.io import output_notebook, show

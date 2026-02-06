@@ -10,7 +10,7 @@ __all__ = ['plot_heatmap_simple', 'pSTY2sty', 'sty2pSTY', 'sty2pSTY_df', 'plot_h
 # %% ../../nbs/02b_pssm_plot.ipynb #5f63ef6f-0582-41ef-bcfc-6becac34c8fb
 from fastcore.meta import delegates
 import numpy as np, pandas as pd
-from .core import get_IC,recover_pssm
+from katlas.pssm.core import get_IC,recover_pssm
 
 from matplotlib import pyplot as plt
 import logomaker,math

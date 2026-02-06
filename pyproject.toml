@@ -1,11 +1,34 @@
 [build-system]
-requires = ["setuptools>=64.0"]
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name="python-katlas"
-requires-python=">=3.7"
-dynamic = [ "keywords", "description", "version", "dependencies", "optional-dependencies", "readme", "license", "authors", "classifiers", "entry-points", "scripts", "urls"]
+name = "python-katlas"
+dynamic = ["version"]
+description = "tools for predicting kinome specificities"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "Apache-2.0"}
+authors = [{name = "lily", email = "lcai888666@gmail.com"}]
+keywords = ['nbdev', 'jupyter', 'notebook', 'python']
+classifiers = ["Natural Language :: English", "Intended Audience :: Developers", "Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3 :: Only"]
+dependencies = ['pandas', 'gdown', 'statsmodels', 'statannotations', 'fastparquet', 'pyarrow', 'tqdm', 'logomaker-kinase', 'seaborn', 'bokeh', 'reactome2py', 'adjustText', 'scikit-learn', 'umap-learn', 'ipywidgets', 'biopython', 'cachetools']
 
-[tool.uv]
-cache-keys = [{ file = "pyproject.toml" }, { file = "settings.ini" }, { file = "setup.py" }]
+[project.urls]
+Repository = "https://github.com/sky1ove/katlas"
+Documentation = "https://sky1ove.github.io/katlas"
+
+[project.entry-points.nbdev]
+katlas = "katlas._modidx:d"
+
+[project.optional-dependencies]
+dev = ['nbdev', 'pyngrok', 'fastai', 'fairscale', 'rdkit', 'openpyxl', 'transformers', 'sentencepiece']
+
+[tool.setuptools.dynamic]
+version = {attr = "katlas.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["katlas"]
+
+[tool.nbdev]
+title = 'python-katlas'

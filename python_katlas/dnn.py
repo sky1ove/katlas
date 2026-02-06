@@ -14,9 +14,9 @@ import fastcore.all as fc
 
 import numpy as np, pandas as pd
 import os, random
-from .data import *
-from .train import *
-from .pssm import *
+from katlas.data import *
+from katlas.train import *
+from katlas.pssm import *
 from fastai.vision.all import *
 import pandas as pd
 

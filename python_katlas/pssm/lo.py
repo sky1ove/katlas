@@ -7,8 +7,8 @@ __all__ = ['get_pssm_LO', 'get_pssm_LO_flat', 'plot_logo_LO', 'plot_logo_heatmap
 
 # %% ../../nbs/02c_pssm_lo.ipynb #6c844d16-6bcb-4452-a41e-b0ce25ea86ab
 import numpy as np, pandas as pd
-from .plot import *
-from .core import *
+from katlas.pssm.plot import *
+from katlas.pssm.core import *
 from matplotlib import pyplot as plt
 
 # %% ../../nbs/02c_pssm_lo.ipynb #77d2dcc5-1020-42fb-8774-879ad764c226

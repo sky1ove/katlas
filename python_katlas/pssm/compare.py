@@ -8,7 +8,7 @@ __all__ = ['kl_divergence', 'kl_divergence_flat', 'js_divergence', 'js_divergenc
 
 # %% ../../nbs/02e_pssm_compare.ipynb #76949d54-f519-4bc6-9da5-d48a05bbfe69
 import numpy as np, pandas as pd
-from .core import EPSILON
+from katlas.pssm.core import EPSILON
 
 # %% ../../nbs/02e_pssm_compare.ipynb #b1ef2ee7-70fd-4703-96b4-1c1a9053987f
 def kl_divergence(p1,  # target pssm p (array-like, shape: (AA, positions))

@@ -8,8 +8,8 @@ __all__ = ['EPSILON', 'get_prob', 'get_pssm_weight', 'flatten_pssm', 'recover_ps
 
 # %% ../../nbs/02a_pssm_core.ipynb #05668c38
 import numpy as np, pandas as pd
-from ..data import *
-from ..utils import *
+from katlas.data import *
+from katlas.utils import *
 from fastcore.meta import delegates
 from tqdm import tqdm
 from tqdm.contrib.concurrent import process_map

@@ -11,7 +11,7 @@ __all__ = ['def_device', 'remove_hi_corr', 'preprocess', 'standardize', 'get_rdk
 import pandas as pd, numpy as np
 import torch, re, gc
 from tqdm.notebook import tqdm; tqdm.pandas()
-from .data import Data
+from katlas.data import Data
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 # Rdkit

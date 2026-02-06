@@ -8,9 +8,9 @@ __all__ = ['get_score_jsd', 'get_score_kld', 'get_score_ce', 'get_splits', 'spli
 
 # %% ../nbs/10_ML.ipynb #b9b2a1d7
 # katlas
-from .data import Data
-from .pssm.core import *
-from .pssm.compare import *
+from katlas.data import Data
+from katlas.pssm.core import *
+from katlas.pssm.compare import *
 # from katlas.feature import *
 from functools import partial
 

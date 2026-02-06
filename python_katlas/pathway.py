@@ -9,7 +9,7 @@ from pandas import json_normalize
 from reactome2py import analysis
 from matplotlib import pyplot as plt
 import numpy as np, pandas as pd
-from .data import *
+from katlas.data import *
 
 # %% ../nbs/07_pathway.ipynb #2dde800a-d3f9-43d2-b3a3-f6d708328791
 def get_reactome_raw(gene_list):

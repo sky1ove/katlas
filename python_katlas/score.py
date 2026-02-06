@@ -9,10 +9,10 @@ __all__ = ['EPSILON', 'multiply_23', 'multiply_20', 'cut_seq', 'STY2sty', 'get_d
 
 # %% ../nbs/03_scoring.ipynb #3870628d
 import numpy as np, pandas as pd
-from .data import *
-from .utils import *
-from .pssm.core import *
-from .pssm.plot import pSTY2sty
+from katlas.data import *
+from katlas.utils import *
+from katlas.pssm.core import *
+from katlas.pssm.plot import pSTY2sty
 from typing import Callable
 from functools import partial
 from tqdm import tqdm

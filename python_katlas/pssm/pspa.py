@@ -7,11 +7,11 @@ __all__ = ['preprocess_pspa', 'plot_logo_pspa', 'plot_logo_heatmap_pspa', 'raw2n
 
 # %% ../../nbs/02d_pssm_pspa.ipynb #fa7de417-671c-4e5c-ba53-230a9e1f4bc7
 import numpy as np, pandas as pd
-from .plot import *
+from katlas.pssm.plot import *
 from matplotlib import pyplot as plt
-from ..data import *
-from .core import *
-from .plot import *
+from katlas.data import *
+from katlas.pssm.core import *
+from katlas.pssm.plot import *
 
 # %% ../../nbs/02d_pssm_pspa.ipynb #0470f701-f222-411e-a0e6-a650285ab6c2
 def preprocess_pspa(pssm):
