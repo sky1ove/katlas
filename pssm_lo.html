@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="calculation of log-odds PSSM and visualization">
+
+<title>pssm.lo – python-katlas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-45a6b1ee3682cc1dbb0c772b170fe9b7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="pssm.lo – python-katlas">
+<meta property="og:description" content="calculation of log-odds PSSM and visualization">
+<meta property="og:image" content="https://sky1ove.github.io/katlas/02c_pssm_lo_files/figure-html/cell-10-output-1.png">
+<meta property="og:site_name" content="python-katlas">
+<meta property="og:image:height" content="143">
+<meta property="og:image:width" content="853">
+<meta name="twitter:title" content="pssm.lo – python-katlas">
+<meta name="twitter:description" content="calculation of log-odds PSSM and visualization">
+<meta name="twitter:image" content="https://sky1ove.github.io/katlas/02c_pssm_lo_files/figure-html/cell-10-output-1.png">
+<meta name="twitter:image-height" content="143">
+<meta name="twitter:image-width" content="853">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">python-katlas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/sky1ove/katlas"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data.html">Modules</a></li><li class="breadcrumb-item"><a href="./pssm_lo.html">pssm.lo</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get Started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pssm_core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pssm.core</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pssm_plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pssm.plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pssm_lo.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">pssm.lo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pssm_pspa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pssm.pspa</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pssm_compare.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pssm.compare</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./scoring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hierarchical clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hierarchical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hierarchical clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pathway.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pathway analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train ML</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dnn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train DL</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#calculate" id="toc-calculate" class="nav-link" data-scroll-target="#calculate">Calculate</a>
+  <ul class="collapse">
+  <li><a href="#get_pssm_lo" id="toc-get_pssm_lo" class="nav-link" data-scroll-target="#get_pssm_lo">get_pssm_LO</a></li>
+  <li><a href="#get_pssm_lo_flat" id="toc-get_pssm_lo_flat" class="nav-link" data-scroll-target="#get_pssm_lo_flat">get_pssm_LO_flat</a></li>
+  </ul></li>
+  <li><a href="#plot" id="toc-plot" class="nav-link" data-scroll-target="#plot">Plot</a>
+  <ul class="collapse">
+  <li><a href="#plot_logo_lo" id="toc-plot_logo_lo" class="nav-link" data-scroll-target="#plot_logo_lo">plot_logo_LO</a></li>
+  <li><a href="#plot_logo_heatmap_lo" id="toc-plot_logo_heatmap_lo" class="nav-link" data-scroll-target="#plot_logo_heatmap_lo">plot_logo_heatmap_LO</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data.html">Modules</a></li><li class="breadcrumb-item"><a href="./pssm_lo.html">pssm.lo</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">pssm.lo</h1>
+</div>
+
+<div>
+  <div class="description">
+    calculation of log-odds PSSM and visualization
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p><strong>Log-Odds PSSM Calculation</strong></p>
+<p>To compute a log-odds Position-Specific Scoring Matrix (PSSM) by comparing observed amino acid frequencies against a background model:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pssm_LO <span class="op">=</span> get_pssm_LO(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    pssm_df<span class="op">=</span>pssm_df,    <span class="co"># DataFrame of amino acid frequencies (rows=aa, cols=positions)</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    site_type<span class="op">=</span><span class="st">'STY'</span>,    <span class="co"># background model: 'S', 'T', 'Y', 'ST', or 'STY'</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<p>To compute a log-odds PSSM from a flattened (1D) frequency representation:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pssm_LO <span class="op">=</span> get_pssm_LO_flat(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    flat_pssm<span class="op">=</span>flat_pssm,  <span class="co"># flattened PSSM as pd.Series</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    site_type<span class="op">=</span><span class="st">'STY'</span>,      <span class="co"># background model: 'S', 'T', 'Y', 'ST', or 'STY'</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<p><strong>Log-Odds Visualization</strong></p>
+<p>To visualize a log-odds PSSM as a sequence logo where letter heights reflect enrichment/depletion:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>plot_logo_LO(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    pssm_LO<span class="op">=</span>pssm_LO,        <span class="co"># log-odds PSSM DataFrame</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'Motif'</span>,          <span class="co"># plot title</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    acceptor<span class="op">=</span><span class="va">None</span>,          <span class="co"># force display of central residue: 'S', 'T', or 'Y'</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    scale_zero<span class="op">=</span><span class="va">True</span>,        <span class="co"># rescale position 0 to match max stack height</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    scale_pos_neg<span class="op">=</span><span class="va">True</span>,     <span class="co"># normalize positive/negative stacks for visibility</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span><span class="va">None</span>,                <span class="co"># matplotlib Axes (creates new if None)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">1</span>),        <span class="co"># figure dimensions (width, height)</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<p>To display both a sequence logo and a heatmap of log-odds values in a combined figure:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plot_logo_heatmap_LO(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    pssm_LO<span class="op">=</span>pssm_LO,        <span class="co"># log-odds PSSM DataFrame</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'Motif'</span>,          <span class="co"># plot title</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    acceptor<span class="op">=</span><span class="va">None</span>,          <span class="co"># force display of central residue: 'S', 'T', or 'Y'</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    figsize<span class="op">=</span>(<span class="dv">17</span>, <span class="dv">10</span>),       <span class="co"># figure dimensions (width, height)</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    include_zero<span class="op">=</span><span class="va">False</span>,     <span class="co"># include position 0 in heatmap</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    scale_pos_neg<span class="op">=</span><span class="va">True</span>,     <span class="co"># normalize color scale for positive/negative values</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<div id="467c4ffa" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> katlas.data <span class="im">import</span> <span class="op">*</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="56988790-8899-4757-9786-7707b3c85402" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> Data.get_ks_dataset()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>data_k <span class="op">=</span> data[data.kinase_uniprot<span class="op">==</span><span class="st">'P49841'</span>] <span class="co"># CDK1</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>pssm_df<span class="op">=</span>get_prob(data_k, col<span class="op">=</span><span class="st">'site_seq'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="calculate" class="level2">
+<h2 class="anchored" data-anchor-id="calculate">Calculate</h2>
+<hr>
+<section id="get_pssm_lo" class="level3">
+<h3 class="anchored" data-anchor-id="get_pssm_lo">get_pssm_LO</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_pssm_LO(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    pssm_df, site_type, <span class="co"># S, T, Y, ST, or STY</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Get log odds PSSM: log2 (freq pssm/background pssm).</em></p>
+<p>Let <span class="math inline">\(P_i(x)\)</span> be the frequency of amino acid <span class="math inline">\(x\)</span> at position <span class="math inline">\(i\)</span> in the input PSSM, and let <span class="math inline">\(B_i(x)\)</span> be the background frequency of amino acid <span class="math inline">\(x\)</span> at the same position, derived from a background model corresponding to the specified site type (<code>S</code>, <code>T</code>, <code>Y</code>, or <code>STY</code>).</p>
+<p>The log-odds score at each position <span class="math inline">\(i\)</span> for amino acid <span class="math inline">\(x\)</span> is computed as:</p>
+<p><span class="math display">\[
+\mathrm{LO}_i(x) = \log_2 \left( \frac{P_i(x) + \varepsilon}{B_i(x) + \varepsilon} \right)
+\]</span></p>
+<p>where <span class="math inline">\(\varepsilon = 10^{-8}\)</span> is a small constant added for numerical stability and to avoid division by zero.</p>
+<p>This results in a matrix where:</p>
+<ul>
+<li>Positive values indicate enrichment over background,</li>
+<li>Negative values indicate depletion relative to background,</li>
+<li>Zero indicates no difference from the expected background.</li>
+</ul>
+<div id="801e4395-7db8-4fa4-aa0b-8bf8175725de" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pssm_LO <span class="op">=</span> get_pssm_LO(pssm_df,<span class="st">'STY'</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>pssm_LO.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Position</th>
+<th data-quarto-table-cell-role="th">-20</th>
+<th data-quarto-table-cell-role="th">-19</th>
+<th data-quarto-table-cell-role="th">-18</th>
+<th data-quarto-table-cell-role="th">-17</th>
+<th data-quarto-table-cell-role="th">-16</th>
+<th data-quarto-table-cell-role="th">-15</th>
+<th data-quarto-table-cell-role="th">-14</th>
+<th data-quarto-table-cell-role="th">-13</th>
+<th data-quarto-table-cell-role="th">-12</th>
+<th data-quarto-table-cell-role="th">-11</th>
+<th data-quarto-table-cell-role="th">-10</th>
+<th data-quarto-table-cell-role="th">-9</th>
+<th data-quarto-table-cell-role="th">-8</th>
+<th data-quarto-table-cell-role="th">-7</th>
+<th data-quarto-table-cell-role="th">-6</th>
+<th data-quarto-table-cell-role="th">-5</th>
+<th data-quarto-table-cell-role="th">-4</th>
+<th data-quarto-table-cell-role="th">-3</th>
+<th data-quarto-table-cell-role="th">-2</th>
+<th data-quarto-table-cell-role="th">-1</th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+<th data-quarto-table-cell-role="th">5</th>
+<th data-quarto-table-cell-role="th">6</th>
+<th data-quarto-table-cell-role="th">7</th>
+<th data-quarto-table-cell-role="th">8</th>
+<th data-quarto-table-cell-role="th">9</th>
+<th data-quarto-table-cell-role="th">10</th>
+<th data-quarto-table-cell-role="th">11</th>
+<th data-quarto-table-cell-role="th">12</th>
+<th data-quarto-table-cell-role="th">13</th>
+<th data-quarto-table-cell-role="th">14</th>
+<th data-quarto-table-cell-role="th">15</th>
+<th data-quarto-table-cell-role="th">16</th>
+<th data-quarto-table-cell-role="th">17</th>
+<th data-quarto-table-cell-role="th">18</th>
+<th data-quarto-table-cell-role="th">19</th>
+<th data-quarto-table-cell-role="th">20</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">aa</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">P</th>
+<td>0.059908</td>
+<td>0.281140</td>
+<td>-0.026749</td>
+<td>0.355318</td>
+<td>0.346468</td>
+<td>0.178779</td>
+<td>0.463147</td>
+<td>0.308758</td>
+<td>0.239997</td>
+<td>0.179283</td>
+<td>0.608034</td>
+<td>0.192985</td>
+<td>0.329370</td>
+<td>0.721201</td>
+<td>0.715760</td>
+<td>0.588674</td>
+<td>0.320993</td>
+<td>1.112040</td>
+<td>0.973481</td>
+<td>1.055403</td>
+<td>0.0</td>
+<td>1.539081</td>
+<td>1.109428</td>
+<td>0.434700</td>
+<td>-0.301588</td>
+<td>1.379883</td>
+<td>0.314032</td>
+<td>0.243357</td>
+<td>-0.060158</td>
+<td>0.644231</td>
+<td>0.061865</td>
+<td>0.161917</td>
+<td>0.308782</td>
+<td>0.140834</td>
+<td>0.521194</td>
+<td>0.373708</td>
+<td>0.158627</td>
+<td>0.462854</td>
+<td>0.138734</td>
+<td>0.658643</td>
+<td>0.216764</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">G</th>
+<td>0.355425</td>
+<td>0.331928</td>
+<td>0.015762</td>
+<td>-0.090070</td>
+<td>0.155057</td>
+<td>-0.318908</td>
+<td>0.274539</td>
+<td>0.486357</td>
+<td>-0.081333</td>
+<td>-0.044640</td>
+<td>-0.023817</td>
+<td>0.297183</td>
+<td>-0.167014</td>
+<td>-0.096944</td>
+<td>-0.092276</td>
+<td>-0.064319</td>
+<td>-0.075365</td>
+<td>0.473975</td>
+<td>0.243292</td>
+<td>0.358158</td>
+<td>0.0</td>
+<td>0.235499</td>
+<td>-0.025131</td>
+<td>0.284594</td>
+<td>-0.457652</td>
+<td>-0.327199</td>
+<td>-0.123033</td>
+<td>0.303309</td>
+<td>0.315783</td>
+<td>-0.190655</td>
+<td>-0.067465</td>
+<td>0.298568</td>
+<td>0.361469</td>
+<td>0.170286</td>
+<td>0.215167</td>
+<td>0.258789</td>
+<td>-0.054255</td>
+<td>-0.185829</td>
+<td>0.200256</td>
+<td>0.388134</td>
+<td>-0.066157</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">A</th>
+<td>0.445724</td>
+<td>0.399204</td>
+<td>0.032468</td>
+<td>0.105841</td>
+<td>0.037853</td>
+<td>0.527832</td>
+<td>0.039466</td>
+<td>-0.201953</td>
+<td>0.117073</td>
+<td>0.243623</td>
+<td>0.053728</td>
+<td>-0.015571</td>
+<td>0.335906</td>
+<td>0.169137</td>
+<td>-0.130969</td>
+<td>-0.098714</td>
+<td>-0.444541</td>
+<td>0.119458</td>
+<td>0.286568</td>
+<td>0.060413</td>
+<td>0.0</td>
+<td>-0.584316</td>
+<td>0.490663</td>
+<td>-0.075931</td>
+<td>-0.078570</td>
+<td>0.109301</td>
+<td>0.496097</td>
+<td>0.191241</td>
+<td>-0.008452</td>
+<td>-0.306504</td>
+<td>0.241955</td>
+<td>-0.675462</td>
+<td>-0.013856</td>
+<td>0.172464</td>
+<td>-0.080489</td>
+<td>-0.019176</td>
+<td>0.360468</td>
+<td>0.315254</td>
+<td>0.109869</td>
+<td>-0.375457</td>
+<td>0.164260</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">C</th>
+<td>0.537945</td>
+<td>-0.956246</td>
+<td>-0.269417</td>
+<td>-0.055141</td>
+<td>-0.547438</td>
+<td>-0.718577</td>
+<td>-0.987818</td>
+<td>0.075745</td>
+<td>0.419542</td>
+<td>-0.634510</td>
+<td>-0.603081</td>
+<td>-0.233384</td>
+<td>0.494481</td>
+<td>0.142392</td>
+<td>0.851304</td>
+<td>0.003453</td>
+<td>-0.677106</td>
+<td>-0.935493</td>
+<td>0.789298</td>
+<td>0.156753</td>
+<td>0.0</td>
+<td>-0.937435</td>
+<td>0.945576</td>
+<td>0.925658</td>
+<td>-1.573420</td>
+<td>-1.149739</td>
+<td>0.860460</td>
+<td>-0.169595</td>
+<td>-0.143715</td>
+<td>0.200914</td>
+<td>-0.385030</td>
+<td>0.235879</td>
+<td>0.725572</td>
+<td>-0.115854</td>
+<td>0.491228</td>
+<td>-0.070391</td>
+<td>-0.647993</td>
+<td>-0.426118</td>
+<td>1.057556</td>
+<td>-1.543537</td>
+<td>-0.898042</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">S</th>
+<td>0.482063</td>
+<td>0.128128</td>
+<td>0.452159</td>
+<td>-0.214803</td>
+<td>0.139830</td>
+<td>0.049341</td>
+<td>0.317830</td>
+<td>-0.214082</td>
+<td>0.175540</td>
+<td>-0.036560</td>
+<td>0.017835</td>
+<td>0.187378</td>
+<td>0.362312</td>
+<td>-0.239848</td>
+<td>0.014115</td>
+<td>0.612648</td>
+<td>-0.070659</td>
+<td>-0.737274</td>
+<td>0.126846</td>
+<td>0.744032</td>
+<td>0.0</td>
+<td>-0.314505</td>
+<td>0.076891</td>
+<td>0.803635</td>
+<td>0.224781</td>
+<td>-0.198496</td>
+<td>0.474760</td>
+<td>0.303879</td>
+<td>0.367185</td>
+<td>-0.142147</td>
+<td>0.492529</td>
+<td>0.309106</td>
+<td>-0.086104</td>
+<td>-0.016800</td>
+<td>-0.160346</td>
+<td>-0.145271</td>
+<td>-0.167390</td>
+<td>-0.262078</td>
+<td>0.101268</td>
+<td>0.189145</td>
+<td>0.426381</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="get_pssm_lo_flat" class="level3">
+<h3 class="anchored" data-anchor-id="get_pssm_lo_flat">get_pssm_LO_flat</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_pssm_LO_flat(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    flat_pssm, site_type, <span class="co"># S, T, Y, ST, or STY</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="d5eb5689-ff74-46cd-a610-89c9a115f4c5" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>flat_pssm<span class="op">=</span>pd.Series(flatten_pssm(pssm_df))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="747d7e7d-6026-4b0d-b5f6-d8ec6a557c2c" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pssm_LO <span class="op">=</span> get_pssm_LO_flat(flat_pssm,<span class="st">'STY'</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>pssm_LO</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Position</th>
+<th data-quarto-table-cell-role="th">-20</th>
+<th data-quarto-table-cell-role="th">-19</th>
+<th data-quarto-table-cell-role="th">-18</th>
+<th data-quarto-table-cell-role="th">-17</th>
+<th data-quarto-table-cell-role="th">-16</th>
+<th data-quarto-table-cell-role="th">-15</th>
+<th data-quarto-table-cell-role="th">-14</th>
+<th data-quarto-table-cell-role="th">-13</th>
+<th data-quarto-table-cell-role="th">-12</th>
+<th data-quarto-table-cell-role="th">-11</th>
+<th data-quarto-table-cell-role="th">-10</th>
+<th data-quarto-table-cell-role="th">-9</th>
+<th data-quarto-table-cell-role="th">-8</th>
+<th data-quarto-table-cell-role="th">-7</th>
+<th data-quarto-table-cell-role="th">-6</th>
+<th data-quarto-table-cell-role="th">-5</th>
+<th data-quarto-table-cell-role="th">-4</th>
+<th data-quarto-table-cell-role="th">-3</th>
+<th data-quarto-table-cell-role="th">-2</th>
+<th data-quarto-table-cell-role="th">-1</th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+<th data-quarto-table-cell-role="th">5</th>
+<th data-quarto-table-cell-role="th">6</th>
+<th data-quarto-table-cell-role="th">7</th>
+<th data-quarto-table-cell-role="th">8</th>
+<th data-quarto-table-cell-role="th">9</th>
+<th data-quarto-table-cell-role="th">10</th>
+<th data-quarto-table-cell-role="th">11</th>
+<th data-quarto-table-cell-role="th">12</th>
+<th data-quarto-table-cell-role="th">13</th>
+<th data-quarto-table-cell-role="th">14</th>
+<th data-quarto-table-cell-role="th">15</th>
+<th data-quarto-table-cell-role="th">16</th>
+<th data-quarto-table-cell-role="th">17</th>
+<th data-quarto-table-cell-role="th">18</th>
+<th data-quarto-table-cell-role="th">19</th>
+<th data-quarto-table-cell-role="th">20</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">aa</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">P</th>
+<td>0.059908</td>
+<td>0.281140</td>
+<td>-0.026749</td>
+<td>0.355318</td>
+<td>0.346468</td>
+<td>0.178779</td>
+<td>0.463147</td>
+<td>0.308758</td>
+<td>0.239997</td>
+<td>0.179283</td>
+<td>0.608034</td>
+<td>0.192985</td>
+<td>0.329370</td>
+<td>0.721201</td>
+<td>0.715760</td>
+<td>0.588674</td>
+<td>0.320993</td>
+<td>1.112040</td>
+<td>0.973481</td>
+<td>1.055403</td>
+<td>0.000000</td>
+<td>1.539081</td>
+<td>1.109428</td>
+<td>0.434700</td>
+<td>-0.301588</td>
+<td>1.379883</td>
+<td>0.314032</td>
+<td>0.243357</td>
+<td>-0.060158</td>
+<td>0.644231</td>
+<td>0.061865</td>
+<td>0.161917</td>
+<td>0.308782</td>
+<td>0.140834</td>
+<td>0.521194</td>
+<td>0.373708</td>
+<td>0.158627</td>
+<td>0.462854</td>
+<td>0.138734</td>
+<td>0.658643</td>
+<td>0.216764</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">G</th>
+<td>0.355425</td>
+<td>0.331928</td>
+<td>0.015762</td>
+<td>-0.090070</td>
+<td>0.155057</td>
+<td>-0.318908</td>
+<td>0.274539</td>
+<td>0.486357</td>
+<td>-0.081333</td>
+<td>-0.044640</td>
+<td>-0.023817</td>
+<td>0.297183</td>
+<td>-0.167014</td>
+<td>-0.096944</td>
+<td>-0.092276</td>
+<td>-0.064319</td>
+<td>-0.075365</td>
+<td>0.473975</td>
+<td>0.243292</td>
+<td>0.358158</td>
+<td>0.000000</td>
+<td>0.235499</td>
+<td>-0.025131</td>
+<td>0.284594</td>
+<td>-0.457652</td>
+<td>-0.327199</td>
+<td>-0.123033</td>
+<td>0.303309</td>
+<td>0.315783</td>
+<td>-0.190655</td>
+<td>-0.067465</td>
+<td>0.298568</td>
+<td>0.361469</td>
+<td>0.170286</td>
+<td>0.215167</td>
+<td>0.258789</td>
+<td>-0.054255</td>
+<td>-0.185829</td>
+<td>0.200256</td>
+<td>0.388134</td>
+<td>-0.066157</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">t</th>
+<td>0.338037</td>
+<td>-0.508472</td>
+<td>0.536544</td>
+<td>0.409825</td>
+<td>0.546294</td>
+<td>0.066828</td>
+<td>0.190809</td>
+<td>-0.298146</td>
+<td>0.023876</td>
+<td>0.295761</td>
+<td>0.995227</td>
+<td>1.015112</td>
+<td>0.246666</td>
+<td>-0.332277</td>
+<td>0.195250</td>
+<td>0.680780</td>
+<td>1.210743</td>
+<td>0.166721</td>
+<td>0.546415</td>
+<td>-0.157283</td>
+<td>0.329833</td>
+<td>-0.420698</td>
+<td>-0.286888</td>
+<td>0.507349</td>
+<td>1.536109</td>
+<td>0.349480</td>
+<td>0.508819</td>
+<td>1.032751</td>
+<td>0.944610</td>
+<td>0.697806</td>
+<td>1.386345</td>
+<td>0.723589</td>
+<td>0.986439</td>
+<td>-0.036165</td>
+<td>0.368048</td>
+<td>-0.516571</td>
+<td>-0.021008</td>
+<td>0.119857</td>
+<td>0.161114</td>
+<td>-0.047991</td>
+<td>-0.097686</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">y</th>
+<td>-1.109821</td>
+<td>0.265760</td>
+<td>-0.184739</td>
+<td>0.075387</td>
+<td>0.307806</td>
+<td>0.041911</td>
+<td>-0.180464</td>
+<td>-1.440588</td>
+<td>-0.516052</td>
+<td>0.508038</td>
+<td>-0.011805</td>
+<td>0.496492</td>
+<td>-0.749242</td>
+<td>0.261563</td>
+<td>0.139186</td>
+<td>0.233321</td>
+<td>-1.138437</td>
+<td>-1.195610</td>
+<td>-1.747661</td>
+<td>-1.166771</td>
+<td>-2.655631</td>
+<td>-0.065791</td>
+<td>-1.535247</td>
+<td>-0.045814</td>
+<td>0.191191</td>
+<td>-1.732180</td>
+<td>-1.613038</td>
+<td>-0.465142</td>
+<td>-0.886647</td>
+<td>-0.336320</td>
+<td>-0.712011</td>
+<td>0.069406</td>
+<td>-0.161659</td>
+<td>-0.829713</td>
+<td>0.474154</td>
+<td>-0.851437</td>
+<td>-0.438485</td>
+<td>-0.267581</td>
+<td>0.642920</td>
+<td>-0.356680</td>
+<td>0.230591</td>
+</tr>
+</tbody>
+</table>
+
+<p>23 rows × 41 columns</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="plot" class="level2">
+<h2 class="anchored" data-anchor-id="plot">Plot</h2>
+<hr>
+<section id="plot_logo_lo" class="level3">
+<h3 class="anchored" data-anchor-id="plot_logo_lo">plot_logo_LO</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_logo_LO(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    pssm_LO, title:<span class="bu">str</span><span class="op">=</span><span class="st">'Motif'</span>, acceptor:NoneType<span class="op">=</span><span class="va">None</span>, scale_zero:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, scale_pos_neg:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    ax:NoneType<span class="op">=</span><span class="va">None</span>, figsize:<span class="bu">tuple</span><span class="op">=</span>(<span class="dv">10</span>, <span class="dv">1</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Plot logo of log-odds given a frequency PSSM.</em></p>
+<p>To ensure the phosphorylated residue is visible at the center of a log-odds motif (position 0), two mechanisms are used:</p>
+<ol type="1">
+<li><p><strong>Acceptor override</strong>: If the center column is entirely zero (e.g., masked), the user can specify an <code>acceptor</code> (<code>'S'</code>, <code>'T'</code>, <code>'Y'</code>, or <code>'STY'</code>). The function then assigns a small nonzero value (e.g., 0.1) to the corresponding phospho-residue row (<code>pS</code>, <code>pT</code>, <code>pY</code>) at position 0. This ensures the central letter appears in the logo plot, even when real log-odds values are absent.</p></li>
+<li><p><strong>Stack height rescaling</strong>: To maintain visual consistency with surrounding columns, position 0 is rescaled so that its total positive and negative stack heights match the most extreme values observed elsewhere.</p></li>
+</ol>
+<p>Together, these adjustments ensure that: - The phospho-acceptor appears explicitly at the center, - The visual scale remains consistent with neighboring positions, - The resulting logo can faithfully reflect both biological relevance and statistical signal.</p>
+<div id="eed88eec-e1e1-4dad-b4ea-dd2479bce277" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pssm_LO <span class="op">=</span> get_pssm_LO(pssm_df,<span class="st">'STY'</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>plot_logo_LO(pssm_LO,scale_zero<span class="op">=</span><span class="va">False</span>,scale_pos_neg<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02c_pssm_lo_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="b4679f37-0b40-46f0-850c-cd48280e8f05" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># with zero position scaled to the max</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>plot_logo_LO(pssm_LO,scale_zero<span class="op">=</span><span class="va">True</span>,scale_pos_neg<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02c_pssm_lo_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="b12a86c7-b2d5-4e2d-bdc2-9afd79ec1c44" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># scaled positive and negative values for better visualization</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>plot_logo_LO(pssm_LO,scale_zero<span class="op">=</span><span class="va">True</span>,scale_pos_neg<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02c_pssm_lo_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="a16f755d-26f6-4d81-a688-3e355e69e0e8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># # for those specific site type (S,T or Y), show acceptor in the middle instead of empty</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># pssm_LO = get_pssm_LO(pssm_y,'Y')</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># plot_logo_LO(pssm_LO,acceptor='Y')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="049cd1fb-2056-4db8-8d64-f03a5c4dc0da" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>plt.close(<span class="st">'all'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+<section id="plot_logo_heatmap_lo" class="level3">
+<h3 class="anchored" data-anchor-id="plot_logo_heatmap_lo">plot_logo_heatmap_LO</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_logo_heatmap_LO(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    pssm_LO, <span class="co"># pssm of log-odds</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    title:<span class="bu">str</span><span class="op">=</span><span class="st">'Motif'</span>, acceptor:NoneType<span class="op">=</span><span class="va">None</span>, figsize:<span class="bu">tuple</span><span class="op">=</span>(<span class="dv">17</span>, <span class="dv">10</span>), include_zero:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    scale_pos_neg:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Plot logo and heatmap of enrichment bits vertically</em></p>
+<div id="e4256dc8-ad3f-4802-852c-085c9f2e2885" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot_logo_heatmap_LO(pssm_LO,acceptor='Y')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="06e5ce43-a556-42f8-965b-5d0316a39073" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pssm_LO <span class="op">=</span> get_pssm_LO(pssm_df,<span class="st">'STY'</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>plot_logo_heatmap_LO(pssm_LO,scale_pos_neg<span class="op">=</span><span class="va">False</span>) <span class="co"># normal color scale</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02c_pssm_lo_files/figure-html/cell-17-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="22109b22-90f5-4e46-aab4-fbc3243039b2" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>plt.close(<span class="st">'all'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/sky1ove\.github\.io\/katlas");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

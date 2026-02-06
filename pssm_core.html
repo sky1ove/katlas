@@ -1,0 +1,2866 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Functions related with PSSMs">
+
+<title>pssm.core – python-katlas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-45a6b1ee3682cc1dbb0c772b170fe9b7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="pssm.core – python-katlas">
+<meta property="og:description" content="Functions related with PSSMs">
+<meta property="og:site_name" content="python-katlas">
+<meta name="twitter:title" content="pssm.core – python-katlas">
+<meta name="twitter:description" content="Functions related with PSSMs">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">python-katlas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/sky1ove/katlas"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data.html">Modules</a></li><li class="breadcrumb-item"><a href="./pssm_core.html">pssm.core</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Get Started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pssm_core.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">pssm.core</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pssm_plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pssm.plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pssm_lo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pssm.lo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pssm_pspa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pssm.pspa</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pssm_compare.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pssm.compare</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./scoring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hierarchical clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hierarchical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hierarchical clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./feature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pathway.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pathway analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ml.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train ML</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dnn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Train DL</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#pssm" id="toc-pssm" class="nav-link" data-scroll-target="#pssm">PSSM</a>
+  <ul class="collapse">
+  <li><a href="#get_prob" id="toc-get_prob" class="nav-link" data-scroll-target="#get_prob">get_prob</a></li>
+  <li><a href="#pssm-with-weight-score" id="toc-pssm-with-weight-score" class="nav-link" data-scroll-target="#pssm-with-weight-score">PSSM with weight score</a></li>
+  <li><a href="#get_pssm_weight" id="toc-get_pssm_weight" class="nav-link" data-scroll-target="#get_pssm_weight">get_pssm_weight</a></li>
+  </ul></li>
+  <li><a href="#transform-pssm" id="toc-transform-pssm" class="nav-link" data-scroll-target="#transform-pssm">Transform PSSM</a>
+  <ul class="collapse">
+  <li><a href="#flatten_pssm" id="toc-flatten_pssm" class="nav-link" data-scroll-target="#flatten_pssm">flatten_pssm</a></li>
+  <li><a href="#recover_pssm" id="toc-recover_pssm" class="nav-link" data-scroll-target="#recover_pssm">recover_pssm</a></li>
+  <li><a href="#clean_zero_normalize" id="toc-clean_zero_normalize" class="nav-link" data-scroll-target="#clean_zero_normalize">clean_zero_normalize</a></li>
+  </ul></li>
+  <li><a href="#pssms-of-clusters" id="toc-pssms-of-clusters" class="nav-link" data-scroll-target="#pssms-of-clusters">PSSMs of clusters</a>
+  <ul class="collapse">
+  <li><a href="#get_cluster_pssms" id="toc-get_cluster_pssms" class="nav-link" data-scroll-target="#get_cluster_pssms">get_cluster_pssms</a></li>
+  </ul></li>
+  <li><a href="#entropy" id="toc-entropy" class="nav-link" data-scroll-target="#entropy">Entropy</a>
+  <ul class="collapse">
+  <li><a href="#get_entropy" id="toc-get_entropy" class="nav-link" data-scroll-target="#get_entropy">get_entropy</a></li>
+  <li><a href="#get_entropy_flat" id="toc-get_entropy_flat" class="nav-link" data-scroll-target="#get_entropy_flat">get_entropy_flat</a></li>
+  </ul></li>
+  <li><a href="#information-content" id="toc-information-content" class="nav-link" data-scroll-target="#information-content">Information Content</a>
+  <ul class="collapse">
+  <li><a href="#get_ic" id="toc-get_ic" class="nav-link" data-scroll-target="#get_ic">get_IC</a></li>
+  <li><a href="#get_ic_flat" id="toc-get_ic_flat" class="nav-link" data-scroll-target="#get_ic_flat">get_IC_flat</a></li>
+  </ul></li>
+  <li><a href="#overall-specificity" id="toc-overall-specificity" class="nav-link" data-scroll-target="#overall-specificity">Overall specificity</a>
+  <ul class="collapse">
+  <li><a href="#get_specificity" id="toc-get_specificity" class="nav-link" data-scroll-target="#get_specificity">get_specificity</a></li>
+  <li><a href="#get_specificity_flat" id="toc-get_specificity_flat" class="nav-link" data-scroll-target="#get_specificity_flat">get_specificity_flat</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data.html">Modules</a></li><li class="breadcrumb-item"><a href="./pssm_core.html">pssm.core</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">pssm.core</h1>
+</div>
+
+<div>
+  <div class="description">
+    Functions related with PSSMs
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p><strong>PSSM Calculation</strong></p>
+<p>To calculate a position-specific probability matrix (PSSM) from phosphorylation site sequences:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pssm_df <span class="op">=</span> get_prob(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>df,       <span class="co"># input DataFrame, Series, or list of sequences</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    col<span class="op">=</span><span class="st">'site_seq'</span>,    <span class="co"># column name containing sequences (if DataFrame)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Alternatively, use a list of sequences as input</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pssm_df <span class="op">=</span> get_prob(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>df[<span class="st">'site_seq'</span>],       <span class="co"># input DataFrame, Series, or list of sequences</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To extract flattened PSSMs for each cluster in a dataset:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cluster_pssms <span class="op">=</span> get_cluster_pssms(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    df<span class="op">=</span>data,                    <span class="co"># DataFrame containing sequences and cluster labels</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    cluster_col<span class="op">=</span><span class="st">'kinase_group'</span>, <span class="co"># column name for cluster identifiers</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    seq_col<span class="op">=</span><span class="st">'site_seq'</span>,         <span class="co"># column name for site sequences</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    id_col<span class="op">=</span><span class="st">'sub_site'</span>,          <span class="co"># column for deduplication within clusters (None to skip)</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    count_thr<span class="op">=</span><span class="dv">10</span>,               <span class="co"># minimum sequences required per cluster</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    valid_thr<span class="op">=</span><span class="va">None</span>,             <span class="co"># minimum fraction of non-zero PSSM values (None to skip)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    plot<span class="op">=</span><span class="va">False</span>,                 <span class="co"># whether to plot sequence logos for each cluster</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<p><strong>PSSM Transformation</strong></p>
+<p>To flatten a 2D PSSM into a dictionary (for storage or model input):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>flat_dict <span class="op">=</span> flatten_pssm(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    pssm_df<span class="op">=</span>pssm_df,     <span class="co"># 2D PSSM with amino acids as rows, positions as columns</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    column_wise<span class="op">=</span><span class="va">True</span>,    <span class="co"># True for column-major order; False for row-wise (PyTorch)</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To recover a 2D PSSM from a flattened Series:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pssm_df <span class="op">=</span> recover_pssm(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    flat_pssm<span class="op">=</span>flat_pssm,  <span class="co"># flattened PSSM as pd.Series with position+aa index</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To clean the center position and normalize each column to sum to 1:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>pssm_norm <span class="op">=</span> clean_zero_normalize(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    pssm_df<span class="op">=</span>pssm,  <span class="co"># 2D PSSM (zeros out non-s/t/y at position 0, then normalizes)</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<p><strong>Entropy Analysis</strong></p>
+<p>To calculate Shannon entropy per position (lower entropy = more conserved):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>entropy <span class="op">=</span> get_entropy(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    pssm_df<span class="op">=</span>pssm_df,      <span class="co"># 2D PSSM matrix</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    return_min<span class="op">=</span><span class="va">False</span>,     <span class="co"># True to return single minimum value</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    exclude_zero<span class="op">=</span><span class="va">True</span>,    <span class="co"># True to exclude center position from calculation</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    clean_zero<span class="op">=</span><span class="va">True</span>,      <span class="co"># True to zero out non-s/t/y at position 0</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To calculate entropy from a flattened PSSM:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>entropy <span class="op">=</span> get_entropy_flat(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    flat_pssm<span class="op">=</span>flat_pssm,  <span class="co"># flattened PSSM as pd.Series</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    return_min<span class="op">=</span><span class="va">True</span>,      <span class="co"># return minimum entropy across positions</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    exclude_zero<span class="op">=</span><span class="va">True</span>,    <span class="co"># exclude center position</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<p><strong>Information Content</strong></p>
+<p>To calculate information content per position (higher IC = more conserved):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ic <span class="op">=</span> get_IC(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    pssm_df<span class="op">=</span>pssm_df,    <span class="co"># 2D PSSM matrix</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    exclude_zero<span class="op">=</span><span class="va">True</span>,  <span class="co"># exclude center position from calculation</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To calculate IC from a flattened PSSM:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ic <span class="op">=</span> get_IC_flat(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    flat_pssm<span class="op">=</span>flat_pssm,  <span class="co"># flattened PSSM as pd.Series</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    exclude_zero<span class="op">=</span><span class="va">True</span>,    <span class="co"># exclude center position</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<p><strong>Overall Specificity</strong></p>
+<p>To compute an overall specificity score combining max IC and IC variance:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>spec <span class="op">=</span> get_specificity(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    pssm_df<span class="op">=</span>pssm_df,  <span class="co"># 2D PSSM matrix (excludes position 0 automatically)</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To compute specificity from a flattened PSSM:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>spec <span class="op">=</span> get_specificity_flat(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    flat_pssm<span class="op">=</span>flat_pssm,  <span class="co"># flattened PSSM as pd.Series</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+</section>
+<section id="pssm" class="level2">
+<h2 class="anchored" data-anchor-id="pssm">PSSM</h2>
+<p>We need to compute <strong>position-specific probability matrix (PSSM)</strong> from a list of aligned site sequences.</p>
+<p>For each position <span class="math inline">\(i\)</span> (e.g., from <span class="math inline">\(-7\)</span> to <span class="math inline">\(+7\)</span>), the probability of observing amino acid <span class="math inline">\(x\)</span> is:</p>
+<p><span class="math display">\[
+P_i(x) = \frac{\text{count of amino acid } x \text{ at position } i}{\text{total counts at position } i}
+\]</span></p>
+<p>The following 23 amino acids are included:</p>
+<ul>
+<li>Standard amino acids:<br>
+<code>A</code>, <code>C</code>, <code>D</code>, <code>E</code>, <code>F</code>, <code>G</code>, <code>H</code>, <code>I</code>, <code>K</code>, <code>L</code>, <code>M</code>, <code>N</code>, <code>P</code>, <code>Q</code>, <code>R</code>, <code>S</code>, <code>T</code>, <code>V</code>, <code>W</code>, <code>Y</code><br>
+</li>
+<li>Modified amino acids:<br>
+<code>s</code>, <code>t</code>, <code>y</code> (often used to denote phosphorylated <code>S</code>, <code>T</code>, <code>Y</code>)</li>
+</ul>
+<p>The resulting matrix has: - <strong>Rows</strong>: Amino acids, - <strong>Columns</strong>: Sequence positions (centered on the phosphosite), - <strong>Values</strong>: Probabilities of each amino acid at each position.</p>
+<hr>
+<section id="get_prob" class="level3">
+<h3 class="anchored" data-anchor-id="get_prob">get_prob</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_prob(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    data:Union, <span class="co"># input data, list or df</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    col:<span class="bu">str</span><span class="op">=</span><span class="st">'site_seq'</span>, <span class="co"># column name if input is df</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Get the probability matrix of PSSM from phosphorylation site sequences.</em></p>
+<div id="d9518627" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> Data.get_ks_dataset()</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>data_k <span class="op">=</span> data[data.kinase_uniprot<span class="op">==</span><span class="st">'P49841'</span>] <span class="co"># CDK1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="6912f2b4" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>get_prob(data_k, col<span class="op">=</span><span class="st">'site_seq'</span>).shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>(23, 41)</code></pre>
+</div>
+</div>
+<div id="5e94b6ba" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># or</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>pssm_df <span class="op">=</span> get_prob(data_k[<span class="st">'site_seq'</span>].tolist())</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>pssm_df.tail()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Position</th>
+<th data-quarto-table-cell-role="th">-20</th>
+<th data-quarto-table-cell-role="th">-19</th>
+<th data-quarto-table-cell-role="th">-18</th>
+<th data-quarto-table-cell-role="th">-17</th>
+<th data-quarto-table-cell-role="th">-16</th>
+<th data-quarto-table-cell-role="th">-15</th>
+<th data-quarto-table-cell-role="th">-14</th>
+<th data-quarto-table-cell-role="th">-13</th>
+<th data-quarto-table-cell-role="th">-12</th>
+<th data-quarto-table-cell-role="th">-11</th>
+<th data-quarto-table-cell-role="th">-10</th>
+<th data-quarto-table-cell-role="th">-9</th>
+<th data-quarto-table-cell-role="th">-8</th>
+<th data-quarto-table-cell-role="th">-7</th>
+<th data-quarto-table-cell-role="th">-6</th>
+<th data-quarto-table-cell-role="th">-5</th>
+<th data-quarto-table-cell-role="th">-4</th>
+<th data-quarto-table-cell-role="th">-3</th>
+<th data-quarto-table-cell-role="th">-2</th>
+<th data-quarto-table-cell-role="th">-1</th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+<th data-quarto-table-cell-role="th">5</th>
+<th data-quarto-table-cell-role="th">6</th>
+<th data-quarto-table-cell-role="th">7</th>
+<th data-quarto-table-cell-role="th">8</th>
+<th data-quarto-table-cell-role="th">9</th>
+<th data-quarto-table-cell-role="th">10</th>
+<th data-quarto-table-cell-role="th">11</th>
+<th data-quarto-table-cell-role="th">12</th>
+<th data-quarto-table-cell-role="th">13</th>
+<th data-quarto-table-cell-role="th">14</th>
+<th data-quarto-table-cell-role="th">15</th>
+<th data-quarto-table-cell-role="th">16</th>
+<th data-quarto-table-cell-role="th">17</th>
+<th data-quarto-table-cell-role="th">18</th>
+<th data-quarto-table-cell-role="th">19</th>
+<th data-quarto-table-cell-role="th">20</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">aa</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">D</th>
+<td>0.059524</td>
+<td>0.065476</td>
+<td>0.044577</td>
+<td>0.080238</td>
+<td>0.051775</td>
+<td>0.048744</td>
+<td>0.047267</td>
+<td>0.054572</td>
+<td>0.064611</td>
+<td>0.048387</td>
+<td>0.052709</td>
+<td>0.058565</td>
+<td>0.049635</td>
+<td>0.049563</td>
+<td>0.071325</td>
+<td>0.069666</td>
+<td>0.058055</td>
+<td>0.063768</td>
+<td>0.037627</td>
+<td>0.062229</td>
+<td>0.000000</td>
+<td>0.034783</td>
+<td>0.046579</td>
+<td>0.056934</td>
+<td>0.030702</td>
+<td>0.084919</td>
+<td>0.064516</td>
+<td>0.056464</td>
+<td>0.051128</td>
+<td>0.072289</td>
+<td>0.059091</td>
+<td>0.054962</td>
+<td>0.033846</td>
+<td>0.063174</td>
+<td>0.053042</td>
+<td>0.054859</td>
+<td>0.063091</td>
+<td>0.055380</td>
+<td>0.054054</td>
+<td>0.056090</td>
+<td>0.053140</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">E</th>
+<td>0.061012</td>
+<td>0.066964</td>
+<td>0.077266</td>
+<td>0.056464</td>
+<td>0.075444</td>
+<td>0.075332</td>
+<td>0.090103</td>
+<td>0.094395</td>
+<td>0.066079</td>
+<td>0.095308</td>
+<td>0.086384</td>
+<td>0.070278</td>
+<td>0.068613</td>
+<td>0.083090</td>
+<td>0.093159</td>
+<td>0.076923</td>
+<td>0.076923</td>
+<td>0.053623</td>
+<td>0.060781</td>
+<td>0.069465</td>
+<td>0.000000</td>
+<td>0.023188</td>
+<td>0.081514</td>
+<td>0.075912</td>
+<td>0.071637</td>
+<td>0.080527</td>
+<td>0.055718</td>
+<td>0.063893</td>
+<td>0.081203</td>
+<td>0.078313</td>
+<td>0.068182</td>
+<td>0.087023</td>
+<td>0.072308</td>
+<td>0.064715</td>
+<td>0.098284</td>
+<td>0.073668</td>
+<td>0.056782</td>
+<td>0.072785</td>
+<td>0.057234</td>
+<td>0.057692</td>
+<td>0.074074</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">s</th>
+<td>0.037202</td>
+<td>0.041667</td>
+<td>0.035661</td>
+<td>0.031204</td>
+<td>0.038462</td>
+<td>0.038405</td>
+<td>0.044313</td>
+<td>0.041298</td>
+<td>0.070485</td>
+<td>0.045455</td>
+<td>0.049780</td>
+<td>0.048316</td>
+<td>0.103650</td>
+<td>0.056851</td>
+<td>0.059680</td>
+<td>0.068215</td>
+<td>0.223512</td>
+<td>0.073913</td>
+<td>0.082489</td>
+<td>0.076700</td>
+<td>0.677279</td>
+<td>0.037681</td>
+<td>0.081514</td>
+<td>0.106569</td>
+<td>0.274854</td>
+<td>0.057101</td>
+<td>0.076246</td>
+<td>0.074294</td>
+<td>0.129323</td>
+<td>0.057229</td>
+<td>0.054545</td>
+<td>0.041221</td>
+<td>0.083077</td>
+<td>0.066256</td>
+<td>0.045242</td>
+<td>0.047022</td>
+<td>0.069401</td>
+<td>0.033228</td>
+<td>0.063593</td>
+<td>0.051282</td>
+<td>0.045089</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">t</th>
+<td>0.019345</td>
+<td>0.010417</td>
+<td>0.022288</td>
+<td>0.019316</td>
+<td>0.019231</td>
+<td>0.016248</td>
+<td>0.016248</td>
+<td>0.011799</td>
+<td>0.014684</td>
+<td>0.020528</td>
+<td>0.033675</td>
+<td>0.036603</td>
+<td>0.024818</td>
+<td>0.017493</td>
+<td>0.024745</td>
+<td>0.039187</td>
+<td>0.065312</td>
+<td>0.030435</td>
+<td>0.050651</td>
+<td>0.026049</td>
+<td>0.285094</td>
+<td>0.021739</td>
+<td>0.029112</td>
+<td>0.037956</td>
+<td>0.089181</td>
+<td>0.033675</td>
+<td>0.033724</td>
+<td>0.040119</td>
+<td>0.039098</td>
+<td>0.031627</td>
+<td>0.050000</td>
+<td>0.025954</td>
+<td>0.030769</td>
+<td>0.015408</td>
+<td>0.020281</td>
+<td>0.010972</td>
+<td>0.014196</td>
+<td>0.015823</td>
+<td>0.015898</td>
+<td>0.014423</td>
+<td>0.014493</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">y</th>
+<td>0.004464</td>
+<td>0.008929</td>
+<td>0.007429</td>
+<td>0.008915</td>
+<td>0.008876</td>
+<td>0.010340</td>
+<td>0.007386</td>
+<td>0.002950</td>
+<td>0.005874</td>
+<td>0.016129</td>
+<td>0.010249</td>
+<td>0.014641</td>
+<td>0.005839</td>
+<td>0.013120</td>
+<td>0.014556</td>
+<td>0.017417</td>
+<td>0.007257</td>
+<td>0.007246</td>
+<td>0.005789</td>
+<td>0.010130</td>
+<td>0.037627</td>
+<td>0.020290</td>
+<td>0.007278</td>
+<td>0.017518</td>
+<td>0.019006</td>
+<td>0.004392</td>
+<td>0.004399</td>
+<td>0.008915</td>
+<td>0.006015</td>
+<td>0.007530</td>
+<td>0.006061</td>
+<td>0.012214</td>
+<td>0.007692</td>
+<td>0.004622</td>
+<td>0.012480</td>
+<td>0.004702</td>
+<td>0.006309</td>
+<td>0.006329</td>
+<td>0.012719</td>
+<td>0.006410</td>
+<td>0.011272</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="pssm-with-weight-score" class="level3">
+<h3 class="anchored" data-anchor-id="pssm-with-weight-score">PSSM with weight score</h3>
+<hr>
+</section>
+<section id="get_pssm_weight" class="level3">
+<h3 class="anchored" data-anchor-id="get_pssm_weight">get_pssm_weight</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_pssm_weight(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    data:DataFrame, seq_col:<span class="bu">str</span><span class="op">=</span><span class="st">'seq'</span>, score_col:<span class="bu">str</span><span class="op">=</span><span class="st">'enrichment'</span>, <span class="co"># selected/input ratio OR already-log2</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    to_log2:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, aa_order:<span class="bu">str</span><span class="op">=</span><span class="st">'PGACSTVILMFYWHKRQNDEsty'</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    center:<span class="bu">str</span><span class="op">=</span><span class="st">'pos'</span>, <span class="co"># per-position median centering or 'glob' global median centering</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    count_thr:<span class="bu">int</span><span class="op">=</span><span class="dv">5</span>, <span class="co"># threshold to filter out if &lt;count_thr</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    alpha:<span class="bu">str</span> <span class="op">|</span> <span class="bu">float</span><span class="op">=</span><span class="st">'auto'</span>, <span class="co"># shrinkage strength: value * count / (count + alpha)</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Position-specific amino acid enrichment matrix:</em> PSSM(aa,pos) = mean( log2(score) ) over peptides with aa at pos.</p>
+</section>
+</section>
+<section id="transform-pssm" class="level2">
+<h2 class="anchored" data-anchor-id="transform-pssm">Transform PSSM</h2>
+<hr>
+<section id="flatten_pssm" class="level3">
+<h3 class="anchored" data-anchor-id="flatten_pssm">flatten_pssm</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> flatten_pssm(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    pssm_df, column_wise:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, <span class="co"># if True, column major flatten; else row wise flatten (for pytorch training)</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Flatten PSSM dataframe to dictionary</em></p>
+<div id="f5e60ca9" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>flat_pssm <span class="op">=</span> pd.Series(flatten_pssm(pssm_df))</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>flat_pssm</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>-20P    0.069940
+-20G    0.087798
+          ...   
+20t     0.014493
+20y     0.011272
+Length: 943, dtype: float64</code></pre>
+</div>
+</div>
+<div id="95731490" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>flat_pssm.reset_index()[<span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>0      0.069940
+1      0.087798
+         ...   
+941    0.014493
+942    0.011272
+Name: 0, Length: 943, dtype: float64</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="recover_pssm" class="level3">
+<h3 class="anchored" data-anchor-id="recover_pssm">recover_pssm</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> recover_pssm(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    flat_pssm:Series</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Recover 2D PSSM from flattened PSSM Series.</em></p>
+<div id="b1f87685" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>out <span class="op">=</span> recover_pssm(flat_pssm)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>out</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Position</th>
+<th data-quarto-table-cell-role="th">-20</th>
+<th data-quarto-table-cell-role="th">-19</th>
+<th data-quarto-table-cell-role="th">-18</th>
+<th data-quarto-table-cell-role="th">-17</th>
+<th data-quarto-table-cell-role="th">-16</th>
+<th data-quarto-table-cell-role="th">-15</th>
+<th data-quarto-table-cell-role="th">-14</th>
+<th data-quarto-table-cell-role="th">-13</th>
+<th data-quarto-table-cell-role="th">-12</th>
+<th data-quarto-table-cell-role="th">-11</th>
+<th data-quarto-table-cell-role="th">-10</th>
+<th data-quarto-table-cell-role="th">-9</th>
+<th data-quarto-table-cell-role="th">-8</th>
+<th data-quarto-table-cell-role="th">-7</th>
+<th data-quarto-table-cell-role="th">-6</th>
+<th data-quarto-table-cell-role="th">-5</th>
+<th data-quarto-table-cell-role="th">-4</th>
+<th data-quarto-table-cell-role="th">-3</th>
+<th data-quarto-table-cell-role="th">-2</th>
+<th data-quarto-table-cell-role="th">-1</th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+<th data-quarto-table-cell-role="th">5</th>
+<th data-quarto-table-cell-role="th">6</th>
+<th data-quarto-table-cell-role="th">7</th>
+<th data-quarto-table-cell-role="th">8</th>
+<th data-quarto-table-cell-role="th">9</th>
+<th data-quarto-table-cell-role="th">10</th>
+<th data-quarto-table-cell-role="th">11</th>
+<th data-quarto-table-cell-role="th">12</th>
+<th data-quarto-table-cell-role="th">13</th>
+<th data-quarto-table-cell-role="th">14</th>
+<th data-quarto-table-cell-role="th">15</th>
+<th data-quarto-table-cell-role="th">16</th>
+<th data-quarto-table-cell-role="th">17</th>
+<th data-quarto-table-cell-role="th">18</th>
+<th data-quarto-table-cell-role="th">19</th>
+<th data-quarto-table-cell-role="th">20</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">aa</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">P</th>
+<td>0.069940</td>
+<td>0.077381</td>
+<td>0.062407</td>
+<td>0.084695</td>
+<td>0.082840</td>
+<td>0.072378</td>
+<td>0.087149</td>
+<td>0.081121</td>
+<td>0.077827</td>
+<td>0.071848</td>
+<td>0.101025</td>
+<td>0.074671</td>
+<td>0.084672</td>
+<td>0.106414</td>
+<td>0.112082</td>
+<td>0.094340</td>
+<td>0.079826</td>
+<td>0.133333</td>
+<td>0.150507</td>
+<td>0.131693</td>
+<td>0.000000</td>
+<td>0.420290</td>
+<td>0.141194</td>
+<td>0.094891</td>
+<td>0.049708</td>
+<td>0.187408</td>
+<td>0.082111</td>
+<td>0.077266</td>
+<td>0.064662</td>
+<td>0.106928</td>
+<td>0.074242</td>
+<td>0.077863</td>
+<td>0.078462</td>
+<td>0.070878</td>
+<td>0.095164</td>
+<td>0.092476</td>
+<td>0.074132</td>
+<td>0.090190</td>
+<td>0.071542</td>
+<td>0.099359</td>
+<td>0.078905</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">G</th>
+<td>0.087798</td>
+<td>0.087798</td>
+<td>0.069837</td>
+<td>0.065379</td>
+<td>0.076923</td>
+<td>0.054653</td>
+<td>0.088626</td>
+<td>0.095870</td>
+<td>0.064611</td>
+<td>0.068915</td>
+<td>0.070278</td>
+<td>0.087848</td>
+<td>0.058394</td>
+<td>0.065598</td>
+<td>0.066958</td>
+<td>0.063861</td>
+<td>0.068215</td>
+<td>0.101449</td>
+<td>0.076700</td>
+<td>0.105644</td>
+<td>0.000000</td>
+<td>0.075362</td>
+<td>0.065502</td>
+<td>0.086131</td>
+<td>0.046784</td>
+<td>0.054173</td>
+<td>0.060117</td>
+<td>0.083210</td>
+<td>0.084211</td>
+<td>0.058735</td>
+<td>0.063636</td>
+<td>0.083969</td>
+<td>0.084615</td>
+<td>0.075501</td>
+<td>0.076443</td>
+<td>0.081505</td>
+<td>0.067823</td>
+<td>0.060127</td>
+<td>0.077901</td>
+<td>0.088141</td>
+<td>0.066023</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">t</th>
+<td>0.019345</td>
+<td>0.010417</td>
+<td>0.022288</td>
+<td>0.019316</td>
+<td>0.019231</td>
+<td>0.016248</td>
+<td>0.016248</td>
+<td>0.011799</td>
+<td>0.014684</td>
+<td>0.020528</td>
+<td>0.033675</td>
+<td>0.036603</td>
+<td>0.024818</td>
+<td>0.017493</td>
+<td>0.024745</td>
+<td>0.039187</td>
+<td>0.065312</td>
+<td>0.030435</td>
+<td>0.050651</td>
+<td>0.026049</td>
+<td>0.285094</td>
+<td>0.021739</td>
+<td>0.029112</td>
+<td>0.037956</td>
+<td>0.089181</td>
+<td>0.033675</td>
+<td>0.033724</td>
+<td>0.040119</td>
+<td>0.039098</td>
+<td>0.031627</td>
+<td>0.050000</td>
+<td>0.025954</td>
+<td>0.030769</td>
+<td>0.015408</td>
+<td>0.020281</td>
+<td>0.010972</td>
+<td>0.014196</td>
+<td>0.015823</td>
+<td>0.015898</td>
+<td>0.014423</td>
+<td>0.014493</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">y</th>
+<td>0.004464</td>
+<td>0.008929</td>
+<td>0.007429</td>
+<td>0.008915</td>
+<td>0.008876</td>
+<td>0.010340</td>
+<td>0.007386</td>
+<td>0.002950</td>
+<td>0.005874</td>
+<td>0.016129</td>
+<td>0.010249</td>
+<td>0.014641</td>
+<td>0.005839</td>
+<td>0.013120</td>
+<td>0.014556</td>
+<td>0.017417</td>
+<td>0.007257</td>
+<td>0.007246</td>
+<td>0.005789</td>
+<td>0.010130</td>
+<td>0.037627</td>
+<td>0.020290</td>
+<td>0.007278</td>
+<td>0.017518</td>
+<td>0.019006</td>
+<td>0.004392</td>
+<td>0.004399</td>
+<td>0.008915</td>
+<td>0.006015</td>
+<td>0.007530</td>
+<td>0.006061</td>
+<td>0.012214</td>
+<td>0.007692</td>
+<td>0.004622</td>
+<td>0.012480</td>
+<td>0.004702</td>
+<td>0.006309</td>
+<td>0.006329</td>
+<td>0.012719</td>
+<td>0.006410</td>
+<td>0.011272</td>
+</tr>
+</tbody>
+</table>
+
+<p>23 rows × 41 columns</p>
+</div>
+</div>
+</div>
+<div id="aa803c39" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>out.equals(pssm_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>True</code></pre>
+</div>
+</div>
+<p>Or recover from PSPA data</p>
+<div id="ef2e54e2" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>pspa <span class="op">=</span> Data.get_pspa()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="19b25990" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>pssm<span class="op">=</span>recover_pssm(pspa.loc[<span class="st">'AAK1'</span>].dropna())</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>pssm</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Position</th>
+<th data-quarto-table-cell-role="th">-5</th>
+<th data-quarto-table-cell-role="th">-4</th>
+<th data-quarto-table-cell-role="th">-3</th>
+<th data-quarto-table-cell-role="th">-2</th>
+<th data-quarto-table-cell-role="th">-1</th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">aa</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">P</th>
+<td>0.0720</td>
+<td>0.0534</td>
+<td>0.1084</td>
+<td>0.0226</td>
+<td>0.1136</td>
+<td>0.0</td>
+<td>0.0463</td>
+<td>0.0527</td>
+<td>0.0681</td>
+<td>0.0628</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">G</th>
+<td>0.0245</td>
+<td>0.0642</td>
+<td>0.0512</td>
+<td>0.0283</td>
+<td>0.0706</td>
+<td>0.0</td>
+<td>0.7216</td>
+<td>0.0749</td>
+<td>0.0923</td>
+<td>0.0702</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">t</th>
+<td>0.0201</td>
+<td>0.0332</td>
+<td>0.0303</td>
+<td>0.0209</td>
+<td>0.0121</td>
+<td>1.0</td>
+<td>0.0123</td>
+<td>0.0409</td>
+<td>0.0335</td>
+<td>0.0251</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">y</th>
+<td>0.0611</td>
+<td>0.0339</td>
+<td>0.0274</td>
+<td>0.0486</td>
+<td>0.0178</td>
+<td>0.0</td>
+<td>0.0100</td>
+<td>0.0410</td>
+<td>0.0359</td>
+<td>0.0270</td>
+</tr>
+</tbody>
+</table>
+
+<p>23 rows × 10 columns</p>
+</div>
+</div>
+</div>
+<p>PSPA is not scaled per position.</p>
+<p>So we need to remove the redundant copy in zero position (leave s/t/y only) and scaled to 1 per position.</p>
+<div id="36657b20" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>pssm.index[pssm.index.isin([<span class="st">'s'</span>,<span class="st">'t'</span>,<span class="st">'y'</span>])]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>Index(['s', 't', 'y'], dtype='object', name='aa')</code></pre>
+</div>
+</div>
+<div id="72df0d04" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>_clean_zero(pssm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Position</th>
+<th data-quarto-table-cell-role="th">-5</th>
+<th data-quarto-table-cell-role="th">-4</th>
+<th data-quarto-table-cell-role="th">-3</th>
+<th data-quarto-table-cell-role="th">-2</th>
+<th data-quarto-table-cell-role="th">-1</th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">aa</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">P</th>
+<td>0.0720</td>
+<td>0.0534</td>
+<td>0.1084</td>
+<td>0.0226</td>
+<td>0.1136</td>
+<td>0.0</td>
+<td>0.0463</td>
+<td>0.0527</td>
+<td>0.0681</td>
+<td>0.0628</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">G</th>
+<td>0.0245</td>
+<td>0.0642</td>
+<td>0.0512</td>
+<td>0.0283</td>
+<td>0.0706</td>
+<td>0.0</td>
+<td>0.7216</td>
+<td>0.0749</td>
+<td>0.0923</td>
+<td>0.0702</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">t</th>
+<td>0.0201</td>
+<td>0.0332</td>
+<td>0.0303</td>
+<td>0.0209</td>
+<td>0.0121</td>
+<td>1.0</td>
+<td>0.0123</td>
+<td>0.0409</td>
+<td>0.0335</td>
+<td>0.0251</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">y</th>
+<td>0.0611</td>
+<td>0.0339</td>
+<td>0.0274</td>
+<td>0.0486</td>
+<td>0.0178</td>
+<td>0.0</td>
+<td>0.0100</td>
+<td>0.0410</td>
+<td>0.0359</td>
+<td>0.0270</td>
+</tr>
+</tbody>
+</table>
+
+<p>23 rows × 10 columns</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="clean_zero_normalize" class="level3">
+<h3 class="anchored" data-anchor-id="clean_zero_normalize">clean_zero_normalize</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_zero_normalize(</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    pssm_df</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Zero out non-last three values in position 0 (keep only s,t,y values at center), and normalize per position</em></p>
+<p>This function applies phosphosite-specific cleaning and normalization to a PSSM.</p>
+<p>At the center position (<span class="math inline">\(i = 0\)</span>), only the last three rows of the matrix — corresponding to phosphorylatable residues <code>s</code>, <code>t</code>, and <code>y</code> — are retained. All other amino acid values at position 0 are set to 0.</p>
+<p>After masking, the matrix is column-normalized to ensure the probabilities at each position sum to 1:</p>
+<p><span class="math display">\[
+P_i(x) = \frac{P_i(x)}{\sum_{x'} P_i(x')}
+\]</span></p>
+<div id="db7629df" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>clean_zero_normalize(pssm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Position</th>
+<th data-quarto-table-cell-role="th">-5</th>
+<th data-quarto-table-cell-role="th">-4</th>
+<th data-quarto-table-cell-role="th">-3</th>
+<th data-quarto-table-cell-role="th">-2</th>
+<th data-quarto-table-cell-role="th">-1</th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">aa</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">P</th>
+<td>0.058446</td>
+<td>0.041715</td>
+<td>0.086100</td>
+<td>0.017935</td>
+<td>0.096068</td>
+<td>0.000000</td>
+<td>0.042649</td>
+<td>0.040482</td>
+<td>0.052640</td>
+<td>0.050260</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">G</th>
+<td>0.019888</td>
+<td>0.050152</td>
+<td>0.040667</td>
+<td>0.022459</td>
+<td>0.059704</td>
+<td>0.000000</td>
+<td>0.664702</td>
+<td>0.057536</td>
+<td>0.071346</td>
+<td>0.056182</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">t</th>
+<td>0.016316</td>
+<td>0.025935</td>
+<td>0.024067</td>
+<td>0.016586</td>
+<td>0.010233</td>
+<td>0.908018</td>
+<td>0.011330</td>
+<td>0.031418</td>
+<td>0.025895</td>
+<td>0.020088</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">y</th>
+<td>0.049598</td>
+<td>0.026482</td>
+<td>0.021763</td>
+<td>0.038568</td>
+<td>0.015053</td>
+<td>0.000000</td>
+<td>0.009211</td>
+<td>0.031495</td>
+<td>0.027750</td>
+<td>0.021609</td>
+</tr>
+</tbody>
+</table>
+
+<p>23 rows × 10 columns</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="pssms-of-clusters" class="level2">
+<h2 class="anchored" data-anchor-id="pssms-of-clusters">PSSMs of clusters</h2>
+<hr>
+<section id="get_cluster_pssms" class="level3">
+<h3 class="anchored" data-anchor-id="get_cluster_pssms">get_cluster_pssms</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_cluster_pssms(</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    df, cluster_col, seq_col:<span class="bu">str</span><span class="op">=</span><span class="st">'site_seq'</span>, id_col:<span class="bu">str</span><span class="op">=</span><span class="st">'sub_site'</span>,</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    count_thr:<span class="bu">int</span><span class="op">=</span><span class="dv">10</span>, <span class="co"># if less than the count threshold, not include in the return</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    valid_thr:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># percentage of not-nan values in pssm</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    plot:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Extract motifs from clusters in a dataframe</em></p>
+<div id="0eb23f2e" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>get_cluster_pssms(data,<span class="st">'kinase_group'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+  0%|          | 0/10 [00:00&lt;?, ?it/s]
+ 10%|█         | 1/10 [00:00&lt;00:01,  5.11it/s]
+ 20%|██        | 2/10 [00:00&lt;00:01,  5.45it/s]
+ 30%|███       | 3/10 [00:00&lt;00:01,  5.62it/s]
+ 40%|████      | 4/10 [00:00&lt;00:00,  6.10it/s]
+ 50%|█████     | 5/10 [00:00&lt;00:00,  7.04it/s]
+ 70%|███████   | 7/10 [00:00&lt;00:00,  8.60it/s]
+ 90%|█████████ | 9/10 [00:01&lt;00:00, 10.54it/s]
+100%|██████████| 10/10 [00:01&lt;00:00,  8.72it/s]</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">-20P</th>
+<th data-quarto-table-cell-role="th">-20G</th>
+<th data-quarto-table-cell-role="th">-20A</th>
+<th data-quarto-table-cell-role="th">-20C</th>
+<th data-quarto-table-cell-role="th">-20S</th>
+<th data-quarto-table-cell-role="th">-20T</th>
+<th data-quarto-table-cell-role="th">-20V</th>
+<th data-quarto-table-cell-role="th">-20I</th>
+<th data-quarto-table-cell-role="th">-20L</th>
+<th data-quarto-table-cell-role="th">-20M</th>
+<th data-quarto-table-cell-role="th">-20F</th>
+<th data-quarto-table-cell-role="th">-20Y</th>
+<th data-quarto-table-cell-role="th">-20W</th>
+<th data-quarto-table-cell-role="th">-20H</th>
+<th data-quarto-table-cell-role="th">-20K</th>
+<th data-quarto-table-cell-role="th">-20R</th>
+<th data-quarto-table-cell-role="th">-20Q</th>
+<th data-quarto-table-cell-role="th">-20N</th>
+<th data-quarto-table-cell-role="th">-20D</th>
+<th data-quarto-table-cell-role="th">-20E</th>
+<th data-quarto-table-cell-role="th">-20s</th>
+<th data-quarto-table-cell-role="th">-20t</th>
+<th data-quarto-table-cell-role="th">-20y</th>
+<th data-quarto-table-cell-role="th">-19P</th>
+<th data-quarto-table-cell-role="th">-19G</th>
+<th data-quarto-table-cell-role="th">-19A</th>
+<th data-quarto-table-cell-role="th">-19C</th>
+<th data-quarto-table-cell-role="th">-19S</th>
+<th data-quarto-table-cell-role="th">-19T</th>
+<th data-quarto-table-cell-role="th">-19V</th>
+<th data-quarto-table-cell-role="th">-19I</th>
+<th data-quarto-table-cell-role="th">-19L</th>
+<th data-quarto-table-cell-role="th">-19M</th>
+<th data-quarto-table-cell-role="th">-19F</th>
+<th data-quarto-table-cell-role="th">-19Y</th>
+<th data-quarto-table-cell-role="th">-19W</th>
+<th data-quarto-table-cell-role="th">-19H</th>
+<th data-quarto-table-cell-role="th">-19K</th>
+<th data-quarto-table-cell-role="th">-19R</th>
+<th data-quarto-table-cell-role="th">-19Q</th>
+<th data-quarto-table-cell-role="th">-19N</th>
+<th data-quarto-table-cell-role="th">-19D</th>
+<th data-quarto-table-cell-role="th">-19E</th>
+<th data-quarto-table-cell-role="th">-19s</th>
+<th data-quarto-table-cell-role="th">-19t</th>
+<th data-quarto-table-cell-role="th">-19y</th>
+<th data-quarto-table-cell-role="th">-18P</th>
+<th data-quarto-table-cell-role="th">-18G</th>
+<th data-quarto-table-cell-role="th">-18A</th>
+<th data-quarto-table-cell-role="th">-18C</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">18E</th>
+<th data-quarto-table-cell-role="th">18s</th>
+<th data-quarto-table-cell-role="th">18t</th>
+<th data-quarto-table-cell-role="th">18y</th>
+<th data-quarto-table-cell-role="th">19P</th>
+<th data-quarto-table-cell-role="th">19G</th>
+<th data-quarto-table-cell-role="th">19A</th>
+<th data-quarto-table-cell-role="th">19C</th>
+<th data-quarto-table-cell-role="th">19S</th>
+<th data-quarto-table-cell-role="th">19T</th>
+<th data-quarto-table-cell-role="th">19V</th>
+<th data-quarto-table-cell-role="th">19I</th>
+<th data-quarto-table-cell-role="th">19L</th>
+<th data-quarto-table-cell-role="th">19M</th>
+<th data-quarto-table-cell-role="th">19F</th>
+<th data-quarto-table-cell-role="th">19Y</th>
+<th data-quarto-table-cell-role="th">19W</th>
+<th data-quarto-table-cell-role="th">19H</th>
+<th data-quarto-table-cell-role="th">19K</th>
+<th data-quarto-table-cell-role="th">19R</th>
+<th data-quarto-table-cell-role="th">19Q</th>
+<th data-quarto-table-cell-role="th">19N</th>
+<th data-quarto-table-cell-role="th">19D</th>
+<th data-quarto-table-cell-role="th">19E</th>
+<th data-quarto-table-cell-role="th">19s</th>
+<th data-quarto-table-cell-role="th">19t</th>
+<th data-quarto-table-cell-role="th">19y</th>
+<th data-quarto-table-cell-role="th">20P</th>
+<th data-quarto-table-cell-role="th">20G</th>
+<th data-quarto-table-cell-role="th">20A</th>
+<th data-quarto-table-cell-role="th">20C</th>
+<th data-quarto-table-cell-role="th">20S</th>
+<th data-quarto-table-cell-role="th">20T</th>
+<th data-quarto-table-cell-role="th">20V</th>
+<th data-quarto-table-cell-role="th">20I</th>
+<th data-quarto-table-cell-role="th">20L</th>
+<th data-quarto-table-cell-role="th">20M</th>
+<th data-quarto-table-cell-role="th">20F</th>
+<th data-quarto-table-cell-role="th">20Y</th>
+<th data-quarto-table-cell-role="th">20W</th>
+<th data-quarto-table-cell-role="th">20H</th>
+<th data-quarto-table-cell-role="th">20K</th>
+<th data-quarto-table-cell-role="th">20R</th>
+<th data-quarto-table-cell-role="th">20Q</th>
+<th data-quarto-table-cell-role="th">20N</th>
+<th data-quarto-table-cell-role="th">20D</th>
+<th data-quarto-table-cell-role="th">20E</th>
+<th data-quarto-table-cell-role="th">20s</th>
+<th data-quarto-table-cell-role="th">20t</th>
+<th data-quarto-table-cell-role="th">20y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">TK</th>
+<td>0.056754</td>
+<td>0.069067</td>
+<td>0.070474</td>
+<td>0.016886</td>
+<td>0.045028</td>
+<td>0.039400</td>
+<td>0.058630</td>
+<td>0.049836</td>
+<td>0.083255</td>
+<td>0.024038</td>
+<td>0.032716</td>
+<td>0.023335</td>
+<td>0.007974</td>
+<td>0.021107</td>
+<td>0.069184</td>
+<td>0.056168</td>
+<td>0.045966</td>
+<td>0.036585</td>
+<td>0.058865</td>
+<td>0.081027</td>
+<td>0.024508</td>
+<td>0.011843</td>
+<td>0.017355</td>
+<td>0.057915</td>
+<td>0.067158</td>
+<td>0.073125</td>
+<td>0.016731</td>
+<td>0.045396</td>
+<td>0.037440</td>
+<td>0.053001</td>
+<td>0.049959</td>
+<td>0.087633</td>
+<td>0.023751</td>
+<td>0.031356</td>
+<td>0.018018</td>
+<td>0.009594</td>
+<td>0.022230</td>
+<td>0.074529</td>
+<td>0.063999</td>
+<td>0.043173</td>
+<td>0.041652</td>
+<td>0.060840</td>
+<td>0.073359</td>
+<td>0.025389</td>
+<td>0.010881</td>
+<td>0.012870</td>
+<td>0.058123</td>
+<td>0.067810</td>
+<td>0.062792</td>
+<td>0.014006</td>
+<td>...</td>
+<td>0.080097</td>
+<td>0.027670</td>
+<td>0.012621</td>
+<td>0.012743</td>
+<td>0.058601</td>
+<td>0.065424</td>
+<td>0.065302</td>
+<td>0.014864</td>
+<td>0.045078</td>
+<td>0.038986</td>
+<td>0.056408</td>
+<td>0.048124</td>
+<td>0.087354</td>
+<td>0.018884</td>
+<td>0.042276</td>
+<td>0.017178</td>
+<td>0.008894</td>
+<td>0.018519</td>
+<td>0.073830</td>
+<td>0.061769</td>
+<td>0.047149</td>
+<td>0.040327</td>
+<td>0.059698</td>
+<td>0.078216</td>
+<td>0.028509</td>
+<td>0.010599</td>
+<td>0.014011</td>
+<td>0.066015</td>
+<td>0.072738</td>
+<td>0.065037</td>
+<td>0.013692</td>
+<td>0.048900</td>
+<td>0.037897</td>
+<td>0.054523</td>
+<td>0.050122</td>
+<td>0.077262</td>
+<td>0.023227</td>
+<td>0.039364</td>
+<td>0.018337</td>
+<td>0.008435</td>
+<td>0.019071</td>
+<td>0.070905</td>
+<td>0.059413</td>
+<td>0.040465</td>
+<td>0.038509</td>
+<td>0.056357</td>
+<td>0.083496</td>
+<td>0.025917</td>
+<td>0.012836</td>
+<td>0.017482</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">CMGC</th>
+<td>0.080589</td>
+<td>0.070340</td>
+<td>0.083792</td>
+<td>0.013709</td>
+<td>0.050865</td>
+<td>0.035874</td>
+<td>0.053812</td>
+<td>0.035874</td>
+<td>0.074824</td>
+<td>0.022037</td>
+<td>0.029468</td>
+<td>0.015247</td>
+<td>0.007559</td>
+<td>0.020884</td>
+<td>0.069058</td>
+<td>0.057143</td>
+<td>0.044331</td>
+<td>0.032031</td>
+<td>0.053299</td>
+<td>0.078668</td>
+<td>0.042921</td>
+<td>0.020115</td>
+<td>0.007559</td>
+<td>0.079718</td>
+<td>0.075496</td>
+<td>0.072937</td>
+<td>0.012028</td>
+<td>0.058733</td>
+<td>0.035061</td>
+<td>0.053871</td>
+<td>0.032885</td>
+<td>0.074472</td>
+<td>0.021753</td>
+<td>0.026104</td>
+<td>0.013436</td>
+<td>0.007806</td>
+<td>0.021241</td>
+<td>0.064491</td>
+<td>0.063596</td>
+<td>0.046449</td>
+<td>0.037492</td>
+<td>0.055534</td>
+<td>0.080614</td>
+<td>0.042482</td>
+<td>0.018298</td>
+<td>0.005502</td>
+<td>0.074292</td>
+<td>0.068930</td>
+<td>0.074419</td>
+<td>0.013786</td>
+<td>...</td>
+<td>0.084768</td>
+<td>0.052185</td>
+<td>0.016556</td>
+<td>0.005960</td>
+<td>0.074212</td>
+<td>0.073813</td>
+<td>0.074212</td>
+<td>0.011970</td>
+<td>0.053731</td>
+<td>0.034047</td>
+<td>0.050805</td>
+<td>0.031520</td>
+<td>0.074345</td>
+<td>0.017423</td>
+<td>0.028195</td>
+<td>0.015029</td>
+<td>0.010374</td>
+<td>0.020215</td>
+<td>0.070887</td>
+<td>0.063173</td>
+<td>0.045884</td>
+<td>0.033914</td>
+<td>0.056124</td>
+<td>0.086980</td>
+<td>0.048278</td>
+<td>0.018619</td>
+<td>0.006251</td>
+<td>0.082465</td>
+<td>0.066961</td>
+<td>0.074980</td>
+<td>0.012563</td>
+<td>0.050789</td>
+<td>0.034215</td>
+<td>0.050521</td>
+<td>0.038626</td>
+<td>0.079925</td>
+<td>0.019246</td>
+<td>0.028869</td>
+<td>0.016840</td>
+<td>0.006816</td>
+<td>0.023924</td>
+<td>0.072307</td>
+<td>0.060011</td>
+<td>0.046111</td>
+<td>0.035285</td>
+<td>0.057070</td>
+<td>0.074044</td>
+<td>0.043972</td>
+<td>0.018043</td>
+<td>0.006415</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">CK1</th>
+<td>0.057860</td>
+<td>0.076419</td>
+<td>0.076965</td>
+<td>0.014192</td>
+<td>0.039847</td>
+<td>0.037118</td>
+<td>0.063865</td>
+<td>0.052402</td>
+<td>0.070961</td>
+<td>0.017467</td>
+<td>0.027293</td>
+<td>0.012555</td>
+<td>0.014192</td>
+<td>0.024017</td>
+<td>0.079694</td>
+<td>0.050764</td>
+<td>0.033297</td>
+<td>0.035480</td>
+<td>0.058406</td>
+<td>0.086790</td>
+<td>0.038210</td>
+<td>0.015830</td>
+<td>0.016376</td>
+<td>0.061069</td>
+<td>0.070883</td>
+<td>0.069793</td>
+<td>0.007634</td>
+<td>0.033806</td>
+<td>0.032715</td>
+<td>0.053435</td>
+<td>0.043075</td>
+<td>0.087786</td>
+<td>0.023991</td>
+<td>0.022901</td>
+<td>0.016903</td>
+<td>0.010905</td>
+<td>0.020720</td>
+<td>0.076881</td>
+<td>0.059978</td>
+<td>0.056161</td>
+<td>0.037077</td>
+<td>0.061069</td>
+<td>0.087786</td>
+<td>0.041439</td>
+<td>0.017448</td>
+<td>0.006543</td>
+<td>0.050000</td>
+<td>0.067935</td>
+<td>0.073913</td>
+<td>0.010870</td>
+<td>...</td>
+<td>0.084629</td>
+<td>0.041451</td>
+<td>0.015544</td>
+<td>0.012090</td>
+<td>0.053148</td>
+<td>0.068746</td>
+<td>0.069324</td>
+<td>0.012709</td>
+<td>0.036973</td>
+<td>0.021953</td>
+<td>0.047371</td>
+<td>0.042172</td>
+<td>0.082034</td>
+<td>0.017909</td>
+<td>0.030040</td>
+<td>0.017909</td>
+<td>0.020220</td>
+<td>0.019064</td>
+<td>0.095321</td>
+<td>0.047371</td>
+<td>0.041594</td>
+<td>0.034084</td>
+<td>0.065280</td>
+<td>0.098209</td>
+<td>0.041594</td>
+<td>0.021953</td>
+<td>0.015020</td>
+<td>0.051865</td>
+<td>0.074592</td>
+<td>0.088578</td>
+<td>0.015152</td>
+<td>0.039627</td>
+<td>0.034382</td>
+<td>0.055361</td>
+<td>0.039627</td>
+<td>0.074592</td>
+<td>0.020979</td>
+<td>0.034382</td>
+<td>0.020396</td>
+<td>0.008741</td>
+<td>0.026224</td>
+<td>0.079837</td>
+<td>0.046620</td>
+<td>0.038462</td>
+<td>0.043124</td>
+<td>0.067599</td>
+<td>0.087995</td>
+<td>0.027972</td>
+<td>0.012238</td>
+<td>0.011655</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Atypical</th>
+<td>0.071895</td>
+<td>0.065359</td>
+<td>0.063492</td>
+<td>0.014939</td>
+<td>0.053221</td>
+<td>0.045752</td>
+<td>0.058824</td>
+<td>0.050420</td>
+<td>0.085901</td>
+<td>0.020542</td>
+<td>0.017740</td>
+<td>0.020542</td>
+<td>0.005602</td>
+<td>0.034547</td>
+<td>0.049486</td>
+<td>0.057890</td>
+<td>0.040149</td>
+<td>0.034547</td>
+<td>0.059757</td>
+<td>0.078431</td>
+<td>0.041083</td>
+<td>0.025210</td>
+<td>0.004669</td>
+<td>0.042870</td>
+<td>0.052190</td>
+<td>0.074557</td>
+<td>0.013979</td>
+<td>0.063374</td>
+<td>0.036347</td>
+<td>0.054986</td>
+<td>0.031687</td>
+<td>0.089469</td>
+<td>0.027959</td>
+<td>0.036347</td>
+<td>0.015843</td>
+<td>0.010252</td>
+<td>0.026095</td>
+<td>0.074557</td>
+<td>0.056850</td>
+<td>0.054054</td>
+<td>0.034483</td>
+<td>0.063374</td>
+<td>0.068966</td>
+<td>0.046598</td>
+<td>0.018639</td>
+<td>0.006524</td>
+<td>0.051068</td>
+<td>0.063138</td>
+<td>0.072423</td>
+<td>0.012071</td>
+<td>...</td>
+<td>0.072175</td>
+<td>0.047483</td>
+<td>0.013295</td>
+<td>0.015195</td>
+<td>0.059829</td>
+<td>0.081671</td>
+<td>0.066477</td>
+<td>0.017094</td>
+<td>0.047483</td>
+<td>0.044634</td>
+<td>0.050332</td>
+<td>0.034188</td>
+<td>0.063628</td>
+<td>0.010446</td>
+<td>0.037037</td>
+<td>0.016144</td>
+<td>0.006648</td>
+<td>0.027540</td>
+<td>0.047483</td>
+<td>0.055081</td>
+<td>0.057930</td>
+<td>0.043685</td>
+<td>0.059829</td>
+<td>0.091168</td>
+<td>0.039886</td>
+<td>0.027540</td>
+<td>0.014245</td>
+<td>0.077290</td>
+<td>0.060115</td>
+<td>0.062977</td>
+<td>0.015267</td>
+<td>0.055344</td>
+<td>0.029580</td>
+<td>0.065840</td>
+<td>0.026718</td>
+<td>0.092557</td>
+<td>0.017176</td>
+<td>0.039122</td>
+<td>0.023855</td>
+<td>0.009542</td>
+<td>0.016221</td>
+<td>0.046756</td>
+<td>0.054389</td>
+<td>0.050573</td>
+<td>0.055344</td>
+<td>0.062977</td>
+<td>0.068702</td>
+<td>0.040076</td>
+<td>0.020992</td>
+<td>0.008588</td>
+</tr>
+</tbody>
+</table>
+
+<p>10 rows × 943 columns</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="entropy" class="level2">
+<h2 class="anchored" data-anchor-id="entropy">Entropy</h2>
+<hr>
+<section id="get_entropy" class="level3">
+<h3 class="anchored" data-anchor-id="get_entropy">get_entropy</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_entropy(</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    pssm_df, <span class="co"># a dataframe of pssm with index as aa and column as position</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    return_min:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># return min entropy as a single value or return all entropy as a pd.series</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    exclude_zero:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># exclude the column of 0 (center position) in the entropy calculation</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    clean_zero:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, <span class="co"># if true, zero out non-last three values in position 0 (keep only s,t,y values at center)</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Calculate entropy per position of a PSSM surrounding 0. The less entropy the more information it contains.</em></p>
+<p>Let <span class="math inline">\(P_i(x)\)</span> be the probability of amino acid <span class="math inline">\(x\)</span> at position <span class="math inline">\(i\)</span> in the PSSM, with <span class="math inline">\(i \in \{-k, \dots, -1, 0, +1, \dots, +k\}\)</span>. The entropy at each position <span class="math inline">\(i\)</span> is defined as:</p>
+<p><span class="math display">\[
+H_i = - \sum_{x} P_i(x) \log_2 \left( P_i(x) + \varepsilon \right)
+\]</span></p>
+<p>where <span class="math inline">\(\varepsilon = 10^{-8}\)</span> is a small constant added for numerical stability.</p>
+<p>If <code>exclude_zero=True</code>, the central position <span class="math inline">\(i = 0\)</span> is omitted from the entropy calculation.</p>
+<p>If <code>clean_zero=True</code>, all values at position <span class="math inline">\(i = 0\)</span> are zeroed out except for amino acids Serine (S), Threonine (T), and Tyrosine (Y), typically the only possible phospho-acceptors in kinase motif analysis.</p>
+<p>If <code>return_min=True</code>, the function returns the minimum entropy across all positions:</p>
+<p><span class="math display">\[
+H_{\text{spec}} = \min_i H_i
+\]</span></p>
+<p>Otherwise, the function returns the full vector <span class="math inline">\(\{H_i\}\)</span> for each position <span class="math inline">\(i\)</span>, reflecting how much information (or uncertainty) is contained at each position in the motif.</p>
+<div id="1e1745ee" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get entropy per position</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>get_entropy(pssm_df).sort_values()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>Position
+ 0     1.074964
+ 1     3.346861
+         ...   
+-9     4.297737
+-12    4.302189
+Length: 41, dtype: float64</code></pre>
+</div>
+</div>
+<div id="1f056b52" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate minimum entropy of surrouding positions</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>get_entropy(pssm_df,return_min<span class="op">=</span><span class="va">True</span>,exclude_zero<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>3.3468606104695913</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="get_entropy_flat" class="level3">
+<h3 class="anchored" data-anchor-id="get_entropy_flat">get_entropy_flat</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_entropy_flat(</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    flat_pssm:Series,</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    return_min:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># return min entropy as a single value or return all entropy as a pd.series</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    exclude_zero:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># exclude the column of 0 (center position) in the entropy calculation</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    clean_zero:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, <span class="co"># if true, zero out non-last three values in position 0 (keep only s,t,y values at center)</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Calculate entropy per position of a flat PSSM surrounding 0</em></p>
+<div id="a2d8502f" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>get_entropy_flat(flat_pssm).sort_values()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>Position
+ 0     1.074964
+ 1     3.346861
+         ...   
+-9     4.297737
+-12    4.302189
+Length: 41, dtype: float64</code></pre>
+</div>
+</div>
+<div id="77f5b3e4" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>get_entropy_flat(flat_pssm,return_min<span class="op">=</span><span class="va">True</span>,exclude_zero<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>3.3468606104695913</code></pre>
+</div>
+</div>
+<div id="22f82af0" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># test equal</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>(get_entropy_flat(flat_pssm).<span class="bu">round</span>(<span class="dv">5</span>) <span class="op">==</span> get_entropy(pssm_df).<span class="bu">round</span>(<span class="dv">5</span>)).value_counts()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>True    41
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="information-content" class="level2">
+<h2 class="anchored" data-anchor-id="information-content">Information Content</h2>
+<hr>
+<section id="get_ic" class="level3">
+<h3 class="anchored" data-anchor-id="get_ic">get_IC</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_IC(</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>    pssm_df, return_min:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># return min entropy as a single value or return all entropy as a pd.series</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>    exclude_zero:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># exclude the column of 0 (center position) in the entropy calculation</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>    clean_zero:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, <span class="co"># if true, zero out non-last three values in position 0 (keep only s,t,y values at center)</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Calculate the information content (bits) from a frequency matrix,</em> using log2(3) for the middle position and log2(len(pssm_df)) for others. The higher the more information it contains.</p>
+<p>Let <span class="math inline">\(P_i(x)\)</span> be the frequency (probability) of amino acid <span class="math inline">\(x\)</span> at position <span class="math inline">\(i\)</span> in the PSSM. The standard information content (IC) at position <span class="math inline">\(i\)</span> is defined as:</p>
+<p><span class="math display">\[
+\mathrm{IC}_i = \max H_i - H_i
+\]</span></p>
+<p>which is:</p>
+<p><span class="math display">\[
+\mathrm{IC}_i = \log_2(N) - H_i
+\]</span></p>
+<p>where <span class="math inline">\(N\)</span> is the number of possible amino acids (i.e., <span class="math inline">\(N = \text{len}(P_i)\)</span>).</p>
+<p>At the center position (<span class="math inline">\(i = 0\)</span>), only three amino acids (S, T, Y) are relevant, so the maximum entropy at each position is defined as:</p>
+<p><span class="math display">\[
+\max H_i =
+\begin{cases}
+\log_2(3) &amp; \text{if } i = 0 \\
+\log_2(N) &amp; \text{otherwise}
+\end{cases}
+\]</span></p>
+<div id="6a362e04" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the higher the more conserved</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>get_IC(pssm_df,exclude_zero<span class="op">=</span><span class="va">True</span>).sort_values()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>Position
+-12    0.221373
+-9     0.225825
+         ...   
+ 4     0.717760
+ 1     1.176701
+Length: 40, dtype: float64</code></pre>
+</div>
+</div>
+<p>Check all zero cases:</p>
+<div id="deb07cc3" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>pssm_df2<span class="op">=</span>pssm_df.copy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="24f76873" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>pssm_df2[<span class="op">-</span><span class="dv">20</span>]<span class="op">=</span><span class="dv">0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="af7c09dc" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>get_entropy(pssm_df2,exclude_zero<span class="op">=</span><span class="va">True</span>).sort_values()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>Position
+-20    0.000000
+ 1     3.346861
+         ...   
+-9     4.297737
+-12    4.302189
+Length: 40, dtype: float64</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="get_ic_flat" class="level3">
+<h3 class="anchored" data-anchor-id="get_ic_flat">get_IC_flat</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_IC_flat(</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>    flat_pssm:Series,</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>    return_min:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># return min entropy as a single value or return all entropy as a pd.series</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>    exclude_zero:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># exclude the column of 0 (center position) in the entropy calculation</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>    clean_zero:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, <span class="co"># if true, zero out non-last three values in position 0 (keep only s,t,y values at center)</span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Calculate the information content (bits) from a flattened pssm pd.Series,</em> using log2(3) for the middle position and log2(len(pssm_df)) for others.</p>
+<div id="3386288e" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>get_IC_flat(flat_pssm,exclude_zero<span class="op">=</span><span class="va">True</span>).sort_values()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>Position
+-12    0.221373
+-9     0.225825
+         ...   
+ 4     0.717760
+ 1     1.176701
+Length: 40, dtype: float64</code></pre>
+</div>
+</div>
+<div id="00a04033" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>(get_IC_flat(flat_pssm).<span class="bu">round</span>(<span class="dv">5</span>) <span class="op">==</span> get_IC(pssm_df).<span class="bu">round</span>(<span class="dv">5</span>)).value_counts()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>True    41
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="overall-specificity" class="level2">
+<h2 class="anchored" data-anchor-id="overall-specificity">Overall specificity</h2>
+<hr>
+<section id="get_specificity" class="level3">
+<h3 class="anchored" data-anchor-id="get_specificity">get_specificity</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_specificity(</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>    pssm_df</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Get specificity score of a pssm, excluding zero position.</em></p>
+<p>We evaluated the overall specificity of a PSSM by combining two metrics: the maximum IC across surrounding positions and the variance of IC values:</p>
+<p><span class="math display">\[
+\text{Specificity Score} = 2 \times \max(\text{IC}) + \mathrm{Var}(\text{IC})
+\]</span></p>
+<div id="f8f370c0" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>get_specificity(pssm_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>2.381609408364424</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="get_specificity_flat" class="level3">
+<h3 class="anchored" data-anchor-id="get_specificity_flat">get_specificity_flat</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_specificity_flat(</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>    flat_pssm</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Get specificity score of a pssm, excluding zero position.</em></p>
+<div id="7ec9354b" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>get_specificity_flat(flat_pssm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>2.381609408364424</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/sky1ove\.github\.io\/katlas");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sky1ove/katlas/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
