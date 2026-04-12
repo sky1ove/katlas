@@ -34,11 +34,6 @@ helpful to your research.
   and [CPTAC](https://pdc.cancer.gov/pdc/cptac-pancancer) /
   [LinkedOmics](https://academic.oup.com/nar/article/46/D1/D956/4607804)
 
-## Reproduce datasets & figures
-
-Follow the instructions in katlas_raw:
-https://github.com/sky1ove/katlas_raw
-
 ## Web applications
 
 Users can now run the analysis directly on the web without needing to
@@ -49,20 +44,9 @@ Check out our latest web platform:
 
 ## Install
 
-UV:
-
 ``` bash
-uv add -U python-katlas
+pip install python-katlas
 ```
-
-pip:
-
-``` bash
-pip install -U python-katlas
-```
-
-If using machine-learning related modules, need to install development
-verison: `pip install -U "python-katlas[dev]"`
 
 ## Import
 

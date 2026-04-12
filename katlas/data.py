@@ -8,7 +8,7 @@ __all__ = ['Data', 'CPTAC']
 # %% ../nbs/00_data.ipynb #34ccf9ea
 import pandas as pd
 from functools import lru_cache
-from fastcore.all import patch,patch_to
+from fastcore.all import patch_to
 
 import gdown,zipfile,shutil,tempfile
 from pathlib import Path

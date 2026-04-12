@@ -7,12 +7,23 @@ name = "python-katlas"
 dynamic = ["version"]
 description = "tools for predicting kinome specificities"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
 authors = [{name = "lily", email = "lcai888666@gmail.com"}]
 keywords = ['nbdev', 'jupyter', 'notebook', 'python']
 classifiers = ["Natural Language :: English", "Intended Audience :: Developers", "Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3 :: Only"]
-dependencies = ['pandas', 'gdown', 'statsmodels', 'statannotations', 'fastparquet', 'pyarrow', 'tqdm', 'logomaker-kinase', 'seaborn', 'bokeh', 'reactome2py', 'adjustText', 'scikit-learn', 'umap-learn', 'ipywidgets', 'biopython', 'cachetools']
+dependencies = [
+    'pandas',
+    'gdown',
+    'pyarrow',
+    'tqdm',
+    'logomaker-kinase',
+    'seaborn',
+    "reactome2py",
+    'scikit-learn',
+    'biopython',
+    "python-kplot>=0.0.2",
+]
 
 [project.urls]
 Repository = "https://github.com/sky1ove/katlas"
@@ -24,13 +35,6 @@ katlas = "katlas._modidx:d"
 [project.optional-dependencies]
 dev = [
     'nbdev',
-    'pyngrok',
-    'fastai',
-    'fairscale',
-    'rdkit',
-    'openpyxl',
-    'transformers',
-    'sentencepiece',
     "jupyterlab>=3.6.8",
 ]
 
@@ -41,4 +45,14 @@ version = {attr = "katlas.__version__"}
 include = ["katlas"]
 
 [tool.nbdev]
-title = 'python-katlas'
+title = 'katlas'
+lib_path = "katlas"
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.2.0",
+    "nbclient>=0.10.4",
+    "nbdev>=3.0.14",
+    "nbformat>=5.10.4",
+]
+
