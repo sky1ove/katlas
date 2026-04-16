@@ -22,8 +22,8 @@ dependencies = [
     "reactome2py",
     'scikit-learn',
     'biopython',
-    "python-kplot>=0.0.2",
     "filelock>=3.25.2",
+    "python-kplot>=0.0.3",
 ]
 
 [project.urls]

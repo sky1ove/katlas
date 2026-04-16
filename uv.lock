@@ -2492,7 +2492,7 @@ requires-dist = [
     { name = "nbdev", marker = "extra == 'dev'" },
     { name = "pandas" },
     { name = "pyarrow" },
-    { name = "python-kplot", specifier = ">=0.0.2" },
+    { name = "python-kplot", specifier = ">=0.0.3" },
     { name = "reactome2py" },
     { name = "scikit-learn" },
     { name = "seaborn" },
