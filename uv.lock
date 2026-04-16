@@ -2454,6 +2454,7 @@ name = "python-katlas"
 source = { editable = "." }
 dependencies = [
     { name = "biopython" },
+    { name = "filelock" },
     { name = "gdown" },
     { name = "logomaker-kinase" },
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -2484,6 +2485,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "biopython" },
+    { name = "filelock", specifier = ">=3.25.2" },
     { name = "gdown" },
     { name = "jupyterlab", marker = "extra == 'dev'", specifier = ">=3.6.8" },
     { name = "logomaker-kinase" },

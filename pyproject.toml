@@ -23,6 +23,7 @@ dependencies = [
     'scikit-learn',
     'biopython',
     "python-kplot>=0.0.2",
+    "filelock>=3.25.2",
 ]
 
 [project.urls]
