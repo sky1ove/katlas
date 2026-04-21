@@ -10,66 +10,92 @@ __all__ = ['kl_divergence', 'kl_divergence_flat', 'js_divergence', 'js_divergenc
 import numpy as np, pandas as pd
 from .pssm import EPSILON
 
+# %% ../nbs/06_compare.ipynb #d7548a21
+def _align_pssm_labels(
+    p1: pd.DataFrame | pd.Series | np.ndarray,  # First PSSM-like object
+    p2: pd.DataFrame | pd.Series | np.ndarray,  # Second PSSM-like object
+):
+    "Validate shape and labels before comparing two PSSMs."
+    if p1.shape != p2.shape:
+        raise ValueError("Shapes of p1 and p2 must match.")
+
+    if isinstance(p1, pd.DataFrame) and isinstance(p2, pd.DataFrame):
+        if not p1.index.equals(p2.index) or not p1.columns.equals(p2.columns):
+            raise ValueError("PSSM indices and columns must match exactly.")
+    elif isinstance(p1, pd.Series) and isinstance(p2, pd.Series):
+        if not p1.index.equals(p2.index):
+            raise ValueError("Flattened PSSM indices must match exactly.")
+
+    return p1, p2
+
+# %% ../nbs/06_compare.ipynb #ac9d6798
+def _flat_position_count(flat_pssm: pd.Series) -> int:
+    "Count unique positions in a flattened PSSM index."
+    positions = flat_pssm.index.to_series().str.extract(r'(-?\d+)')[0]
+    return int(positions.nunique())
+
 # %% ../nbs/06_compare.ipynb #b1ef2ee7-70fd-4703-96b4-1c1a9053987f
 def kl_divergence(p1,  # target pssm p (array-like, shape: (AA, positions))
                   p2,  # pred pssm q (array-like, same shape as p1)
                  ):
     """
     KL divergence D_KL(p1 || p2) over positions.
-    
+
     p1 and p2 are arrays (df or np) with index as aa and column as position.
     Returns average divergence across positions if mean=True, else per-position.
     """
-    if p1.shape != p2.shape: raise ValueError("Shapes of p1 and p2 must match.")
-    p1, p2 = p1.align(p2, join='inner', axis=None)
-    # Mask invalid positions (both zero)
-    valid = (p1 + p2) > 0
-    p1 = np.where(valid, p1, 0.0)
-    p2 = np.where(valid, p2, 0.0)
+    p1, p2 = _align_pssm_labels(p1, p2)
+    p1_values = p1.to_numpy() if isinstance(p1, (pd.DataFrame, pd.Series)) else np.asarray(p1)
+    p2_values = p2.to_numpy() if isinstance(p2, (pd.DataFrame, pd.Series)) else np.asarray(p2)
 
-    # KL divergence: sum_x p1(x) log(p1(x)/p2(x))
-    kl = np.sum(p1 * np.log((p1 + EPSILON) / (p2 + EPSILON)), axis=0)
+    valid = (p1_values + p2_values) > 0
+    p1_values = np.where(valid, p1_values, 0.0)
+    p2_values = np.where(valid, p2_values, 0.0)
 
+    kl = np.sum(p1_values * np.log((p1_values + EPSILON) / (p2_values + EPSILON)), axis=0)
     return kl
 
 # %% ../nbs/06_compare.ipynb #71084bb3-169a-4dc2-b5dd-1b802fda8225
 def kl_divergence_flat(p1_flat, # pd.Series of target flattened pssm p
                        p2_flat, # pd.Series of pred flattened pssm q
                        ):
-
     "p1 and p2 are two flattened pd.Series with index as aa and column as position"
-    kld = kl_divergence(p1_flat,p2_flat) # do not do js.mean() because it's 1d
-    total_position = len(p1_flat.index.str.extract(r'(-?\d+)').drop_duplicates())
-    return float(kld/total_position)
+    kld = kl_divergence(p1_flat, p2_flat) # do not do js.mean() because it's 1d
+    total_position = _flat_position_count(p1_flat)
+    return float(kld / total_position)
 
 # %% ../nbs/06_compare.ipynb #eca99343-fbcd-48c2-a1ff-88af31fd2346
-def js_divergence(p1, # pssm 
+def js_divergence(p1, # pssm
                   p2, # pssm
                   index=True,
                  ):
     "p1 and p2 are two arrays (df or np) with index as aa and column as position"
-    if p1.shape != p2.shape: raise ValueError("Shapes of p1 and p2 must match.")
-    p1, p2 = p1.align(p2, join='inner', axis=None)
-    if index: positions=p1.columns
-    valid = (p1 + p2) > 0
-    p1 = np.where(valid, p1, 0.0)
-    p2 = np.where(valid, p2, 0.0)
-    
-    m = 0.5 * (p1 + p2)
-    
-    js = 0.5 * np.sum(p1 * np.log((p1+ EPSILON) / (m + EPSILON)), axis=0) + \
-         0.5 * np.sum(p2 * np.log((p2+ EPSILON) / (m + EPSILON)), axis=0)
-    return pd.Series(js,index=positions) if index else js
+    p1, p2 = _align_pssm_labels(p1, p2)
+    positions = p1.columns if index and isinstance(p1, pd.DataFrame) else None
+
+    p1_values = p1.to_numpy() if isinstance(p1, (pd.DataFrame, pd.Series)) else np.asarray(p1)
+    p2_values = p2.to_numpy() if isinstance(p2, (pd.DataFrame, pd.Series)) else np.asarray(p2)
+    valid = (p1_values + p2_values) > 0
+    p1_values = np.where(valid, p1_values, 0.0)
+    p2_values = np.where(valid, p2_values, 0.0)
+
+    m = 0.5 * (p1_values + p2_values)
+
+    js = 0.5 * np.sum(p1_values * np.log((p1_values + EPSILON) / (m + EPSILON)), axis=0) +          0.5 * np.sum(p2_values * np.log((p2_values + EPSILON) / (m + EPSILON)), axis=0)
+    if index:
+        if positions is None:
+            raise ValueError("index=True requires DataFrame inputs with column labels.")
+        return pd.Series(js, index=positions)
+    return js
 
 # %% ../nbs/06_compare.ipynb #37553737-13b3-4461-ad93-fe4cf863f25b
 def js_divergence_flat(p1_flat, # pd.Series of flattened pssm
                        p2_flat, # pd.Series of flattened pssm
                        ):
-
     "p1 and p2 are two flattened pd.Series with index as aa and column as position"
-    js = js_divergence(p1_flat,p2_flat,index=False)
-    total_position = len(p1_flat.index.str.extract(r'(-?\d+)').drop_duplicates())
-    return float(js/total_position)
+    js = js_divergence(p1_flat, p2_flat, index=False)
+    total_position = _flat_position_count(p1_flat)
+    return float(js / total_position)
 
 # %% ../nbs/06_compare.ipynb #7e480e54-c5de-4726-b208-c531e07a2adc
 def js_similarity(pssm1,pssm2):
@@ -86,14 +112,12 @@ def js_similarity_flat(p1_flat,p2_flat):
 # %% ../nbs/06_compare.ipynb #8d2e228a-8543-4174-8c24-ce6ded317c8d
 def cosine_similarity(pssm1: pd.DataFrame, pssm2: pd.DataFrame) -> pd.Series:
     "Compute cosine similarity per position (column) between two PSSMs."
-
-    if pssm1.shape != pssm2.shape: raise ValueError("PSSMs must have the same shape")
+    pssm1, pssm2 = _align_pssm_labels(pssm1, pssm2)
 
     sims = {}
     for pos in pssm1.columns:
         v1 = pssm1[pos]
         v2 = pssm2[pos]
-        v1,v2 = v1.align(v2, join='inner') # make sure the aa index match with each other
 
         norm1 = np.linalg.norm(v1)
         norm2 = np.linalg.norm(v2)
@@ -101,18 +125,17 @@ def cosine_similarity(pssm1: pd.DataFrame, pssm2: pd.DataFrame) -> pd.Series:
         if norm1 == 0 or norm2 == 0:
             sims[pos] = 0.0
         else:
-            dot_product = np.dot(v1,v2) # sum(v1*v2)
-            sims[pos] = dot_product / (norm1 * norm2)
+            sims[pos] = float(np.dot(v1, v2) / (norm1 * norm2))
 
     return pd.Series(sims)
 
 # %% ../nbs/06_compare.ipynb #d830fbaa-4a9f-4d5d-98ba-289fc91bff8e
 def cosine_overall_flat(pssm1_flat, pssm2_flat):
     """Compute overall cosine similarity between two PSSMs (flattened)."""
-    # match index for dot product
-    pssm1_flat, pssm2_flat = pssm1_flat.align(pssm2_flat, join='inner')
+    pssm1_flat, pssm2_flat = _align_pssm_labels(pssm1_flat, pssm2_flat)
     norm1 = np.linalg.norm(pssm1_flat)
     norm2 = np.linalg.norm(pssm2_flat)
-    if norm1 == 0 or norm2 == 0: return 0.0
-    dot_product = sum(pssm1_flat*pssm2_flat) # np.dot(pssm1_flat, pssm2_flat)
-    return  dot_product/ (norm1 * norm2)
+    if norm1 == 0 or norm2 == 0:
+        return 0.0
+    dot_product = np.dot(pssm1_flat, pssm2_flat)
+    return float(dot_product / (norm1 * norm2))

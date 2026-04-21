@@ -10,7 +10,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from .data import Data
-from .plot import convert_logo_df, plot_logo_heatmap, plot_heatmap, plot_logo_raw
+from .plot import _plot_logo_heatmap_layout, convert_logo_df, plot_heatmap, plot_logo_raw
 from .pssm import EPSILON, recover_pssm, get_prob, flatten_pssm
 
 # %% ../nbs/04_lo.ipynb #77d2dcc5-1020-42fb-8774-879ad764c226
@@ -34,17 +34,19 @@ def get_pssm_LO_flat(flat_pssm,
     return get_pssm_LO(pssm_df,site_type)
 
 # %% ../nbs/04_lo.ipynb #ae9329ff-1f25-45f5-93b2-15d7389a8c3b
-def plot_logo_LO(pssm_LO,title='Motif', acceptor=None, scale_zero=True,scale_pos_neg=True,ax=None,figsize=(10,1)):
+def plot_logo_LO(pssm_LO,title="Motif", acceptor=None, scale_zero=True,scale_pos_neg=True,ax=None,figsize=(10,1)):
     "Plot logo of log-odds given a frequency PSSM."
-    if acceptor is not None: 
-        acceptor = acceptor.upper()
-        if acceptor not in ['S','T','Y']:
-            raise ValueError(f"Acceptor must be one of 'S', 'T', or 'Y'; got {acceptor!r}")
-        pssm_LO= pssm_LO.copy()
-        pssm_LO.loc[acceptor,0]=0.1 # give it a value so that it can be shown on the motif
+    if acceptor is not None:
+        acceptor_upper = acceptor.upper()
+        if acceptor_upper not in ["S", "T", "Y"]:
+            raise ValueError(f"Acceptor must be one of 'S', 'T', or 'Y'; got {acceptor_upper!r}")
+        pssm_LO = pssm_LO.copy()
+        target_row = acceptor_upper.lower() if acceptor_upper.lower() in pssm_LO.index else acceptor_upper
+        if target_row not in pssm_LO.index:
+            pssm_LO.loc[target_row] = 0.0
+        pssm_LO.loc[target_row, 0] = 0.1
 
-    # return pssm_LO
-    pssm_LO= convert_logo_df(pssm_LO,scale_zero=scale_zero,scale_pos_neg=scale_pos_neg)
+    pssm_LO = convert_logo_df(pssm_LO,scale_zero=scale_zero,scale_pos_neg=scale_pos_neg)
     ytitle = "Scaled Log-Odds" if scale_pos_neg else "Log-Odds (bits)"
     plot_logo_raw(pssm_LO,ax=ax,title=title,ytitle=ytitle,figsize=figsize)
 
@@ -56,14 +58,17 @@ def plot_logo_heatmap_LO(pssm_LO, # pssm of log-odds
                              include_zero=False,
                          scale_pos_neg=True
                       ):
-    
     """Plot logo and heatmap of enrichment bits vertically"""
-    
-    fig = plt.figure(figsize=figsize)
-    gs = fig.add_gridspec(2, 2, height_ratios=[1, 5], width_ratios=[4, 1], hspace=0.11, wspace=0)
-
-    ax_logo = fig.add_subplot(gs[0, 0])
-    plot_logo_LO(pssm_LO,acceptor=acceptor,ax=ax_logo,title=title)
-
-    ax_heatmap = fig.add_subplot(gs[1, :])
-    plot_heatmap(pssm_LO,ax=ax_heatmap,position_label=False,include_zero=include_zero,scale_pos_neg=scale_pos_neg,colorbar_title='bits')
+    _plot_logo_heatmap_layout(
+        heatmap_df=pssm_LO,
+        logo_plotter=lambda ax: plot_logo_LO(
+            pssm_LO,
+            acceptor=acceptor,
+            ax=ax,
+            title=title,
+            scale_pos_neg=scale_pos_neg,
+        ),
+        figsize=figsize,
+        include_zero=include_zero,
+        heatmap_kwargs={"scale_pos_neg": scale_pos_neg, "colorbar_title": "bits"},
+    )

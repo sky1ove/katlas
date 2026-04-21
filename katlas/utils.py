@@ -4,9 +4,9 @@
 
 # %% auto #0
 __all__ = ['sty_color', 'group_color', 'pspa_category_color', 'prepare_path', 'get_subfamily_color', 'remove_hi_corr',
-           'clean_feat', 'standardize', 'check_seq', 'check_seqs', 'validate_site', 'validate_site_df',
-           'phosphorylate_seq', 'phosphorylate_seq_df', 'extract_site_seq', 'get_fasta', 'run_clustalo', 'aln2df',
-           'get_aln_freq']
+           'clean_feat', 'standardize', 'STY2sty', 'pSTY2sty', 'sty2pSTY', 'sty2pSTY_df', 'check_seq', 'check_seqs',
+           'validate_site', 'validate_site_df', 'phosphorylate_seq', 'phosphorylate_seq_df', 'extract_site_seq',
+           'get_fasta', 'run_clustalo', 'aln2df', 'get_aln_freq']
 
 # %% ../nbs/01_utils.ipynb #1b68d25a
 import numpy as np, pandas as pd
@@ -95,6 +95,28 @@ def clean_feat(df: pd.DataFrame,
 def standardize(df): 
     "Standardize features from a df"
     return StandardScaler().fit_transform(df.copy())
+
+# %% ../nbs/01_utils.ipynb #c7b783a3
+def STY2sty(input_string: str):
+    "Replace all uppercase S/T/Y with lowercase s/t/y in a sequence."
+    return input_string.replace("S", "s").replace("T", "t").replace("Y", "y")
+
+# %% ../nbs/01_utils.ipynb #1d47704c
+def pSTY2sty(string):
+    "Convert pS/pT/pY to s/t/y in a string."
+    return string.replace("pS", "s").replace("pT", "t").replace("pY", "y")
+
+# %% ../nbs/01_utils.ipynb #5a58fd73
+def sty2pSTY(string):
+    "Convert s/t/y to pS/pT/pY in a string."
+    return string.replace("s", "pS").replace("t", "pT").replace("y", "pY")
+
+# %% ../nbs/01_utils.ipynb #56414964
+def sty2pSTY_df(df):
+    "Apply sty to pSTY conversion to a dataframe index."
+    df = df.copy()
+    df.index = df.index.map(sty2pSTY)
+    return df
 
 # %% ../nbs/01_utils.ipynb #60b3f337
 def check_seq(seq):
@@ -209,15 +231,13 @@ def run_clustalo(input_fasta,  # .fasta fname
                  output_aln, # .aln output fname
                  outfmt="clu"):
     "Run Clustal Omega to perform multiple sequence alignment."
-    # if the output directory does not exist, create one
     output_aln = Path(output_aln)
     output_aln.parent.mkdir(parents=True, exist_ok=True)
 
-    # run clustalo
     subprocess.run([
         "clustalo", "-i", str(input_fasta),
         "-o", str(output_aln),
-        "--force", "--outfmt=clu"
+        "--force", f"--outfmt={outfmt}"
     ], check=True)
 
 # %% ../nbs/01_utils.ipynb #901a0917

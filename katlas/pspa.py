@@ -9,7 +9,7 @@ __all__ = ['preprocess_pspa', 'plot_logo_pspa', 'plot_logo_heatmap_pspa', 'raw2n
 import numpy as np, pandas as pd
 from matplotlib import pyplot as plt
 
-from .plot import change_center_name, plot_heatmap, plot_logo_raw, scale_zero_position
+from .plot import _plot_logo_heatmap_layout, change_center_name, plot_logo_raw, scale_zero_position
 from .pssm import recover_pssm
 
 # %% ../nbs/05_pspa.ipynb #0470f701-f222-411e-a0e6-a650285ab6c2
@@ -38,20 +38,22 @@ def plot_logo_heatmap_pspa(row, # row of Data.get_pspa()
                        figsize=(6,10),
                        include_zero=False
                       ):
-
     """Plot logo and heatmap vertically"""
     pssm = recover_pssm(row.dropna())
-    
-    fig = plt.figure(figsize=figsize)
-    gs = fig.add_gridspec(2, 2, height_ratios=[1, 5], width_ratios=[4, 1], hspace=0.11, wspace=0)
-
-    ax_logo = fig.add_subplot(gs[0, 0])
-    
     logo_pssm = preprocess_pspa(pssm)
-    plot_logo_raw(logo_pssm,ax=ax_logo, ytitle='log₂(Value/Median)',title=title)
 
-    ax_heatmap = fig.add_subplot(gs[1, :])
-    plot_heatmap(pssm,ax=ax_heatmap,position_label=False,include_zero=include_zero,colorbar_title='Value')
+    _plot_logo_heatmap_layout(
+        heatmap_df=pssm,
+        logo_plotter=lambda ax: plot_logo_raw(
+            logo_pssm,
+            ax=ax,
+            ytitle='log₂(Value / Median)',
+            title=title,
+        ),
+        figsize=figsize,
+        include_zero=include_zero,
+        heatmap_kwargs={"colorbar_title": "Value"},
+    )
 
 # %% ../nbs/05_pspa.ipynb #891debe3-8bf7-4f8f-8b36-ab8a65010685
 def raw2norm(df: pd.DataFrame, # single kinase's df has position as index, and single amino acid as columns
