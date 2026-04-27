@@ -47,7 +47,7 @@ group_color=get_color_dict(
 def get_subfamily_color():
     group_color2 = pd.DataFrame(group_color).T
     group_color2 = group_color2.reset_index(names='modi_group')
-    info=Data.get_kinase_info()
+    info=Data.kinase_info()
     subfamily_color = info[['modi_group','subfamily']].merge(group_color2).drop(columns=['modi_group']).set_index('subfamily')
     subfamily_color = subfamily_color.apply(tuple, axis=1).to_dict()
     return subfamily_color

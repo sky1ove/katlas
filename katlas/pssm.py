@@ -21,16 +21,16 @@ EPSILON = 1e-8
 
 # %% ../nbs/02_pssm.ipynb #be1756c3
 def get_prob(data: pd.DataFrame | pd.Series | Sequence[str], # input data, list or df
-             col: str='site_seq', # column name if input is df
+             seq_col: str='site_seq', # column name if input is df
              ):
     "Get the probability matrix of PSSM from phosphorylation site sequences."
 
     aa_order=[i for i in 'PGACSTVILMFYWHKRQNDEsty']
 
     if isinstance(data, pd.DataFrame):
-        if col not in data.columns:
-            raise ValueError(f"Column '{col}' not found in DataFrame.")
-        site = data[col]
+        if seq_col not in data.columns:
+            raise ValueError(f"Column '{seq_col}' not found in DataFrame.")
+        site = data[seq_col]
     else:
         if isinstance(data, (str, bytes)):
             raise TypeError("Input looks like a single sequence string; pass [seq] or a Series instead.")

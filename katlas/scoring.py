@@ -79,7 +79,7 @@ multiply_20 = partial(multiply,num_aa=20)
 def multiply_pspa(values, kinase, num_aa_dict=None):
     "Multiply values, consider the dynamics of scale factor, which is PSPA random aa number."
     if num_aa_dict is None:
-        num_aa_dict = Data.get_num_dict()
+        num_aa_dict = Data.num_dict()
     # Check if any values are less than or equal to zero
     if np.any(np.array(values) == 0):
         return np.nan
@@ -168,11 +168,11 @@ def Params(name=None, load=True):
     def lazy(f): return lambda: f().astype('float32')
     
     params = {
-        "CDDM": {'ref': lazy(Data.get_cddm_LO), 'func': sumup},
-        "CDDM_upper": {'ref': lazy(Data.get_cddm_LO_upper), 'func': sumup, 'to_upper': True},
-        "PSPA_st": {'ref': lazy(Data.get_pspa_st), 'func': multiply_pspa},
-        "PSPA_y": {'ref': lazy(Data.get_pspa_tyr), 'func': multiply_pspa},
-        "PSPA": {'ref': lazy(Data.get_pspa), 'func': multiply_pspa},
+        "CDDM": {'ref': lazy(Data.cddm_LO), 'func': sumup},
+        "CDDM_upper": {'ref': lazy(Data.cddm_LO_upper), 'func': sumup, 'to_upper': True},
+        "PSPA_st": {'ref': lazy(Data.pspa_st), 'func': multiply_pspa},
+        "PSPA_y": {'ref': lazy(Data.pspa_tyr), 'func': multiply_pspa},
+        "PSPA": {'ref': lazy(Data.pspa), 'func': multiply_pspa},
     }
 
     if name is None:
@@ -244,7 +244,7 @@ def predict_kinase_df(df, seq_col, ref, func, to_lower=False, to_upper=False):
     if func == sumup:
         out = merged_df.groupby("input_index").sum().reindex(df.index)
     elif func in (multiply, multiply_pspa, multiply_23, multiply_20):
-        num_dict = Data.get_num_dict() if func == multiply_pspa else None
+        num_dict = Data.num_dict() if func == multiply_pspa else None
         divisor = (
             (lambda k: num_dict[k])
             if func == multiply_pspa else

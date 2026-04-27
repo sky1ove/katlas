@@ -15,23 +15,39 @@ from .pssm import EPSILON, recover_pssm, get_prob, flatten_pssm
 
 # %% ../nbs/04_lo.ipynb #77d2dcc5-1020-42fb-8774-879ad764c226
 def get_pssm_LO(pssm_df,
-                site_type, # S, T, Y, ST, or STY
+                bg_type=None, # S, T, Y, ST, or STY
+                bg_pssm=None, # Alternative: provide background PSSM directly
                ):
     "Get log odds PSSM: log2 (freq pssm/background pssm)."
-    bg_pssms = Data.get_ks_background()
-    flat_bg = bg_pssms.loc[f'ks_{site_type}']
-    pssm_bg = recover_pssm(flat_bg)
-    pssm_odds = ((pssm_df+EPSILON)/(pssm_bg+EPSILON)).dropna(axis=0,how='all').dropna(axis=1, how='all')
+    
+    # Can't have both bg_pssm and bg_type
+    if bg_pssm is not None and bg_type is not None:
+        raise ValueError("Cannot specify both bg_pssm and bg_type")
+    if bg_pssm is None and bg_type is None:
+        raise ValueError("Must specify either bg_pssm or bg_type")
+    
+    # Get background PSSM
+    if bg_type is not None:
+        bg_pssms = Data.ks_background()
+        flat_bg = bg_pssms.loc[f'ks_{bg_type}']
+        bg_pssm = recover_pssm(flat_bg)
+    
+    # Compute log odds using log2 subtraction instead of division
+    log_pssm = np.log2(pssm_df + EPSILON)
+    log_bg = np.log2(bg_pssm + EPSILON)
+    pssm_LO = (log_pssm - log_bg).fillna(0)
+    
     # make sure all columns and index matched
-    if pssm_odds.shape != pssm_df.shape: raise ValueError("Shape mismatch between PSSM and background PSSM.")
-    return np.log2(pssm_odds).replace([np.inf, -np.inf], 0).fillna(0)
+    if pssm_LO.shape != pssm_df.shape: raise ValueError("Shape mismatch between PSSM and background PSSM.")
+    return pssm_LO
 
 # %% ../nbs/04_lo.ipynb #4171e816-92b1-4c59-86af-e72946ecfd51
 def get_pssm_LO_flat(flat_pssm,
-                    site_type, # S, T, Y, ST, or STY
+                    bg_type=None, # S, T, Y, ST, or STY
+                    bg_pssm=None,
                     ):
     pssm_df = recover_pssm(flat_pssm)
-    return get_pssm_LO(pssm_df,site_type)
+    return get_pssm_LO(pssm_df, bg_type=bg_type, bg_pssm=bg_pssm)
 
 # %% ../nbs/04_lo.ipynb #ae9329ff-1f25-45f5-93b2-15d7389a8c3b
 def plot_logo_LO(pssm_LO,title="Motif", acceptor=None, scale_zero=True,scale_pos_neg=True,ax=None,figsize=(10,1)):

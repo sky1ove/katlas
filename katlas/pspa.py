@@ -33,7 +33,7 @@ def plot_logo_pspa(row,title='Motif',figsize=(5,2)):
     plot_logo_raw(logo_pssm,ytitle='log₂(Value / Median)',title=title,figsize=figsize)
 
 # %% ../nbs/05_pspa.ipynb #90578cc4-9bce-4129-a234-7a876e041562
-def plot_logo_heatmap_pspa(row, # row of Data.get_pspa()
+def plot_logo_heatmap_pspa(row, # row of Data.pspa()
                        title='Motif',
                        figsize=(6,10),
                        include_zero=False
